@@ -1,11 +1,21 @@
 import type { MuscleType } from "../db/exercises.ts";
 
 export const MUSCLES_TRANSLATION: Record<MuscleType, string> = {
-  chest: "Грудь",
+  abs: "Пресс",
+  abductors: "Отводящие мышцы",
+  adductors: "Приводящие мышцы",
   biceps: "Бицепсы",
-  lats: "Широчайшие",
-  triceps: "Трицепсы",
-  shoulders: "Плечи",
+  calves: "Икры",
+  chest: "Грудь",
   forearms: "Предплечья",
+  glutes: "Ягодицы",
+  hamstrings: "Подколенные сухожилия",
+  lats: "Широчайшие",
+  lower_back: "Низ спины",
+  neck: "Шея",
+  quadriceps: "Квадрицепсы",
+  shoulders: "Плечи",
+  traps: "Трапеции",
+  triceps: "Трицепсы",
   upper_back: "Верх спины",
 };

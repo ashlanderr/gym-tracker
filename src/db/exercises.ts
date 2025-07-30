@@ -2,13 +2,23 @@ import { firestore, useFirestoreDocument, useFirestoreQuery } from "./db.ts";
 import { collection, doc, query, setDoc } from "firebase/firestore";
 
 export type MuscleType =
-  | "chest"
-  | "lats"
+  | "abs"
+  | "abductors"
+  | "adductors"
   | "biceps"
-  | "triceps"
+  | "calves"
+  | "chest"
+  | "forearms"
+  | "glutes"
+  | "hamstrings"
+  | "lats"
+  | "lower_back"
+  | "neck"
+  | "quadriceps"
   | "shoulders"
-  | "upper_back"
-  | "forearms";
+  | "traps"
+  | "triceps"
+  | "upper_back";
 
 export interface Exercise {
   id: string;
