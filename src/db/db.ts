@@ -5,6 +5,8 @@ import {
   persistentLocalCache,
   Query,
   DocumentReference,
+  persistentMultipleTabManager,
+  CACHE_SIZE_UNLIMITED,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
@@ -20,7 +22,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 export const firestore = initializeFirestore(app, {
-  localCache: persistentLocalCache(),
+  localCache: persistentLocalCache({
+    cacheSizeBytes: CACHE_SIZE_UNLIMITED,
+    tabManager: persistentMultipleTabManager(),
+  }),
 });
 
 export type QueryOptions = {
