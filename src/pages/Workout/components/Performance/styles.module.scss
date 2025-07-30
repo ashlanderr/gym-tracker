@@ -1,0 +1,62 @@
+.exercise {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.exerciseName {
+  color: #08F;
+  font-weight: bold;
+}
+
+.sets {
+  width: 100%;
+
+  th, td {
+    padding: 4px;
+  }
+}
+
+.setNumHeader,
+.setNumValue {
+  text-align: left;
+}
+
+.prevVolumeHeader,
+.currentWeightHeader,
+.currentRepsHeader,
+.setCompletedHeader,
+.prevVolumeValue,
+.currentWeightValue,
+.currentRepsValue,
+.setCompletedValue {
+  text-align: center;
+}
+
+.setNumHeader,
+.prevVolumeHeader,
+.currentWeightHeader,
+.currentRepsHeader,
+.setCompletedHeader, {
+  width: 0;
+}
+
+.currentWeightValue.placeholder,
+.currentRepsValue.placeholder {
+  color: #888;
+}
+
+.addSetButton {
+  background: #444;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: none;
+  outline: none;
+  border-radius: 4px;
+  font-size: inherit;
+  padding: 12px 12px 10px 12px;
+  line-height: 1;
+}
