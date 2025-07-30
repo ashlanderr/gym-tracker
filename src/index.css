@@ -50,4 +50,5 @@ html {
     font-family: Montserrat, "Helvetica Neue", sans-serif;
     background: #000;
     color: #fff;
+    user-select: none;
 }

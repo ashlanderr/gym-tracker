@@ -1,11 +1,15 @@
 import type { PerformanceProps } from "./types.ts";
 import s from "./styles.module.scss";
 import { MdAdd, MdCheck } from "react-icons/md";
-import { useQuerySetsByPerformance, type Set } from "../../../../db/sets.ts";
-import type { ReactNode } from "react";
+import {
+  useQuerySetsByPerformance,
+  type Set,
+  addSet,
+} from "../../../../db/sets.ts";
+import { type ReactNode } from "react";
 import { useQueryPreviousPerformance } from "../../../../db/performances.ts";
-import { clsx } from "clsx";
 import { useQueryExerciseById } from "../../../../db/exercises.ts";
+import { SetRow } from "../SetRow";
 
 export function Performance({ performance }: PerformanceProps) {
   const exercise = useQueryExerciseById(performance.exercise);
@@ -15,10 +19,22 @@ export function Performance({ performance }: PerformanceProps) {
     performance.exercise,
     performance.startedAt,
   );
+
   const prevSets = useQuerySetsByPerformance({
     enabled: prevPerformance?.id !== undefined,
     performance: prevPerformance?.id,
   });
+
+  const addSetHandler = async () => {
+    await addSet({
+      performance: performance.id,
+      order: Math.max(-1, ...sets.map((s) => s.order)) + 1,
+      type: "working",
+      weight: 0,
+      reps: 0,
+      completed: false,
+    });
+  };
 
   return (
     <div className={s.exercise}>
@@ -37,7 +53,7 @@ export function Performance({ performance }: PerformanceProps) {
         </thead>
         <tbody>{buildSets(sets, prevSets)}</tbody>
       </table>
-      <button className={s.addSetButton}>
+      <button className={s.addSetButton} onClick={addSetHandler}>
         <MdAdd />
         Добавить сет
       </button>
@@ -46,8 +62,12 @@ export function Performance({ performance }: PerformanceProps) {
 }
 
 function buildSets(sets: Set[], prevSets: Set[]): ReactNode[] {
-  const prevWarmUp = prevSets.filter((s) => s.type === "warm-up");
-  const prevWorking = prevSets.filter((s) => s.type === "working");
+  const prevWarmUp = prevSets.filter(
+    (s) => s.type === "warm-up" && s.weight && s.reps,
+  );
+  const prevWorking = prevSets.filter(
+    (s) => s.type === "working" && s.weight && s.reps,
+  );
   const recommendations = buildRecommendations(prevWorking);
   const recWarmUp = recommendations.filter((s) => s.type === "warm-up");
   const recWorking = recommendations.filter((s) => s.type === "working");
@@ -56,7 +76,7 @@ function buildSets(sets: Set[], prevSets: Set[]): ReactNode[] {
   let warmUpIndex = 0;
   let workingIndex = 0;
 
-  sets.forEach((set, index) => {
+  sets.forEach((set) => {
     let number = "-";
     let prevSet: Set | undefined;
     let recSet: Set | undefined;
@@ -73,56 +93,15 @@ function buildSets(sets: Set[], prevSets: Set[]): ReactNode[] {
       workingIndex += 1;
     }
 
-    const prev = prevSet ? `${prevSet.weight}кг x ${prevSet.reps}` : "-";
-
-    let weight: string;
-    let weightPlaceholder: boolean;
-
-    if (set.weight) {
-      weight = set.weight.toString();
-      weightPlaceholder = false;
-    } else {
-      weight = recSet?.weight?.toString() ?? "-";
-      weightPlaceholder = true;
-    }
-
-    let reps: string;
-    let repsPlaceholder: boolean;
-
-    if (set.reps) {
-      reps = set.reps.toString();
-      repsPlaceholder = false;
-    } else {
-      reps = recSet?.reps?.toString() ?? "-";
-      repsPlaceholder = true;
-    }
-
-    const node = (
-      <tr key={index}>
-        <td className={s.setNumValue}>{number}</td>
-        <td className={s.prevVolumeValue}>{prev}</td>
-        <td
-          className={clsx(
-            s.currentWeightValue,
-            weightPlaceholder && s.placeholder,
-          )}
-        >
-          {weight}
-        </td>
-        <td
-          className={clsx(s.currentRepsValue, repsPlaceholder && s.placeholder)}
-        >
-          {reps}
-        </td>
-        <td className={s.setCompletedValue}>
-          <button>
-            <MdCheck />
-          </button>
-        </td>
-      </tr>
+    result.push(
+      <SetRow
+        key={set.id}
+        number={number}
+        set={set}
+        prevSet={prevSet}
+        recSet={recSet}
+      />,
     );
-
-    result.push(node);
   });
 
   return result;
@@ -160,6 +139,7 @@ function buildRecommendations(workingSets: Set[]): Set[] {
       order: 0,
       weight: Math.floor(oneRepMax * 0.4),
       reps: 30,
+      completed: true,
     },
     {
       id: "",
@@ -168,6 +148,7 @@ function buildRecommendations(workingSets: Set[]): Set[] {
       order: 1,
       weight: Math.floor(oneRepMax * 0.6),
       reps: 12,
+      completed: true,
     },
   ];
 

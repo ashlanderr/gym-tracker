@@ -1,0 +1,70 @@
+.completed {
+  background: #080;
+}
+
+td.setNumValue {
+  text-align: left;
+  padding-left: 16px;
+}
+
+.prevVolumeValue,
+.currentWeightValue,
+.currentRepsValue,
+.setCompletedValue {
+  text-align: center;
+}
+
+.sheetHeader {
+  padding: 24px 16px;
+  border-bottom: 1px solid #666;
+  text-align: center;
+}
+
+.sheetActions {
+  display: flex;
+  flex-direction: column;
+  margin: 16px 16px 64px;
+  border-radius: 16px;
+  background: #444;
+  padding: 4px 0;
+}
+
+.sheetAction {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+
+  :first-child {
+    width: 32px;
+  }
+}
+
+.sheetAction:not(:first-child) {
+  border-top: 1px solid #666;
+}
+
+.input {
+  min-width: 0;
+  width: 100%;
+  text-align: center;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  outline: none;
+}
+
+.setCompletedButton {
+  color: #FFF;
+  border: none;
+  background: #888;
+  border-radius: 4px;
+}
+
+.completed .setCompletedButton {
+  background: #0B0;
+}

@@ -7,29 +7,26 @@
 .exerciseName {
   color: #08F;
   font-weight: bold;
+  font-size: 20px;
 }
 
 .sets {
-  width: 100%;
+  margin: 0 -16px;
 
   th, td {
-    padding: 4px;
+    padding: 12px 4px;
   }
 }
 
-.setNumHeader,
-.setNumValue {
+th.setNumHeader {
   text-align: left;
+  padding-left: 16px;
 }
 
 .prevVolumeHeader,
 .currentWeightHeader,
 .currentRepsHeader,
-.setCompletedHeader,
-.prevVolumeValue,
-.currentWeightValue,
-.currentRepsValue,
-.setCompletedValue {
+.setCompletedHeader {
   text-align: center;
 }
 
@@ -37,16 +34,12 @@
 .prevVolumeHeader,
 .currentWeightHeader,
 .currentRepsHeader,
-.setCompletedHeader, {
+.setCompletedHeader {
   width: 0;
 }
 
-.currentWeightValue.placeholder,
-.currentRepsValue.placeholder {
-  color: #888;
-}
-
 .addSetButton {
+  margin: 8px 0 0;
   background: #444;
   color: #fff;
   display: flex;
