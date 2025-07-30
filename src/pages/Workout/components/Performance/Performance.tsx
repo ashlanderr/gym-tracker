@@ -10,6 +10,7 @@ import { type ReactNode } from "react";
 import { useQueryPreviousPerformance } from "../../../../db/performances.ts";
 import { useQueryExerciseById } from "../../../../db/exercises.ts";
 import { SetRow } from "../SetRow";
+import { generateFirestoreId } from "../../../../db/db.ts";
 
 export function Performance({ performance }: PerformanceProps) {
   const exercise = useQueryExerciseById(performance.exercise);
@@ -27,6 +28,7 @@ export function Performance({ performance }: PerformanceProps) {
 
   const addSetHandler = async () => {
     await addSet({
+      id: generateFirestoreId(),
       performance: performance.id,
       order: Math.max(-1, ...sets.map((s) => s.order)) + 1,
       type: "working",

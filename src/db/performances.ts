@@ -1,8 +1,10 @@
 import {
   collection,
+  doc,
   limit,
   orderBy,
   query,
+  setDoc,
   type Timestamp,
   where,
 } from "firebase/firestore";
@@ -45,4 +47,9 @@ export function useQueryPreviousPerformance(
     deps: [exercise, beforeDate],
   });
   return docs[0];
+}
+
+export async function addPerformance(entity: Performance) {
+  const { id, ...data } = entity;
+  await setDoc(doc(firestore, "performances", id), data);
 }

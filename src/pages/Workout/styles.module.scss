@@ -1,7 +1,9 @@
 .root {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  margin-bottom: 64px;
+  overflow: auto;
 }
 
 .toolbar {
@@ -76,4 +78,5 @@
   font-size: inherit;
   padding: 12px 12px 10px 12px;
   line-height: 1;
+  margin: 0 0 64px;
 }
