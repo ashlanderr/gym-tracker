@@ -1,11 +1,13 @@
 import {
   collection,
+  deleteDoc,
   doc,
   limit,
   orderBy,
   query,
   setDoc,
   type Timestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { firestore, useFirestoreQuery } from "./db.ts";
@@ -52,4 +54,13 @@ export function useQueryPreviousPerformance(
 export async function addPerformance(entity: Performance) {
   const { id, ...data } = entity;
   await setDoc(doc(firestore, "performances", id), data);
+}
+
+export async function updatePerformance(entity: Performance) {
+  const { id, ...data } = entity;
+  await updateDoc(doc(firestore, "performances", id), data);
+}
+
+export async function deletePerformance(entity: Performance) {
+  await deleteDoc(doc(firestore, "performances", entity.id));
 }

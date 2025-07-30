@@ -1,16 +1,33 @@
 import type { PerformanceProps } from "./types.ts";
 import s from "./styles.module.scss";
-import { MdAdd, MdCheck } from "react-icons/md";
+import {
+  MdAdd,
+  MdAutorenew,
+  MdBarChart,
+  MdCheck,
+  MdDelete,
+  MdSwapVert,
+} from "react-icons/md";
 import {
   useQuerySetsByPerformance,
   type Set,
   addSet,
 } from "../../../../db/sets.ts";
-import { type ReactNode } from "react";
-import { useQueryPreviousPerformance } from "../../../../db/performances.ts";
-import { useQueryExerciseById } from "../../../../db/exercises.ts";
+import { type ReactNode, useState } from "react";
+import {
+  deletePerformance,
+  updatePerformance,
+  useQueryPreviousPerformance,
+} from "../../../../db/performances.ts";
+import {
+  type Exercise,
+  useQueryExerciseById,
+} from "../../../../db/exercises.ts";
 import { SetRow } from "../SetRow";
 import { generateFirestoreId } from "../../../../db/db.ts";
+import { BottomSheet } from "../BottomSheet";
+import { ChooseExercise } from "../ChooseExercise";
+import { PageModal } from "../PageModal";
 
 export function Performance({ performance }: PerformanceProps) {
   const exercise = useQueryExerciseById(performance.exercise);
@@ -26,6 +43,9 @@ export function Performance({ performance }: PerformanceProps) {
     performance: prevPerformance?.id,
   });
 
+  const [isActionsOpen, setActionsOpen] = useState(false);
+  const [isReplaceOpen, setReplaceOpen] = useState(false);
+
   const addSetHandler = async () => {
     await addSet({
       id: generateFirestoreId(),
@@ -38,9 +58,36 @@ export function Performance({ performance }: PerformanceProps) {
     });
   };
 
+  const statsHandler = () => {
+    // todo
+    alert("TBD");
+  };
+
+  const orderHandler = () => {
+    // todo
+    alert("TBD");
+  };
+
+  const replaceBeginHandler = () => {
+    setActionsOpen(false);
+    setReplaceOpen(true);
+  };
+
+  const replaceCompleteHandler = async (exercise: Exercise) => {
+    setReplaceOpen(false);
+    await updatePerformance({ ...performance, exercise: exercise.id });
+  };
+
+  const deleteHandler = async () => {
+    setActionsOpen(false);
+    await deletePerformance(performance);
+  };
+
   return (
     <div className={s.exercise}>
-      <div className={s.exerciseName}>{exercise?.name}</div>
+      <div className={s.exerciseName} onClick={() => setActionsOpen(true)}>
+        {exercise?.name ?? "-"}
+      </div>
       <table className={s.sets}>
         <thead>
           <tr>
@@ -59,6 +106,33 @@ export function Performance({ performance }: PerformanceProps) {
         <MdAdd />
         Добавить сет
       </button>
+      <BottomSheet isOpen={isActionsOpen} onClose={() => setActionsOpen(false)}>
+        <div className={s.sheetHeader}>Упражнение</div>
+        <div className={s.sheetActions}>
+          <button className={s.sheetAction} onClick={statsHandler}>
+            <MdBarChart />
+            <span>История выполнения</span>
+          </button>
+          <button className={s.sheetAction} onClick={orderHandler}>
+            <MdSwapVert />
+            <span>Порядок выполнения</span>
+          </button>
+          <button className={s.sheetAction} onClick={replaceBeginHandler}>
+            <MdAutorenew />
+            <span>Заменить на другое</span>
+          </button>
+          <button className={s.sheetAction} onClick={deleteHandler}>
+            <MdDelete />
+            <span>Удалить из тренировки</span>
+          </button>
+        </div>
+      </BottomSheet>
+      <PageModal isOpen={isReplaceOpen}>
+        <ChooseExercise
+          onCancel={() => setReplaceOpen(false)}
+          onSubmit={replaceCompleteHandler}
+        />
+      </PageModal>
     </div>
   );
 }
