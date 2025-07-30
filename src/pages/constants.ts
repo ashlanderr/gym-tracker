@@ -1,4 +1,4 @@
-import type { MuscleType } from "../../../../db/exercises.ts";
+import type { MuscleType } from "../db/exercises.ts";
 
 export const MUSCLES_TRANSLATION: Record<MuscleType, string> = {
   chest: "Грудь",

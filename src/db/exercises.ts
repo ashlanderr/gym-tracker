@@ -1,5 +1,5 @@
 import { firestore, useFirestoreDocument, useFirestoreQuery } from "./db.ts";
-import { collection, doc, query } from "firebase/firestore";
+import { collection, doc, query, setDoc } from "firebase/firestore";
 
 export type MuscleType =
   | "chest"
@@ -29,4 +29,9 @@ export function useQueryAllExercises(): Exercise[] {
     deps: [],
   });
   return [...docs].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+export async function addExercise(entity: Exercise) {
+  const { id, ...data } = entity;
+  await setDoc(doc(firestore, "exercises", id), data);
 }
