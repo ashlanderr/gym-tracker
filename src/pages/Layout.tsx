@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router";
+import { HashRouter, Route, Routes } from "react-router";
 import { Workout } from "./Workout";
 import { Home } from "./Home";
 import { ProtectedRoute } from "../components";
@@ -6,7 +6,7 @@ import { SignIn } from "./SignIn";
 
 export function Layout() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route
           path="/"
@@ -26,6 +26,6 @@ export function Layout() {
         />
         <Route path="/auth/sign-in" element={<SignIn />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
