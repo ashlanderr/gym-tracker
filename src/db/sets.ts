@@ -13,6 +13,7 @@ export type SetType = "warm-up" | "working";
 
 export interface Set {
   id: string;
+  workout: string;
   performance: string;
   order: number;
   type: SetType;
@@ -40,6 +41,14 @@ export function useQuerySetsByPerformance({
     deps: [performance],
   });
   return [...docs].sort((a, b) => a.order - b.order);
+}
+
+export function useQuerySetsByWorkout(workout: string): Set[] {
+  return useFirestoreQuery({
+    query: () =>
+      query(collection(firestore, "sets"), where("workout", "==", workout)),
+    deps: [workout],
+  });
 }
 
 export async function addSet(entity: Set) {

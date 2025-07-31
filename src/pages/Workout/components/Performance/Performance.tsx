@@ -49,6 +49,7 @@ export function Performance({ performance }: PerformanceProps) {
   const addSetHandler = async () => {
     await addSet({
       id: generateFirestoreId(),
+      workout: performance.workout,
       performance: performance.id,
       order: Math.max(-1, ...sets.map((s) => s.order)) + 1,
       type: "working",
@@ -210,6 +211,7 @@ function buildRecommendations(workingSets: Set[]): Set[] {
   const newWarmUpSets: Set[] = [
     {
       id: "",
+      workout: "",
       performance: "",
       type: "warm-up",
       order: 0,
@@ -219,6 +221,7 @@ function buildRecommendations(workingSets: Set[]): Set[] {
     },
     {
       id: "",
+      workout: "",
       performance: "",
       type: "warm-up",
       order: 1,

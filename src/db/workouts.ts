@@ -4,6 +4,7 @@ import {
   orderBy,
   query,
   Timestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { firestore, useFirestoreDocument, useFirestoreQuery } from "./db.ts";
@@ -33,4 +34,9 @@ export function useQueryWorkoutsByUser(user: string): Workout[] {
       ),
     deps: [user],
   });
+}
+
+export async function updateWorkout(entity: Workout) {
+  const { id, ...data } = entity;
+  await updateDoc(doc(firestore, "workouts", id), data);
 }

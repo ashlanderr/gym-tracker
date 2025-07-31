@@ -1,11 +1,12 @@
 import s from "./styles.module.scss";
 import { MdAdd } from "react-icons/md";
 import { clsx } from "clsx";
-import { useQueryWorkoutById } from "../../db/workouts.ts";
+import { updateWorkout, useQueryWorkoutById } from "../../db/workouts.ts";
 import type { WorkoutParams } from "./types.ts";
 import { usePageParams } from "../hooks.ts";
 import {
   addPerformance,
+  deletePerformance,
   useQueryPerformancesByWorkout,
 } from "../../db/performances.ts";
 import { Performance } from "./components";
@@ -13,14 +14,30 @@ import { useState } from "react";
 import { PageModal } from "./components/PageModal";
 import { ChooseExercise } from "./components/ChooseExercise";
 import type { Exercise } from "../../db/exercises.ts";
-import { addSet } from "../../db/sets.ts";
+import { addSet, deleteSet, useQuerySetsByWorkout } from "../../db/sets.ts";
 import { generateFirestoreId } from "../../db/db.ts";
+import { ModalDialog } from "./components/ModalDialog";
+import {
+  type CompleteWorkoutData,
+  CompleteWorkoutModal,
+} from "./components/CompleteWorkoutModal";
+import { Timestamp } from "firebase/firestore";
+import { useNavigate } from "react-router";
+import { useTimer } from "./hooks.ts";
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
+  const navigate = useNavigate();
   const workout = useQueryWorkoutById(workoutId);
+  const timer = useTimer(workout?.startedAt, workout?.completedAt ?? undefined);
   const performances = useQueryPerformancesByWorkout(workoutId);
+  const sets = useQuerySetsByWorkout(workoutId);
+  const completedSets = sets.filter((s) => s.completed);
+  const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
   const [isAddPerformanceOpen, setAddPerformanceOpen] = useState(false);
+  const [completeModal, setCompleteModal] = useState<"warning" | "form" | null>(
+    null,
+  );
 
   const addPerformanceHandler = async (exercise: Exercise) => {
     if (!workout) return;
@@ -39,6 +56,7 @@ export function Workout() {
 
     const setPromise = addSet({
       id: generateFirestoreId(),
+      workout: workout.id,
       performance: performanceId,
       order: 0,
       type: "working",
@@ -50,24 +68,70 @@ export function Workout() {
     await Promise.all([performancePromise, setPromise]);
   };
 
+  const completeBeginHandler = () => {
+    const completed = sets.every((s) => s.completed);
+    setCompleteModal(completed ? "form" : "warning");
+  };
+
+  const completeEndHandler = async (data: CompleteWorkoutData) => {
+    if (!workout) return;
+    setCompleteModal(null);
+    navigate("/", { replace: true });
+
+    const promises: Promise<void>[] = [];
+
+    promises.push(
+      updateWorkout({
+        ...workout,
+        completedAt: Timestamp.now(),
+        name: data.name,
+      }),
+    );
+
+    for (const performance of performances) {
+      const performanceSets = sets.filter(
+        (s) => s.performance === performance.id,
+      );
+      let emptyPerformance = true;
+
+      for (const set of performanceSets) {
+        if (!set.completed) {
+          promises.push(deleteSet(set));
+        } else {
+          emptyPerformance = false;
+        }
+      }
+
+      if (emptyPerformance) {
+        promises.push(deletePerformance(performance));
+      }
+    }
+
+    await Promise.all(promises);
+  };
+
   return (
     <div className={s.root}>
       <div className={s.toolbar}>
         <div className={s.pageTitle}>Тренировка</div>
-        <button className={s.finishButton}>Закончить</button>
+        <button className={s.finishButton} onClick={completeBeginHandler}>
+          Закончить
+        </button>
       </div>
       <div className={s.stats}>
         <div className={s.stat}>
           <div className={s.statName}>Время</div>
-          <div className={clsx(s.statValue, s.accent)}>10s</div>
+          <div className={clsx(s.statValue, s.accent)}>{timer}</div>
         </div>
         <div className={s.stat}>
           <div className={s.statName}>Объём</div>
-          <div className={s.statValue}>0 кг</div>
+          <div className={s.statValue}>{volume.toLocaleString()} кг</div>
         </div>
         <div className={s.stat}>
           <div className={s.statName}>Сеты</div>
-          <div className={s.statValue}>0</div>
+          <div className={s.statValue}>
+            {completedSets.length} / {sets.length}
+          </div>
         </div>
       </div>
       <div className={s.exercises}>
@@ -88,6 +152,25 @@ export function Workout() {
           onSubmit={addPerformanceHandler}
         />
       </PageModal>
+      <ModalDialog
+        title="Подтверждение"
+        width="300px"
+        cancelText="Отмена"
+        submitText="Завершить"
+        isOpen={completeModal === "warning"}
+        onClose={() => setCompleteModal(null)}
+        onSubmit={() => setCompleteModal("form")}
+      >
+        Не все сеты выполнены. Вы точно ходите завершить тренировку?
+      </ModalDialog>
+      {workout && (
+        <CompleteWorkoutModal
+          workout={workout}
+          isOpen={completeModal === "form"}
+          onClose={() => setCompleteModal(null)}
+          onSubmit={completeEndHandler}
+        />
+      )}
     </div>
   );
 }
