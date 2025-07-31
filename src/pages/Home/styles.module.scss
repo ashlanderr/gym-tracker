@@ -1,0 +1,111 @@
+.body {
+  padding: 16px;
+}
+
+.workoutButtons {
+  display: flex;
+  margin-top: 16px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.workoutButton {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: none;
+  outline: none;
+  border-radius: 4px;
+  font-size: inherit;
+  padding: 12px 12px 12px 12px;
+  line-height: 1;
+}
+
+.startWorkout {
+  background: #06F;
+  color: #fff;
+}
+
+.workouts {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.workout {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background: #1A1A1A;
+  border-radius: 8px;
+}
+
+.workoutName {
+  font-size: 24px;
+}
+
+.workoutTimer {
+  margin-top: 8px;
+}
+
+.workoutDate {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #AAA;
+}
+
+.workoutStats {
+  margin-top: 16px;
+  display: flex;
+  gap: 24px;
+}
+
+.workoutStat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statName {
+  font-size: 12px;
+  color: #AAA;
+}
+
+.statValue {
+  font-size: 20px;
+}
+
+.sheetHeader {
+  padding: 24px 16px;
+  border-bottom: 1px solid #666;
+  text-align: center;
+}
+
+.sheetActions {
+  display: flex;
+  flex-direction: column;
+  margin: 16px 16px 64px;
+  border-radius: 16px;
+  background: #444;
+  padding: 4px 0;
+}
+
+.sheetAction {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+
+  :first-child {
+    width: 32px;
+  }
+}
+
+.sheetAction:not(:first-child) {
+  border-top: 1px solid #666;
+}

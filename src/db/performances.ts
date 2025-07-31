@@ -10,7 +10,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { firestore, useFirestoreQuery } from "./db.ts";
+import { firestore, firestoreQuery, useFirestoreQuery } from "./db.ts";
 
 export interface Performance {
   id: string;
@@ -19,6 +19,17 @@ export interface Performance {
   exercise: string;
   order: number;
   startedAt: Timestamp;
+}
+
+export function queryPerformancesByWorkout(
+  workout: string,
+): Promise<Performance[]> {
+  return firestoreQuery(
+    query(
+      collection(firestore, "performances"),
+      where("workout", "==", workout),
+    ),
+  );
 }
 
 export function useQueryPerformancesByWorkout(workout: string): Performance[] {

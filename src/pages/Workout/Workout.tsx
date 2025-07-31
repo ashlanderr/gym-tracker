@@ -1,5 +1,5 @@
 import s from "./styles.module.scss";
-import { MdAdd } from "react-icons/md";
+import { MdAdd, MdArrowBack } from "react-icons/md";
 import { clsx } from "clsx";
 import { updateWorkout, useQueryWorkoutById } from "../../db/workouts.ts";
 import type { WorkoutParams } from "./types.ts";
@@ -23,7 +23,7 @@ import {
 } from "./components/CompleteWorkoutModal";
 import { Timestamp } from "firebase/firestore";
 import { useNavigate } from "react-router";
-import { useTimer } from "./hooks.ts";
+import { useTimer } from "../hooks.ts";
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
@@ -38,6 +38,9 @@ export function Workout() {
   const [completeModal, setCompleteModal] = useState<"warning" | "form" | null>(
     null,
   );
+
+  // todo disable editing if completed
+  // todo personal records, history
 
   const addPerformanceHandler = async (exercise: Exercise) => {
     if (!workout) return;
@@ -76,7 +79,6 @@ export function Workout() {
   const completeEndHandler = async (data: CompleteWorkoutData) => {
     if (!workout) return;
     setCompleteModal(null);
-    navigate("/", { replace: true });
 
     const promises: Promise<void>[] = [];
 
@@ -85,6 +87,8 @@ export function Workout() {
         ...workout,
         completedAt: Timestamp.now(),
         name: data.name,
+        volume,
+        sets: completedSets.length,
       }),
     );
 
@@ -107,12 +111,19 @@ export function Workout() {
       }
     }
 
+    navigate("/", { replace: true });
     await Promise.all(promises);
   };
 
   return (
     <div className={s.root}>
       <div className={s.toolbar}>
+        <button
+          className={s.backButton}
+          onClick={() => navigate("/", { replace: true })}
+        >
+          <MdArrowBack />
+        </button>
         <div className={s.pageTitle}>Тренировка</div>
         <button className={s.finishButton} onClick={completeBeginHandler}>
           Закончить

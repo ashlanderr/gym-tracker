@@ -1,4 +1,4 @@
-import { firestore, useFirestoreQuery } from "./db.ts";
+import { firestore, firestoreQuery, useFirestoreQuery } from "./db.ts";
 import {
   collection,
   deleteDoc,
@@ -41,6 +41,12 @@ export function useQuerySetsByPerformance({
     deps: [performance],
   });
   return [...docs].sort((a, b) => a.order - b.order);
+}
+
+export function querySetsByWorkout(workout: string): Promise<Set[]> {
+  return firestoreQuery(
+    query(collection(firestore, "sets"), where("workout", "==", workout)),
+  );
 }
 
 export function useQuerySetsByWorkout(workout: string): Set[] {

@@ -7,6 +7,7 @@ import {
   DocumentReference,
   persistentMultipleTabManager,
   CACHE_SIZE_UNLIMITED,
+  getDocs,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
@@ -39,6 +40,11 @@ export type DocumentOptions = {
   enabled?: boolean;
   deps: readonly unknown[];
 };
+
+export async function firestoreQuery<T>(query: Query): Promise<T[]> {
+  const result = await getDocs(query);
+  return result.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as T[];
+}
 
 export function useFirestoreQuery<T>({
   query,
