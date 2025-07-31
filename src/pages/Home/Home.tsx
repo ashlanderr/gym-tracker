@@ -8,7 +8,15 @@ import {
 import { buildTime, useTimer } from "../hooks.ts";
 import s from "./styles.module.scss";
 import { DATE_FORMATTER } from "./constants.ts";
-import { MdAdd, MdClose, MdDelete, MdEdit, MdPlayArrow } from "react-icons/md";
+import {
+  MdAdd,
+  MdClose,
+  MdDelete,
+  MdEdit,
+  MdLogout,
+  MdPerson,
+  MdPlayArrow,
+} from "react-icons/md";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { BottomSheet } from "../Workout/components/BottomSheet";
@@ -27,16 +35,15 @@ import {
 import { generateFirestoreId } from "../../db/db.ts";
 import { Timestamp } from "firebase/firestore";
 import { clsx } from "clsx";
+import { signOut, useUser } from "../../firebase/auth.ts";
 
 export function Home() {
-  const userId = "3H0tvAlGqw9auk0mUum3";
+  const user = useUser();
   const navigate = useNavigate();
-  const workouts = useQueryCompletedWorkoutsByUser(userId);
-  const [activeWorkout] = useQueryActiveWorkoutsByUser(userId);
+  const workouts = useQueryCompletedWorkoutsByUser(user.uid);
+  const [activeWorkout] = useQueryActiveWorkoutsByUser(user.uid);
   const [workoutActions, setWorkoutActions] = useState<Workout | null>(null);
   const activeTimer = useTimer(activeWorkout?.startedAt, undefined);
-
-  console.log(activeWorkout);
 
   const openWorkoutHandler = (workout: Workout | null) => {
     if (!workout) return;
@@ -48,7 +55,7 @@ export function Home() {
 
     const newWorkout: Workout = {
       id: generateFirestoreId(),
-      user: userId,
+      user: user.uid,
       name: "Новая тренировка",
       startedAt: Timestamp.now(),
       completedAt: null,
@@ -132,6 +139,24 @@ export function Home() {
 
   return (
     <div className={s.body}>
+      <div className={s.user}>
+        {user.photoURL ? (
+          <img className={s.userImage} src={user.photoURL} alt="User Photo" />
+        ) : (
+          <div className={s.userImage}>
+            <MdPerson />
+          </div>
+        )}
+        <div className={s.userInfo}>
+          <div className={s.userName}>
+            {user.displayName ?? "Анонимный Пользователь"}
+          </div>
+          <button className={s.signOut} onClick={signOut}>
+            <MdLogout />
+            <span>Выйти</span>
+          </button>
+        </div>
+      </div>
       <div className={s.workouts}>
         {activeWorkout ? (
           <div className={s.workout}>

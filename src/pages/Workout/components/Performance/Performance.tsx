@@ -34,6 +34,7 @@ export function Performance({ performance }: PerformanceProps) {
   const sets = useQuerySetsByPerformance({ performance: performance.id });
 
   const prevPerformance = useQueryPreviousPerformance(
+    performance.user,
     performance.exercise,
     performance.startedAt,
   );

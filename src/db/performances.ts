@@ -45,6 +45,7 @@ export function useQueryPerformancesByWorkout(workout: string): Performance[] {
 }
 
 export function useQueryPreviousPerformance(
+  user: string,
   exercise: string,
   beforeDate: Timestamp,
 ): Performance | undefined {
@@ -52,6 +53,7 @@ export function useQueryPreviousPerformance(
     query: () =>
       query(
         collection(firestore, "performances"),
+        where("user", "==", user),
         where("exercise", "==", exercise),
         where("startedAt", "<", beforeDate),
         orderBy("startedAt", "desc"),

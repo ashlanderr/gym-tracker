@@ -1,4 +1,3 @@
-import { initializeApp } from "firebase/app";
 import {
   initializeFirestore,
   onSnapshot,
@@ -10,19 +9,9 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { firebaseApp } from "../firebase/app.ts";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDh-1aOWA8DU2uacjCxJsMCI3p2v-1kJFg",
-  authDomain: "gym-tracker-e77e5.firebaseapp.com",
-  projectId: "gym-tracker-e77e5",
-  storageBucket: "gym-tracker-e77e5.firebasestorage.app",
-  messagingSenderId: "778763865283",
-  appId: "1:778763865283:web:165931321e0b1e6e846676",
-};
-
-const app = initializeApp(firebaseConfig);
-
-export const firestore = initializeFirestore(app, {
+export const firestore = initializeFirestore(firebaseApp, {
   localCache: persistentLocalCache({
     cacheSizeBytes: CACHE_SIZE_UNLIMITED,
     tabManager: persistentMultipleTabManager(),
