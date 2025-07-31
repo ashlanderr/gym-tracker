@@ -70,8 +70,11 @@ export function Home() {
 
   const cancelWorkoutHandler = async (workout: Workout) => {
     const promises: Promise<void>[] = [];
-    const performances = await queryPerformancesByWorkout(workout.id);
-    const sets = await querySetsByWorkout(workout.id);
+    const performances = await queryPerformancesByWorkout(
+      workout.user,
+      workout.id,
+    );
+    const sets = await querySetsByWorkout(workout.user, workout.id);
 
     promises.push(deleteWorkout(workout));
     promises.push(...performances.map((p) => deletePerformance(p)));
@@ -84,8 +87,14 @@ export function Home() {
     if (!workoutActions) return;
 
     const promises: Promise<void>[] = [];
-    const performances = await queryPerformancesByWorkout(workoutActions.id);
-    const sets = await querySetsByWorkout(workoutActions.id);
+    const performances = await queryPerformancesByWorkout(
+      workoutActions.user,
+      workoutActions.id,
+    );
+    const sets = await querySetsByWorkout(
+      workoutActions.user,
+      workoutActions.id,
+    );
 
     const newWorkout: Workout = {
       id: generateFirestoreId(),
@@ -116,6 +125,7 @@ export function Home() {
       for (const set of performanceSets) {
         const newSet: Set = {
           id: generateFirestoreId(),
+          user: newWorkout.user,
           workout: newWorkout.id,
           performance: newPerformance.id,
           order: set.order,

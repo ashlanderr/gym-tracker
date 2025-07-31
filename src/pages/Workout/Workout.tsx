@@ -24,14 +24,16 @@ import {
 import { Timestamp } from "firebase/firestore";
 import { useNavigate } from "react-router";
 import { useTimer } from "../hooks.ts";
+import { useUser } from "../../firebase/auth.ts";
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
+  const user = useUser();
   const navigate = useNavigate();
   const workout = useQueryWorkoutById(workoutId);
   const timer = useTimer(workout?.startedAt, workout?.completedAt ?? undefined);
-  const performances = useQueryPerformancesByWorkout(workoutId);
-  const sets = useQuerySetsByWorkout(workoutId);
+  const performances = useQueryPerformancesByWorkout(user.uid, workoutId);
+  const sets = useQuerySetsByWorkout(user.uid, workoutId);
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
   const [isAddPerformanceOpen, setAddPerformanceOpen] = useState(false);
@@ -60,6 +62,7 @@ export function Workout() {
 
     const setPromise = addSet({
       id: generateFirestoreId(),
+      user: workout.user,
       workout: workout.id,
       performance: performanceId,
       order: 0,

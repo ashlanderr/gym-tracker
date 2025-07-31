@@ -13,6 +13,7 @@ export type SetType = "warm-up" | "working";
 
 export interface Set {
   id: string;
+  user: string;
   workout: string;
   performance: string;
   order: number;
@@ -24,36 +25,50 @@ export interface Set {
 
 export interface QuerySetByPerformanceRequest {
   enabled?: boolean;
+  user: string | undefined;
   performance: string | undefined;
 }
 
 export function useQuerySetsByPerformance({
   enabled,
+  user,
   performance,
 }: QuerySetByPerformanceRequest): Set[] {
   const docs = useFirestoreQuery<Set>({
     query: () =>
       query(
         collection(firestore, "sets"),
+        where("user", "==", user),
         where("performance", "==", performance),
       ),
     enabled,
-    deps: [performance],
+    deps: [user, performance],
   });
   return [...docs].sort((a, b) => a.order - b.order);
 }
 
-export function querySetsByWorkout(workout: string): Promise<Set[]> {
+export function querySetsByWorkout(
+  user: string,
+  workout: string,
+): Promise<Set[]> {
   return firestoreQuery(
-    query(collection(firestore, "sets"), where("workout", "==", workout)),
+    query(
+      collection(firestore, "sets"),
+      where("user", "==", user),
+      where("workout", "==", workout),
+    ),
   );
 }
 
-export function useQuerySetsByWorkout(workout: string): Set[] {
+export function useQuerySetsByWorkout(user: string, workout: string): Set[] {
   return useFirestoreQuery({
     query: () =>
-      query(collection(firestore, "sets"), where("workout", "==", workout)),
-    deps: [workout],
+      query(
+        collection(firestore, "sets"),
+        where("user", "==", user),
+        where("workout", "==", workout),
+      ),
+    deps: [user, workout],
   });
 }
 

@@ -12,6 +12,7 @@ import {
   useQuerySetsByPerformance,
   type Set,
   addSet,
+  deleteSet,
 } from "../../../../db/sets.ts";
 import { type ReactNode, useState } from "react";
 import {
@@ -31,7 +32,10 @@ import { PageModal } from "../PageModal";
 
 export function Performance({ performance }: PerformanceProps) {
   const exercise = useQueryExerciseById(performance.exercise);
-  const sets = useQuerySetsByPerformance({ performance: performance.id });
+  const sets = useQuerySetsByPerformance({
+    user: performance.user,
+    performance: performance.id,
+  });
 
   const prevPerformance = useQueryPreviousPerformance(
     performance.user,
@@ -41,6 +45,7 @@ export function Performance({ performance }: PerformanceProps) {
 
   const prevSets = useQuerySetsByPerformance({
     enabled: prevPerformance?.id !== undefined,
+    user: prevPerformance?.user,
     performance: prevPerformance?.id,
   });
 
@@ -50,6 +55,7 @@ export function Performance({ performance }: PerformanceProps) {
   const addSetHandler = async () => {
     await addSet({
       id: generateFirestoreId(),
+      user: performance.user,
       workout: performance.workout,
       performance: performance.id,
       order: Math.max(-1, ...sets.map((s) => s.order)) + 1,
@@ -82,7 +88,10 @@ export function Performance({ performance }: PerformanceProps) {
 
   const deleteHandler = async () => {
     setActionsOpen(false);
-    await deletePerformance(performance);
+    await Promise.all([
+      ...sets.map((s) => deleteSet(s)),
+      deletePerformance(performance),
+    ]);
   };
 
   return (
@@ -212,6 +221,7 @@ function buildRecommendations(workingSets: Set[]): Set[] {
   const newWarmUpSets: Set[] = [
     {
       id: "",
+      user: "",
       workout: "",
       performance: "",
       type: "warm-up",
@@ -222,6 +232,7 @@ function buildRecommendations(workingSets: Set[]): Set[] {
     },
     {
       id: "",
+      user: "",
       workout: "",
       performance: "",
       type: "warm-up",

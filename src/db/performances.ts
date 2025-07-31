@@ -22,24 +22,30 @@ export interface Performance {
 }
 
 export function queryPerformancesByWorkout(
+  user: string,
   workout: string,
 ): Promise<Performance[]> {
   return firestoreQuery(
     query(
       collection(firestore, "performances"),
+      where("user", "==", user),
       where("workout", "==", workout),
     ),
   );
 }
 
-export function useQueryPerformancesByWorkout(workout: string): Performance[] {
+export function useQueryPerformancesByWorkout(
+  user: string,
+  workout: string,
+): Performance[] {
   const docs = useFirestoreQuery<Performance>({
     query: () =>
       query(
         collection(firestore, "performances"),
+        where("user", "==", user),
         where("workout", "==", workout),
       ),
-    deps: [workout],
+    deps: [user, workout],
   });
   return [...docs].sort((a, b) => a.order - b.order);
 }
