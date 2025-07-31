@@ -7,7 +7,7 @@ import {
 } from "../../db/workouts.ts";
 import { buildTime, useTimer } from "../hooks.ts";
 import s from "./styles.module.scss";
-import { DATE_FORMATTER } from "./constants.ts";
+import { APP_VERSION, DATE_FORMATTER } from "./constants.ts";
 import {
   MdAdd,
   MdClose,
@@ -237,6 +237,7 @@ export function Home() {
           </div>
         ))}
       </div>
+      <div className={s.appVersion}>App Version: {APP_VERSION}</div>
       <BottomSheet
         isOpen={workoutActions !== null}
         onClose={() => setWorkoutActions(null)}

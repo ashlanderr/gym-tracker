@@ -1,3 +1,5 @@
+export const APP_VERSION = "1.1.0";
+
 export const DATE_FORMATTER = new Intl.DateTimeFormat("ru", {
   year: "numeric",
   month: "long",
