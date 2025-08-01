@@ -29,6 +29,7 @@ import { generateFirestoreId } from "../../../../db/db.ts";
 import { BottomSheet } from "../BottomSheet";
 import { ChooseExercise } from "../ChooseExercise";
 import { PageModal } from "../PageModal";
+import { buildRecommendations } from "./utils.ts";
 
 export function Performance({ performance }: PerformanceProps) {
   const exercise = useQueryExerciseById(performance.exercise);
@@ -111,7 +112,7 @@ export function Performance({ performance }: PerformanceProps) {
             </th>
           </tr>
         </thead>
-        <tbody>{buildSets(sets, prevSets)}</tbody>
+        <tbody>{buildSets(prevSets, sets)}</tbody>
       </table>
       <button className={s.addSetButton} onClick={addSetHandler}>
         <MdAdd />
@@ -148,35 +149,31 @@ export function Performance({ performance }: PerformanceProps) {
   );
 }
 
-function buildSets(sets: Set[], prevSets: Set[]): ReactNode[] {
+function buildSets(prevSets: Set[], sets: Set[]): ReactNode[] {
   const prevWarmUp = prevSets.filter(
     (s) => s.type === "warm-up" && s.weight && s.reps,
   );
   const prevWorking = prevSets.filter(
     (s) => s.type === "working" && s.weight && s.reps,
   );
-  const recommendations = buildRecommendations(prevWorking);
-  const recWarmUp = recommendations.filter((s) => s.type === "warm-up");
-  const recWorking = recommendations.filter((s) => s.type === "working");
+  const recommendations = buildRecommendations(prevSets, sets);
 
   const result: ReactNode[] = [];
   let warmUpIndex = 0;
   let workingIndex = 0;
 
-  sets.forEach((set) => {
+  sets.forEach((set, index) => {
     let number = "-";
     let prevSet: Set | undefined;
-    let recSet: Set | undefined;
+    const recSet = recommendations[index];
 
     if (set.type === "warm-up") {
       number = "W";
       prevSet = prevWarmUp[warmUpIndex];
-      recSet = recWarmUp[warmUpIndex];
       warmUpIndex += 1;
     } else if (set.type === "working") {
       number = (workingIndex + 1).toString();
       prevSet = prevWorking[workingIndex];
-      recSet = recWorking[workingIndex];
       workingIndex += 1;
     }
 
@@ -192,63 +189,4 @@ function buildSets(sets: Set[], prevSets: Set[]): ReactNode[] {
   });
 
   return result;
-}
-
-function buildRecommendations(workingSets: Set[]): Set[] {
-  if (workingSets.length === 0) return [];
-
-  let weight = Infinity;
-  let reps = Infinity;
-
-  for (const set of workingSets) {
-    if (set.weight < weight) {
-      weight = set.weight;
-      reps = set.reps;
-    } else if (set.weight === weight) {
-      reps = Math.min(reps, set.reps);
-    }
-  }
-
-  if (reps >= 12) {
-    weight = Math.ceil(weight * 1.1);
-    reps = 8;
-  } else {
-    reps = Math.min(reps + 2, 12);
-  }
-
-  const oneRepMax = weight * (1 + reps / 30);
-
-  const newWarmUpSets: Set[] = [
-    {
-      id: "",
-      user: "",
-      workout: "",
-      performance: "",
-      type: "warm-up",
-      order: 0,
-      weight: Math.floor(oneRepMax * 0.4),
-      reps: 30,
-      completed: true,
-    },
-    {
-      id: "",
-      user: "",
-      workout: "",
-      performance: "",
-      type: "warm-up",
-      order: 1,
-      weight: Math.floor(oneRepMax * 0.6),
-      reps: 12,
-      completed: true,
-    },
-  ];
-
-  const newWorkingSets = workingSets.map((s, i) => ({
-    ...s,
-    order: i + 2,
-    weight,
-    reps,
-  }));
-
-  return [...newWarmUpSets, ...newWorkingSets];
 }

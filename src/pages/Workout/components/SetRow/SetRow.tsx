@@ -24,10 +24,10 @@ export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
   const prev = prevSet ? `${prevSet.weight}кг x ${prevSet.reps}` : "-";
 
   const weight = set.weight ? set.weight.toString() : "";
-  const weightPlaceholder = recSet?.weight?.toString() ?? "-";
+  const weightPlaceholder = (recSet?.weight || "-").toString();
 
   const reps = set.reps ? set.reps.toString() : "";
-  const repsPlaceholder = recSet?.reps?.toString() ?? "-";
+  const repsPlaceholder = (recSet?.reps || "-").toString();
 
   const updateSetInner = async (updater: (set: Set) => Set) => {
     updatedSet.current = updater(updatedSet.current);
