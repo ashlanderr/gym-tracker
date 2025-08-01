@@ -109,6 +109,10 @@ td.setCompletedValue {
   outline: none;
 }
 
+.input:disabled {
+  color: inherit;
+}
+
 .setCompletedButton {
   color: #FFF;
   border: none;
