@@ -7,10 +7,14 @@ td.setNumValue {
   padding-left: 16px;
 }
 
+td.setCompletedValue {
+  text-align: right;
+  padding-right: 16px;
+}
+
 .prevVolumeValue,
 .currentWeightValue,
-.currentRepsValue,
-.setCompletedValue {
+.currentRepsValue {
   text-align: center;
 }
 
@@ -63,6 +67,9 @@ td.setNumValue {
   border: none;
   background: #888;
   border-radius: 4px;
+  padding: 2px 6px 4px 6px;
+  display: flex;
+  margin: auto 0 auto auto;
 }
 
 .completed .setCompletedButton {
