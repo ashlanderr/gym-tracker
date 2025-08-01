@@ -6,6 +6,11 @@ import {
   WARM_UP_DEFAULT_REPS,
   WARM_UP_WEIGHT_MULTIPLIER,
 } from "./constants.ts";
+import {
+  oneRepMaxToReps,
+  oneRepMaxToWeight,
+  volumeToOneRepMax,
+} from "../utils.ts";
 
 function findWorkingVolume(workingSets: SetData[]): WorkingVolume | undefined {
   if (workingSets.length === 0) return undefined;
@@ -146,16 +151,4 @@ export function buildRecommendations(
   }
 
   return result;
-}
-
-function volumeToOneRepMax(weight: number, reps: number): number {
-  return weight * (1 + reps / 30);
-}
-
-function oneRepMaxToWeight(oneRepMax: number, reps: number): number {
-  return oneRepMax / (1 + reps / 30);
-}
-
-function oneRepMaxToReps(oneRepMax: number, weight: number): number {
-  return (oneRepMax / weight - 1) * 30;
 }

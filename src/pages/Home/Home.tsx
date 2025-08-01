@@ -36,6 +36,7 @@ import { generateFirestoreId } from "../../db/db.ts";
 import { Timestamp } from "firebase/firestore";
 import { clsx } from "clsx";
 import { signOut, useUser } from "../../firebase/auth.ts";
+import { deleteRecord, queryRecordsByWorkout } from "../../db/records.ts";
 
 export function Home() {
   const user = useUser();
@@ -75,10 +76,12 @@ export function Home() {
       workout.id,
     );
     const sets = await querySetsByWorkout(workout.user, workout.id);
+    const records = await queryRecordsByWorkout(workout.user, workout.id);
 
     promises.push(deleteWorkout(workout));
     promises.push(...performances.map((p) => deletePerformance(p)));
     promises.push(...sets.map((s) => deleteSet(s)));
+    promises.push(...records.map((r) => deleteRecord(r)));
 
     await Promise.all(promises);
   };

@@ -77,11 +77,11 @@ export async function addSet(entity: Set) {
   await setDoc(doc(firestore, "sets", id), data);
 }
 
-export async function updateSet(set: Set) {
-  const { id, ...data } = set;
+export async function updateSet(entity: Set) {
+  const { id, ...data } = entity;
   await updateDoc(doc(firestore, "sets", id), data);
 }
 
-export async function deleteSet(set: Set) {
-  await deleteDoc(doc(firestore, "sets", set.id));
+export async function deleteSet(entity: Set) {
+  await deleteDoc(doc(firestore, "sets", entity.id));
 }

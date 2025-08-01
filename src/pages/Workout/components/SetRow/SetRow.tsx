@@ -1,6 +1,6 @@
 import type { SetRowProps } from "./types.ts";
 import s from "./styles.module.scss";
-import { MdCheck, MdDelete } from "react-icons/md";
+import { MdArrowUpward, MdCheck, MdDelete } from "react-icons/md";
 import { BottomSheet } from "../BottomSheet";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -10,11 +10,31 @@ import {
   type Set,
 } from "../../../../db/sets.ts";
 import { clsx } from "clsx";
+import {
+  addRecord,
+  deleteRecord,
+  queryLatestRecordByExercise,
+  type RecordType,
+  useQueryRecordsBySet,
+} from "../../../../db/records.ts";
+import { generateFirestoreId } from "../../../../db/db.ts";
+import { Timestamp } from "firebase/firestore";
+import { RECORDS_TRANSLATION } from "./constants.ts";
+import { PiMedalFill } from "react-icons/pi";
+import { volumeToOneRepMax } from "../utils.ts";
 
-export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
-  const [isSheetOpen, setSheetOpen] = useState(false);
+export function SetRow({
+  number,
+  exercise,
+  set,
+  prevSet,
+  recSet,
+}: SetRowProps) {
+  const [isActionsOpen, setActionsOpen] = useState(false);
+  const [isRecordsOpen, setRecordsOpen] = useState(false);
   const [weightInput, setWeightInput] = useState<string | null>(null);
   const [repsInput, setRepsInput] = useState<string | null>(null);
+  const records = useQueryRecordsBySet(set.user, set.id);
 
   const updatedSet = useRef(set);
   useEffect(() => {
@@ -29,46 +49,92 @@ export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
   const reps = set.reps ? set.reps.toString() : "";
   const repsPlaceholder = (recSet?.reps || "-").toString();
 
-  const updateSetInner = async (updater: (set: Set) => Set) => {
+  const updateSetInner = (updater: (set: Set) => Set): Set => {
     updatedSet.current = updater(updatedSet.current);
-    await updateSet(updatedSet.current);
+    return updatedSet.current;
   };
 
   const setTypeHandler = async (type: SetType) => {
-    await updateSetInner((set) => ({ ...set, type }));
-    setSheetOpen(false);
+    setActionsOpen(false);
+
+    const set = updateSetInner((set) => ({ ...set, type }));
+    await updateSet(set);
   };
 
   const removeHandler = async () => {
-    await deleteSet(set);
-    setSheetOpen(false);
+    setActionsOpen(false);
+    await Promise.all([deleteSet(set), ...records.map((r) => deleteRecord(r))]);
   };
 
   const weightBlurHandler = async () => {
     if (weightInput === null) return;
     const newWeight = Number.parseFloat(weightInput || "0");
+    setWeightInput(null);
 
     if (!Number.isNaN(newWeight) && newWeight >= 0) {
-      await updateSetInner((set) => ({ ...set, weight: newWeight }));
+      const set = updateSetInner((set) => ({ ...set, weight: newWeight }));
+      await updateSet(set);
     }
-
-    setWeightInput(null);
   };
 
   const repsBlurHandler = async () => {
     if (repsInput === null) return;
     const newReps = Number.parseFloat(repsInput || "0");
+    setRepsInput(null);
 
     if (!Number.isNaN(newReps) && newReps >= 0) {
-      await updateSetInner((set) => ({ ...set, reps: newReps }));
+      const set = updateSetInner((set) => ({ ...set, reps: newReps }));
+      await updateSet(set);
+    }
+  };
+
+  const updateRecords = async (set: Set) => {
+    const types: RecordType[] = ["one_rep_max", "weight", "volume"];
+
+    const currentRecords: Array<{ type: RecordType; value: number }> = [
+      { type: "one_rep_max", value: volumeToOneRepMax(set.weight, set.reps) },
+      { type: "weight", value: set.weight },
+      { type: "volume", value: set.weight * set.reps },
+    ];
+
+    const previousRecords = await Promise.all(
+      types.map((type) =>
+        queryLatestRecordByExercise({ type, exercise, user: set.user }),
+      ),
+    );
+
+    const promises: Promise<void>[] = [];
+
+    for (const currentRecord of currentRecords) {
+      const previousRecord = previousRecords.find(
+        (r) => r?.type === currentRecord.type,
+      );
+      const previousValue = previousRecord?.current ?? 0;
+
+      if (currentRecord.value > previousValue) {
+        promises.push(
+          addRecord({
+            id: generateFirestoreId(),
+            user: set.user,
+            workout: set.workout,
+            exercise: exercise,
+            performance: set.performance,
+            set: set.id,
+            createdAt: Timestamp.now(),
+            type: currentRecord.type,
+            previous: previousValue,
+            current: currentRecord.value,
+          }),
+        );
+      }
     }
 
-    setRepsInput(null);
+    await Promise.all(promises);
   };
 
   const completeHandler = async () => {
     if (!set.completed) {
-      await updateSetInner((set) => {
+      const set = updateSetInner((set) => {
         const weight = set.weight || recSet?.weight;
         const reps = set.reps || recSet?.reps;
         if (weight && reps) {
@@ -77,16 +143,33 @@ export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
           return set;
         }
       });
+      await Promise.all([updateSet(set), updateRecords(set)]);
     } else {
-      await updateSetInner((set) => ({ ...set, completed: false }));
+      const set = updateSetInner((set) => ({ ...set, completed: false }));
+      await Promise.all([
+        updateSet(set),
+        ...records.map((r) => deleteRecord(r)),
+      ]);
+    }
+  };
+
+  const setInfoHandler = () => {
+    if (!set.completed) {
+      setActionsOpen(true);
+    } else if (records.length !== 0) {
+      setRecordsOpen(true);
     }
   };
 
   return (
     <>
       <tr className={clsx(set.completed && s.completed)}>
-        <td className={s.setNumValue} onClick={() => setSheetOpen(true)}>
-          {number}
+        <td className={s.setNumValue} onClick={setInfoHandler}>
+          {records.length === 0 ? (
+            <span>{number}</span>
+          ) : (
+            <PiMedalFill className={s.recordMedal} />
+          )}
         </td>
         <td className={s.prevVolumeValue}>{prev}</td>
         <td className={s.currentWeightValue}>
@@ -123,7 +206,7 @@ export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
           </button>
         </td>
       </tr>
-      <BottomSheet isOpen={isSheetOpen} onClose={() => setSheetOpen(false)}>
+      <BottomSheet isOpen={isActionsOpen} onClose={() => setActionsOpen(false)}>
         <div className={s.sheetHeader}>Выберите тип сета</div>
         <div className={s.sheetActions}>
           <button
@@ -146,6 +229,31 @@ export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
           </button>
         </div>
       </BottomSheet>
+      <BottomSheet isOpen={isRecordsOpen} onClose={() => setRecordsOpen(false)}>
+        <div className={s.sheetHeader}>Новый рекорд</div>
+        <div className={s.sheetRecords}>
+          {records.map((r) => (
+            <div className={s.sheetRecord} key={r.type}>
+              <div className={s.recordType}>{RECORDS_TRANSLATION[r.type]}</div>
+              <div className={s.recordValue}>
+                {formatRecordValue(r.current)} кг
+              </div>
+              {r.previous !== 0 && (
+                <div className={s.recordIncrement}>
+                  <MdArrowUpward /> {formatRecordValue(r.current - r.previous)}{" "}
+                  кг
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </BottomSheet>
     </>
   );
+}
+
+function formatRecordValue(value: number) {
+  return value === Math.round(value) //
+    ? value.toFixed(0)
+    : value.toFixed(2);
 }

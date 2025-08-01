@@ -3,7 +3,7 @@
 }
 
 td.setNumValue {
-  text-align: left;
+  text-align: center;
   padding-left: 16px;
 }
 
@@ -22,6 +22,53 @@ td.setCompletedValue {
   padding: 24px 16px;
   border-bottom: 1px solid #666;
   text-align: center;
+}
+
+.sheetRecords {
+  display: flex;
+  flex-direction: column;
+  margin: 16px 16px 64px;
+  border-radius: 16px;
+  background: #444;
+  padding: 4px 0;
+}
+
+.sheetRecord {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+}
+
+.recordType {
+  color: #fff;
+}
+
+.recordValue {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  color: #BBB;
+}
+
+.recordIncrement {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  color: #0F0;
+
+  svg {
+    margin-bottom: 4px;
+  }
+}
+
+.sheetRecord:not(:first-child) {
+  border-top: 1px solid #666;
 }
 
 .sheetActions {
@@ -74,4 +121,8 @@ td.setCompletedValue {
 
 .completed .setCompletedButton {
   background: #0B0;
+}
+
+.recordMedal {
+  color: #FF0;
 }

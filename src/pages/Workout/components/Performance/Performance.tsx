@@ -19,6 +19,7 @@ import {
   deletePerformance,
   updatePerformance,
   useQueryPreviousPerformance,
+  type Performance,
 } from "../../../../db/performances.ts";
 import {
   type Exercise,
@@ -30,6 +31,10 @@ import { BottomSheet } from "../BottomSheet";
 import { ChooseExercise } from "../ChooseExercise";
 import { PageModal } from "../PageModal";
 import { buildRecommendations } from "./utils.ts";
+import {
+  deleteRecord,
+  queryRecordsByPerformance,
+} from "../../../../db/records.ts";
 
 export function Performance({ performance }: PerformanceProps) {
   const exercise = useQueryExerciseById(performance.exercise);
@@ -89,8 +94,13 @@ export function Performance({ performance }: PerformanceProps) {
 
   const deleteHandler = async () => {
     setActionsOpen(false);
+    const records = await queryRecordsByPerformance(
+      performance.user,
+      performance.id,
+    );
     await Promise.all([
       ...sets.map((s) => deleteSet(s)),
+      ...records.map((r) => deleteRecord(r)),
       deletePerformance(performance),
     ]);
   };
@@ -112,7 +122,7 @@ export function Performance({ performance }: PerformanceProps) {
             </th>
           </tr>
         </thead>
-        <tbody>{buildSets(prevSets, sets)}</tbody>
+        <tbody>{buildSets(performance, prevSets, sets)}</tbody>
       </table>
       <button className={s.addSetButton} onClick={addSetHandler}>
         <MdAdd />
@@ -149,7 +159,11 @@ export function Performance({ performance }: PerformanceProps) {
   );
 }
 
-function buildSets(prevSets: Set[], sets: Set[]): ReactNode[] {
+function buildSets(
+  performance: Performance,
+  prevSets: Set[],
+  sets: Set[],
+): ReactNode[] {
   const prevWarmUp = prevSets.filter(
     (s) => s.type === "warm-up" && s.weight && s.reps,
   );
@@ -181,6 +195,7 @@ function buildSets(prevSets: Set[], sets: Set[]): ReactNode[] {
       <SetRow
         key={set.id}
         number={number}
+        exercise={performance.exercise}
         set={set}
         prevSet={prevSet}
         recSet={recSet}

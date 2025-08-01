@@ -3,6 +3,7 @@ import type { SetData } from "../Performance/types.ts";
 
 export interface SetRowProps {
   number: string;
+  exercise: string;
   set: Set;
   prevSet: Set | undefined;
   recSet: SetData | undefined;
