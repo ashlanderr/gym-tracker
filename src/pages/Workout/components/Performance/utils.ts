@@ -3,7 +3,6 @@ import {
   DEFAULT_RANGE_MAX_REPS,
   DEFAULT_RANGE_MIN_REPS,
   REPS_INCREASE_WEIGHT_MULTIPLIER,
-  WARM_UP_DEFAULT_REPS,
   WARM_UP_WEIGHT_MULTIPLIER,
 } from "./constants.ts";
 import {
@@ -34,117 +33,103 @@ function findWorkingVolume(workingSets: SetData[]): WorkingVolume | undefined {
   };
 }
 
-function computeWarmUpWeight(oneRepMax: number, reps: number): number {
-  const warmUpMax = oneRepMax * WARM_UP_WEIGHT_MULTIPLIER;
-  const weight = oneRepMaxToWeight(warmUpMax, reps);
-  return Math.floor(weight);
-}
-
-function computeWarmUpReps(oneRepMax: number, weight: number): number {
-  const warmUpMax = oneRepMax * WARM_UP_WEIGHT_MULTIPLIER;
-  const reps = oneRepMaxToReps(warmUpMax, weight);
-  return Math.floor(reps);
-}
-
-function buildWarmUpRecommendation(
-  working: WorkingVolume | undefined,
-  current: SetData,
-  filled: SetData,
-  index: number,
-): SetData {
-  let weight = current.weight;
-  let reps = current.reps;
-
-  if (working) {
-    if (!reps && weight) {
-      reps = computeWarmUpReps(working.oneRepMax, weight);
-    } else if (reps && !weight) {
-      weight = computeWarmUpWeight(working.oneRepMax, reps);
-    } else if (!reps && !weight) {
-      const repsIndex = Math.min(index, WARM_UP_DEFAULT_REPS.length - 1);
-      reps = WARM_UP_DEFAULT_REPS[repsIndex];
-      weight = computeWarmUpWeight(working.oneRepMax, reps);
-    }
-  } else {
-    weight = filled.weight;
-    reps = filled.reps;
-  }
-
-  return {
-    type: "warm-up",
-    weight,
-    reps,
-  };
-}
-
-function buildWorkingRecommendation(
-  working: WorkingVolume | undefined,
-  filled: SetData,
-): SetData {
-  let weight = filled.weight;
-  let reps = filled.reps;
-
-  if (working && !weight && working.reps >= DEFAULT_RANGE_MAX_REPS) {
-    reps = DEFAULT_RANGE_MIN_REPS;
-    weight = Math.floor(oneRepMaxToWeight(working.oneRepMax, reps));
-  }
-
-  if (working && !weight) {
-    weight = working.weight;
-  }
-
-  if (working && weight === working.weight) {
-    const newRepMax = working.oneRepMax * REPS_INCREASE_WEIGHT_MULTIPLIER;
-    reps = Math.ceil(oneRepMaxToReps(newRepMax, weight));
-  }
-
-  if (working && weight > working.weight && !reps) {
-    reps = Math.ceil(oneRepMaxToReps(working.oneRepMax, weight));
-  }
-
-  return {
-    type: "working",
-    weight,
-    reps,
-  };
+function increaseReps(oneRepMax: number, weight: number): number {
+  const newRepMax = oneRepMax * REPS_INCREASE_WEIGHT_MULTIPLIER;
+  return Math.round(oneRepMaxToReps(newRepMax, weight));
 }
 
 export function buildRecommendations(
   prevSets: SetData[],
   currentSets: SetData[],
 ): SetData[] {
+  const prevWarmUpSets = prevSets.filter((s) => s.type === "warm-up");
   const prevWorkingSets = prevSets.filter((s) => s.type === "working");
   const working = findWorkingVolume(prevWorkingSets);
   const result: SetData[] = [];
-  const filled: SetData = { type: "warm-up", weight: 0, reps: 0 };
   let warmUpIndex = 0;
+  let filledSet: SetData | undefined = undefined;
 
-  for (const currentSet of currentSets) {
-    if (filled.type !== currentSet.type) {
-      filled.type = currentSet.type;
-      filled.weight = 0;
-      filled.reps = 0;
-    }
-
-    filled.weight = currentSet.weight || filled.weight;
-    filled.reps = currentSet.reps || filled.reps;
-
-    switch (currentSet.type) {
+  for (const set of currentSets) {
+    switch (set.type) {
       case "warm-up": {
-        const set = buildWarmUpRecommendation(
-          working,
-          currentSet,
-          filled,
-          warmUpIndex,
-        );
-        result.push(set);
+        let weight = 0;
+        let reps = 0;
+
+        const prevSet = prevWarmUpSets.at(warmUpIndex);
+        const warmUpMax = working
+          ? working.oneRepMax * WARM_UP_WEIGHT_MULTIPLIER
+          : undefined;
+
+        if (set.weight && set.reps) {
+          weight = set.weight;
+          reps = set.reps;
+        } else if (warmUpMax && prevSet && !set.weight && !set.reps) {
+          reps = prevSet.reps;
+          weight = Math.round(oneRepMaxToWeight(warmUpMax, reps));
+        } else if (warmUpMax && !set.weight && set.reps) {
+          reps = set.reps;
+          weight = Math.round(oneRepMaxToWeight(warmUpMax, reps));
+        } else if (warmUpMax && set.weight && !set.reps) {
+          weight = set.weight;
+          reps = Math.round(oneRepMaxToReps(warmUpMax, weight));
+        } else {
+          weight = set.weight;
+          reps = set.reps;
+        }
+
+        result.push({
+          type: "warm-up",
+          weight,
+          reps,
+        });
         warmUpIndex += 1;
         break;
       }
 
       case "working": {
-        const set = buildWorkingRecommendation(working, filled);
-        result.push(set);
+        let weight = 0;
+        let reps = 0;
+
+        if (set.weight && set.reps) {
+          weight = set.weight;
+          reps = set.reps;
+        } else if (filledSet && !set.weight && !set.reps) {
+          weight = filledSet.weight;
+          reps = filledSet.reps;
+        } else if (working && !set.weight && !set.reps) {
+          if (working.reps >= DEFAULT_RANGE_MAX_REPS) {
+            reps = DEFAULT_RANGE_MIN_REPS;
+            weight = Math.round(oneRepMaxToWeight(working.oneRepMax, reps));
+            if (weight <= working.weight) {
+              weight = working.weight;
+              reps = increaseReps(working.oneRepMax, weight);
+            }
+          } else {
+            weight = working.weight;
+            reps = increaseReps(working.oneRepMax, weight);
+          }
+        } else if (working && set.weight && !set.reps) {
+          if (set.weight === working.weight) {
+            weight = set.weight;
+            reps = increaseReps(working.oneRepMax, weight);
+          } else {
+            weight = set.weight;
+            reps = Math.round(oneRepMaxToReps(working.oneRepMax, weight));
+          }
+        } else if (working && !set.weight && set.reps) {
+          reps = set.reps;
+          weight = Math.round(oneRepMaxToWeight(working.oneRepMax, reps));
+        } else {
+          weight = set.weight;
+          reps = set.reps;
+        }
+
+        filledSet = {
+          type: "working",
+          weight,
+          reps,
+        };
+        result.push(filledSet);
         break;
       }
     }

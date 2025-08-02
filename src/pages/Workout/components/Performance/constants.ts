@@ -1,5 +1,3 @@
-export const WARM_UP_DEFAULT_REPS = [30, 12];
-
 export const WARM_UP_WEIGHT_MULTIPLIER = 0.8;
 
 export const DEFAULT_RANGE_MIN_REPS = 8;
