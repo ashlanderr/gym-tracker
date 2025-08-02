@@ -104,13 +104,16 @@ td.setCompletedValue {
   text-align: center;
   border: none;
   background: transparent;
-  color: inherit;
+  color: #fff;
   font: inherit;
   outline: none;
 }
 
 .input:disabled {
-  color: inherit;
+  -webkit-text-fill-color: #fff;
+  -webkit-opacity: 1;
+  color: #fff;
+  opacity: 1;
 }
 
 .setCompletedButton {
