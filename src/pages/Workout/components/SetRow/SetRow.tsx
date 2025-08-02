@@ -253,7 +253,5 @@ export function SetRow({
 }
 
 function formatRecordValue(value: number) {
-  return value === Math.round(value) //
-    ? value.toFixed(0)
-    : value.toFixed(2);
+  return (Math.round(value * 100) / 100).toLocaleString();
 }
