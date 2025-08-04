@@ -17,7 +17,8 @@ export function initStore(uid: string): Store {
 function initDoc(name: string): Y.Doc {
   const doc = new Y.Doc();
 
-  const wsProvider = new WebsocketProvider("ws://localhost:1234", name, doc);
+  const wsUrl = import.meta.env.VITE_BACKEND_URL ?? "ws://localhost:1234";
+  const wsProvider = new WebsocketProvider(wsUrl, name, doc);
 
   wsProvider.on("status", (event) => {
     console.log(`wsProvider [${name}]: ${event.status}`);
