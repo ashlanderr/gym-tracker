@@ -5,9 +5,16 @@ import {
   GoogleAuthProvider,
   onAuthStateChanged,
   signInAnonymously as signInAnonymouslyInner,
+  type User as FirebaseUser,
 } from "firebase/auth";
 import { firebaseApp } from "./app.ts";
 import { useEffect, useState } from "react";
+
+export interface User {
+  uid: string;
+  photoURL: string | null;
+  displayName: string | null;
+}
 
 export const firebaseAuth = getAuth(firebaseApp);
 
@@ -26,13 +33,25 @@ export async function signOut() {
   await signOutInner(firebaseAuth);
 }
 
+const LOCAL_STORAGE_KEY = "user";
+
 export function useAuth() {
-  const [user, setUser] = useState(() => firebaseAuth.currentUser);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(() => {
+    const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
+    return localData ? JSON.parse(localData) : null;
+  });
+  const [loading, setLoading] = useState(user === null);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(firebaseAuth, (firebaseUser) => {
-      setUser(firebaseUser);
+      if (firebaseUser) {
+        const user = convertUser(firebaseUser);
+        setUser(user);
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(user));
+      } else {
+        setUser(null);
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
+      }
       setLoading(false);
     });
 
@@ -46,4 +65,12 @@ export function useUser() {
   const { user } = useAuth();
   if (!user) throw new Error("User is not authenticated");
   return user;
+}
+
+function convertUser(user: FirebaseUser): User {
+  return {
+    uid: user.uid,
+    photoURL: user.photoURL,
+    displayName: user.displayName,
+  };
 }
