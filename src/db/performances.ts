@@ -21,22 +21,27 @@ export function queryPerformancesByWorkout(
   store: Store,
   workout: string,
 ): Performance[] {
-  return queryCollection(collection(store.personal, "performances"), {
-    workout: { eq: workout },
-  });
+  const performances = queryCollection<Performance>(
+    collection(store.personal, "performances"),
+    {
+      workout: { eq: workout },
+    },
+  );
+  return [...performances].sort((a, b) => a.order - b.order);
 }
 
 export function useQueryPerformancesByWorkout(
   store: Store,
   workout: string,
 ): Performance[] {
-  return useQueryCollection({
+  const performances = useQueryCollection<Performance>({
     collection: collection(store.personal, "performances"),
     filter: {
       workout: { eq: workout },
     },
     deps: [workout],
   });
+  return [...performances].sort((a, b) => a.order - b.order);
 }
 
 export function useQueryPreviousPerformance(
