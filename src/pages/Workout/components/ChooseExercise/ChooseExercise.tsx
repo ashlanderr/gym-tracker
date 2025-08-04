@@ -6,9 +6,11 @@ import { MUSCLES_TRANSLATION } from "../../../constants.ts";
 import { useState } from "react";
 import { PageModal } from "../PageModal";
 import { AddExercise } from "../AddExercise";
+import { useStore } from "../../../../components";
 
 export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
-  const exercises = useQueryAllExercises();
+  const store = useStore();
+  const exercises = useQueryAllExercises(store);
   const [isAddExerciseOpen, setAddExerciseOpen] = useState(false);
   const [search, setSearch] = useState("");
   const searchLower = search.toLowerCase();

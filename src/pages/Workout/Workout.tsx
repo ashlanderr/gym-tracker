@@ -23,17 +23,19 @@ import { ChooseExercise } from "./components/ChooseExercise";
 import { generateId } from "../../db/db.ts";
 import { addSet, deleteSet, useQuerySetsByWorkout } from "../../db/sets.ts";
 import type { Exercise } from "../../db/exercises.ts";
+import { useStore } from "../../components";
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
+  const store = useStore();
   const navigate = useNavigate();
-  const workout = useQueryWorkoutById(workoutId);
+  const workout = useQueryWorkoutById(store, workoutId);
   const timer = useTimer(
     workout?.startedAt ?? null,
     workout?.completedAt ?? null,
   );
-  const performances = useQueryPerformancesByWorkout(workoutId);
-  const sets = useQuerySetsByWorkout(workoutId);
+  const performances = useQueryPerformancesByWorkout(store, workoutId);
+  const sets = useQuerySetsByWorkout(store, workoutId);
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
   const [isAddPerformanceOpen, setAddPerformanceOpen] = useState(false);
@@ -42,7 +44,7 @@ export function Workout() {
   );
 
   // todo disable editing if completed
-  // todo personal records, history
+  // todo history
   // todo firebase access rules
 
   const addPerformanceHandler = (exercise: Exercise) => {
@@ -50,7 +52,7 @@ export function Workout() {
 
     setAddPerformanceOpen(false);
 
-    const performance = addPerformance({
+    const performance = addPerformance(store, {
       id: generateId(),
       user: workout.user,
       workout: workout.id,
@@ -59,7 +61,7 @@ export function Workout() {
       startedAt: workout.startedAt,
     });
 
-    addSet({
+    addSet(store, {
       id: generateId(),
       user: workout.user,
       workout: workout.id,
@@ -89,18 +91,18 @@ export function Workout() {
 
       for (const set of performanceSets) {
         if (!set.completed) {
-          deleteSet(set);
+          deleteSet(store, set);
         } else {
           emptyPerformance = false;
         }
       }
 
       if (emptyPerformance) {
-        deletePerformance(performance);
+        deletePerformance(store, performance);
       }
     }
 
-    updateWorkout({
+    updateWorkout(store, {
       ...workout,
       completedAt: Date.now(),
       name: data.name,

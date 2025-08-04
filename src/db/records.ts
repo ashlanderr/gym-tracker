@@ -6,7 +6,7 @@ import {
   queryCollection,
   useQueryCollection,
 } from "./db.ts";
-import { doc } from "./doc.ts";
+import type { Store } from "./doc.ts";
 
 export type RecordType = "one_rep_max" | "weight" | "volume";
 
@@ -23,21 +23,24 @@ export interface Record {
   current: number;
 }
 
-export function queryRecordsByWorkout(workout: string): Record[] {
-  return queryCollection(collection(doc, "records"), {
+export function queryRecordsByWorkout(store: Store, workout: string): Record[] {
+  return queryCollection(collection(store.personal, "records"), {
     workout: { eq: workout },
   });
 }
 
-export function queryRecordsByPerformance(performance: string): Record[] {
-  return queryCollection(collection(doc, "records"), {
+export function queryRecordsByPerformance(
+  store: Store,
+  performance: string,
+): Record[] {
+  return queryCollection(collection(store.personal, "records"), {
     performance: { eq: performance },
   });
 }
 
-export function useQueryRecordsBySet(set: string): Record[] {
+export function useQueryRecordsBySet(store: Store, set: string): Record[] {
   return useQueryCollection({
-    collection: collection(doc, "records"),
+    collection: collection(store.personal, "records"),
     filter: {
       set: { eq: set },
     },
@@ -46,20 +49,24 @@ export function useQueryRecordsBySet(set: string): Record[] {
 }
 
 export function queryLatestRecordByExercise(
+  store: Store,
   type: RecordType,
   exercise: string,
 ): Record | null {
-  const records = queryCollection<Record>(collection(doc, "records"), {
-    type: { eq: type },
-    exercise: { eq: exercise },
-  });
+  const records = queryCollection<Record>(
+    collection(store.personal, "records"),
+    {
+      type: { eq: type },
+      exercise: { eq: exercise },
+    },
+  );
   return maxBy(records, (a, b) => a.createdAt - b.createdAt);
 }
 
-export function addRecord(entity: Record) {
-  insertEntity(collection(doc, "records"), entity);
+export function addRecord(store: Store, entity: Record) {
+  insertEntity(collection(store.personal, "records"), entity);
 }
 
-export function deleteRecord(entity: Record) {
-  deleteEntity(collection(doc, "records"), entity);
+export function deleteRecord(store: Store, entity: Record) {
+  deleteEntity(collection(store.personal, "records"), entity);
 }

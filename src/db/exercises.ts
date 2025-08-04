@@ -4,7 +4,7 @@ import {
   useGetEntity,
   useQueryCollection,
 } from "./db.ts";
-import { doc } from "./doc.ts";
+import { type Store } from "./doc.ts";
 
 export type MuscleType =
   | "abs"
@@ -31,24 +31,27 @@ export interface Exercise {
   muscles: MuscleType[];
 }
 
-export function useQueryExerciseById(id: string): Exercise | null {
+export function useQueryExerciseById(
+  store: Store,
+  id: string,
+): Exercise | null {
   return useGetEntity({
-    collection: collection(doc, "exercises"),
+    collection: collection(store.shared, "exercises"),
     id,
     deps: [id],
   });
 }
 
-export function useQueryAllExercises(): Exercise[] {
+export function useQueryAllExercises(store: Store): Exercise[] {
   const entities = useQueryCollection<Exercise>({
-    collection: collection(doc, "exercises"),
+    collection: collection(store.shared, "exercises"),
     filter: {},
     deps: [],
   });
   return [...entities].sort((a, b) => a.name.localeCompare(b.name));
 }
 
-export function addExercise(entity: Exercise): Exercise {
-  insertEntity(collection(doc, "exercises"), entity);
+export function addExercise(store: Store, entity: Exercise): Exercise {
+  insertEntity(collection(store.shared, "exercises"), entity);
   return entity;
 }

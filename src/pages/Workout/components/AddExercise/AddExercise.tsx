@@ -6,8 +6,10 @@ import { addExercise, type MuscleType } from "../../../../db/exercises.ts";
 import { MUSCLES_TRANSLATION } from "../../../constants.ts";
 import { clsx } from "clsx";
 import { generateId } from "../../../../db/db.ts";
+import { useStore } from "../../../../components";
 
 export function AddExercise({ onCancel, onSubmit }: AddExerciseProps) {
+  const store = useStore();
   const [name, setName] = useState("");
   const trimmedName = name.trim();
   const [mainMuscle, setMainMuscle] = useState<MuscleType | null>(null);
@@ -37,7 +39,7 @@ export function AddExercise({ onCancel, onSubmit }: AddExerciseProps) {
     if (!trimmedName) return;
     if (!mainMuscle) return;
 
-    const exercise = addExercise({
+    const exercise = addExercise(store, {
       id: generateId(),
       name: trimmedName,
       muscles: [mainMuscle, ...secondaryMuscles],

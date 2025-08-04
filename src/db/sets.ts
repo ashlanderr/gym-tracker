@@ -1,4 +1,3 @@
-import { doc } from "./doc.ts";
 import {
   collection,
   deleteEntity,
@@ -6,6 +5,7 @@ import {
   queryCollection,
   useQueryCollection,
 } from "./db.ts";
+import type { Store } from "./doc.ts";
 
 export type SetType = "warm-up" | "working";
 
@@ -22,43 +22,49 @@ export interface Set {
   completed: boolean;
 }
 
-export function querySetsByWorkout(workout: string): Set[] {
-  return queryCollection(collection(doc, "sets"), {
+export function querySetsByWorkout(store: Store, workout: string): Set[] {
+  return queryCollection(collection(store.personal, "sets"), {
     workout: { eq: workout },
   });
 }
 
-export function useQuerySetsByWorkout(workout: string): Set[] {
+export function useQuerySetsByWorkout(store: Store, workout: string): Set[] {
   return useQueryCollection({
-    collection: collection(doc, "sets"),
+    collection: collection(store.personal, "sets"),
     filter: { workout: { eq: workout } },
     deps: [workout],
   });
 }
 
-export function querySetsByPerformance(performance: string): Set[] {
-  return queryCollection(collection(doc, "sets"), {
+export function querySetsByPerformance(
+  store: Store,
+  performance: string,
+): Set[] {
+  return queryCollection(collection(store.personal, "sets"), {
     performance: { eq: performance },
   });
 }
 
-export function useQuerySetsByPerformance(performance: string): Set[] {
+export function useQuerySetsByPerformance(
+  store: Store,
+  performance: string,
+): Set[] {
   return useQueryCollection({
-    collection: collection(doc, "sets"),
+    collection: collection(store.personal, "sets"),
     filter: { performance: { eq: performance } },
     deps: [performance],
   });
 }
 
-export function addSet(entity: Set): Set {
-  insertEntity(collection(doc, "sets"), entity);
+export function addSet(store: Store, entity: Set): Set {
+  insertEntity(collection(store.personal, "sets"), entity);
   return entity;
 }
 
-export function updateSet(entity: Set) {
-  insertEntity(collection(doc, "sets"), entity);
+export function updateSet(store: Store, entity: Set) {
+  insertEntity(collection(store.personal, "sets"), entity);
 }
 
-export function deleteSet(entity: Set) {
-  deleteEntity(collection(doc, "sets"), entity);
+export function deleteSet(store: Store, entity: Set) {
+  deleteEntity(collection(store.personal, "sets"), entity);
 }

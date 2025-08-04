@@ -30,12 +30,14 @@ import { generateId } from "../../db/db.ts";
 import { clsx } from "clsx";
 import { signOut, useUser } from "../../firebase/auth.ts";
 import { deleteRecord, queryRecordsByWorkout } from "../../db/records.ts";
+import { useStore } from "../../components";
 
 export function Home() {
   const user = useUser();
+  const store = useStore();
   const navigate = useNavigate();
-  const workouts = useQueryCompletedWorkouts();
-  const [activeWorkout] = useQueryActiveWorkouts();
+  const workouts = useQueryCompletedWorkouts(store);
+  const [activeWorkout] = useQueryActiveWorkouts(store);
   const [workoutActions, setWorkoutActions] = useState<Workout | null>(null);
   const activeTimer = useTimer(activeWorkout?.startedAt ?? null, null);
 
@@ -45,7 +47,7 @@ export function Home() {
   };
 
   const startWorkoutHandler = () => {
-    const newWorkout = addWorkout({
+    const newWorkout = addWorkout(store, {
       id: generateId(),
       user: user.uid,
       name: "Новая тренировка",
@@ -58,23 +60,23 @@ export function Home() {
   };
 
   const cancelWorkoutHandler = (workout: Workout) => {
-    const performances = queryPerformancesByWorkout(workout.id);
-    const sets = querySetsByWorkout(workout.id);
-    const records = queryRecordsByWorkout(workout.id);
+    const performances = queryPerformancesByWorkout(store, workout.id);
+    const sets = querySetsByWorkout(store, workout.id);
+    const records = queryRecordsByWorkout(store, workout.id);
 
-    records.map((r) => deleteRecord(r));
-    sets.forEach((s) => deleteSet(s));
-    performances.forEach((p) => deletePerformance(p));
-    deleteWorkout(workout);
+    records.map((r) => deleteRecord(store, r));
+    sets.forEach((s) => deleteSet(store, s));
+    performances.forEach((p) => deletePerformance(store, p));
+    deleteWorkout(store, workout);
   };
 
   const duplicateWorkoutHandler = () => {
     if (!workoutActions) return;
 
-    const performances = queryPerformancesByWorkout(workoutActions.id);
-    const sets = querySetsByWorkout(workoutActions.id);
+    const performances = queryPerformancesByWorkout(store, workoutActions.id);
+    const sets = querySetsByWorkout(store, workoutActions.id);
 
-    const newWorkout = addWorkout({
+    const newWorkout = addWorkout(store, {
       id: generateId(),
       user: workoutActions.user,
       name: workoutActions.name,
@@ -85,7 +87,7 @@ export function Home() {
     });
 
     for (const performance of performances) {
-      const newPerformance = addPerformance({
+      const newPerformance = addPerformance(store, {
         id: generateId(),
         user: newWorkout.user,
         workout: newWorkout.id,
@@ -99,7 +101,7 @@ export function Home() {
       );
 
       for (const set of performanceSets) {
-        addSet({
+        addSet(store, {
           id: generateId(),
           user: newWorkout.user,
           workout: newWorkout.id,

@@ -2,18 +2,38 @@ import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import { IndexeddbPersistence } from "y-indexeddb";
 
-export const doc = new Y.Doc();
+export interface Store {
+  shared: Y.Doc;
+  personal: Y.Doc;
+}
 
-const DOC_NAME = "test3";
+export function initStore(uid: string): Store {
+  return {
+    shared: initDoc("shared"),
+    personal: initDoc(`user/${uid}`),
+  };
+}
 
-const wsProvider = new WebsocketProvider("ws://localhost:1234", "test3", doc);
+function initDoc(name: string): Y.Doc {
+  const doc = new Y.Doc();
 
-wsProvider.on("status", (event) => {
-  console.log("wsProvider status: " + event.status);
-});
+  const wsProvider = new WebsocketProvider("ws://localhost:1234", name, doc);
 
-const idbProvider = new IndexeddbPersistence(DOC_NAME, doc);
+  wsProvider.on("status", (event) => {
+    console.log(`wsProvider [${name}]: ${event.status}`);
+  });
 
-idbProvider.on("synced", () => {
-  console.log("idbProvider synced");
-});
+  const idbProvider = new IndexeddbPersistence(name, doc);
+
+  idbProvider.on("synced", () => {
+    console.log(`idbProvider [${name}]: synced`);
+  });
+
+  return doc;
+}
+
+export function destroyStore(store: Store) {
+  store.shared.destroy();
+  store.personal.destroy();
+  console.log("store destroyed");
+}

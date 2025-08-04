@@ -6,7 +6,7 @@ import {
   queryCollection,
   useQueryCollection,
 } from "./db.ts";
-import { doc } from "./doc.ts";
+import type { Store } from "./doc.ts";
 
 export interface Performance {
   id: string;
@@ -17,15 +17,21 @@ export interface Performance {
   startedAt: number;
 }
 
-export function queryPerformancesByWorkout(workout: string): Performance[] {
-  return queryCollection(collection(doc, "performances"), {
+export function queryPerformancesByWorkout(
+  store: Store,
+  workout: string,
+): Performance[] {
+  return queryCollection(collection(store.personal, "performances"), {
     workout: { eq: workout },
   });
 }
 
-export function useQueryPerformancesByWorkout(workout: string): Performance[] {
+export function useQueryPerformancesByWorkout(
+  store: Store,
+  workout: string,
+): Performance[] {
   return useQueryCollection({
-    collection: collection(doc, "performances"),
+    collection: collection(store.personal, "performances"),
     filter: {
       workout: { eq: workout },
     },
@@ -34,11 +40,12 @@ export function useQueryPerformancesByWorkout(workout: string): Performance[] {
 }
 
 export function useQueryPreviousPerformance(
+  store: Store,
   exercise: string,
   startedAt: number,
 ): Performance | null {
   const entities = useQueryCollection<Performance>({
-    collection: collection(doc, "performances"),
+    collection: collection(store.personal, "performances"),
     filter: {
       exercise: { eq: exercise },
       startedAt: { lt: startedAt },
@@ -48,15 +55,15 @@ export function useQueryPreviousPerformance(
   return maxBy(entities, (a, b) => a.startedAt - b.startedAt);
 }
 
-export function addPerformance(entity: Performance): Performance {
-  insertEntity(collection(doc, "performances"), entity);
+export function addPerformance(store: Store, entity: Performance): Performance {
+  insertEntity(collection(store.personal, "performances"), entity);
   return entity;
 }
 
-export function updatePerformance(entity: Performance) {
-  insertEntity(collection(doc, "performances"), entity);
+export function updatePerformance(store: Store, entity: Performance) {
+  insertEntity(collection(store.personal, "performances"), entity);
 }
 
-export function deletePerformance(entity: Performance) {
-  deleteEntity(collection(doc, "performances"), entity);
+export function deletePerformance(store: Store, entity: Performance) {
+  deleteEntity(collection(store.personal, "performances"), entity);
 }

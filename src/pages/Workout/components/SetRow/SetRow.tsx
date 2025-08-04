@@ -21,13 +21,15 @@ import { generateId } from "../../../../db/db.ts";
 import { RECORDS_TRANSLATION } from "./constants.ts";
 import { PiMedalFill } from "react-icons/pi";
 import { volumeToOneRepMax } from "../utils.ts";
+import { useStore } from "../../../../components";
 
 export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
+  const store = useStore();
   const [isActionsOpen, setActionsOpen] = useState(false);
   const [isRecordsOpen, setRecordsOpen] = useState(false);
   const [weightInput, setWeightInput] = useState<string | null>(null);
   const [repsInput, setRepsInput] = useState<string | null>(null);
-  const records = useQueryRecordsBySet(set.id);
+  const records = useQueryRecordsBySet(store, set.id);
 
   const updatedSet = useRef(set);
   useEffect(() => {
@@ -49,13 +51,13 @@ export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
 
   const setTypeHandler = (type: SetType) => {
     const set = updateSetInner((set) => ({ ...set, type }));
-    updateSet(set);
+    updateSet(store, set);
     setActionsOpen(false);
   };
 
   const removeHandler = async () => {
-    records.forEach((r) => deleteRecord(r));
-    deleteSet(set);
+    records.forEach((r) => deleteRecord(store, r));
+    deleteSet(store, set);
     setActionsOpen(false);
   };
 
@@ -66,7 +68,7 @@ export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
 
     if (!Number.isNaN(newWeight) && newWeight >= 0) {
       const set = updateSetInner((set) => ({ ...set, weight: newWeight }));
-      updateSet(set);
+      updateSet(store, set);
     }
   };
 
@@ -77,7 +79,7 @@ export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
 
     if (!Number.isNaN(newReps) && newReps >= 0) {
       const set = updateSetInner((set) => ({ ...set, reps: newReps }));
-      updateSet(set);
+      updateSet(store, set);
     }
   };
 
@@ -90,13 +92,14 @@ export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
 
     for (const currentRecord of currentRecords) {
       const previousRecord = queryLatestRecordByExercise(
+        store,
         currentRecord.type,
         set.exercise,
       );
       const previousValue = previousRecord?.current ?? 0;
 
       if (currentRecord.value > previousValue) {
-        addRecord({
+        addRecord(store, {
           id: generateId(),
           user: set.user,
           workout: set.workout,
@@ -123,12 +126,12 @@ export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
           return set;
         }
       });
-      updateSet(set);
+      updateSet(store, set);
       updateRecords(set);
     } else {
       const set = updateSetInner((set) => ({ ...set, completed: false }));
-      updateSet(set);
-      records.map((r) => deleteRecord(r));
+      updateSet(store, set);
+      records.map((r) => deleteRecord(store, r));
     }
   };
 

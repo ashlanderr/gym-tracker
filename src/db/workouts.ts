@@ -5,7 +5,7 @@ import {
   useGetEntity,
   useQueryCollection,
 } from "./db.ts";
-import { doc } from "./doc.ts";
+import type { Store } from "./doc.ts";
 
 export interface Workout {
   id: string;
@@ -17,17 +17,17 @@ export interface Workout {
   sets?: number;
 }
 
-export function useQueryWorkoutById(id: string): Workout | null {
+export function useQueryWorkoutById(store: Store, id: string): Workout | null {
   return useGetEntity({
-    collection: collection(doc, "workouts"),
+    collection: collection(store.personal, "workouts"),
     id,
     deps: [id],
   });
 }
 
-export function useQueryCompletedWorkouts(): Workout[] {
+export function useQueryCompletedWorkouts(store: Store): Workout[] {
   const workouts = useQueryCollection<Workout>({
-    collection: collection(doc, "workouts"),
+    collection: collection(store.personal, "workouts"),
     filter: {
       completedAt: { ne: null },
     },
@@ -36,9 +36,9 @@ export function useQueryCompletedWorkouts(): Workout[] {
   return [...workouts].sort((a, b) => b.startedAt - a.startedAt);
 }
 
-export function useQueryActiveWorkouts(): Workout[] {
+export function useQueryActiveWorkouts(store: Store): Workout[] {
   return useQueryCollection({
-    collection: collection(doc, "workouts"),
+    collection: collection(store.personal, "workouts"),
     filter: {
       completedAt: { eq: null },
     },
@@ -46,15 +46,15 @@ export function useQueryActiveWorkouts(): Workout[] {
   });
 }
 
-export function addWorkout(entity: Workout): Workout {
-  insertEntity(collection(doc, "workouts"), entity);
+export function addWorkout(store: Store, entity: Workout): Workout {
+  insertEntity(collection(store.personal, "workouts"), entity);
   return entity;
 }
 
-export function updateWorkout(entity: Workout) {
-  insertEntity(collection(doc, "workouts"), entity);
+export function updateWorkout(store: Store, entity: Workout) {
+  insertEntity(collection(store.personal, "workouts"), entity);
 }
 
-export function deleteWorkout(entity: Workout) {
-  deleteEntity(collection(doc, "workouts"), entity);
+export function deleteWorkout(store: Store, entity: Workout) {
+  deleteEntity(collection(store.personal, "workouts"), entity);
 }

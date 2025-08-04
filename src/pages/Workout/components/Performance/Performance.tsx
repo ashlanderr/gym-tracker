@@ -35,22 +35,25 @@ import {
   deleteRecord,
   queryRecordsByPerformance,
 } from "../../../../db/records.ts";
+import { useStore } from "../../../../components";
 
 export function Performance({ performance }: PerformanceProps) {
-  const exercise = useQueryExerciseById(performance.exercise);
-  const sets = useQuerySetsByPerformance(performance.id);
+  const store = useStore();
+  const exercise = useQueryExerciseById(store, performance.exercise);
+  const sets = useQuerySetsByPerformance(store, performance.id);
 
   const prevPerformance = useQueryPreviousPerformance(
+    store,
     performance.exercise,
     performance.startedAt,
   );
-  const prevSets = useQuerySetsByPerformance(prevPerformance?.id ?? "");
+  const prevSets = useQuerySetsByPerformance(store, prevPerformance?.id ?? "");
 
   const [isActionsOpen, setActionsOpen] = useState(false);
   const [isReplaceOpen, setReplaceOpen] = useState(false);
 
   const addSetHandler = () => {
-    addSet({
+    addSet(store, {
       id: generateId(),
       user: performance.user,
       workout: performance.workout,
@@ -80,23 +83,23 @@ export function Performance({ performance }: PerformanceProps) {
   };
 
   const replaceCompleteHandler = (exercise: Exercise) => {
-    const sets = querySetsByPerformance(performance.id);
-    const records = queryRecordsByPerformance(performance.id);
+    const sets = querySetsByPerformance(store, performance.id);
+    const records = queryRecordsByPerformance(store, performance.id);
 
-    records.forEach((record) => deleteRecord(record));
-    sets.forEach((set) => deleteSet(set));
-    updatePerformance({ ...performance, exercise: exercise.id });
+    records.forEach((record) => deleteRecord(store, record));
+    sets.forEach((set) => deleteSet(store, set));
+    updatePerformance(store, { ...performance, exercise: exercise.id });
 
     setReplaceOpen(false);
   };
 
   const deleteHandler = () => {
-    const sets = querySetsByPerformance(performance.id);
-    const records = queryRecordsByPerformance(performance.id);
+    const sets = querySetsByPerformance(store, performance.id);
+    const records = queryRecordsByPerformance(store, performance.id);
 
-    records.forEach((record) => deleteRecord(record));
-    sets.forEach((set) => deleteSet(set));
-    deletePerformance(performance);
+    records.forEach((record) => deleteRecord(store, record));
+    sets.forEach((set) => deleteSet(store, set));
+    deletePerformance(store, performance);
 
     setActionsOpen(false);
   };
