@@ -1,5 +1,6 @@
 import {
   collection,
+  getEntity,
   insertEntity,
   useGetEntity,
   useQueryCollection,
@@ -29,6 +30,10 @@ export interface Exercise {
   id: string;
   name: string;
   muscles: MuscleType[];
+}
+
+export function queryExerciseById(store: Store, id: string): Exercise | null {
+  return getEntity(collection(store.shared, "exercises"), id);
 }
 
 export function useQueryExerciseById(

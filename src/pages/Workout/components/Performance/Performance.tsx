@@ -25,8 +25,10 @@ import { ChooseExercise } from "../ChooseExercise";
 import { PageModal } from "../PageModal";
 import {
   deletePerformance,
+  queryPerformancesByWorkout,
   updatePerformance,
   useQueryPreviousPerformance,
+  type Performance,
 } from "../../../../db/performances.ts";
 import { buildRecommendations } from "./utils.ts";
 import { SetRow } from "../SetRow";
@@ -36,6 +38,7 @@ import {
   queryRecordsByPerformance,
 } from "../../../../db/records.ts";
 import { useStore } from "../../../../components";
+import { PerformanceOrder } from "../PerformanceOrder";
 
 export function Performance({ performance }: PerformanceProps) {
   const store = useStore();
@@ -51,6 +54,7 @@ export function Performance({ performance }: PerformanceProps) {
 
   const [isActionsOpen, setActionsOpen] = useState(false);
   const [isReplaceOpen, setReplaceOpen] = useState(false);
+  const [orderState, setOrderState] = useState<Performance[]>([]);
 
   const addSetHandler = () => {
     addSet(store, {
@@ -72,9 +76,14 @@ export function Performance({ performance }: PerformanceProps) {
     alert("TBD");
   };
 
-  const orderHandler = () => {
-    // todo
-    alert("TBD");
+  const orderBeginHandler = () => {
+    setActionsOpen(false);
+    setOrderState(queryPerformancesByWorkout(store, performance.workout));
+  };
+
+  const orderCompleteHandler = (items: Performance[]) => {
+    items.forEach((p) => updatePerformance(store, p));
+    setOrderState([]);
   };
 
   const replaceBeginHandler = () => {
@@ -134,7 +143,7 @@ export function Performance({ performance }: PerformanceProps) {
             <MdBarChart />
             <span>История выполнения</span>
           </button>
-          <button className={s.sheetAction} onClick={orderHandler}>
+          <button className={s.sheetAction} onClick={orderBeginHandler}>
             <MdSwapVert />
             <span>Порядок выполнения</span>
           </button>
@@ -152,6 +161,13 @@ export function Performance({ performance }: PerformanceProps) {
         <ChooseExercise
           onCancel={() => setReplaceOpen(false)}
           onSubmit={replaceCompleteHandler}
+        />
+      </PageModal>
+      <PageModal isOpen={orderState.length !== 0}>
+        <PerformanceOrder
+          performances={orderState}
+          onCancel={() => setOrderState([])}
+          onSubmit={orderCompleteHandler}
         />
       </PageModal>
     </div>
