@@ -18,9 +18,9 @@ import {
   useQueryRecordsBySet,
 } from "../../../../db/records.ts";
 import { generateId } from "../../../../db/db.ts";
-import { RECORDS_TRANSLATION } from "./constants.ts";
+import { RECORDS_TRANSLATION } from "../constants.ts";
 import { PiMedalFill } from "react-icons/pi";
-import { volumeToOneRepMax } from "../utils.ts";
+import { formatRecordValue, volumeToOneRepMax } from "../utils.ts";
 import { useStore } from "../../../../components";
 
 export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
@@ -232,8 +232,4 @@ export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
       </BottomSheet>
     </>
   );
-}
-
-function formatRecordValue(value: number) {
-  return (Math.round(value * 100) / 100).toLocaleString();
 }

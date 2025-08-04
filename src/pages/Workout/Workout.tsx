@@ -44,7 +44,6 @@ export function Workout() {
   );
 
   // todo disable editing if completed
-  // todo history
   // todo firebase access rules
 
   const addPerformanceHandler = (exercise: Exercise) => {

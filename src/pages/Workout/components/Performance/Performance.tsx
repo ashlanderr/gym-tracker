@@ -39,6 +39,7 @@ import {
 } from "../../../../db/records.ts";
 import { useStore } from "../../../../components";
 import { PerformanceOrder } from "../PerformanceOrder";
+import { ExerciseHistory } from "../ExerciseHistory";
 
 export function Performance({ performance }: PerformanceProps) {
   const store = useStore();
@@ -54,6 +55,7 @@ export function Performance({ performance }: PerformanceProps) {
 
   const [isActionsOpen, setActionsOpen] = useState(false);
   const [isReplaceOpen, setReplaceOpen] = useState(false);
+  const [isHistoryOpen, setHistoryOpen] = useState(false);
   const [orderState, setOrderState] = useState<Performance[]>([]);
 
   const addSetHandler = () => {
@@ -71,9 +73,9 @@ export function Performance({ performance }: PerformanceProps) {
     });
   };
 
-  const statsHandler = () => {
-    // todo
-    alert("TBD");
+  const historyHandler = () => {
+    setActionsOpen(false);
+    setHistoryOpen(true);
   };
 
   const orderBeginHandler = () => {
@@ -139,7 +141,7 @@ export function Performance({ performance }: PerformanceProps) {
       <BottomSheet isOpen={isActionsOpen} onClose={() => setActionsOpen(false)}>
         <div className={s.sheetHeader}>Упражнение</div>
         <div className={s.sheetActions}>
-          <button className={s.sheetAction} onClick={statsHandler}>
+          <button className={s.sheetAction} onClick={historyHandler}>
             <MdBarChart />
             <span>История выполнения</span>
           </button>
@@ -163,6 +165,14 @@ export function Performance({ performance }: PerformanceProps) {
           onSubmit={replaceCompleteHandler}
         />
       </PageModal>
+      {exercise && (
+        <PageModal isOpen={isHistoryOpen}>
+          <ExerciseHistory
+            exercise={exercise}
+            onClose={() => setHistoryOpen(false)}
+          />
+        </PageModal>
+      )}
       <PageModal isOpen={orderState.length !== 0}>
         <PerformanceOrder
           performances={orderState}

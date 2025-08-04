@@ -31,7 +31,9 @@ export function querySetsByWorkout(store: Store, workout: string): Set[] {
 export function useQuerySetsByWorkout(store: Store, workout: string): Set[] {
   return useQueryCollection({
     collection: collection(store.personal, "sets"),
-    filter: { workout: { eq: workout } },
+    filter: {
+      workout: { eq: workout },
+    },
     deps: [workout],
   });
 }
@@ -52,10 +54,22 @@ export function useQuerySetsByPerformance(
 ): Set[] {
   const sets = useQueryCollection<Set>({
     collection: collection(store.personal, "sets"),
-    filter: { performance: { eq: performance } },
+    filter: {
+      performance: { eq: performance },
+    },
     deps: [performance],
   });
   return [...sets].sort((a, b) => a.order - b.order);
+}
+
+export function useQuerySetsByExercise(store: Store, exercise: string): Set[] {
+  return useQueryCollection({
+    collection: collection(store.personal, "sets"),
+    filter: {
+      exercise: { eq: exercise },
+    },
+    deps: [exercise],
+  });
 }
 
 export function addSet(store: Store, entity: Set): Set {

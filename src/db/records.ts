@@ -48,6 +48,19 @@ export function useQueryRecordsBySet(store: Store, set: string): Record[] {
   });
 }
 
+export function useQueryRecordsByExercise(
+  store: Store,
+  exercise: string,
+): Record[] {
+  return useQueryCollection({
+    collection: collection(store.personal, "records"),
+    filter: {
+      exercise: { eq: exercise },
+    },
+    deps: [exercise],
+  });
+}
+
 export function queryLatestRecordByExercise(
   store: Store,
   type: RecordType,

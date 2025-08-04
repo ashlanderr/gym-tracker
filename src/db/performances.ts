@@ -60,6 +60,19 @@ export function useQueryPreviousPerformance(
   return maxBy(entities, (a, b) => a.startedAt - b.startedAt);
 }
 
+export function useQueryPerformancesByExercise(
+  store: Store,
+  exercise: string,
+): Performance[] {
+  return useQueryCollection({
+    collection: collection(store.personal, "performances"),
+    filter: {
+      exercise: { eq: exercise },
+    },
+    deps: [exercise],
+  });
+}
+
 export function addPerformance(store: Store, entity: Performance): Performance {
   insertEntity(collection(store.personal, "performances"), entity);
   return entity;
