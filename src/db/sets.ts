@@ -40,20 +40,22 @@ export function querySetsByPerformance(
   store: Store,
   performance: string,
 ): Set[] {
-  return queryCollection(collection(store.personal, "sets"), {
+  const sets = queryCollection<Set>(collection(store.personal, "sets"), {
     performance: { eq: performance },
   });
+  return [...sets].sort((a, b) => a.order - b.order);
 }
 
 export function useQuerySetsByPerformance(
   store: Store,
   performance: string,
 ): Set[] {
-  return useQueryCollection({
+  const sets = useQueryCollection<Set>({
     collection: collection(store.personal, "sets"),
     filter: { performance: { eq: performance } },
     deps: [performance],
   });
+  return [...sets].sort((a, b) => a.order - b.order);
 }
 
 export function addSet(store: Store, entity: Set): Set {
