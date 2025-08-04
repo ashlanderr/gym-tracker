@@ -1,13 +1,11 @@
-import { firestore, firestoreQuery, useFirestoreQuery } from "./db.ts";
+import { doc } from "./doc.ts";
 import {
   collection,
-  deleteDoc,
-  doc,
-  query,
-  setDoc,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+  deleteEntity,
+  insertEntity,
+  queryCollection,
+  useQueryCollection,
+} from "./db.ts";
 
 export type SetType = "warm-up" | "working";
 
@@ -15,6 +13,7 @@ export interface Set {
   id: string;
   user: string;
   workout: string;
+  exercise: string;
   performance: string;
   order: number;
   type: SetType;
@@ -23,65 +22,43 @@ export interface Set {
   completed: boolean;
 }
 
-export interface QuerySetByPerformanceRequest {
-  enabled?: boolean;
-  user: string | undefined;
-  performance: string | undefined;
-}
-
-export function useQuerySetsByPerformance({
-  enabled,
-  user,
-  performance,
-}: QuerySetByPerformanceRequest): Set[] {
-  const docs = useFirestoreQuery<Set>({
-    query: () =>
-      query(
-        collection(firestore, "sets"),
-        where("user", "==", user),
-        where("performance", "==", performance),
-      ),
-    enabled,
-    deps: [user, performance],
-  });
-  return [...docs].sort((a, b) => a.order - b.order);
-}
-
-export function querySetsByWorkout(
-  user: string,
-  workout: string,
-): Promise<Set[]> {
-  return firestoreQuery(
-    query(
-      collection(firestore, "sets"),
-      where("user", "==", user),
-      where("workout", "==", workout),
-    ),
-  );
-}
-
-export function useQuerySetsByWorkout(user: string, workout: string): Set[] {
-  return useFirestoreQuery({
-    query: () =>
-      query(
-        collection(firestore, "sets"),
-        where("user", "==", user),
-        where("workout", "==", workout),
-      ),
-    deps: [user, workout],
+export function querySetsByWorkout(workout: string): Set[] {
+  return queryCollection(collection(doc, "sets"), {
+    workout: { eq: workout },
   });
 }
 
-export async function addSet(entity: Set) {
-  const { id, ...data } = entity;
-  await setDoc(doc(firestore, "sets", id), data);
+export function useQuerySetsByWorkout(workout: string): Set[] {
+  return useQueryCollection({
+    collection: collection(doc, "sets"),
+    filter: { workout: { eq: workout } },
+    deps: [workout],
+  });
 }
 
-export async function updateSet(entity: Set) {
-  const { id, ...data } = entity;
-  await updateDoc(doc(firestore, "sets", id), data);
+export function querySetsByPerformance(performance: string): Set[] {
+  return queryCollection(collection(doc, "sets"), {
+    performance: { eq: performance },
+  });
 }
 
-export async function deleteSet(entity: Set) {
-  await deleteDoc(doc(firestore, "sets", entity.id));
+export function useQuerySetsByPerformance(performance: string): Set[] {
+  return useQueryCollection({
+    collection: collection(doc, "sets"),
+    filter: { performance: { eq: performance } },
+    deps: [performance],
+  });
+}
+
+export function addSet(entity: Set): Set {
+  insertEntity(collection(doc, "sets"), entity);
+  return entity;
+}
+
+export function updateSet(entity: Set) {
+  insertEntity(collection(doc, "sets"), entity);
+}
+
+export function deleteSet(entity: Set) {
+  deleteEntity(collection(doc, "sets"), entity);
 }

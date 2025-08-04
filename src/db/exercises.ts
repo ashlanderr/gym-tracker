@@ -1,5 +1,10 @@
-import { firestore, useFirestoreDocument, useFirestoreQuery } from "./db.ts";
-import { collection, doc, query, setDoc } from "firebase/firestore";
+import {
+  collection,
+  insertEntity,
+  useGetEntity,
+  useQueryCollection,
+} from "./db.ts";
+import { doc } from "./doc.ts";
 
 export type MuscleType =
   | "abs"
@@ -26,22 +31,24 @@ export interface Exercise {
   muscles: MuscleType[];
 }
 
-export function useQueryExerciseById(id: string): Exercise | undefined {
-  return useFirestoreDocument({
-    query: () => doc(firestore, "exercises", id),
+export function useQueryExerciseById(id: string): Exercise | null {
+  return useGetEntity({
+    collection: collection(doc, "exercises"),
+    id,
     deps: [id],
   });
 }
 
 export function useQueryAllExercises(): Exercise[] {
-  const docs = useFirestoreQuery<Exercise>({
-    query: () => query(collection(firestore, "exercises")),
+  const entities = useQueryCollection<Exercise>({
+    collection: collection(doc, "exercises"),
+    filter: {},
     deps: [],
   });
-  return [...docs].sort((a, b) => a.name.localeCompare(b.name));
+  return [...entities].sort((a, b) => a.name.localeCompare(b.name));
 }
 
-export async function addExercise(entity: Exercise) {
-  const { id, ...data } = entity;
-  await setDoc(doc(firestore, "exercises", id), data);
+export function addExercise(entity: Exercise): Exercise {
+  insertEntity(collection(doc, "exercises"), entity);
+  return entity;
 }

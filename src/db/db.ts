@@ -1,97 +1,154 @@
-import {
-  initializeFirestore,
-  onSnapshot,
-  persistentLocalCache,
-  Query,
-  DocumentReference,
-  persistentMultipleTabManager,
-  CACHE_SIZE_UNLIMITED,
-  getDocs,
-} from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { firebaseApp } from "../firebase/app.ts";
+/* eslint-disable */
+import * as Y from "yjs";
+import { useEffect, useMemo, useState } from "react";
 
-export const firestore = initializeFirestore(firebaseApp, {
-  localCache: persistentLocalCache({
-    cacheSizeBytes: CACHE_SIZE_UNLIMITED,
-    tabManager: persistentMultipleTabManager(),
-  }),
-});
-
-export type QueryOptions = {
-  query: () => Query;
-  enabled?: boolean;
-  deps: readonly unknown[];
-};
-
-export type DocumentOptions = {
-  query: () => DocumentReference;
-  enabled?: boolean;
-  deps: readonly unknown[];
-};
-
-export async function firestoreQuery<T>(query: Query): Promise<T[]> {
-  const result = await getDocs(query);
-  return result.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as T[];
+interface Entity {
+  id: string;
 }
 
-export function useFirestoreQuery<T>({
-  query,
-  enabled,
-  deps,
-}: QueryOptions): T[] {
-  const [state, setState] = useState<T[]>([]);
+type Op<T> = { eq: T } | { in: T[] } | { ne: T } | { lt: T };
 
-  useEffect(() => {
-    if (enabled === false) {
-      setState([]);
-      return;
-    }
+type Filter<E> = {
+  [K in keyof E]?: Op<E[K]>;
+};
 
-    const q = query();
+export type Collection = Y.Map<Y.Map<any>>;
 
-    const unsub = onSnapshot(q, (snapshot) => {
-      const docs = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-      setState(docs as T[]);
-    });
-
-    return () => unsub();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
-
-  return state;
+export function collection(doc: Y.Doc, collection: string): Collection {
+  return doc.getMap(collection);
 }
 
-export function useFirestoreDocument<T>({
-  query,
-  enabled,
-  deps,
-}: DocumentOptions): T | undefined {
-  const [state, setState] = useState<T | undefined>(undefined);
+export function queryCollection<E extends Entity>(
+  collection: Collection,
+  filter: Filter<Exclude<E, "id">>,
+): E[] {
+  const result: E[] = [];
 
-  useEffect(() => {
-    if (enabled === false) {
-      setState(undefined);
-      return;
+  for (const [id, data] of collection) {
+    let match = true;
+
+    for (const key in filter) {
+      const value = data.get(key);
+      const op = filter[key];
+      if (op) {
+        if ("eq" in op) {
+          match &&= value === op.eq;
+        } else if ("ne" in op) {
+          match &&= value !== op.ne;
+        } else if ("in" in op) {
+          match &&= op.in.includes(value);
+        } else if ("lt" in op) {
+          match &&= value < op.lt;
+        }
+      }
     }
 
-    const q = query();
+    if (match) {
+      result.push({ id, ...data.toJSON() } as E);
+    }
+  }
 
-    const unsub = onSnapshot(q, (snapshot) => {
-      const doc = snapshot.data();
-      setState({ ...doc, id: snapshot.id } as T);
-    });
+  return result;
+}
 
-    return () => unsub();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+export interface QueryCollectionOptions<E extends Entity> {
+  collection: Collection;
+  filter: Filter<Exclude<E, "id">>;
+  deps: any[];
+}
+
+export function useQueryCollection<E extends Entity>({
+  collection,
+  filter,
+  deps,
+}: QueryCollectionOptions<E>): E[] {
+  const initial = useMemo(() => queryCollection(collection, filter), deps);
+  const [updated, setUpdated] = useState<E[] | null>(null);
+
+  useEffect(() => {
+    const observer = () => {
+      setUpdated(queryCollection(collection, filter));
+    };
+    observer();
+    collection.observe(observer);
+    return () => {
+      collection.unobserve(observer);
+      setUpdated(null);
+    };
   }, deps);
 
-  return state;
+  return updated ?? initial;
+}
+
+export function getEntity<E extends Entity>(
+  collection: Collection,
+  id: string,
+): E | null {
+  const entity = collection.get(id);
+  return entity ? ({ id, ...entity.toJSON() } as E) : null;
+}
+
+export interface GetEntityOptions {
+  collection: Collection;
+  id: string;
+  deps: any[];
+}
+
+export function useGetEntity<E extends Entity>({
+  collection,
+  id,
+  deps,
+}: GetEntityOptions): E | null {
+  const initial = useMemo(() => getEntity<E>(collection, id), deps);
+  const [updated, setUpdated] = useState<E | null>(null);
+
+  useEffect(() => {
+    setUpdated(null);
+    const observer = () => {
+      setUpdated(getEntity<E>(collection, id));
+    };
+    collection.observe(observer);
+    return () => collection.unobserve(observer);
+  }, deps);
+
+  return updated ?? initial ?? null;
+}
+
+export function insertEntity<E extends Entity>(
+  collection: Collection,
+  entity: E,
+) {
+  const { id, ...data } = entity;
+  collection.set(entity.id, new Y.Map(Object.entries(data)));
+}
+
+export function deleteEntity<E extends Entity>(
+  collection: Collection,
+  entity: E,
+) {
+  collection.delete(entity.id);
+}
+
+export function maxBy<E>(
+  entities: E[],
+  comparator: (a: E, b: E) => number,
+): E | null {
+  if (entities.length === 0) return null;
+  let result = entities[0];
+
+  for (let i = 1; i < entities.length; ++i) {
+    const entity = entities[i];
+    if (comparator(entity, result) > 0) {
+      result = entity;
+    }
+  }
+
+  return result;
 }
 
 const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-export function generateFirestoreId(): string {
+export function generateId(): string {
   const array = new Uint8Array(20);
   crypto.getRandomValues(array);
   return Array.from(array, (byte) => CHARS[byte % CHARS.length]).join("");

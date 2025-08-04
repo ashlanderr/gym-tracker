@@ -1,5 +1,4 @@
 import { useParams } from "react-router";
-import { Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
 export function usePageParams<T>(): T {
@@ -7,16 +6,16 @@ export function usePageParams<T>(): T {
 }
 
 export function useTimer(
-  startedAt: Timestamp | undefined,
-  completedAt: Timestamp | undefined,
+  startedAt: Date | number | null,
+  completedAt: Date | number | null,
 ): string {
   const [time, setTime] = useState(() =>
-    buildTime(startedAt, completedAt ?? Timestamp.now()),
+    buildTime(startedAt, completedAt ?? Date.now()),
   );
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTime(buildTime(startedAt, completedAt ?? Timestamp.now()));
+      setTime(buildTime(startedAt, completedAt ?? Date.now()));
     });
     return () => {
       clearInterval(interval);
@@ -27,13 +26,13 @@ export function useTimer(
 }
 
 export function buildTime(
-  startedAt: Timestamp | undefined,
-  completedAt: Timestamp | undefined,
+  startedAt: Date | number | null,
+  completedAt: Date | number | null,
 ): string {
-  if (!startedAt || !completedAt) return "";
+  if (startedAt === null || completedAt === null) return "";
 
   const delta = Math.floor(
-    Math.max(completedAt.seconds - startedAt.seconds, 0),
+    Math.max(completedAt.valueOf() / 1000 - startedAt.valueOf() / 1000, 0),
   );
   const seconds = delta % 60;
   const minutes = Math.floor(delta / 60) % 60;
@@ -44,5 +43,5 @@ export function buildTime(
   if (hours || minutes) parts.push(`${minutes}min`);
   if (hours || minutes || seconds) parts.push(`${seconds}s`);
 
-  return parts.slice(0, 2).join(" ");
+  return parts.slice(0, 2).join(" ") || "0s";
 }

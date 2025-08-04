@@ -17,24 +17,17 @@ import {
   type RecordType,
   useQueryRecordsBySet,
 } from "../../../../db/records.ts";
-import { generateFirestoreId } from "../../../../db/db.ts";
-import { Timestamp } from "firebase/firestore";
+import { generateId } from "../../../../db/db.ts";
 import { RECORDS_TRANSLATION } from "./constants.ts";
 import { PiMedalFill } from "react-icons/pi";
 import { volumeToOneRepMax } from "../utils.ts";
 
-export function SetRow({
-  number,
-  exercise,
-  set,
-  prevSet,
-  recSet,
-}: SetRowProps) {
+export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
   const [isActionsOpen, setActionsOpen] = useState(false);
   const [isRecordsOpen, setRecordsOpen] = useState(false);
   const [weightInput, setWeightInput] = useState<string | null>(null);
   const [repsInput, setRepsInput] = useState<string | null>(null);
-  const records = useQueryRecordsBySet(set.user, set.id);
+  const records = useQueryRecordsBySet(set.id);
 
   const updatedSet = useRef(set);
   useEffect(() => {
@@ -54,82 +47,69 @@ export function SetRow({
     return updatedSet.current;
   };
 
-  const setTypeHandler = async (type: SetType) => {
-    setActionsOpen(false);
-
+  const setTypeHandler = (type: SetType) => {
     const set = updateSetInner((set) => ({ ...set, type }));
-    await updateSet(set);
+    updateSet(set);
+    setActionsOpen(false);
   };
 
   const removeHandler = async () => {
+    records.forEach((r) => deleteRecord(r));
+    deleteSet(set);
     setActionsOpen(false);
-    await Promise.all([deleteSet(set), ...records.map((r) => deleteRecord(r))]);
   };
 
-  const weightBlurHandler = async () => {
+  const weightBlurHandler = () => {
     if (weightInput === null) return;
     const newWeight = Number.parseFloat(weightInput || "0");
     setWeightInput(null);
 
     if (!Number.isNaN(newWeight) && newWeight >= 0) {
       const set = updateSetInner((set) => ({ ...set, weight: newWeight }));
-      await updateSet(set);
+      updateSet(set);
     }
   };
 
-  const repsBlurHandler = async () => {
+  const repsBlurHandler = () => {
     if (repsInput === null) return;
     const newReps = Number.parseFloat(repsInput || "0");
     setRepsInput(null);
 
     if (!Number.isNaN(newReps) && newReps >= 0) {
       const set = updateSetInner((set) => ({ ...set, reps: newReps }));
-      await updateSet(set);
+      updateSet(set);
     }
   };
 
-  const updateRecords = async (set: Set) => {
-    const types: RecordType[] = ["one_rep_max", "weight", "volume"];
-
+  const updateRecords = (set: Set) => {
     const currentRecords: Array<{ type: RecordType; value: number }> = [
       { type: "one_rep_max", value: volumeToOneRepMax(set.weight, set.reps) },
       { type: "weight", value: set.weight },
       { type: "volume", value: set.weight * set.reps },
     ];
 
-    const previousRecords = await Promise.all(
-      types.map((type) =>
-        queryLatestRecordByExercise({ type, exercise, user: set.user }),
-      ),
-    );
-
-    const promises: Promise<void>[] = [];
-
     for (const currentRecord of currentRecords) {
-      const previousRecord = previousRecords.find(
-        (r) => r?.type === currentRecord.type,
+      const previousRecord = queryLatestRecordByExercise(
+        currentRecord.type,
+        set.exercise,
       );
       const previousValue = previousRecord?.current ?? 0;
 
       if (currentRecord.value > previousValue) {
-        promises.push(
-          addRecord({
-            id: generateFirestoreId(),
-            user: set.user,
-            workout: set.workout,
-            exercise: exercise,
-            performance: set.performance,
-            set: set.id,
-            createdAt: Timestamp.now(),
-            type: currentRecord.type,
-            previous: previousValue,
-            current: currentRecord.value,
-          }),
-        );
+        addRecord({
+          id: generateId(),
+          user: set.user,
+          workout: set.workout,
+          exercise: set.exercise,
+          performance: set.performance,
+          set: set.id,
+          createdAt: Date.now(),
+          type: currentRecord.type,
+          previous: previousValue,
+          current: currentRecord.value,
+        });
       }
     }
-
-    await Promise.all(promises);
   };
 
   const completeHandler = async () => {
@@ -143,13 +123,12 @@ export function SetRow({
           return set;
         }
       });
-      await Promise.all([updateSet(set), updateRecords(set)]);
+      updateSet(set);
+      updateRecords(set);
     } else {
       const set = updateSetInner((set) => ({ ...set, completed: false }));
-      await Promise.all([
-        updateSet(set),
-        ...records.map((r) => deleteRecord(r)),
-      ]);
+      updateSet(set);
+      records.map((r) => deleteRecord(r));
     }
   };
 

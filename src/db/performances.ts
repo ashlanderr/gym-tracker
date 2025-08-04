@@ -1,16 +1,12 @@
 import {
   collection,
-  deleteDoc,
-  doc,
-  limit,
-  orderBy,
-  query,
-  setDoc,
-  type Timestamp,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import { firestore, firestoreQuery, useFirestoreQuery } from "./db.ts";
+  deleteEntity,
+  insertEntity,
+  maxBy,
+  queryCollection,
+  useQueryCollection,
+} from "./db.ts";
+import { doc } from "./doc.ts";
 
 export interface Performance {
   id: string;
@@ -18,68 +14,49 @@ export interface Performance {
   workout: string;
   exercise: string;
   order: number;
-  startedAt: Timestamp;
+  startedAt: number;
 }
 
-export function queryPerformancesByWorkout(
-  user: string,
-  workout: string,
-): Promise<Performance[]> {
-  return firestoreQuery(
-    query(
-      collection(firestore, "performances"),
-      where("user", "==", user),
-      where("workout", "==", workout),
-    ),
-  );
-}
-
-export function useQueryPerformancesByWorkout(
-  user: string,
-  workout: string,
-): Performance[] {
-  const docs = useFirestoreQuery<Performance>({
-    query: () =>
-      query(
-        collection(firestore, "performances"),
-        where("user", "==", user),
-        where("workout", "==", workout),
-      ),
-    deps: [user, workout],
+export function queryPerformancesByWorkout(workout: string): Performance[] {
+  return queryCollection(collection(doc, "performances"), {
+    workout: { eq: workout },
   });
-  return [...docs].sort((a, b) => a.order - b.order);
+}
+
+export function useQueryPerformancesByWorkout(workout: string): Performance[] {
+  return useQueryCollection({
+    collection: collection(doc, "performances"),
+    filter: {
+      workout: { eq: workout },
+    },
+    deps: [workout],
+  });
 }
 
 export function useQueryPreviousPerformance(
-  user: string,
   exercise: string,
-  beforeDate: Timestamp,
-): Performance | undefined {
-  const docs = useFirestoreQuery<Performance>({
-    query: () =>
-      query(
-        collection(firestore, "performances"),
-        where("user", "==", user),
-        where("exercise", "==", exercise),
-        where("startedAt", "<", beforeDate),
-        orderBy("startedAt", "desc"),
-        limit(1),
-      ),
-    deps: [exercise, beforeDate],
+  startedAt: number,
+): Performance | null {
+  const entities = useQueryCollection<Performance>({
+    collection: collection(doc, "performances"),
+    filter: {
+      exercise: { eq: exercise },
+      startedAt: { lt: startedAt },
+    },
+    deps: [exercise],
   });
-  return docs[0];
+  return maxBy(entities, (a, b) => a.startedAt - b.startedAt);
 }
 
-export async function addPerformance(entity: Performance) {
-  const { id, ...data } = entity;
-  await setDoc(doc(firestore, "performances", id), data);
+export function addPerformance(entity: Performance): Performance {
+  insertEntity(collection(doc, "performances"), entity);
+  return entity;
 }
 
-export async function updatePerformance(entity: Performance) {
-  const { id, ...data } = entity;
-  await updateDoc(doc(firestore, "performances", id), data);
+export function updatePerformance(entity: Performance) {
+  insertEntity(collection(doc, "performances"), entity);
 }
 
-export async function deletePerformance(entity: Performance) {
-  await deleteDoc(doc(firestore, "performances", entity.id));
+export function deletePerformance(entity: Performance) {
+  deleteEntity(collection(doc, "performances"), entity);
 }

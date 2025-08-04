@@ -8,29 +8,29 @@ import {
   MdDelete,
   MdSwapVert,
 } from "react-icons/md";
+import { type ReactNode, useState } from "react";
 import {
   useQuerySetsByPerformance,
   type Set,
   addSet,
   deleteSet,
+  querySetsByPerformance,
 } from "../../../../db/sets.ts";
-import { type ReactNode, useState } from "react";
-import {
-  deletePerformance,
-  updatePerformance,
-  useQueryPreviousPerformance,
-  type Performance,
-} from "../../../../db/performances.ts";
 import {
   type Exercise,
   useQueryExerciseById,
 } from "../../../../db/exercises.ts";
-import { SetRow } from "../SetRow";
-import { generateFirestoreId } from "../../../../db/db.ts";
 import { BottomSheet } from "../BottomSheet";
 import { ChooseExercise } from "../ChooseExercise";
 import { PageModal } from "../PageModal";
+import {
+  deletePerformance,
+  updatePerformance,
+  useQueryPreviousPerformance,
+} from "../../../../db/performances.ts";
 import { buildRecommendations } from "./utils.ts";
+import { SetRow } from "../SetRow";
+import { generateId } from "../../../../db/db.ts";
 import {
   deleteRecord,
   queryRecordsByPerformance,
@@ -38,31 +38,23 @@ import {
 
 export function Performance({ performance }: PerformanceProps) {
   const exercise = useQueryExerciseById(performance.exercise);
-  const sets = useQuerySetsByPerformance({
-    user: performance.user,
-    performance: performance.id,
-  });
+  const sets = useQuerySetsByPerformance(performance.id);
 
   const prevPerformance = useQueryPreviousPerformance(
-    performance.user,
     performance.exercise,
     performance.startedAt,
   );
-
-  const prevSets = useQuerySetsByPerformance({
-    enabled: prevPerformance?.id !== undefined,
-    user: prevPerformance?.user,
-    performance: prevPerformance?.id,
-  });
+  const prevSets = useQuerySetsByPerformance(prevPerformance?.id ?? "");
 
   const [isActionsOpen, setActionsOpen] = useState(false);
   const [isReplaceOpen, setReplaceOpen] = useState(false);
 
-  const addSetHandler = async () => {
-    await addSet({
-      id: generateFirestoreId(),
+  const addSetHandler = () => {
+    addSet({
+      id: generateId(),
       user: performance.user,
       workout: performance.workout,
+      exercise: performance.exercise,
       performance: performance.id,
       order: Math.max(-1, ...sets.map((s) => s.order)) + 1,
       type: "working",
@@ -87,22 +79,26 @@ export function Performance({ performance }: PerformanceProps) {
     setReplaceOpen(true);
   };
 
-  const replaceCompleteHandler = async (exercise: Exercise) => {
+  const replaceCompleteHandler = (exercise: Exercise) => {
+    const sets = querySetsByPerformance(performance.id);
+    const records = queryRecordsByPerformance(performance.id);
+
+    records.forEach((record) => deleteRecord(record));
+    sets.forEach((set) => deleteSet(set));
+    updatePerformance({ ...performance, exercise: exercise.id });
+
     setReplaceOpen(false);
-    await updatePerformance({ ...performance, exercise: exercise.id });
   };
 
-  const deleteHandler = async () => {
+  const deleteHandler = () => {
+    const sets = querySetsByPerformance(performance.id);
+    const records = queryRecordsByPerformance(performance.id);
+
+    records.forEach((record) => deleteRecord(record));
+    sets.forEach((set) => deleteSet(set));
+    deletePerformance(performance);
+
     setActionsOpen(false);
-    const records = await queryRecordsByPerformance(
-      performance.user,
-      performance.id,
-    );
-    await Promise.all([
-      ...sets.map((s) => deleteSet(s)),
-      ...records.map((r) => deleteRecord(r)),
-      deletePerformance(performance),
-    ]);
   };
 
   return (
@@ -122,7 +118,7 @@ export function Performance({ performance }: PerformanceProps) {
             </th>
           </tr>
         </thead>
-        <tbody>{buildSets(performance, prevSets, sets)}</tbody>
+        <tbody>{buildSets(prevSets, sets)}</tbody>
       </table>
       <button className={s.addSetButton} onClick={addSetHandler}>
         <MdAdd />
@@ -159,11 +155,7 @@ export function Performance({ performance }: PerformanceProps) {
   );
 }
 
-function buildSets(
-  performance: Performance,
-  prevSets: Set[],
-  sets: Set[],
-): ReactNode[] {
+function buildSets(prevSets: Set[], sets: Set[]): ReactNode[] {
   const prevWarmUp = prevSets.filter(
     (s) => s.type === "warm-up" && s.weight && s.reps,
   );
@@ -195,7 +187,6 @@ function buildSets(
       <SetRow
         key={set.id}
         number={number}
-        exercise={performance.exercise}
         set={set}
         prevSet={prevSet}
         recSet={recSet}

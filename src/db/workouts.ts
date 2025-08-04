@@ -1,68 +1,60 @@
 import {
   collection,
-  deleteDoc,
-  doc,
-  orderBy,
-  query,
-  setDoc,
-  Timestamp,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import { firestore, useFirestoreDocument, useFirestoreQuery } from "./db.ts";
+  deleteEntity,
+  insertEntity,
+  useGetEntity,
+  useQueryCollection,
+} from "./db.ts";
+import { doc } from "./doc.ts";
 
 export interface Workout {
   id: string;
   user: string;
   name: string;
-  startedAt: Timestamp;
-  completedAt: Timestamp | null;
+  startedAt: number;
+  completedAt: number | null;
   volume?: number;
   sets?: number;
 }
 
-export function useQueryWorkoutById(id: string): Workout | undefined {
-  return useFirestoreDocument({
-    query: () => doc(firestore, "workouts", id),
+export function useQueryWorkoutById(id: string): Workout | null {
+  return useGetEntity({
+    collection: collection(doc, "workouts"),
+    id,
     deps: [id],
   });
 }
 
-export function useQueryCompletedWorkoutsByUser(user: string): Workout[] {
-  return useFirestoreQuery({
-    query: () =>
-      query(
-        collection(firestore, "workouts"),
-        where("user", "==", user),
-        where("completedAt", "!=", null),
-        orderBy("completedAt", "desc"),
-      ),
-    deps: [user],
+export function useQueryCompletedWorkouts(): Workout[] {
+  const workouts = useQueryCollection<Workout>({
+    collection: collection(doc, "workouts"),
+    filter: {
+      completedAt: { ne: null },
+    },
+    deps: [],
+  });
+  return [...workouts].sort((a, b) => b.startedAt - a.startedAt);
+}
+
+export function useQueryActiveWorkouts(): Workout[] {
+  return useQueryCollection({
+    collection: collection(doc, "workouts"),
+    filter: {
+      completedAt: { eq: null },
+    },
+    deps: [],
   });
 }
 
-export function useQueryActiveWorkoutsByUser(user: string): Workout[] {
-  return useFirestoreQuery({
-    query: () =>
-      query(
-        collection(firestore, "workouts"),
-        where("user", "==", user),
-        where("completedAt", "==", null),
-      ),
-    deps: [user],
-  });
+export function addWorkout(entity: Workout): Workout {
+  insertEntity(collection(doc, "workouts"), entity);
+  return entity;
 }
 
-export async function addWorkout(entity: Workout) {
-  const { id, ...data } = entity;
-  await setDoc(doc(firestore, "workouts", id), data);
+export function updateWorkout(entity: Workout) {
+  insertEntity(collection(doc, "workouts"), entity);
 }
 
-export async function updateWorkout(entity: Workout) {
-  const { id, ...data } = entity;
-  await updateDoc(doc(firestore, "workouts", id), data);
-}
-
-export async function deleteWorkout(entity: Workout) {
-  await deleteDoc(doc(firestore, "workouts", entity.id));
+export function deleteWorkout(entity: Workout) {
+  deleteEntity(collection(doc, "workouts"), entity);
 }

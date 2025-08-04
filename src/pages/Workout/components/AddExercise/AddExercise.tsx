@@ -2,14 +2,10 @@ import s from "./styles.module.scss";
 import { MdArrowBack, MdCheck } from "react-icons/md";
 import type { AddExerciseProps } from "./types.ts";
 import { useState } from "react";
-import {
-  addExercise,
-  type Exercise,
-  type MuscleType,
-} from "../../../../db/exercises.ts";
+import { addExercise, type MuscleType } from "../../../../db/exercises.ts";
 import { MUSCLES_TRANSLATION } from "../../../constants.ts";
 import { clsx } from "clsx";
-import { generateFirestoreId } from "../../../../db/db.ts";
+import { generateId } from "../../../../db/db.ts";
 
 export function AddExercise({ onCancel, onSubmit }: AddExerciseProps) {
   const [name, setName] = useState("");
@@ -37,18 +33,16 @@ export function AddExercise({ onCancel, onSubmit }: AddExerciseProps) {
     }
   };
 
-  const submitHandler = async () => {
+  const submitHandler = () => {
     if (!trimmedName) return;
     if (!mainMuscle) return;
 
-    const exercise: Exercise = {
-      id: generateFirestoreId(),
+    const exercise = addExercise({
+      id: generateId(),
       name: trimmedName,
       muscles: [mainMuscle, ...secondaryMuscles],
-    };
-
+    });
     onSubmit(exercise);
-    await addExercise(exercise);
   };
 
   return (

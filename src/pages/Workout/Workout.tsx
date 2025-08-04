@@ -4,36 +4,36 @@ import { clsx } from "clsx";
 import { updateWorkout, useQueryWorkoutById } from "../../db/workouts.ts";
 import type { WorkoutParams } from "./types.ts";
 import { usePageParams } from "../hooks.ts";
+import { useState } from "react";
+import { PageModal } from "./components/PageModal";
+import { ModalDialog } from "./components/ModalDialog";
+import {
+  type CompleteWorkoutData,
+  CompleteWorkoutModal,
+} from "./components/CompleteWorkoutModal";
+import { useNavigate } from "react-router";
+import { useTimer } from "../hooks.ts";
 import {
   addPerformance,
   deletePerformance,
   useQueryPerformancesByWorkout,
 } from "../../db/performances.ts";
 import { Performance } from "./components";
-import { useState } from "react";
-import { PageModal } from "./components/PageModal";
 import { ChooseExercise } from "./components/ChooseExercise";
-import type { Exercise } from "../../db/exercises.ts";
+import { generateId } from "../../db/db.ts";
 import { addSet, deleteSet, useQuerySetsByWorkout } from "../../db/sets.ts";
-import { generateFirestoreId } from "../../db/db.ts";
-import { ModalDialog } from "./components/ModalDialog";
-import {
-  type CompleteWorkoutData,
-  CompleteWorkoutModal,
-} from "./components/CompleteWorkoutModal";
-import { Timestamp } from "firebase/firestore";
-import { useNavigate } from "react-router";
-import { useTimer } from "../hooks.ts";
-import { useUser } from "../../firebase/auth.ts";
+import type { Exercise } from "../../db/exercises.ts";
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
-  const user = useUser();
   const navigate = useNavigate();
   const workout = useQueryWorkoutById(workoutId);
-  const timer = useTimer(workout?.startedAt, workout?.completedAt ?? undefined);
-  const performances = useQueryPerformancesByWorkout(user.uid, workoutId);
-  const sets = useQuerySetsByWorkout(user.uid, workoutId);
+  const timer = useTimer(
+    workout?.startedAt ?? null,
+    workout?.completedAt ?? null,
+  );
+  const performances = useQueryPerformancesByWorkout(workoutId);
+  const sets = useQuerySetsByWorkout(workoutId);
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
   const [isAddPerformanceOpen, setAddPerformanceOpen] = useState(false);
@@ -45,14 +45,13 @@ export function Workout() {
   // todo personal records, history
   // todo firebase access rules
 
-  const addPerformanceHandler = async (exercise: Exercise) => {
+  const addPerformanceHandler = (exercise: Exercise) => {
     if (!workout) return;
 
     setAddPerformanceOpen(false);
 
-    const performanceId = generateFirestoreId();
-    const performancePromise = addPerformance({
-      id: performanceId,
+    const performance = addPerformance({
+      id: generateId(),
       user: workout.user,
       workout: workout.id,
       exercise: exercise.id,
@@ -60,19 +59,18 @@ export function Workout() {
       startedAt: workout.startedAt,
     });
 
-    const setPromise = addSet({
-      id: generateFirestoreId(),
+    addSet({
+      id: generateId(),
       user: workout.user,
       workout: workout.id,
-      performance: performanceId,
+      performance: performance.id,
+      exercise: performance.exercise,
       order: 0,
       type: "working",
       weight: 0,
       reps: 0,
       completed: false,
     });
-
-    await Promise.all([performancePromise, setPromise]);
   };
 
   const completeBeginHandler = () => {
@@ -80,21 +78,8 @@ export function Workout() {
     setCompleteModal(completed ? "form" : "warning");
   };
 
-  const completeEndHandler = async (data: CompleteWorkoutData) => {
+  const completeEndHandler = (data: CompleteWorkoutData) => {
     if (!workout) return;
-    setCompleteModal(null);
-
-    const promises: Promise<void>[] = [];
-
-    promises.push(
-      updateWorkout({
-        ...workout,
-        completedAt: Timestamp.now(),
-        name: data.name,
-        volume,
-        sets: completedSets.length,
-      }),
-    );
 
     for (const performance of performances) {
       const performanceSets = sets.filter(
@@ -104,19 +89,27 @@ export function Workout() {
 
       for (const set of performanceSets) {
         if (!set.completed) {
-          promises.push(deleteSet(set));
+          deleteSet(set);
         } else {
           emptyPerformance = false;
         }
       }
 
       if (emptyPerformance) {
-        promises.push(deletePerformance(performance));
+        deletePerformance(performance);
       }
     }
 
+    updateWorkout({
+      ...workout,
+      completedAt: Date.now(),
+      name: data.name,
+      volume,
+      sets: completedSets.length,
+    });
+
+    setCompleteModal(null);
     navigate("/", { replace: true });
-    await Promise.all(promises);
   };
 
   return (

@@ -1,15 +1,12 @@
 import {
   collection,
-  deleteDoc,
-  doc,
-  limit,
-  orderBy,
-  query,
-  setDoc,
-  type Timestamp,
-  where,
-} from "firebase/firestore";
-import { firestore, firestoreQuery, useFirestoreQuery } from "./db.ts";
+  deleteEntity,
+  insertEntity,
+  maxBy,
+  queryCollection,
+  useQueryCollection,
+} from "./db.ts";
+import { doc } from "./doc.ts";
 
 export type RecordType = "one_rep_max" | "weight" | "volume";
 
@@ -20,79 +17,49 @@ export interface Record {
   exercise: string;
   performance: string;
   set: string;
-  createdAt: Timestamp;
+  createdAt: number;
   type: RecordType;
   previous: number;
   current: number;
 }
 
-export interface QueryLatestRecordByExercise {
-  user: string;
-  exercise: string;
-  type: RecordType;
-}
-
-export async function queryLatestRecordByExercise({
-  user,
-  exercise,
-  type,
-}: QueryLatestRecordByExercise): Promise<Record | undefined> {
-  const docs = await firestoreQuery<Record>(
-    query(
-      collection(firestore, "records"),
-      where("user", "==", user),
-      where("exercise", "==", exercise),
-      where("type", "==", type),
-      orderBy("createdAt", "desc"),
-      limit(1),
-    ),
-  );
-  return docs[0];
-}
-
-export async function queryRecordsByPerformance(
-  user: string,
-  performance: string,
-): Promise<Record[]> {
-  return firestoreQuery<Record>(
-    query(
-      collection(firestore, "records"),
-      where("user", "==", user),
-      where("performance", "==", performance),
-    ),
-  );
-}
-
-export async function queryRecordsByWorkout(
-  user: string,
-  workout: string,
-): Promise<Record[]> {
-  return firestoreQuery<Record>(
-    query(
-      collection(firestore, "records"),
-      where("user", "==", user),
-      where("workout", "==", workout),
-    ),
-  );
-}
-
-export function useQueryRecordsBySet(user: string, set: string): Record[] {
-  return useFirestoreQuery({
-    query: () =>
-      query(
-        collection(firestore, "records"),
-        where("user", "==", user),
-        where("set", "==", set),
-      ),
-    deps: [user, set],
+export function queryRecordsByWorkout(workout: string): Record[] {
+  return queryCollection(collection(doc, "records"), {
+    workout: { eq: workout },
   });
 }
 
-export async function addRecord(entity: Record) {
-  const { id, ...data } = entity;
-  await setDoc(doc(firestore, "records", id), data);
+export function queryRecordsByPerformance(performance: string): Record[] {
+  return queryCollection(collection(doc, "records"), {
+    performance: { eq: performance },
+  });
 }
 
-export async function deleteRecord(entity: Record) {
-  await deleteDoc(doc(firestore, "records", entity.id));
+export function useQueryRecordsBySet(set: string): Record[] {
+  return useQueryCollection({
+    collection: collection(doc, "records"),
+    filter: {
+      set: { eq: set },
+    },
+    deps: [set],
+  });
+}
+
+export function queryLatestRecordByExercise(
+  type: RecordType,
+  exercise: string,
+): Record | null {
+  const records = queryCollection<Record>(collection(doc, "records"), {
+    type: { eq: type },
+    exercise: { eq: exercise },
+  });
+  return maxBy(records, (a, b) => a.createdAt - b.createdAt);
+}
+
+export function addRecord(entity: Record) {
+  insertEntity(collection(doc, "records"), entity);
+}
+
+export function deleteRecord(entity: Record) {
+  deleteEntity(collection(doc, "records"), entity);
 }
