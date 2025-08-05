@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteEntity,
   getEntity,
   insertEntity,
   useGetEntity,
@@ -59,4 +60,12 @@ export function useQueryAllExercises(store: Store): Exercise[] {
 export function addExercise(store: Store, entity: Exercise): Exercise {
   insertEntity(collection(store.shared, "exercises"), entity);
   return entity;
+}
+
+export function updateExercise(store: Store, entity: Exercise) {
+  insertEntity(collection(store.shared, "exercises"), entity);
+}
+
+export function deleteExercise(store: Store, entity: Exercise) {
+  deleteEntity(collection(store.shared, "exercises"), entity);
 }

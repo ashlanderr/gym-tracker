@@ -2,18 +2,30 @@ import s from "./styles.module.scss";
 import { MdArrowBack, MdCheck } from "react-icons/md";
 import type { AddExerciseProps } from "./types.ts";
 import { useState } from "react";
-import { addExercise, type MuscleType } from "../../../../db/exercises.ts";
+import {
+  addExercise,
+  type MuscleType,
+  updateExercise,
+} from "../../../../db/exercises.ts";
 import { MUSCLES_TRANSLATION } from "../../../constants.ts";
 import { clsx } from "clsx";
 import { generateId } from "../../../../db/db.ts";
 import { useStore } from "../../../../components";
 
-export function AddExercise({ onCancel, onSubmit }: AddExerciseProps) {
+export function AddExercise({
+  exercise,
+  onCancel,
+  onSubmit,
+}: AddExerciseProps) {
   const store = useStore();
-  const [name, setName] = useState("");
+  const [name, setName] = useState(() => exercise?.name ?? "");
   const trimmedName = name.trim();
-  const [mainMuscle, setMainMuscle] = useState<MuscleType | null>(null);
-  const [secondaryMuscles, setSecondaryMuscles] = useState<MuscleType[]>([]);
+  const [mainMuscle, setMainMuscle] = useState<MuscleType | null>(
+    () => exercise?.muscles?.[0] ?? null,
+  );
+  const [secondaryMuscles, setSecondaryMuscles] = useState<MuscleType[]>(
+    () => exercise?.muscles?.slice?.(1) ?? [],
+  );
 
   const muscles = Object.entries(MUSCLES_TRANSLATION).map(([key, label]) => ({
     key: key as MuscleType,
@@ -39,12 +51,22 @@ export function AddExercise({ onCancel, onSubmit }: AddExerciseProps) {
     if (!trimmedName) return;
     if (!mainMuscle) return;
 
-    const exercise = addExercise(store, {
-      id: generateId(),
-      name: trimmedName,
-      muscles: [mainMuscle, ...secondaryMuscles],
-    });
-    onSubmit(exercise);
+    if (exercise) {
+      const newExercise = {
+        ...exercise,
+        name: trimmedName,
+        muscles: [mainMuscle, ...secondaryMuscles],
+      };
+      updateExercise(store, newExercise);
+      onSubmit(newExercise);
+    } else {
+      const newExercise = addExercise(store, {
+        id: generateId(),
+        name: trimmedName,
+        muscles: [mainMuscle, ...secondaryMuscles],
+      });
+      onSubmit(newExercise);
+    }
   };
 
   return (
