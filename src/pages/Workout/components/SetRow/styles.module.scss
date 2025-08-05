@@ -92,6 +92,10 @@ td.setCompletedValue {
   :first-child {
     width: 32px;
   }
+
+  &.danger {
+    color: #faa;
+  }
 }
 
 .sheetAction:not(:first-child) {

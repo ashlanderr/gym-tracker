@@ -205,7 +205,10 @@ export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
             <span>1</span>
             <span>Обычный сет</span>
           </button>
-          <button className={s.sheetAction} onClick={removeHandler}>
+          <button
+            className={clsx(s.sheetAction, s.danger)}
+            onClick={removeHandler}
+          >
             <MdDelete />
             <span>Удалить сет</span>
           </button>

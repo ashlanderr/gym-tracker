@@ -40,6 +40,7 @@ import {
 import { useStore } from "../../../../components";
 import { PerformanceOrder } from "../PerformanceOrder";
 import { ExerciseHistory } from "../ExerciseHistory";
+import { clsx } from "clsx";
 
 export function Performance({ performance }: PerformanceProps) {
   const store = useStore();
@@ -153,7 +154,10 @@ export function Performance({ performance }: PerformanceProps) {
             <MdAutorenew />
             <span>Заменить на другое</span>
           </button>
-          <button className={s.sheetAction} onClick={deleteHandler}>
+          <button
+            className={clsx(s.sheetAction, s.danger)}
+            onClick={deleteHandler}
+          >
             <MdDelete />
             <span>Удалить из тренировки</span>
           </button>
