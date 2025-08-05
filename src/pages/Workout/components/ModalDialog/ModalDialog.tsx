@@ -7,8 +7,10 @@ export function ModalDialog({
   width,
   cancelText,
   cancelDisabled,
+  cancelColor,
   submitText,
   submitDisabled,
+  submitColor,
   isOpen,
   children,
   onClose,
@@ -29,6 +31,7 @@ export function ModalDialog({
             <button
               className={clsx(s.action, s.cancel)}
               disabled={cancelDisabled}
+              style={{ backgroundColor: cancelColor }}
               onClick={onClose}
             >
               {cancelText}
@@ -38,6 +41,7 @@ export function ModalDialog({
             <button
               className={clsx(s.action, s.submit)}
               disabled={submitDisabled}
+              style={{ backgroundColor: submitColor }}
               onClick={onSubmit}
             >
               {submitText}

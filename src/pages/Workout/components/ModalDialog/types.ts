@@ -5,8 +5,10 @@ export interface ModalDialogProps {
   width?: string;
   cancelText?: string;
   cancelDisabled?: boolean;
+  cancelColor?: string;
   submitText?: string;
   submitDisabled?: boolean;
+  submitColor?: string;
   isOpen: boolean;
   children?: ReactNode;
   onClose?: () => void;

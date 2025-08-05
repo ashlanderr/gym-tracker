@@ -31,6 +31,7 @@ import { clsx } from "clsx";
 import { signOut, useUser } from "../../firebase/auth.ts";
 import { deleteRecord, queryRecordsByWorkout } from "../../db/records.ts";
 import { useStore } from "../../components";
+import { ModalDialog } from "../Workout/components/ModalDialog";
 
 export function Home() {
   const user = useUser();
@@ -40,6 +41,7 @@ export function Home() {
   const [activeWorkout] = useQueryActiveWorkouts(store);
   const [workoutActions, setWorkoutActions] = useState<Workout | null>(null);
   const activeTimer = useTimer(activeWorkout?.startedAt ?? null, null);
+  const [cancelWorkout, setCancelWorkout] = useState<Workout | null>(null);
 
   const openWorkoutHandler = (workout: Workout | null) => {
     if (!workout) return;
@@ -59,15 +61,23 @@ export function Home() {
     openWorkoutHandler(newWorkout);
   };
 
-  const cancelWorkoutHandler = (workout: Workout) => {
-    const performances = queryPerformancesByWorkout(store, workout.id);
-    const sets = querySetsByWorkout(store, workout.id);
-    const records = queryRecordsByWorkout(store, workout.id);
+  const cancelWorkoutBeginHandler = (workout: Workout) => {
+    setCancelWorkout(workout);
+  };
+
+  const cancelWorkoutCompleteHandler = () => {
+    if (!cancelWorkout) return;
+
+    const performances = queryPerformancesByWorkout(store, cancelWorkout.id);
+    const sets = querySetsByWorkout(store, cancelWorkout.id);
+    const records = queryRecordsByWorkout(store, cancelWorkout.id);
 
     records.map((r) => deleteRecord(store, r));
     sets.forEach((s) => deleteSet(store, s));
     performances.forEach((p) => deletePerformance(store, p));
-    deleteWorkout(store, workout);
+    deleteWorkout(store, cancelWorkout);
+
+    setCancelWorkout(null);
   };
 
   const duplicateWorkoutHandler = () => {
@@ -159,7 +169,7 @@ export function Home() {
               </button>
               <button
                 className={clsx(s.workoutButton, s.cancelWorkout)}
-                onClick={() => cancelWorkoutHandler(activeWorkout)}
+                onClick={() => cancelWorkoutBeginHandler(activeWorkout)}
               >
                 <MdClose />
                 Отменить
@@ -239,6 +249,19 @@ export function Home() {
           </button>
         </div>
       </BottomSheet>
+      {cancelWorkout && (
+        <ModalDialog
+          title={"Подтверждение"}
+          isOpen={true}
+          cancelText="НЕТ"
+          submitText="ДА"
+          submitColor="#a00"
+          onClose={() => setCancelWorkout(null)}
+          onSubmit={cancelWorkoutCompleteHandler}
+        >
+          Вы уверены, что хотите отменить тренировку?
+        </ModalDialog>
+      )}
     </div>
   );
 }
