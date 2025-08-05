@@ -27,10 +27,13 @@ export type MuscleType =
   | "triceps"
   | "upper_back";
 
+export type EquipmentType = "none" | "barbell" | "dumbbell" | "machine";
+
 export interface Exercise {
   id: string;
   name: string;
   muscles: MuscleType[];
+  equipment?: EquipmentType;
 }
 
 export function queryExerciseById(store: Store, id: string): Exercise | null {

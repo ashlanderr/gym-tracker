@@ -1,4 +1,4 @@
-import type { MuscleType } from "../db/exercises.ts";
+import type { EquipmentType, MuscleType } from "../db/exercises.ts";
 
 export const MUSCLES_TRANSLATION: Record<MuscleType, string> = {
   abs: "Пресс",
@@ -18,4 +18,11 @@ export const MUSCLES_TRANSLATION: Record<MuscleType, string> = {
   traps: "Трапеции",
   triceps: "Трицепсы",
   upper_back: "Верх спины",
+};
+
+export const EQUIPMENT_TRANSLATION: Record<EquipmentType, string> = {
+  none: "Нет",
+  barbell: "Штанга",
+  dumbbell: "Гантели",
+  machine: "Тренажёр",
 };

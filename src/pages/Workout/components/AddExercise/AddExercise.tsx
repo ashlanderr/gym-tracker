@@ -4,10 +4,14 @@ import type { AddExerciseProps } from "./types.ts";
 import { useState } from "react";
 import {
   addExercise,
+  type EquipmentType,
   type MuscleType,
   updateExercise,
 } from "../../../../db/exercises.ts";
-import { MUSCLES_TRANSLATION } from "../../../constants.ts";
+import {
+  EQUIPMENT_TRANSLATION,
+  MUSCLES_TRANSLATION,
+} from "../../../constants.ts";
 import { clsx } from "clsx";
 import { generateId } from "../../../../db/db.ts";
 import { useStore } from "../../../../components";
@@ -20,10 +24,13 @@ export function AddExercise({
   const store = useStore();
   const [name, setName] = useState(() => exercise?.name ?? "");
   const trimmedName = name.trim();
-  const [mainMuscle, setMainMuscle] = useState<MuscleType | null>(
+  const [equipment, setEquipment] = useState(
+    () => exercise?.equipment ?? "none",
+  );
+  const [mainMuscle, setMainMuscle] = useState(
     () => exercise?.muscles?.[0] ?? null,
   );
-  const [secondaryMuscles, setSecondaryMuscles] = useState<MuscleType[]>(
+  const [secondaryMuscles, setSecondaryMuscles] = useState(
     () => exercise?.muscles?.slice?.(1) ?? [],
   );
 
@@ -31,6 +38,13 @@ export function AddExercise({
     key: key as MuscleType,
     label,
   }));
+
+  const equipments = Object.entries(EQUIPMENT_TRANSLATION).map(
+    ([key, label]) => ({
+      key: key as EquipmentType,
+      label,
+    }),
+  );
 
   const disabled =
     !trimmedName || !mainMuscle || secondaryMuscles.includes(mainMuscle);
@@ -56,6 +70,7 @@ export function AddExercise({
         ...exercise,
         name: trimmedName,
         muscles: [mainMuscle, ...secondaryMuscles],
+        equipment,
       };
       updateExercise(store, newExercise);
       onSubmit(newExercise);
@@ -64,6 +79,7 @@ export function AddExercise({
         id: generateId(),
         name: trimmedName,
         muscles: [mainMuscle, ...secondaryMuscles],
+        equipment,
       });
       onSubmit(newExercise);
     }
@@ -91,14 +107,23 @@ export function AddExercise({
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
+        <label className={s.label}>Оборудование</label>
+        <div className={s.chips}>
+          {equipments.map((eq) => (
+            <button
+              className={clsx(s.chip, equipment === eq.key && s.selected)}
+              key={eq.key}
+              onClick={() => setEquipment(eq.key)}
+            >
+              {eq.label}
+            </button>
+          ))}
+        </div>
         <label className={s.label}>Основная группа мышц</label>
-        <div className={s.muscles}>
+        <div className={s.chips}>
           {muscles.map((muscle) => (
             <button
-              className={clsx(
-                s.muscle,
-                mainMuscle === muscle.key && s.selected,
-              )}
+              className={clsx(s.chip, mainMuscle === muscle.key && s.selected)}
               key={muscle.key}
               onClick={() => mainMuscleHandler(muscle.key)}
             >
@@ -107,11 +132,11 @@ export function AddExercise({
           ))}
         </div>
         <label className={s.label}>Другие мышцы</label>
-        <div className={s.muscles}>
+        <div className={s.chips}>
           {muscles.map((muscle) => (
             <button
               className={clsx(
-                s.muscle,
+                s.chip,
                 secondaryMuscles.includes(muscle.key) && s.selected,
               )}
               key={muscle.key}
