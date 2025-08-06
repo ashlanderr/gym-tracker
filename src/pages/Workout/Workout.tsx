@@ -30,6 +30,7 @@ import {
 } from "../../db/sets.ts";
 import type { Exercise } from "../../db/exercises.ts";
 import { useStore } from "../../components";
+import { queryRecordsByWorkout } from "../../db/records.ts";
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
@@ -135,12 +136,15 @@ export function Workout() {
       }
     }
 
+    const records = queryRecordsByWorkout(store, workout.id);
+
     updateWorkout(store, {
       ...workout,
       completedAt: Date.now(),
       name: data.name,
-      volume,
       sets: completedSets.length,
+      records: records.length !== 0 ? records.length : undefined,
+      volume,
     });
 
     setCompleteModal(null);

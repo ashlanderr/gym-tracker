@@ -15,6 +15,7 @@ export interface Workout {
   completedAt: number | null;
   volume?: number;
   sets?: number;
+  records?: number;
 }
 
 export function useQueryWorkoutById(store: Store, id: string): Workout | null {

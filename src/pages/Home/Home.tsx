@@ -34,6 +34,7 @@ import { deleteRecord, queryRecordsByWorkout } from "../../db/records.ts";
 import { useStore } from "../../components";
 import { ModalDialog } from "../Workout/components/ModalDialog";
 import { useConnectionStatus } from "../../components/StoreProvider/hooks.ts";
+import { PiMedalFill } from "react-icons/pi";
 
 export function Home() {
   const user = useUser();
@@ -230,6 +231,15 @@ export function Home() {
                 <div className={s.statName}>Сеты</div>
                 <div className={s.statValue}>{workout.sets}</div>
               </div>
+              {workout.records !== undefined && (
+                <div className={s.workoutStat}>
+                  <div className={s.statName}>Рекорды</div>
+                  <div className={clsx(s.statValue, s.statRecords)}>
+                    <PiMedalFill className={s.recordMedal} />
+                    {workout.records}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ))}
