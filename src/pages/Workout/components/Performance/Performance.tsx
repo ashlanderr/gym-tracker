@@ -110,11 +110,45 @@ export function Performance({ performance }: PerformanceProps) {
       exercise.id,
       Date.now(),
     );
+
+    const prevSets =
+      prevPerformance && querySetsByPerformance(store, prevPerformance.id);
+
     updatePerformance(store, {
       ...performance,
       exercise: exercise.id,
       weights: prevPerformance?.weights,
     });
+
+    if (prevSets) {
+      for (const set of prevSets) {
+        addSet(store, {
+          id: generateId(),
+          user: performance.user,
+          workout: performance.workout,
+          performance: performance.id,
+          exercise: performance.exercise,
+          order: set.order,
+          type: set.type,
+          weight: 0,
+          reps: 0,
+          completed: false,
+        });
+      }
+    } else {
+      addSet(store, {
+        id: generateId(),
+        user: performance.user,
+        workout: performance.workout,
+        performance: performance.id,
+        exercise: performance.exercise,
+        order: 0,
+        type: "working",
+        weight: 0,
+        reps: 0,
+        completed: false,
+      });
+    }
 
     setReplaceOpen(false);
   };

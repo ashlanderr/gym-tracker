@@ -22,7 +22,12 @@ import {
 import { Performance } from "./components";
 import { ChooseExercise } from "./components/ChooseExercise";
 import { generateId } from "../../db/db.ts";
-import { addSet, deleteSet, useQuerySetsByWorkout } from "../../db/sets.ts";
+import {
+  addSet,
+  deleteSet,
+  querySetsByPerformance,
+  useQuerySetsByWorkout,
+} from "../../db/sets.ts";
 import type { Exercise } from "../../db/exercises.ts";
 import { useStore } from "../../components";
 
@@ -45,7 +50,7 @@ export function Workout() {
   );
 
   // todo disable editing if completed
-  // todo firebase access rules
+  // todo access rules
 
   const addPerformanceHandler = (exercise: Exercise) => {
     if (!workout) return;
@@ -58,6 +63,9 @@ export function Workout() {
       Date.now(),
     );
 
+    const prevSets =
+      prevPerformance && querySetsByPerformance(store, prevPerformance.id);
+
     const performance = addPerformance(store, {
       id: generateId(),
       user: workout.user,
@@ -68,18 +76,36 @@ export function Workout() {
       weights: prevPerformance?.weights,
     });
 
-    addSet(store, {
-      id: generateId(),
-      user: workout.user,
-      workout: workout.id,
-      performance: performance.id,
-      exercise: performance.exercise,
-      order: 0,
-      type: "working",
-      weight: 0,
-      reps: 0,
-      completed: false,
-    });
+    if (prevSets) {
+      console.log({ prevPerformance, performance, prevSets });
+      for (const set of prevSets) {
+        addSet(store, {
+          id: generateId(),
+          user: workout.user,
+          workout: workout.id,
+          performance: performance.id,
+          exercise: performance.exercise,
+          order: set.order,
+          type: set.type,
+          weight: 0,
+          reps: 0,
+          completed: false,
+        });
+      }
+    } else {
+      addSet(store, {
+        id: generateId(),
+        user: workout.user,
+        workout: workout.id,
+        performance: performance.id,
+        exercise: performance.exercise,
+        order: 0,
+        type: "working",
+        weight: 0,
+        reps: 0,
+        completed: false,
+      });
+    }
   };
 
   const completeBeginHandler = () => {
