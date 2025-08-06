@@ -33,10 +33,12 @@ import { signOut, useUser } from "../../firebase/auth.ts";
 import { deleteRecord, queryRecordsByWorkout } from "../../db/records.ts";
 import { useStore } from "../../components";
 import { ModalDialog } from "../Workout/components/ModalDialog";
+import { useConnectionStatus } from "../../components/StoreProvider/hooks.ts";
 
 export function Home() {
   const user = useUser();
   const store = useStore();
+  const connection = useConnectionStatus();
   const navigate = useNavigate();
   const workouts = useQueryCompletedWorkouts(store);
   const [activeWorkout] = useQueryActiveWorkouts(store);
@@ -230,6 +232,7 @@ export function Home() {
         ))}
       </div>
       <div className={s.appVersion}>App Version: {APP_VERSION}</div>
+      <div className={s.connectionStatus}>Network: {connection}</div>
       <BottomSheet
         isOpen={workoutActions !== null}
         onClose={() => setWorkoutActions(null)}
