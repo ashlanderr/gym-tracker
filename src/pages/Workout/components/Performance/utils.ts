@@ -3,6 +3,7 @@ import {
   DEFAULT_RANGE_MAX_REPS,
   DEFAULT_RANGE_MIN_REPS,
   REPS_INCREASE_WEIGHT_MULTIPLIER,
+  WARM_UP_SETS,
   WARM_UP_WEIGHT_MULTIPLIER,
 } from "./constants.ts";
 import {
@@ -48,8 +49,9 @@ export function buildRecommendations(
   currentSets: SetData[],
   weights?: Weights,
 ): SetData[] {
-  const prevWarmUpSets = prevSets.filter((s) => s.type === "warm-up");
+  const currentWarmUpSets = currentSets.filter((s) => s.type === "warm-up");
   const prevWorkingSets = prevSets.filter((s) => s.type === "working");
+  const warmUpTemplate = WARM_UP_SETS.at(currentWarmUpSets.length - 1) ?? [];
   const working = findWorkingVolume(weights, prevWorkingSets);
   const result: SetData[] = [];
   let warmUpIndex = 0;
@@ -61,26 +63,14 @@ export function buildRecommendations(
         let weight = 0;
         let reps = 0;
 
-        const prevSet = prevWarmUpSets.at(warmUpIndex);
+        const template = warmUpTemplate.at(warmUpIndex);
         const warmUpMax = working
           ? working.oneRepMax * WARM_UP_WEIGHT_MULTIPLIER
           : undefined;
 
-        if (set.weight && set.reps) {
-          weight = snapWeightKg(weights, set.weight);
-          reps = set.reps;
-        } else if (warmUpMax && prevSet && !set.weight && !set.reps) {
-          reps = prevSet.reps;
-          weight = snapWeightKg(weights, oneRepMaxToWeight(warmUpMax, reps));
-        } else if (warmUpMax && !set.weight && set.reps) {
-          reps = set.reps;
-          weight = snapWeightKg(weights, oneRepMaxToWeight(warmUpMax, reps));
-        } else if (warmUpMax && set.weight && !set.reps) {
-          weight = snapWeightKg(weights, set.weight);
-          reps = Math.round(oneRepMaxToReps(warmUpMax, weight));
-        } else {
-          weight = snapWeightKg(weights, set.weight);
-          reps = set.reps;
+        if (warmUpMax && template && !set.weight && !set.reps) {
+          reps = template.reps;
+          weight = snapWeightKg(weights, warmUpMax * template.weight);
         }
 
         result.push({

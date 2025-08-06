@@ -53,59 +53,112 @@ describe("warm up sets", () => {
     });
   });
 
-  test("no previous set, current weight is filled -> use filled values", () => {
+  test("no previous set, current weight is filled -> no recommendation", () => {
     testRecommendations({
       prev: [],
-      curr: [{ type: "warm-up", weight: 20, reps: 0 }],
-      recs: [{ type: "warm-up", weight: 20, reps: 0 }],
-    });
-  });
-
-  test("no previous set, current reps is filled -> use filled values", () => {
-    testRecommendations({
-      prev: [],
-      curr: [{ type: "warm-up", weight: 0, reps: 30 }],
-      recs: [{ type: "warm-up", weight: 0, reps: 30 }],
-    });
-  });
-
-  test("no previous warm-up set, current set is not filled -> no recommendation", () => {
-    testRecommendations({
-      prev: [{ type: "working", weight: 50, reps: 8 }],
       curr: [{ type: "warm-up", weight: 0, reps: 0 }],
       recs: [{ type: "warm-up", weight: 0, reps: 0 }],
     });
   });
 
-  test("no previous warm-up set, current reps is filled -> weight recommendation", () => {
+  test("no previous set, current reps is filled -> no recommendation", () => {
+    testRecommendations({
+      prev: [],
+      curr: [{ type: "warm-up", weight: 0, reps: 30 }],
+      recs: [{ type: "warm-up", weight: 0, reps: 0 }],
+    });
+  });
+
+  test("no previous warm-up set, 1 current warm-up set is not filled -> 1 set recommendation", () => {
+    testRecommendations({
+      weights: plateWeights,
+      prev: [{ type: "working", weight: 100, reps: 8 }],
+      curr: [{ type: "warm-up", weight: 0, reps: 0 }],
+      recs: [{ type: "warm-up", weight: 60, reps: 10 }],
+    });
+  });
+
+  test("no previous warm-up set, 2 current warm-up set is not filled -> 2 set recommendation", () => {
+    testRecommendations({
+      weights: plateWeights,
+      prev: [{ type: "working", weight: 100, reps: 8 }],
+      curr: [
+        { type: "warm-up", weight: 0, reps: 0 },
+        { type: "warm-up", weight: 0, reps: 0 },
+      ],
+      recs: [
+        { type: "warm-up", weight: 50, reps: 12 },
+        { type: "warm-up", weight: 75, reps: 6 },
+      ],
+    });
+  });
+
+  test("no previous warm-up set, 3 current warm-up set is not filled -> 3 set recommendation", () => {
+    testRecommendations({
+      weights: plateWeights,
+      prev: [{ type: "working", weight: 100, reps: 8 }],
+      curr: [
+        { type: "warm-up", weight: 0, reps: 0 },
+        { type: "warm-up", weight: 0, reps: 0 },
+        { type: "warm-up", weight: 0, reps: 0 },
+      ],
+      recs: [
+        { type: "warm-up", weight: 40, reps: 15 },
+        { type: "warm-up", weight: 60, reps: 8 },
+        { type: "warm-up", weight: 80, reps: 4 },
+      ],
+    });
+  });
+
+  test("no previous warm-up set, 4 current warm-up set is not filled -> 4 set recommendation", () => {
+    testRecommendations({
+      weights: plateWeights,
+      prev: [{ type: "working", weight: 100, reps: 8 }],
+      curr: [
+        { type: "warm-up", weight: 0, reps: 0 },
+        { type: "warm-up", weight: 0, reps: 0 },
+        { type: "warm-up", weight: 0, reps: 0 },
+        { type: "warm-up", weight: 0, reps: 0 },
+      ],
+      recs: [
+        { type: "warm-up", weight: 30, reps: 15 },
+        { type: "warm-up", weight: 50, reps: 10 },
+        { type: "warm-up", weight: 70, reps: 6 },
+        { type: "warm-up", weight: 85, reps: 2 },
+      ],
+    });
+  });
+
+  test("no previous warm-up set, current reps is filled -> no recommendation", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 8 }],
       curr: [{ type: "warm-up", weight: 0, reps: 30 }],
-      recs: [{ type: "warm-up", weight: 25, reps: 30 }],
+      recs: [{ type: "warm-up", weight: 0, reps: 0 }],
     });
   });
 
-  test("no previous warm-up set, current weight is filled -> reps recommendation", () => {
+  test("no previous warm-up set, current weight is filled -> no recommendation", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 8 }],
       curr: [{ type: "warm-up", weight: 30, reps: 0 }],
-      recs: [{ type: "warm-up", weight: 30, reps: 21 }],
+      recs: [{ type: "warm-up", weight: 0, reps: 0 }],
     });
   });
 
-  test("previous warm-up is filled, current is not filled -> same reps, weight recommendation", () => {
+  test("previous warm-up is filled, current is not filled -> standard recommendation", () => {
     testRecommendations({
       prev: [
         { type: "warm-up", weight: 20, reps: 20 },
-        { type: "working", weight: 50, reps: 8 },
+        { type: "working", weight: 100, reps: 8 },
       ],
       curr: [{ type: "warm-up", weight: 0, reps: 0 }],
-      recs: [{ type: "warm-up", weight: 30, reps: 20 }],
+      recs: [{ type: "warm-up", weight: 60, reps: 10 }],
     });
   });
 
-  test("multiple current warm-up sets, current is not filled -> independent recommendations", () => {
+  test("multiple current warm-up sets, current is not filled -> standard recommendations", () => {
     testRecommendations({
+      weights: plateWeights,
       prev: [
         { type: "warm-up", weight: 10, reps: 30 },
         { type: "working", weight: 50, reps: 8 },
@@ -115,8 +168,8 @@ describe("warm up sets", () => {
         { type: "warm-up", weight: 0, reps: 0 },
       ],
       recs: [
-        { type: "warm-up", weight: 25, reps: 30 },
-        { type: "warm-up", weight: 0, reps: 0 },
+        { type: "warm-up", weight: 25, reps: 12 },
+        { type: "warm-up", weight: 37.5, reps: 6 },
       ],
     });
   });
