@@ -27,7 +27,12 @@ export type MuscleType =
   | "triceps"
   | "upper_back";
 
-export type EquipmentType = "none" | "barbell" | "dumbbell" | "machine";
+export type EquipmentType =
+  | "none"
+  | "barbell"
+  | "dumbbell"
+  | "machine"
+  | "plates";
 
 export interface Exercise {
   id: string;

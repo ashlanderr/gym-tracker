@@ -18,6 +18,8 @@ export function WeightsSelector({
       return dumbbellWeights(normalizedValue, onChange);
     case "machine":
       return machineWeights(normalizedValue, onChange);
+    case "plates":
+      return platesWeights(normalizedValue, onChange);
     default:
       return null;
   }
@@ -172,6 +174,68 @@ function machineWeights(
               <button
                 key={opt}
                 className={clsx(s.item, opt === w.selected && s.selected)}
+                onClick={() => w.onChange(opt)}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        </React.Fragment>
+      ))}
+    </div>
+  );
+}
+
+function platesWeights(
+  value: Weights,
+  onChange: (value: Weights | undefined) => void,
+) {
+  const toggle = (steps: number[] | number | undefined, value: number) => {
+    if (!Array.isArray(steps)) steps = [];
+    const index = steps.indexOf(value);
+    return index >= 0 ? steps.filter((s) => s !== value) : [...steps, value];
+  };
+
+  const weights = [
+    {
+      label: "Блины",
+      options:
+        value.units === "kg"
+          ? [1.25, 2.5, 5, 10, 20]
+          : [2.5, 5, 10, 25, 35, 45],
+      selected: (v: number) =>
+        Array.isArray(value.steps) && value.steps.includes(v),
+      onChange: (plate: number) =>
+        onChange({
+          ...value,
+          steps: toggle(value.steps, plate),
+        }),
+    },
+    {
+      label: "Кол-во",
+      options: [1, 2],
+      selected: (v: number) => v === value.count,
+      onChange: (count: number) =>
+        onChange({
+          ...value,
+          count: count !== value.count ? count : undefined,
+        }),
+    },
+  ];
+
+  return (
+    <div className={s.root}>
+      <div className={s.title}>Тип</div>
+      <div className={s.title}>Блины</div>
+      {unitsSelector(value, onChange)}
+      {weights.map((w) => (
+        <React.Fragment key={w.label}>
+          <div className={s.title}>{w.label}</div>
+          <div className={s.items}>
+            {w.options.map((opt) => (
+              <button
+                key={opt}
+                className={clsx(s.item, w.selected(opt) && s.selected)}
                 onClick={() => w.onChange(opt)}
               >
                 {opt}

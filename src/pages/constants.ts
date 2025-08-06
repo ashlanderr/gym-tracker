@@ -27,6 +27,7 @@ export const EQUIPMENT_TRANSLATION: Record<EquipmentType, string> = {
   barbell: "Штанга",
   dumbbell: "Гантели",
   machine: "Тренажёр",
+  plates: "Блины",
 };
 
 export const UNITS_TRANSLATION: Record<WeightUnits, string> = {
