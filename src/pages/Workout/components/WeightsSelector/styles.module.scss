@@ -1,0 +1,35 @@
+.root {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-auto-rows: auto;
+  flex-direction: column;
+  grid-column-gap: 16px;
+  grid-row-gap: 8px;
+  font-size: 16px;
+}
+
+.title {
+  align-self: center;
+}
+
+.items {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.item {
+  padding: 4px 8px;
+  background: #555;
+  border-radius: 4px;
+  text-align: center;
+  background: none;
+  border: none;
+  color: inherit;
+  background: #444;
+  font: inherit;
+}
+
+.selected {
+  background: #06F;
+}

@@ -18,12 +18,27 @@ import {
   useQueryRecordsBySet,
 } from "../../../../db/records.ts";
 import { generateId } from "../../../../db/db.ts";
-import { RECORDS_TRANSLATION } from "../constants.ts";
+import { RECORDS_TRANSLATION } from "../../../constants.ts";
 import { PiMedalFill } from "react-icons/pi";
-import { formatRecordValue, volumeToOneRepMax } from "../utils.ts";
+import {
+  computeWeights,
+  formatRecordValue,
+  kgToUnits,
+  snapWeightKg,
+  unitsToKg,
+  volumeToOneRepMax,
+} from "../utils.ts";
 import { useStore } from "../../../../components";
+import { WeightDisplay } from "../WeightDisplay";
 
-export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
+export function SetRow({
+  exercise,
+  performance,
+  number,
+  set,
+  prevSet,
+  recSet,
+}: SetRowProps) {
   const store = useStore();
   const [isActionsOpen, setActionsOpen] = useState(false);
   const [isRecordsOpen, setRecordsOpen] = useState(false);
@@ -36,10 +51,22 @@ export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
     updatedSet.current = set;
   }, [set]);
 
-  const prev = prevSet ? `${prevSet.weight}кг x ${prevSet.reps}` : "-";
+  const convertWeight = (weightKg: number | undefined): number | undefined => {
+    return weightKg !== undefined
+      ? Math.round(kgToUnits(weightKg, performance.weights?.units) * 100) / 100
+      : undefined;
+  };
 
-  const weight = set.weight ? set.weight.toString() : "";
-  const weightPlaceholder = (recSet?.weight || "-").toString();
+  const prev = prevSet
+    ? `${convertWeight(prevSet.weight)} x ${prevSet.reps}`
+    : "-";
+
+  const weight = (convertWeight(set.weight) || "").toString();
+  const weightPlaceholder = (convertWeight(recSet?.weight) || "-").toString();
+  const weightConstructor = computeWeights(
+    performance.weights,
+    set.weight || recSet?.weight || 0,
+  );
 
   const reps = set.reps ? set.reps.toString() : "";
   const repsPlaceholder = (recSet?.reps || "-").toString();
@@ -67,7 +94,15 @@ export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
     setWeightInput(null);
 
     if (!Number.isNaN(newWeight) && newWeight >= 0) {
-      const set = updateSetInner((set) => ({ ...set, weight: newWeight }));
+      const set = updateSetInner((set) => ({
+        ...set,
+        weight:
+          newWeight &&
+          snapWeightKg(
+            performance.weights,
+            unitsToKg(newWeight, performance.weights?.units),
+          ),
+      }));
       updateSet(store, set);
     }
   };
@@ -189,28 +224,36 @@ export function SetRow({ number, set, prevSet, recSet }: SetRowProps) {
         </td>
       </tr>
       <BottomSheet isOpen={isActionsOpen} onClose={() => setActionsOpen(false)}>
-        <div className={s.sheetHeader}>Выберите тип сета</div>
+        <div className={s.sheetHeader}>Подход</div>
+        {weightConstructor.steps || weightConstructor.additional ? (
+          <div className={s.sheetWeights}>
+            <WeightDisplay
+              equipment={exercise?.equipment ?? "none"}
+              data={weightConstructor}
+            />
+          </div>
+        ) : null}
         <div className={s.sheetActions}>
           <button
             className={s.sheetAction}
             onClick={() => setTypeHandler("warm-up")}
           >
             <span>W</span>
-            <span>Разминочный сет</span>
+            <span>Разминочный подход</span>
           </button>
           <button
             className={s.sheetAction}
             onClick={() => setTypeHandler("working")}
           >
             <span>1</span>
-            <span>Обычный сет</span>
+            <span>Обычный подход</span>
           </button>
           <button
             className={clsx(s.sheetAction, s.danger)}
             onClick={removeHandler}
           >
             <MdDelete />
-            <span>Удалить сет</span>
+            <span>Удалить подход</span>
           </button>
         </div>
       </BottomSheet>

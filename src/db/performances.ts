@@ -15,6 +15,17 @@ export interface Performance {
   exercise: string;
   order: number;
   startedAt: number;
+  weights?: Weights;
+}
+
+export type WeightUnits = "kg" | "lbs";
+
+export interface Weights {
+  units: WeightUnits;
+  base?: number;
+  steps?: number | number[];
+  additional?: number;
+  count?: number;
 }
 
 export function queryPerformancesByWorkout(
@@ -42,6 +53,21 @@ export function useQueryPerformancesByWorkout(
     deps: [workout],
   });
   return [...performances].sort((a, b) => a.order - b.order);
+}
+
+export function queryPreviousPerformance(
+  store: Store,
+  exercise: string,
+  startedAt: number,
+): Performance | null {
+  const entities = queryCollection<Performance>(
+    collection(store.personal, "performances"),
+    {
+      exercise: { eq: exercise },
+      startedAt: { lt: startedAt },
+    },
+  );
+  return maxBy(entities, (a, b) => a.startedAt - b.startedAt);
 }
 
 export function useQueryPreviousPerformance(

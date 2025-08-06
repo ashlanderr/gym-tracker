@@ -16,6 +16,7 @@ import { useTimer } from "../hooks.ts";
 import {
   addPerformance,
   deletePerformance,
+  queryPreviousPerformance,
   useQueryPerformancesByWorkout,
 } from "../../db/performances.ts";
 import { Performance } from "./components";
@@ -51,6 +52,12 @@ export function Workout() {
 
     setAddPerformanceOpen(false);
 
+    const prevPerformance = queryPreviousPerformance(
+      store,
+      exercise.id,
+      Date.now(),
+    );
+
     const performance = addPerformance(store, {
       id: generateId(),
       user: workout.user,
@@ -58,6 +65,7 @@ export function Workout() {
       exercise: exercise.id,
       order: Math.max(-1, ...performances.map((p) => p.order)) + 1,
       startedAt: workout.startedAt,
+      weights: prevPerformance?.weights,
     });
 
     addSet(store, {

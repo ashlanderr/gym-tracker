@@ -1,4 +1,6 @@
 import type { EquipmentType, MuscleType } from "../db/exercises.ts";
+import type { WeightUnits } from "../db/performances.ts";
+import type { RecordType } from "../db/records.ts";
 
 export const MUSCLES_TRANSLATION: Record<MuscleType, string> = {
   abs: "Пресс",
@@ -25,4 +27,15 @@ export const EQUIPMENT_TRANSLATION: Record<EquipmentType, string> = {
   barbell: "Штанга",
   dumbbell: "Гантели",
   machine: "Тренажёр",
+};
+
+export const UNITS_TRANSLATION: Record<WeightUnits, string> = {
+  kg: "KG",
+  lbs: "LBS",
+};
+
+export const RECORDS_TRANSLATION: Record<RecordType, string> = {
+  one_rep_max: "Лучший 1ПМ",
+  weight: "Самый большой вес",
+  volume: "Лучший объём",
 };

@@ -24,6 +24,7 @@ import {
   addPerformance,
   deletePerformance,
   queryPerformancesByWorkout,
+  queryPreviousPerformance,
 } from "../../db/performances.ts";
 import { addSet, deleteSet, querySetsByWorkout } from "../../db/sets.ts";
 import { generateId } from "../../db/db.ts";
@@ -97,6 +98,12 @@ export function Home() {
     });
 
     for (const performance of performances) {
+      const prevPerformance = queryPreviousPerformance(
+        store,
+        performance.exercise,
+        Date.now(),
+      );
+
       const newPerformance = addPerformance(store, {
         id: generateId(),
         user: newWorkout.user,
@@ -104,6 +111,7 @@ export function Home() {
         exercise: performance.exercise,
         order: performance.order,
         startedAt: newWorkout.startedAt,
+        weights: prevPerformance?.weights,
       });
 
       const performanceSets = sets.filter(

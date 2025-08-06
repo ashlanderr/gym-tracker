@@ -1,17 +1,36 @@
 import { buildRecommendations } from "./utils.ts";
 import { describe } from "vitest";
 import type { SetData } from "./types.ts";
+import type { Weights } from "../../../../db/performances.ts";
+
+const roundedWeights: Weights = {
+  units: "kg",
+  count: 1,
+  additional: 0,
+  steps: 1,
+  base: 0,
+};
+
+const plateWeights: Weights = {
+  units: "kg",
+  count: 2,
+  additional: 0,
+  steps: 1.25,
+  base: 0,
+};
 
 function testRecommendations({
+  weights,
   prev,
   curr,
   recs,
 }: {
+  weights?: Weights;
   prev: SetData[];
   curr: SetData[];
   recs: SetData[];
 }) {
-  const rec = buildRecommendations(prev, curr);
+  const rec = buildRecommendations(prev, curr, weights ?? roundedWeights);
   expect(rec).toEqual(recs);
 }
 
@@ -106,6 +125,7 @@ describe("warm up sets", () => {
 describe("single working set", () => {
   test("current set is filled -> use filled values", () => {
     testRecommendations({
+      weights: plateWeights,
       prev: [{ type: "working", weight: 30, reps: 8 }],
       curr: [{ type: "working", weight: 27.5, reps: 20 }],
       recs: [{ type: "working", weight: 27.5, reps: 20 }],
@@ -114,6 +134,7 @@ describe("single working set", () => {
 
   test("no previous set, weight filled -> use filled values", () => {
     testRecommendations({
+      weights: plateWeights,
       prev: [],
       curr: [{ type: "working", weight: 27.5, reps: 0 }],
       recs: [{ type: "working", weight: 27.5, reps: 0 }],
@@ -130,6 +151,7 @@ describe("single working set", () => {
 
   test("no previous set, current set filled -> use filled values", () => {
     testRecommendations({
+      weights: plateWeights,
       prev: [],
       curr: [{ type: "working", weight: 27.5, reps: 20 }],
       recs: [{ type: "working", weight: 27.5, reps: 20 }],
@@ -146,6 +168,7 @@ describe("single working set", () => {
 
   test("previous reps is small, current set is not filled -> increase reps", () => {
     testRecommendations({
+      weights: plateWeights,
       prev: [{ type: "working", weight: 32.5, reps: 8 }],
       curr: [{ type: "working", weight: 0, reps: 0 }],
       recs: [{ type: "working", weight: 32.5, reps: 10 }],
@@ -178,6 +201,7 @@ describe("single working set", () => {
 
   test("current weight equals previous weight -> recommend more reps", () => {
     testRecommendations({
+      weights: plateWeights,
       prev: [{ type: "working", weight: 12.5, reps: 12 }],
       curr: [{ type: "working", weight: 12.5, reps: 0 }],
       recs: [{ type: "working", weight: 12.5, reps: 14 }],
@@ -186,6 +210,7 @@ describe("single working set", () => {
 
   test("current weight greater than previous weight -> recommend less reps", () => {
     testRecommendations({
+      weights: plateWeights,
       prev: [{ type: "working", weight: 10, reps: 12 }],
       curr: [{ type: "working", weight: 12.5, reps: 0 }],
       recs: [{ type: "working", weight: 12.5, reps: 4 }],
@@ -194,6 +219,7 @@ describe("single working set", () => {
 
   test("current weight less than previous weight -> recommend more reps", () => {
     testRecommendations({
+      weights: plateWeights,
       prev: [{ type: "working", weight: 10, reps: 8 }],
       curr: [{ type: "working", weight: 7.5, reps: 0 }],
       recs: [{ type: "working", weight: 7.5, reps: 21 }],

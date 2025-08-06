@@ -1,3 +1,6 @@
+import type { Weights, WeightUnits } from "../../../db/performances.ts";
+import type { WeightsConstructor } from "./Performance/types.ts";
+
 export function volumeToOneRepMax(weight: number, reps: number): number {
   return weight * (1 + reps / 30);
 }
@@ -12,4 +15,116 @@ export function oneRepMaxToReps(oneRepMax: number, weight: number): number {
 
 export function formatRecordValue(value: number) {
   return (Math.round(value * 100) / 100).toLocaleString();
+}
+
+export function snapWeightKg(
+  weights: Weights | undefined,
+  valueKg: number,
+): number {
+  return computeWeights(weights, valueKg).totalKg;
+}
+
+export function computeWeights(
+  weights: Weights | undefined,
+  valueKg: number,
+): WeightsConstructor {
+  if (!weights) {
+    return {
+      units: "kg",
+      totalUnits: valueKg,
+      totalKg: valueKg,
+    };
+  }
+
+  const resultSteps: number[] = [];
+
+  const valueUnits = kgToUnits(valueKg, weights.units);
+  const base = weights.base ?? 0;
+  const withoutBase = valueUnits - base;
+  const count = weights.count ?? 1;
+  const separate = withoutBase / count;
+  let stepped = 0;
+  let remaining = 0;
+
+  if (Array.isArray(weights.steps) && weights.steps.length !== 0) {
+    const steps = weights.steps.sort((a, b) => b - a);
+    remaining = separate;
+    while (stepped < separate) {
+      const stepIndex = steps.findIndex((s) => s <= remaining);
+      if (stepIndex < 0) break;
+      const stepValue = steps[stepIndex];
+      remaining -= stepValue;
+      stepped += stepValue;
+      resultSteps.push(stepValue);
+    }
+  } else if (typeof weights.steps === "number") {
+    stepped = Math.floor(separate / weights.steps) * weights.steps;
+    resultSteps.push(stepped);
+  } else {
+    stepped = Math.floor(separate);
+    resultSteps.push(stepped);
+  }
+
+  remaining = (separate - stepped) * count;
+
+  if (weights.additional) {
+    remaining = Math.round(remaining / weights.additional) * weights.additional;
+  } else {
+    remaining = 0;
+  }
+
+  const totalUnits = stepped * count + remaining + base;
+  const combinedSteps = resultSteps.reduce(combineSteps, []);
+
+  return {
+    units: weights.units,
+    totalKg: unitsToKg(totalUnits, weights.units),
+    base: base !== 0 ? base : undefined,
+    steps: combinedSteps.length !== 0 ? combinedSteps : undefined,
+    additional: remaining !== 0 ? remaining : undefined,
+    totalUnits,
+  };
+}
+
+function combineSteps(
+  steps: Array<{ weight: number; count: number }>,
+  weight: number,
+): Array<{ weight: number; count: number }> {
+  const lastStep = steps.length > 0 ? steps[steps.length - 1] : null;
+
+  if (lastStep?.weight === weight) {
+    return [
+      ...steps.slice(0, steps.length - 1),
+      {
+        weight,
+        count: lastStep.count + 1,
+      },
+    ];
+  } else {
+    return [...steps, { weight, count: 1 }];
+  }
+}
+
+export function kgToUnits(
+  weightKg: number,
+  units: WeightUnits | undefined,
+): number {
+  switch (units ?? "kg") {
+    case "kg":
+      return weightKg;
+    case "lbs":
+      return weightKg / 0.454;
+  }
+}
+
+export function unitsToKg(
+  weightUnits: number,
+  units: WeightUnits | undefined,
+): number {
+  switch (units ?? "kg") {
+    case "kg":
+      return weightUnits;
+    case "lbs":
+      return weightUnits * 0.454;
+  }
 }

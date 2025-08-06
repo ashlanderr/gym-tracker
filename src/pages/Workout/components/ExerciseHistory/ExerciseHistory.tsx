@@ -18,7 +18,7 @@ import {
   YAxis,
 } from "recharts";
 import { useQueryRecordsByExercise } from "../../../../db/records.ts";
-import { RECORDS_TRANSLATION } from "../constants.ts";
+import { RECORDS_TRANSLATION } from "../../../constants.ts";
 import { maxBy } from "../../../../db/db.ts";
 import { formatRecordValue } from "../utils.ts";
 import { PiMedalFill } from "react-icons/pi";

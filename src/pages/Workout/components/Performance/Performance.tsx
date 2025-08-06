@@ -29,6 +29,8 @@ import {
   updatePerformance,
   useQueryPreviousPerformance,
   type Performance,
+  type Weights,
+  queryPreviousPerformance,
 } from "../../../../db/performances.ts";
 import { buildRecommendations } from "./utils.ts";
 import { SetRow } from "../SetRow";
@@ -41,6 +43,8 @@ import { useStore } from "../../../../components";
 import { PerformanceOrder } from "../PerformanceOrder";
 import { ExerciseHistory } from "../ExerciseHistory";
 import { clsx } from "clsx";
+import { WeightsSelector } from "../WeightsSelector";
+import { UNITS_TRANSLATION } from "../../../constants.ts";
 
 export function Performance({ performance }: PerformanceProps) {
   const store = useStore();
@@ -100,7 +104,17 @@ export function Performance({ performance }: PerformanceProps) {
 
     records.forEach((record) => deleteRecord(store, record));
     sets.forEach((set) => deleteSet(store, set));
-    updatePerformance(store, { ...performance, exercise: exercise.id });
+
+    const prevPerformance = queryPreviousPerformance(
+      store,
+      exercise.id,
+      Date.now(),
+    );
+    updatePerformance(store, {
+      ...performance,
+      exercise: exercise.id,
+      weights: prevPerformance?.weights,
+    });
 
     setReplaceOpen(false);
   };
@@ -116,6 +130,10 @@ export function Performance({ performance }: PerformanceProps) {
     setActionsOpen(false);
   };
 
+  const weightsChangeHandler = (weights: Weights | undefined) => {
+    updatePerformance(store, { ...performance, weights });
+  };
+
   return (
     <div className={s.exercise}>
       <div className={s.exerciseName} onClick={() => setActionsOpen(true)}>
@@ -126,14 +144,16 @@ export function Performance({ performance }: PerformanceProps) {
           <tr>
             <th className={s.setNumHeader}>Подх.</th>
             <th className={s.prevVolumeHeader}>Пред.</th>
-            <th className={s.currentWeightHeader}>КГ</th>
+            <th className={s.currentWeightHeader}>
+              {UNITS_TRANSLATION[performance.weights?.units ?? "kg"]}
+            </th>
             <th className={s.currentRepsHeader}>Повт.</th>
             <th className={s.setCompletedHeader}>
               <MdCheck />
             </th>
           </tr>
         </thead>
-        <tbody>{buildSets(prevSets, sets)}</tbody>
+        <tbody>{buildSets(prevSets, sets, performance, exercise)}</tbody>
       </table>
       <button className={s.addSetButton} onClick={addSetHandler}>
         <MdAdd />
@@ -141,6 +161,15 @@ export function Performance({ performance }: PerformanceProps) {
       </button>
       <BottomSheet isOpen={isActionsOpen} onClose={() => setActionsOpen(false)}>
         <div className={s.sheetHeader}>Упражнение</div>
+        {exercise?.equipment && (
+          <div className={s.sheetWeights}>
+            <WeightsSelector
+              equipment={exercise.equipment}
+              value={performance.weights}
+              onChange={weightsChangeHandler}
+            />
+          </div>
+        )}
         <div className={s.sheetActions}>
           <button className={s.sheetAction} onClick={historyHandler}>
             <MdBarChart />
@@ -188,14 +217,23 @@ export function Performance({ performance }: PerformanceProps) {
   );
 }
 
-function buildSets(prevSets: Set[], sets: Set[]): ReactNode[] {
+function buildSets(
+  prevSets: Set[],
+  sets: Set[],
+  performance: Performance,
+  exercise: Exercise | null,
+): ReactNode[] {
   const prevWarmUp = prevSets.filter(
     (s) => s.type === "warm-up" && s.weight && s.reps,
   );
   const prevWorking = prevSets.filter(
     (s) => s.type === "working" && s.weight && s.reps,
   );
-  const recommendations = buildRecommendations(prevSets, sets);
+  const recommendations = buildRecommendations(
+    prevSets,
+    sets,
+    performance.weights,
+  );
 
   const result: ReactNode[] = [];
   let warmUpIndex = 0;
@@ -218,6 +256,8 @@ function buildSets(prevSets: Set[], sets: Set[]): ReactNode[] {
 
     result.push(
       <SetRow
+        exercise={exercise}
+        performance={performance}
         key={set.id}
         number={number}
         set={set}
