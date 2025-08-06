@@ -6,6 +6,7 @@ import {
   MdBarChart,
   MdCheck,
   MdDelete,
+  MdEdit,
   MdSwapVert,
 } from "react-icons/md";
 import { type ReactNode, useState } from "react";
@@ -45,6 +46,7 @@ import { ExerciseHistory } from "../ExerciseHistory";
 import { clsx } from "clsx";
 import { WeightsSelector } from "../WeightsSelector";
 import { UNITS_TRANSLATION } from "../../../constants.ts";
+import { AddExercise } from "../AddExercise";
 
 export function Performance({ performance }: PerformanceProps) {
   const store = useStore();
@@ -62,6 +64,7 @@ export function Performance({ performance }: PerformanceProps) {
   const [isReplaceOpen, setReplaceOpen] = useState(false);
   const [isHistoryOpen, setHistoryOpen] = useState(false);
   const [orderState, setOrderState] = useState<Performance[]>([]);
+  const [editState, setEditState] = useState<Exercise | null>(null);
 
   const addSetHandler = () => {
     addSet(store, {
@@ -96,6 +99,12 @@ export function Performance({ performance }: PerformanceProps) {
   const replaceBeginHandler = () => {
     setActionsOpen(false);
     setReplaceOpen(true);
+  };
+
+  const editBeginHandler = () => {
+    if (!exercise) return;
+    setActionsOpen(false);
+    setEditState(exercise);
   };
 
   const replaceCompleteHandler = (exercise: Exercise) => {
@@ -217,6 +226,10 @@ export function Performance({ performance }: PerformanceProps) {
             <MdAutorenew />
             <span>Заменить на другое</span>
           </button>
+          <button className={s.sheetAction} onClick={editBeginHandler}>
+            <MdEdit />
+            <span>Изменить упражнение</span>
+          </button>
           <button
             className={clsx(s.sheetAction, s.danger)}
             onClick={deleteHandler}
@@ -247,6 +260,15 @@ export function Performance({ performance }: PerformanceProps) {
           onSubmit={orderCompleteHandler}
         />
       </PageModal>
+      {editState && (
+        <PageModal isOpen={true}>
+          <AddExercise
+            exercise={editState}
+            onCancel={() => setEditState(null)}
+            onSubmit={() => setEditState(null)}
+          />
+        </PageModal>
+      )}
     </div>
   );
 }
