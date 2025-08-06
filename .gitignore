@@ -24,6 +24,5 @@ dist-ssr
 *.sw?
 
 /yjs
-.env
 /scripts/firestore-key.json
 /scripts/firestore-export.json
