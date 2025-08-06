@@ -220,7 +220,10 @@ export function Home() {
               <div className={s.workoutStat}>
                 <div className={s.statName}>Объём</div>
                 <div className={s.statValue}>
-                  {workout.volume?.toLocaleString() ?? "-"} кг
+                  {workout.volume
+                    ? Math.round(workout.volume).toLocaleString()
+                    : "-"}{" "}
+                  кг
                 </div>
               </div>
               <div className={s.workoutStat}>

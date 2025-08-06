@@ -168,7 +168,9 @@ export function Workout() {
         </div>
         <div className={s.stat}>
           <div className={s.statName}>Объём</div>
-          <div className={s.statValue}>{volume.toLocaleString()} кг</div>
+          <div className={s.statValue}>
+            {Math.round(volume).toLocaleString()} кг
+          </div>
         </div>
         <div className={s.stat}>
           <div className={s.statName}>Сеты</div>
