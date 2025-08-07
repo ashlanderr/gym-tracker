@@ -9,7 +9,7 @@ export const REPS_INCREASE_WEIGHT_MULTIPLIER = 1.05;
 export const WARM_UP_SETS = [
   [
     //
-    { weight: 0.6, reps: 10 },
+    { weight: 0.6, reps: 12 },
   ],
   [
     //
