@@ -29,7 +29,7 @@ import {
   volumeToOneRepMax,
 } from "../utils.ts";
 import { useStore } from "../../../../components";
-import { WeightDisplay } from "../WeightDisplay";
+import { WeightsVisualizer } from "../WeightsVisualizer";
 
 export function SetRow({
   exercise,
@@ -226,14 +226,12 @@ export function SetRow({
       </tr>
       <BottomSheet isOpen={isActionsOpen} onClose={() => setActionsOpen(false)}>
         <div className={s.sheetHeader}>Подход</div>
-        {weightConstructor.steps || weightConstructor.additional ? (
-          <div className={s.sheetWeights}>
-            <WeightDisplay
-              equipment={exercise?.equipment ?? "none"}
-              data={weightConstructor}
-            />
-          </div>
-        ) : null}
+        <div className={s.sheetWeights}>
+          <WeightsVisualizer
+            equipment={exercise?.equipment ?? "none"}
+            weights={weightConstructor}
+          />
+        </div>
         <div className={s.sheetActions}>
           <button
             className={s.sheetAction}

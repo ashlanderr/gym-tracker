@@ -1,0 +1,121 @@
+.barbell {
+  display: flex;
+  position: relative;
+  min-height: 20px;
+  align-items: center;
+  gap: 1px;
+}
+
+.bar {
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 20px;
+  background: #555;
+  transform: translateY(-50%);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.barLabel {
+  margin-top: 1px;
+  font-size: 12px;
+}
+
+.plate {
+  z-index: 1;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 100px;
+  background: #888;
+  position: relative;
+  border-radius: 2px;
+}
+
+.innerPlate {
+  width: 4px;
+  height: 40px;
+}
+
+.plateLabel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  white-space: nowrap;
+  transform: translate(-50%, -50%) translate(0, 0) rotate(90deg);
+  font-size: 12px;
+}
+
+.barSpacer {
+  flex: 0 0 auto;
+  width: 10px;
+}
+
+.barCenter {
+  flex: 1 1 0;
+}
+
+.dumbbells {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.dumbbell {
+  width: 150px;
+}
+
+.dumbbellLabel {
+  font-size: 12px;
+}
+
+.machineWeights {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+}
+
+.machineWeight {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  background: #666;
+  padding: 8px;
+  border-radius: 8px;
+
+  & > span {
+    margin-top: 2px;
+  }
+}
+
+.platesMachine {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+
+  .barbell:nth-child(2) {
+    transform: scaleX(-1);
+
+    .plate {
+      transform: scaleX(-1);
+    }
+  }
+}
+
+.platesSpacer {
+  width: 32px;
+}
+
+.platesHolder {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  bottom: 0;
+  width: 16px;
+  background: #555;
+}

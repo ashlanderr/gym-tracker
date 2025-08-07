@@ -33,6 +33,7 @@ export function computeWeights(
       units: "kg",
       totalUnits: valueKg,
       totalKg: valueKg,
+      count: 1,
     };
   }
 
@@ -82,6 +83,7 @@ export function computeWeights(
     base: base !== 0 ? base : undefined,
     steps: combinedSteps.length !== 0 ? combinedSteps : undefined,
     additional: remaining !== 0 ? remaining : undefined,
+    count,
     totalUnits,
   };
 }
