@@ -50,7 +50,7 @@ export function Workout() {
     null,
   );
 
-  // todo disable editing if completed
+  // todo retro records
   // todo access rules
 
   const addPerformanceHandler = (exercise: Exercise) => {
@@ -140,7 +140,7 @@ export function Workout() {
 
     updateWorkout(store, {
       ...workout,
-      completedAt: Date.now(),
+      completedAt: workout.completedAt ?? Date.now(),
       name: data.name,
       sets: completedSets.length,
       records: records.length !== 0 ? records.length : undefined,
@@ -162,7 +162,7 @@ export function Workout() {
         </button>
         <div className={s.pageTitle}>Тренировка</div>
         <button className={s.finishButton} onClick={completeBeginHandler}>
-          Закончить
+          {workout?.completedAt ? "Обновить" : "Закончить"}
         </button>
       </div>
       <div className={s.stats}>
