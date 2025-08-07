@@ -74,7 +74,7 @@ describe("warm up sets", () => {
       weights: plateWeights,
       prev: [{ type: "working", weight: 100, reps: 8 }],
       curr: [{ type: "warm-up", weight: 0, reps: 0 }],
-      recs: [{ type: "warm-up", weight: 60, reps: 10 }],
+      recs: [{ type: "warm-up", weight: 60, reps: 12 }],
     });
   });
 
@@ -152,7 +152,7 @@ describe("warm up sets", () => {
         { type: "working", weight: 100, reps: 8 },
       ],
       curr: [{ type: "warm-up", weight: 0, reps: 0 }],
-      recs: [{ type: "warm-up", weight: 60, reps: 10 }],
+      recs: [{ type: "warm-up", weight: 60, reps: 12 }],
     });
   });
 
