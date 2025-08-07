@@ -6,7 +6,7 @@ interface Entity {
   id: string;
 }
 
-type Op<T> = { eq: T } | { in: T[] } | { ne: T } | { lt: T };
+type Op<T> = { eq: T } | { in: T[] } | { ne: T } | { lt: T } | { le: T };
 
 type Filter<E> = {
   [K in keyof E]?: Op<E[K]>;
@@ -39,6 +39,8 @@ export function queryCollection<E extends Entity>(
           match &&= op.in.includes(value);
         } else if ("lt" in op) {
           match &&= value < op.lt;
+        } else if ("le" in op) {
+          match &&= value <= op.le;
         }
       }
     }

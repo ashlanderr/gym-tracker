@@ -61,19 +61,21 @@ export function useQueryRecordsByExercise(
   });
 }
 
-export function queryLatestRecordByExercise(
+export function queryPreviousRecordByExercise(
   store: Store,
   type: RecordType,
   exercise: string,
+  createdAt: number,
 ): Record | null {
   const records = queryCollection<Record>(
     collection(store.personal, "records"),
     {
       type: { eq: type },
       exercise: { eq: exercise },
+      createdAt: { le: createdAt },
     },
   );
-  return maxBy(records, (a, b) => a.createdAt - b.createdAt);
+  return maxBy(records, (a, b) => a.current - b.current);
 }
 
 export function addRecord(store: Store, entity: Record) {

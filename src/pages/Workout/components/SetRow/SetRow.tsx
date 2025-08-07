@@ -13,7 +13,7 @@ import { clsx } from "clsx";
 import {
   addRecord,
   deleteRecord,
-  queryLatestRecordByExercise,
+  queryPreviousRecordByExercise,
   type RecordType,
   useQueryRecordsBySet,
 } from "../../../../db/records.ts";
@@ -126,10 +126,11 @@ export function SetRow({
     ];
 
     for (const currentRecord of currentRecords) {
-      const previousRecord = queryLatestRecordByExercise(
+      const previousRecord = queryPreviousRecordByExercise(
         store,
         currentRecord.type,
         set.exercise,
+        performance.startedAt,
       );
       const previousValue = previousRecord?.current ?? 0;
 
@@ -141,7 +142,7 @@ export function SetRow({
           exercise: set.exercise,
           performance: set.performance,
           set: set.id,
-          createdAt: Date.now(),
+          createdAt: performance.startedAt,
           type: currentRecord.type,
           previous: previousValue,
           current: currentRecord.value,

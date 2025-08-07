@@ -50,7 +50,6 @@ export function Workout() {
     null,
   );
 
-  // todo retro records
   // todo access rules
 
   const addPerformanceHandler = (exercise: Exercise) => {
