@@ -1,6 +1,9 @@
 import type { WeightsSelectorProps } from "./types.ts";
 import s from "./styles.module.scss";
-import type { Weights, WeightUnits } from "../../../../db/performances.ts";
+import type {
+  PerformanceWeights,
+  WeightUnits,
+} from "../../../../db/performances.ts";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -26,8 +29,8 @@ export function WeightsSelector({
 }
 
 function barbellWeights(
-  value: Weights,
-  onChange: (value: Weights | undefined) => void,
+  value: PerformanceWeights,
+  onChange: (value: PerformanceWeights | undefined) => void,
 ) {
   const toggle = (steps: number[] | number | undefined, value: number) => {
     if (!Array.isArray(steps)) steps = [];
@@ -89,8 +92,8 @@ function barbellWeights(
 }
 
 function dumbbellWeights(
-  value: Weights,
-  onChange: (value: Weights | undefined) => void,
+  value: PerformanceWeights,
+  onChange: (value: PerformanceWeights | undefined) => void,
 ) {
   const weights = [
     {
@@ -138,8 +141,8 @@ function dumbbellWeights(
 }
 
 function machineWeights(
-  value: Weights,
-  onChange: (value: Weights | undefined) => void,
+  value: PerformanceWeights,
+  onChange: (value: PerformanceWeights | undefined) => void,
 ) {
   const weights = [
     {
@@ -187,8 +190,8 @@ function machineWeights(
 }
 
 function platesWeights(
-  value: Weights,
-  onChange: (value: Weights | undefined) => void,
+  value: PerformanceWeights,
+  onChange: (value: PerformanceWeights | undefined) => void,
 ) {
   const toggle = (steps: number[] | number | undefined, value: number) => {
     if (!Array.isArray(steps)) steps = [];
@@ -249,8 +252,8 @@ function platesWeights(
 }
 
 function unitsSelector(
-  value: Weights,
-  onChange: (value: Weights | undefined) => void,
+  value: PerformanceWeights,
+  onChange: (value: PerformanceWeights | undefined) => void,
 ) {
   const unitsHandler = (units: WeightUnits) => {
     onChange({ units });

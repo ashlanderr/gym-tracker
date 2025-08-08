@@ -1,9 +1,10 @@
 import { buildRecommendations } from "./utils.ts";
 import { describe } from "vitest";
 import type { SetData } from "./types.ts";
-import type { Weights } from "../../../../db/performances.ts";
+import type { PerformanceWeights } from "../../../../db/performances.ts";
+import type { ExerciseWeight } from "../../../../db/exercises.ts";
 
-const roundedWeights: Weights = {
+const roundedWeights: PerformanceWeights = {
   units: "kg",
   count: 1,
   additional: 0,
@@ -11,7 +12,7 @@ const roundedWeights: Weights = {
   base: 0,
 };
 
-const plateWeights: Weights = {
+const plateWeights: PerformanceWeights = {
   units: "kg",
   count: 2,
   additional: 0,
@@ -19,18 +20,38 @@ const plateWeights: Weights = {
   base: 0,
 };
 
+const positiveExerciseWeights: ExerciseWeight = {
+  type: "positive",
+  selfWeightPercent: 50,
+};
+
+const negativeExerciseWeights: ExerciseWeight = {
+  type: "negative",
+  selfWeightPercent: 100,
+};
+
 function testRecommendations({
   weights,
   prev,
   curr,
   recs,
+  selfWeight,
+  exercise,
 }: {
-  weights?: Weights;
+  weights?: PerformanceWeights;
   prev: SetData[];
   curr: SetData[];
   recs: SetData[];
+  selfWeight?: number;
+  exercise?: ExerciseWeight;
 }) {
-  const rec = buildRecommendations(prev, curr, weights ?? roundedWeights);
+  const rec = buildRecommendations({
+    prevSets: prev,
+    currentSets: curr,
+    performanceWeights: weights ?? roundedWeights,
+    exerciseWeights: exercise,
+    selfWeight,
+  });
   expect(rec).toEqual(recs);
 }
 
@@ -340,6 +361,202 @@ describe("multiple working sets", () => {
         { type: "working", weight: 42, reps: 15 },
         { type: "working", weight: 42, reps: 15 },
       ],
+    });
+  });
+});
+
+describe("positive exercise weight", () => {
+  test("weight is zero, previous reps is small, current set is not filled -> increase reps", () => {
+    testRecommendations({
+      weights: plateWeights,
+      exercise: positiveExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 0, reps: 8 }],
+      curr: [{ type: "working", weight: 0, reps: 0 }],
+      recs: [{ type: "working", weight: 0, reps: 10 }],
+    });
+  });
+
+  test("previous reps is small, current set is not filled -> increase reps", () => {
+    testRecommendations({
+      weights: plateWeights,
+      exercise: positiveExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 20, reps: 8 }],
+      curr: [{ type: "working", weight: 0, reps: 0 }],
+      recs: [{ type: "working", weight: 20, reps: 10 }],
+    });
+  });
+
+  test("previous reps is very small, current set is not filled -> increase reps", () => {
+    testRecommendations({
+      exercise: positiveExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 30, reps: 1 }],
+      curr: [{ type: "working", weight: 0, reps: 0 }],
+      recs: [{ type: "working", weight: 30, reps: 3 }],
+    });
+  });
+
+  test("previous reps is maxed out, current set is not filled -> increase weight", () => {
+    testRecommendations({
+      exercise: positiveExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 30, reps: 12 }],
+      curr: [{ type: "working", weight: 0, reps: 0 }],
+      recs: [{ type: "working", weight: 36, reps: 8 }],
+    });
+  });
+
+  test("current weight equals previous weight -> recommend more reps", () => {
+    testRecommendations({
+      weights: plateWeights,
+      exercise: positiveExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 12.5, reps: 12 }],
+      curr: [{ type: "working", weight: 12.5, reps: 0 }],
+      recs: [{ type: "working", weight: 12.5, reps: 14 }],
+    });
+  });
+
+  test("current weight greater than previous weight -> recommend less reps", () => {
+    testRecommendations({
+      weights: plateWeights,
+      exercise: positiveExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 10, reps: 12 }],
+      curr: [{ type: "working", weight: 12.5, reps: 0 }],
+      recs: [{ type: "working", weight: 12.5, reps: 10 }],
+    });
+  });
+
+  test("current weight less than previous weight -> recommend more reps", () => {
+    testRecommendations({
+      weights: plateWeights,
+      exercise: positiveExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 10, reps: 8 }],
+      curr: [{ type: "working", weight: 7.5, reps: 0 }],
+      recs: [{ type: "working", weight: 7.5, reps: 11 }],
+    });
+  });
+
+  test("current reps is filled -> compute equivalent 1RM weight", () => {
+    testRecommendations({
+      exercise: positiveExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 50, reps: 8 }],
+      curr: [{ type: "working", weight: 0, reps: 16 }],
+      recs: [{ type: "working", weight: 36, reps: 16 }],
+    });
+  });
+
+  test("no previous warm-up set, 1 current warm-up set is not filled -> 1 set recommendation", () => {
+    testRecommendations({
+      weights: plateWeights,
+      exercise: positiveExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 40, reps: 8 }],
+      curr: [{ type: "warm-up", weight: 0, reps: 0 }],
+      recs: [{ type: "warm-up", weight: 12.5, reps: 12 }],
+    });
+  });
+});
+
+describe("negative exercise weight", () => {
+  test("weight is zero, previous reps is small, current set is not filled -> increase reps", () => {
+    testRecommendations({
+      weights: plateWeights,
+      exercise: negativeExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 0, reps: 8 }],
+      curr: [{ type: "working", weight: 0, reps: 0 }],
+      recs: [{ type: "working", weight: 0, reps: 10 }],
+    });
+  });
+
+  test("previous reps is small, current set is not filled -> increase reps", () => {
+    testRecommendations({
+      weights: plateWeights,
+      exercise: negativeExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 20, reps: 8 }],
+      curr: [{ type: "working", weight: 0, reps: 0 }],
+      recs: [{ type: "working", weight: 20, reps: 10 }],
+    });
+  });
+
+  test("previous reps is very small, current set is not filled -> increase reps", () => {
+    testRecommendations({
+      exercise: negativeExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 30, reps: 1 }],
+      curr: [{ type: "working", weight: 0, reps: 0 }],
+      recs: [{ type: "working", weight: 30, reps: 3 }],
+    });
+  });
+
+  test("previous reps is maxed out, current set is not filled -> decrease weight", () => {
+    testRecommendations({
+      exercise: negativeExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 30, reps: 12 }],
+      curr: [{ type: "working", weight: 0, reps: 0 }],
+      recs: [{ type: "working", weight: 26, reps: 8 }],
+    });
+  });
+
+  test("current weight equals previous weight -> recommend more reps", () => {
+    testRecommendations({
+      weights: plateWeights,
+      exercise: negativeExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 12.5, reps: 12 }],
+      curr: [{ type: "working", weight: 12.5, reps: 0 }],
+      recs: [{ type: "working", weight: 12.5, reps: 14 }],
+    });
+  });
+
+  test("current weight greater than previous weight -> recommend more reps", () => {
+    testRecommendations({
+      weights: plateWeights,
+      exercise: negativeExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 10, reps: 12 }],
+      curr: [{ type: "working", weight: 12.5, reps: 0 }],
+      recs: [{ type: "working", weight: 12.5, reps: 14 }],
+    });
+  });
+
+  test("current weight less than previous weight -> recommend less reps", () => {
+    testRecommendations({
+      weights: plateWeights,
+      exercise: negativeExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 10, reps: 8 }],
+      curr: [{ type: "working", weight: 7.5, reps: 0 }],
+      recs: [{ type: "working", weight: 7.5, reps: 6 }],
+    });
+  });
+
+  test("current reps is filled -> compute equivalent 1RM weight", () => {
+    testRecommendations({
+      exercise: negativeExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 20, reps: 8 }],
+      curr: [{ type: "working", weight: 0, reps: 16 }],
+      recs: [{ type: "working", weight: 26, reps: 16 }],
+    });
+  });
+
+  test("no previous warm-up set, 1 current warm-up set is not filled -> 1 set recommendation", () => {
+    testRecommendations({
+      weights: plateWeights,
+      exercise: negativeExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 20, reps: 8 }],
+      curr: [{ type: "warm-up", weight: 0, reps: 0 }],
+      recs: [{ type: "warm-up", weight: 35, reps: 12 }],
     });
   });
 });

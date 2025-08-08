@@ -30,7 +30,7 @@ import {
   updatePerformance,
   useQueryPreviousPerformance,
   type Performance,
-  type Weights,
+  type PerformanceWeights,
   queryPreviousPerformance,
 } from "../../../../db/performances.ts";
 import { buildRecommendations } from "./utils.ts";
@@ -47,11 +47,16 @@ import { clsx } from "clsx";
 import { WeightsSelector } from "../WeightsSelector";
 import { UNITS_TRANSLATION } from "../../../constants.ts";
 import { AddExercise } from "../AddExercise";
+import {
+  type Measurement,
+  useQueryLatestMeasurement,
+} from "../../../../db/measurements.ts";
 
 export function Performance({ performance }: PerformanceProps) {
   const store = useStore();
   const exercise = useQueryExerciseById(store, performance.exercise);
   const sets = useQuerySetsByPerformance(store, performance.id);
+  const measurement = useQueryLatestMeasurement(store, performance.startedAt);
 
   const prevPerformance = useQueryPreviousPerformance(
     store,
@@ -173,7 +178,7 @@ export function Performance({ performance }: PerformanceProps) {
     setActionsOpen(false);
   };
 
-  const weightsChangeHandler = (weights: Weights | undefined) => {
+  const weightsChangeHandler = (weights: PerformanceWeights | undefined) => {
     updatePerformance(store, { ...performance, weights });
   };
 
@@ -196,7 +201,9 @@ export function Performance({ performance }: PerformanceProps) {
             </th>
           </tr>
         </thead>
-        <tbody>{buildSets(prevSets, sets, performance, exercise)}</tbody>
+        <tbody>
+          {buildSets(prevSets, sets, performance, exercise, measurement)}
+        </tbody>
       </table>
       <button className={s.addSetButton} onClick={addSetHandler}>
         <MdAdd />
@@ -278,6 +285,7 @@ function buildSets(
   sets: Set[],
   performance: Performance,
   exercise: Exercise | null,
+  measurement: Measurement | null,
 ): ReactNode[] {
   const prevWarmUp = prevSets.filter(
     (s) => s.type === "warm-up" && s.weight && s.reps,
@@ -285,11 +293,13 @@ function buildSets(
   const prevWorking = prevSets.filter(
     (s) => s.type === "working" && s.weight && s.reps,
   );
-  const recommendations = buildRecommendations(
+  const recommendations = buildRecommendations({
     prevSets,
-    sets,
-    performance.weights,
-  );
+    currentSets: sets,
+    performanceWeights: performance.weights,
+    exerciseWeights: exercise?.weight,
+    selfWeight: measurement?.weight,
+  });
 
   const result: ReactNode[] = [];
   let warmUpIndex = 0;

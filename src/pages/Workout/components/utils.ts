@@ -1,5 +1,58 @@
-import type { Weights, WeightUnits } from "../../../db/performances.ts";
+import type {
+  PerformanceWeights,
+  WeightUnits,
+} from "../../../db/performances.ts";
 import type { WeightsConstructor } from "./Performance/types.ts";
+import {
+  DEFAULT_EXERCISE_WEIGHT,
+  type ExerciseWeight,
+} from "../../../db/exercises.ts";
+
+export function addSelfWeight(
+  exerciseWeight: ExerciseWeight | undefined,
+  selfWeight: number | undefined,
+  performanceWeight: number,
+): number {
+  exerciseWeight = exerciseWeight ?? DEFAULT_EXERCISE_WEIGHT;
+  selfWeight = selfWeight ?? 0;
+
+  switch (exerciseWeight.type) {
+    case "full":
+      return performanceWeight;
+
+    case "positive":
+      return (
+        (selfWeight * exerciseWeight.selfWeightPercent) / 100 +
+        performanceWeight
+      );
+
+    case "negative":
+      return (
+        (selfWeight * exerciseWeight.selfWeightPercent) / 100 -
+        performanceWeight
+      );
+  }
+}
+
+export function subtractSelfWeight(
+  config: ExerciseWeight | undefined,
+  selfWeight: number | undefined,
+  fullWeight: number,
+): number {
+  config = config ?? DEFAULT_EXERCISE_WEIGHT;
+  selfWeight = selfWeight ?? 0;
+
+  switch (config.type) {
+    case "full":
+      return fullWeight;
+
+    case "positive":
+      return fullWeight - (selfWeight * config.selfWeightPercent) / 100;
+
+    case "negative":
+      return (selfWeight * config.selfWeightPercent) / 100 - fullWeight;
+  }
+}
 
 export function volumeToOneRepMax(weight: number, reps: number): number {
   return weight * (1 + reps / 30);
@@ -18,14 +71,14 @@ export function formatRecordValue(value: number) {
 }
 
 export function snapWeightKg(
-  weights: Weights | undefined,
+  weights: PerformanceWeights | undefined,
   valueKg: number,
 ): number {
   return computeWeights(weights, valueKg).totalKg;
 }
 
 export function computeWeights(
-  weights: Weights | undefined,
+  weights: PerformanceWeights | undefined,
   valueKg: number,
 ): WeightsConstructor {
   if (!weights) {

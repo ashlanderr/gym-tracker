@@ -1,4 +1,4 @@
-import type { SetData, WorkingVolume } from "./types.ts";
+import type { RecommendationParams, SetData, WorkingVolume } from "./types.ts";
 import {
   DEFAULT_RANGE_MAX_REPS,
   DEFAULT_RANGE_MIN_REPS,
@@ -7,15 +7,50 @@ import {
   WARM_UP_WEIGHT_MULTIPLIER,
 } from "./constants.ts";
 import {
-  oneRepMaxToReps,
-  oneRepMaxToWeight,
+  addSelfWeight,
   snapWeightKg,
-  volumeToOneRepMax,
+  subtractSelfWeight,
+  oneRepMaxToWeight as oneRepMaxToWeightInner,
+  oneRepMaxToReps as oneRepMaxToRepsInner,
+  volumeToOneRepMax as volumeToOneRepMaxInner,
 } from "../utils.ts";
-import type { Weights } from "../../../../db/performances.ts";
+
+export function volumeToOneRepMax(
+  params: RecommendationParams,
+  weight: number,
+  reps: number,
+): number {
+  return volumeToOneRepMaxInner(
+    addSelfWeight(params.exerciseWeights, params.selfWeight, weight),
+    reps,
+  );
+}
+
+export function oneRepMaxToWeight(
+  params: RecommendationParams,
+  oneRepMax: number,
+  reps: number,
+): number {
+  return subtractSelfWeight(
+    params.exerciseWeights,
+    params.selfWeight,
+    oneRepMaxToWeightInner(oneRepMax, reps),
+  );
+}
+
+export function oneRepMaxToReps(
+  params: RecommendationParams,
+  oneRepMax: number,
+  weight: number,
+): number {
+  return oneRepMaxToRepsInner(
+    oneRepMax,
+    addSelfWeight(params.exerciseWeights, params.selfWeight, weight),
+  );
+}
 
 function findWorkingVolume(
-  weights: Weights | undefined,
+  params: RecommendationParams,
   workingSets: SetData[],
 ): WorkingVolume | undefined {
   if (workingSets.length === 0) return undefined;
@@ -33,26 +68,34 @@ function findWorkingVolume(
   }
 
   return {
-    weight: snapWeightKg(weights, workingWeight),
+    weight: snapWeightKg(params.performanceWeights, workingWeight),
     reps: workingReps,
-    oneRepMax: volumeToOneRepMax(workingWeight, workingReps),
+    oneRepMax: volumeToOneRepMax(params, workingWeight, workingReps),
   };
 }
 
-function increaseReps(oneRepMax: number, weight: number): number {
+function increaseReps(
+  params: RecommendationParams,
+  oneRepMax: number,
+  weight: number,
+): number {
   const newRepMax = oneRepMax * REPS_INCREASE_WEIGHT_MULTIPLIER;
-  return Math.round(oneRepMaxToReps(newRepMax, weight));
+  return Math.round(oneRepMaxToReps(params, newRepMax, weight));
 }
 
-export function buildRecommendations(
-  prevSets: SetData[],
-  currentSets: SetData[],
-  weights?: Weights,
-): SetData[] {
+export function buildRecommendations(params: RecommendationParams): SetData[] {
+  const {
+    prevSets,
+    currentSets,
+    performanceWeights,
+    exerciseWeights,
+    selfWeight,
+  } = params;
+
   const currentWarmUpSets = currentSets.filter((s) => s.type === "warm-up");
   const prevWorkingSets = prevSets.filter((s) => s.type === "working");
   const warmUpTemplate = WARM_UP_SETS.at(currentWarmUpSets.length - 1) ?? [];
-  const working = findWorkingVolume(weights, prevWorkingSets);
+  const working = findWorkingVolume(params, prevWorkingSets);
   const result: SetData[] = [];
   let warmUpIndex = 0;
   let filledSet: SetData | undefined = undefined;
@@ -70,7 +113,12 @@ export function buildRecommendations(
 
         if (warmUpMax && template && !set.weight && !set.reps) {
           reps = template.reps;
-          weight = snapWeightKg(weights, warmUpMax * template.weight);
+          weight = subtractSelfWeight(
+            exerciseWeights,
+            selfWeight,
+            warmUpMax * template.weight,
+          );
+          weight = snapWeightKg(performanceWeights, weight);
         }
 
         result.push({
@@ -87,7 +135,7 @@ export function buildRecommendations(
         let reps = 0;
 
         if (set.weight && set.reps) {
-          weight = snapWeightKg(weights, set.weight);
+          weight = snapWeightKg(performanceWeights, set.weight);
           reps = set.reps;
         } else if (filledSet && !set.weight && !set.reps) {
           weight = filledSet.weight;
@@ -96,33 +144,35 @@ export function buildRecommendations(
           if (working.reps >= DEFAULT_RANGE_MAX_REPS) {
             reps = DEFAULT_RANGE_MIN_REPS;
             weight = snapWeightKg(
-              weights,
-              oneRepMaxToWeight(working.oneRepMax, reps),
+              performanceWeights,
+              oneRepMaxToWeight(params, working.oneRepMax, reps),
             );
-            if (weight <= working.weight) {
+            if (weight == working.weight) {
               weight = working.weight;
-              reps = increaseReps(working.oneRepMax, weight);
+              reps = increaseReps(params, working.oneRepMax, weight);
             }
           } else {
             weight = working.weight;
-            reps = increaseReps(working.oneRepMax, weight);
+            reps = increaseReps(params, working.oneRepMax, weight);
           }
         } else if (working && set.weight && !set.reps) {
           if (set.weight === working.weight) {
-            weight = snapWeightKg(weights, set.weight);
-            reps = increaseReps(working.oneRepMax, weight);
+            weight = snapWeightKg(performanceWeights, set.weight);
+            reps = increaseReps(params, working.oneRepMax, weight);
           } else {
-            weight = snapWeightKg(weights, set.weight);
-            reps = Math.round(oneRepMaxToReps(working.oneRepMax, weight));
+            weight = snapWeightKg(performanceWeights, set.weight);
+            reps = Math.round(
+              oneRepMaxToReps(params, working.oneRepMax, weight),
+            );
           }
         } else if (working && !set.weight && set.reps) {
           reps = set.reps;
           weight = snapWeightKg(
-            weights,
-            oneRepMaxToWeight(working.oneRepMax, reps),
+            performanceWeights,
+            oneRepMaxToWeight(params, working.oneRepMax, reps),
           );
         } else {
-          weight = snapWeightKg(weights, set.weight);
+          weight = snapWeightKg(performanceWeights, set.weight);
           reps = set.reps;
         }
 

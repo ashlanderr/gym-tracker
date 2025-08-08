@@ -15,12 +15,12 @@ export interface Performance {
   exercise: string;
   order: number;
   startedAt: number;
-  weights?: Weights;
+  weights?: PerformanceWeights;
 }
 
 export type WeightUnits = "kg" | "lbs";
 
-export interface Weights {
+export interface PerformanceWeights {
   units: WeightUnits;
   base?: number;
   steps?: number | number[];
