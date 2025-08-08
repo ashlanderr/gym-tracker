@@ -35,22 +35,22 @@ export function addSelfWeight(
 }
 
 export function subtractSelfWeight(
-  config: ExerciseWeight | undefined,
+  exerciseWeight: ExerciseWeight | undefined,
   selfWeight: number | undefined,
   fullWeight: number,
 ): number {
-  config = config ?? DEFAULT_EXERCISE_WEIGHT;
+  exerciseWeight = exerciseWeight ?? DEFAULT_EXERCISE_WEIGHT;
   selfWeight = selfWeight ?? 0;
 
-  switch (config.type) {
+  switch (exerciseWeight.type) {
     case "full":
       return fullWeight;
 
     case "positive":
-      return fullWeight - (selfWeight * config.selfWeightPercent) / 100;
+      return fullWeight - (selfWeight * exerciseWeight.selfWeightPercent) / 100;
 
     case "negative":
-      return (selfWeight * config.selfWeightPercent) / 100 - fullWeight;
+      return (selfWeight * exerciseWeight.selfWeightPercent) / 100 - fullWeight;
   }
 }
 
