@@ -3,6 +3,7 @@ import { Workout } from "./Workout";
 import { Home } from "./Home";
 import { ProtectedRoute } from "../components";
 import { SignIn } from "./SignIn";
+import { User } from "./User";
 
 export function Layout() {
   return (
@@ -21,6 +22,14 @@ export function Layout() {
           element={
             <ProtectedRoute>
               <Workout />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user"
+          element={
+            <ProtectedRoute>
+              <User />
             </ProtectedRoute>
           }
         />

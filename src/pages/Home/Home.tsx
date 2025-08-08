@@ -16,6 +16,7 @@ import {
   MdLogout,
   MdPerson,
   MdPlayArrow,
+  MdSettings,
 } from "react-icons/md";
 import { useNavigate } from "react-router";
 import { useState } from "react";
@@ -164,6 +165,9 @@ export function Home() {
             <span>Выйти</span>
           </button>
         </div>
+        <button className={s.userSettings} onClick={() => navigate("/user")}>
+          <MdSettings />
+        </button>
       </div>
       <div className={s.workouts}>
         {activeWorkout ? (
