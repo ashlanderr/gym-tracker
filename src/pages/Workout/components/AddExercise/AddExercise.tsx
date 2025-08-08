@@ -4,12 +4,15 @@ import type { AddExerciseProps } from "./types.ts";
 import { useState } from "react";
 import {
   addExercise,
+  DEFAULT_EXERCISE_WEIGHT,
   type EquipmentType,
+  type ExerciseWeight,
   type MuscleType,
   updateExercise,
 } from "../../../../db/exercises.ts";
 import {
   EQUIPMENT_TRANSLATION,
+  EXERCISE_WEIGHT_TRANSLATION,
   MUSCLES_TRANSLATION,
 } from "../../../constants.ts";
 import { clsx } from "clsx";
@@ -26,6 +29,9 @@ export function AddExercise({
   const trimmedName = name.trim();
   const [equipment, setEquipment] = useState(
     () => exercise?.equipment ?? "none",
+  );
+  const [weight, setWeight] = useState(
+    () => exercise?.weight ?? DEFAULT_EXERCISE_WEIGHT,
   );
   const [mainMuscle, setMainMuscle] = useState(
     () => exercise?.muscles?.[0] ?? null,
@@ -46,8 +52,33 @@ export function AddExercise({
     }),
   );
 
+  const weights = Object.entries(EXERCISE_WEIGHT_TRANSLATION).map(
+    ([key, label]) => ({
+      key: key as ExerciseWeight["type"],
+      label,
+    }),
+  );
+
+  const selfWeightPercentages = [0, 25, 50, 75, 100];
+
   const disabled =
     !trimmedName || !mainMuscle || secondaryMuscles.includes(mainMuscle);
+
+  const setWeightHandler = (type: ExerciseWeight["type"]) => {
+    switch (type) {
+      case "full":
+        setWeight({ type: "full" });
+        break;
+
+      case "positive":
+        setWeight({ type: "positive", selfWeightPercent: 50 });
+        break;
+
+      case "negative":
+        setWeight({ type: "negative", selfWeightPercent: 50 });
+        break;
+    }
+  };
 
   const mainMuscleHandler = (muscle: MuscleType) => {
     setMainMuscle(mainMuscle === muscle ? null : muscle);
@@ -71,6 +102,7 @@ export function AddExercise({
         name: trimmedName,
         muscles: [mainMuscle, ...secondaryMuscles],
         equipment,
+        weight,
       };
       updateExercise(store, newExercise);
       onSubmit(newExercise);
@@ -80,6 +112,7 @@ export function AddExercise({
         name: trimmedName,
         muscles: [mainMuscle, ...secondaryMuscles],
         equipment,
+        weight,
       });
       onSubmit(newExercise);
     }
@@ -119,6 +152,37 @@ export function AddExercise({
             </button>
           ))}
         </div>
+        <label className={s.label}>Тип веса</label>
+        <div className={s.chips}>
+          {weights.map((w) => (
+            <button
+              className={clsx(s.chip, weight.type === w.key && s.selected)}
+              key={w.key}
+              onClick={() => setWeightHandler(w.key)}
+            >
+              {w.label}
+            </button>
+          ))}
+        </div>
+        {weight.type !== "full" && (
+          <>
+            <label className={s.label}>Процент собственного веса</label>
+            <div className={s.chips}>
+              {selfWeightPercentages.map((p) => (
+                <button
+                  className={clsx(
+                    s.chip,
+                    weight.selfWeightPercent === p && s.selected,
+                  )}
+                  key={p}
+                  onClick={() => setWeight({ ...weight, selfWeightPercent: p })}
+                >
+                  {p}%
+                </button>
+              ))}
+            </div>
+          </>
+        )}
         <label className={s.label}>Основная группа мышц</label>
         <div className={s.chips}>
           {muscles.map((muscle) => (

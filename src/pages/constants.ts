@@ -1,4 +1,8 @@
-import type { EquipmentType, MuscleType } from "../db/exercises.ts";
+import type {
+  EquipmentType,
+  ExerciseWeight,
+  MuscleType,
+} from "../db/exercises.ts";
 import type { WeightUnits } from "../db/performances.ts";
 import type { RecordType } from "../db/records.ts";
 
@@ -28,6 +32,15 @@ export const EQUIPMENT_TRANSLATION: Record<EquipmentType, string> = {
   dumbbell: "Гантели",
   machine: "Тренажёр",
   plates: "Блины",
+};
+
+export const EXERCISE_WEIGHT_TRANSLATION: Record<
+  ExerciseWeight["type"],
+  string
+> = {
+  full: "Полный",
+  negative: "Облегчение",
+  positive: "Утяжеление",
 };
 
 export const UNITS_TRANSLATION: Record<WeightUnits, string> = {

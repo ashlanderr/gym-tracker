@@ -39,7 +39,15 @@ export interface Exercise {
   name: string;
   muscles: MuscleType[];
   equipment?: EquipmentType;
+  weight?: ExerciseWeight;
 }
+
+export type ExerciseWeight =
+  | { type: "full" }
+  | { type: "positive"; selfWeightPercent: number }
+  | { type: "negative"; selfWeightPercent: number };
+
+export const DEFAULT_EXERCISE_WEIGHT: ExerciseWeight = { type: "full" };
 
 export function queryExerciseById(store: Store, id: string): Exercise | null {
   return getEntity(collection(store.shared, "exercises"), id);
