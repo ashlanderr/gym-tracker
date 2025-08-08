@@ -105,18 +105,22 @@ export function ExerciseHistory({ exercise, onClose }: ExerciseHistoryProps) {
           </ResponsiveContainer>
         </div>
       </div>
-      <div className={s.records}>
-        <div className={s.recordTitle}>
-          <PiMedalFill className={s.recordMedal} />
-          Личные рекорды
-        </div>
-        {latestRecords.map((r) => (
-          <div className={s.record}>
-            <div className={s.recordName}>{r.name}</div>
-            <div className={s.recordValue}>{formatRecordValue(r.value)} кг</div>
+      {latestRecords.length !== 0 && (
+        <div className={s.records}>
+          <div className={s.recordTitle}>
+            <PiMedalFill className={s.recordMedal} />
+            Личные рекорды
           </div>
-        ))}
-      </div>
+          {latestRecords.map((r) => (
+            <div className={s.record} key={r.name}>
+              <div className={s.recordName}>{r.name}</div>
+              <div className={s.recordValue}>
+                {formatRecordValue(r.value)} кг
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -118,7 +118,10 @@ export function SetRow({
     }
   };
 
-  const updateRecords = (set: Set) => {
+  const addRecords = (set: Set) => {
+    // todo support negative weights
+    if (exercise?.weight?.type === "negative") return;
+
     const currentRecords: Array<{ type: RecordType; value: number }> = [
       { type: "one_rep_max", value: volumeToOneRepMax(set.weight, set.reps) },
       { type: "weight", value: set.weight },
@@ -163,7 +166,7 @@ export function SetRow({
         }
       });
       updateSet(store, set);
-      updateRecords(set);
+      addRecords(set);
     } else {
       const set = updateSetInner((set) => ({ ...set, completed: false }));
       updateSet(store, set);
