@@ -150,7 +150,7 @@ function machineWeights(
       options: [0, 2.5, 5, 10, 15],
       selected: value.base,
       onChange: (base: number) =>
-        onChange({ ...value, base: base !== value.bade ? base : undefined }),
+        onChange({ ...value, base: base !== value.base ? base : undefined }),
     },
     {
       label: "Глав. шаг",
