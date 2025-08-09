@@ -104,6 +104,7 @@ function dumbbellWeights(weights: WeightsConstructor) {
 }
 
 function machineWeights(weights: WeightsConstructor) {
+  const baseWeight = weights.base ?? 0;
   const mainWeight = weights.steps?.[0]?.weight ?? 0;
   const additionalWeight = weights.additional ?? 0;
 
@@ -111,7 +112,7 @@ function machineWeights(weights: WeightsConstructor) {
     <div className={s.machineWeights}>
       <div className={s.machineWeight}>
         <RiPlayList2Fill />
-        <span>{mainWeight}</span>
+        <span>{baseWeight + mainWeight}</span>
       </div>
       <div className={s.machineWeight}>
         <LuCircleGauge />
