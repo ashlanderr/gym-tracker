@@ -146,6 +146,13 @@ function machineWeights(
 ) {
   const weights = [
     {
+      label: "Нач. вес",
+      options: [0, 2.5, 5, 10, 15],
+      selected: value.base,
+      onChange: (base: number) =>
+        onChange({ ...value, base: base !== value.bade ? base : undefined }),
+    },
+    {
       label: "Глав. шаг",
       options: [2.5, 5, 10, 15],
       selected: value.steps,
