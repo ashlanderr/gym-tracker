@@ -147,7 +147,7 @@ function machineWeights(
   const weights = [
     {
       label: "Глав. шаг",
-      options: [2.5, 5, 10],
+      options: [2.5, 5, 10, 15],
       selected: value.steps,
       onChange: (step: number) =>
         onChange({ ...value, steps: step !== value.steps ? step : undefined }),
