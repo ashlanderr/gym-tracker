@@ -103,7 +103,7 @@ export function computeWeights(
   let remaining = 0;
 
   if (Array.isArray(weights.steps) && weights.steps.length !== 0) {
-    const steps = weights.steps.sort((a, b) => b - a);
+    const steps = [...weights.steps].sort((a, b) => b - a);
     remaining = separate;
     while (stepped < separate) {
       const stepIndex = steps.findIndex((s) => s <= remaining);
@@ -214,14 +214,16 @@ export function autoDetectWeights(
   };
 }
 
-export function switchUnits(units: WeightUnits): WeightUnits {
-  switch (units) {
-    case "kg":
-      return "lbs";
+export function switchItem<T>(items: T[], current: T | undefined): T {
+  if (current === undefined) return items[0];
+  const index = items.indexOf(current);
+  if (index < 0) return items[0];
+  const nextIndex = (index + 1) % items.length;
+  return items[nextIndex];
+}
 
-    case "lbs":
-      return "kg";
-  }
+export function switchUnits(units: WeightUnits): WeightUnits {
+  return switchItem<WeightUnits>(["kg", "lbs"], units);
 }
 
 export function convertToAutoWeights(

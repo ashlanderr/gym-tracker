@@ -119,3 +119,20 @@
   width: 16px;
   background: #555;
 }
+
+.invalid {
+  .bar,
+  .platesHolder {
+    background: #844;
+  }
+
+  .plate {
+    background: #A66;
+  }
+
+  .barLabel,
+  .plateLabel,
+  .dumbbellLabel {
+    color: #FCC;
+  }
+}

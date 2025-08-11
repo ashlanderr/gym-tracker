@@ -22,7 +22,6 @@ import { RECORDS_TRANSLATION } from "../../../constants.ts";
 import { PiMedalFill } from "react-icons/pi";
 import {
   autoDetectWeights,
-  computeWeights,
   formatRecordValue,
   kgToUnits,
   snapWeightKg,
@@ -31,7 +30,10 @@ import {
 } from "../utils.ts";
 import { useStore } from "../../../../components";
 import { WeightsVisualizer } from "../WeightsVisualizer";
-import { updatePerformance } from "../../../../db/performances.ts";
+import {
+  type PerformanceLoadout,
+  updatePerformance,
+} from "../../../../db/performances.ts";
 
 export function SetRow({
   exercise,
@@ -65,10 +67,7 @@ export function SetRow({
 
   const weight = (convertWeight(set.weight) || "").toString();
   const weightPlaceholder = (convertWeight(recSet?.weight) || "-").toString();
-  const weightConstructor = computeWeights(
-    performance.weights,
-    set.weight || recSet?.weight || 0,
-  );
+  const expectedWeight = set.weight || recSet?.weight || 0;
 
   const reps = set.reps ? set.reps.toString() : "";
   const repsPlaceholder = (recSet?.reps || "-").toString();
@@ -201,6 +200,13 @@ export function SetRow({
     }
   };
 
+  const visualizerChangeHandler = (loadout: PerformanceLoadout) => {
+    updatePerformance(store, {
+      ...performance,
+      loadout,
+    });
+  };
+
   return (
     <>
       <tr className={clsx(set.completed && s.completed)}>
@@ -251,7 +257,10 @@ export function SetRow({
         <div className={s.sheetWeights}>
           <WeightsVisualizer
             equipment={exercise?.equipment ?? "none"}
-            weights={weightConstructor}
+            weights={performance.weights}
+            loadout={performance.loadout}
+            weightKg={expectedWeight}
+            onChange={visualizerChangeHandler}
           />
         </div>
         <div className={s.sheetActions}>

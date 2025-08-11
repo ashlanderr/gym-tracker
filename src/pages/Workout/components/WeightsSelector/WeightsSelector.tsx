@@ -8,6 +8,7 @@ import {
 import { clsx } from "clsx";
 import React from "react";
 import { convertToAutoWeights } from "../utils.ts";
+import { BARBELL_BASES, DEFAULT_PLATES } from "../constants.ts";
 
 export function WeightsSelector({
   equipment,
@@ -73,7 +74,7 @@ function barbellWeights(
   const weights = [
     {
       label: "Штанга",
-      options: value.units === "kg" ? [10, 15, 20] : [25, 35, 45],
+      options: BARBELL_BASES[value.units],
       selected: (v: number) => value.base === v,
       onChange: (base: number) =>
         onChange({
@@ -84,10 +85,7 @@ function barbellWeights(
     },
     {
       label: "Блины",
-      options:
-        value.units === "kg"
-          ? [1.25, 2.5, 5, 10, 20]
-          : [2.5, 5, 10, 25, 35, 45],
+      options: DEFAULT_PLATES[value.units],
       selected: (v: number) =>
         Array.isArray(value.steps) && value.steps.includes(v),
       onChange: (plate: number) =>
@@ -241,10 +239,7 @@ function platesWeights(
   const weights = [
     {
       label: "Блины",
-      options:
-        value.units === "kg"
-          ? [1.25, 2.5, 5, 10, 20]
-          : [2.5, 5, 10, 25, 35, 45],
+      options: DEFAULT_PLATES[value.units],
       selected: (v: number) =>
         Array.isArray(value.steps) && value.steps.includes(v),
       onChange: (plate: number) =>
