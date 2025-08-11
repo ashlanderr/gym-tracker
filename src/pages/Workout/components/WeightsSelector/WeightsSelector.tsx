@@ -3,7 +3,6 @@ import s from "./styles.module.scss";
 import {
   DEFAULT_WEIGHT_UNITS,
   type PerformanceWeights,
-  type WeightUnits,
 } from "../../../../db/performances.ts";
 import { clsx } from "clsx";
 import React from "react";
@@ -14,6 +13,10 @@ export function WeightsSelector({
   onChange,
 }: WeightsSelectorProps) {
   const normalizedValue = value ?? { units: DEFAULT_WEIGHT_UNITS };
+
+  if (value?.auto) {
+    return autoWeights(normalizedValue, onChange);
+  }
 
   switch (equipment) {
     case "barbell":
@@ -27,6 +30,25 @@ export function WeightsSelector({
     default:
       return null;
   }
+}
+
+function autoWeights(
+  value: PerformanceWeights,
+  onChange: (value: PerformanceWeights | undefined) => void,
+) {
+  return (
+    <div className={s.root}>
+      {unitsSelector(value, onChange)}
+      <div className={s.title}>Нач. вес</div>
+      <div className={s.items}>
+        <div className={s.item}>{value.base ?? 0}</div>
+      </div>
+      <div className={s.title}>Глав. шаг</div>
+      <div className={s.items}>
+        <div className={s.item}>{value.steps ?? 0}</div>
+      </div>
+    </div>
+  );
 }
 
 function barbellWeights(
@@ -263,25 +285,27 @@ function unitsSelector(
   value: PerformanceWeights,
   onChange: (value: PerformanceWeights | undefined) => void,
 ) {
-  const unitsHandler = (units: WeightUnits) => {
-    onChange({ units });
-  };
-
   return (
     <>
       <div className={s.title}>Единицы</div>
       <div className={s.items}>
         <button
-          className={clsx(s.item, value.units === "lbs" && s.selected)}
-          onClick={() => unitsHandler("lbs")}
+          className={clsx(s.item, value.auto && s.selected)}
+          onClick={() => onChange({ auto: !value.auto, units: value.units })}
         >
-          LBS
+          AUTO
         </button>
         <button
           className={clsx(s.item, value.units === "kg" && s.selected)}
-          onClick={() => unitsHandler("kg")}
+          onClick={() => onChange({ units: "kg" })}
         >
           KG
+        </button>
+        <button
+          className={clsx(s.item, value.units === "lbs" && s.selected)}
+          onClick={() => onChange({ units: "lbs" })}
+        >
+          LBS
         </button>
       </div>
     </>
