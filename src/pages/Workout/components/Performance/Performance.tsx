@@ -32,6 +32,7 @@ import {
   type Performance,
   type PerformanceWeights,
   queryPreviousPerformance,
+  DEFAULT_WEIGHT_UNITS,
 } from "../../../../db/performances.ts";
 import { buildRecommendations } from "./utils.ts";
 import { SetRow } from "../SetRow";
@@ -70,6 +71,9 @@ export function Performance({ performance }: PerformanceProps) {
   const [isHistoryOpen, setHistoryOpen] = useState(false);
   const [orderState, setOrderState] = useState<Performance[]>([]);
   const [editState, setEditState] = useState<Exercise | null>(null);
+
+  const units = performance.weights?.units ?? DEFAULT_WEIGHT_UNITS;
+  const unitsText = UNITS_TRANSLATION[units];
 
   const addSetHandler = () => {
     addSet(store, {
@@ -192,9 +196,7 @@ export function Performance({ performance }: PerformanceProps) {
           <tr>
             <th className={s.setNumHeader}>Подх.</th>
             <th className={s.prevVolumeHeader}>Пред.</th>
-            <th className={s.currentWeightHeader}>
-              {UNITS_TRANSLATION[performance.weights?.units ?? "kg"]}
-            </th>
+            <th className={s.currentWeightHeader}>{unitsText}</th>
             <th className={s.currentRepsHeader}>Повт.</th>
             <th className={s.setCompletedHeader}>
               <MdCheck />

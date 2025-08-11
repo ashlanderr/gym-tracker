@@ -1,8 +1,9 @@
 import type { WeightsSelectorProps } from "./types.ts";
 import s from "./styles.module.scss";
-import type {
-  PerformanceWeights,
-  WeightUnits,
+import {
+  DEFAULT_WEIGHT_UNITS,
+  type PerformanceWeights,
+  type WeightUnits,
 } from "../../../../db/performances.ts";
 import { clsx } from "clsx";
 import React from "react";
@@ -12,7 +13,7 @@ export function WeightsSelector({
   value,
   onChange,
 }: WeightsSelectorProps) {
-  const normalizedValue = value ?? { units: "kg" };
+  const normalizedValue = value ?? { units: DEFAULT_WEIGHT_UNITS };
 
   switch (equipment) {
     case "barbell":

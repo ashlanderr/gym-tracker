@@ -1,6 +1,7 @@
-import type {
-  PerformanceWeights,
-  WeightUnits,
+import {
+  DEFAULT_WEIGHT_UNITS,
+  type PerformanceWeights,
+  type WeightUnits,
 } from "../../../db/performances.ts";
 import type { WeightsConstructor } from "./Performance/types.ts";
 import {
@@ -164,7 +165,7 @@ export function kgToUnits(
   weightKg: number,
   units: WeightUnits | undefined,
 ): number {
-  switch (units ?? "kg") {
+  switch (units ?? DEFAULT_WEIGHT_UNITS) {
     case "kg":
       return weightKg;
     case "lbs":
@@ -176,10 +177,45 @@ export function unitsToKg(
   weightUnits: number,
   units: WeightUnits | undefined,
 ): number {
-  switch (units ?? "kg") {
+  switch (units ?? DEFAULT_WEIGHT_UNITS) {
     case "kg":
       return weightUnits;
     case "lbs":
       return weightUnits * 0.454;
   }
+}
+
+export function autoDetectWeights(
+  weights: PerformanceWeights | undefined,
+  previousKg: number | undefined,
+  currentKg: number | undefined,
+): PerformanceWeights {
+  if (
+    currentKg === undefined ||
+    previousKg === undefined ||
+    currentKg <= previousKg ||
+    (weights && !weights.auto)
+  ) {
+    return (
+      weights ?? {
+        auto: true,
+        units: DEFAULT_WEIGHT_UNITS,
+        base: 0,
+        steps: 1,
+      }
+    );
+  }
+
+  const units = weights?.units ?? DEFAULT_WEIGHT_UNITS;
+  const previousUnits = kgToUnits(previousKg, units);
+  const currentUnits = kgToUnits(currentKg, units);
+  const steps = currentUnits - previousUnits;
+  const base = currentUnits - Math.floor(currentUnits / steps) * steps;
+
+  return {
+    auto: true,
+    units,
+    base,
+    steps,
+  };
 }

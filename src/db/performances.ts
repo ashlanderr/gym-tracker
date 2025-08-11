@@ -7,6 +7,7 @@ import {
   useQueryCollection,
 } from "./db.ts";
 import type { Store } from "./doc.ts";
+import type { EquipmentType } from "./exercises.ts";
 
 export interface Performance {
   id: string;
@@ -16,16 +17,26 @@ export interface Performance {
   order: number;
   startedAt: number;
   weights?: PerformanceWeights;
+  loadout?: PerformanceLoadout;
 }
 
 export type WeightUnits = "kg" | "lbs";
 
+export const DEFAULT_WEIGHT_UNITS: WeightUnits = "kg";
+
 export interface PerformanceWeights {
   units: WeightUnits;
+  auto?: boolean;
   base?: number;
   steps?: number | number[];
   additional?: number;
   count?: number;
+}
+
+export interface PerformanceLoadout {
+  type: EquipmentType;
+  base: number;
+  count: number;
 }
 
 export function queryPerformancesByWorkout(

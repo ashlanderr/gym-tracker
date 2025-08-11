@@ -77,7 +77,6 @@ export function Workout() {
     });
 
     if (prevSets) {
-      console.log({ prevPerformance, performance, prevSets });
       for (const set of prevSets) {
         addSet(store, {
           id: generateId(),
