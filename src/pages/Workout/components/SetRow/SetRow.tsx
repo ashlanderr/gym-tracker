@@ -21,6 +21,7 @@ import { generateId } from "../../../../db/db.ts";
 import { RECORDS_TRANSLATION } from "../../../constants.ts";
 import { PiMedalFill } from "react-icons/pi";
 import {
+  autoDetectWeights,
   computeWeights,
   formatRecordValue,
   kgToUnits,
@@ -30,6 +31,7 @@ import {
 } from "../utils.ts";
 import { useStore } from "../../../../components";
 import { WeightsVisualizer } from "../WeightsVisualizer";
+import { updatePerformance } from "../../../../db/performances.ts";
 
 export function SetRow({
   exercise,
@@ -94,15 +96,17 @@ export function SetRow({
     setWeightInput(null);
 
     if (!Number.isNaN(newWeight) && newWeight >= 0) {
+      let newWeightKg = unitsToKg(newWeight, performance.weights?.units);
+
+      if (newWeightKg && !performance.weights?.auto) {
+        newWeightKg = snapWeightKg(performance.weights, newWeightKg);
+      }
+
       const set = updateSetInner((set) => ({
         ...set,
-        weight:
-          newWeight &&
-          snapWeightKg(
-            performance.weights,
-            unitsToKg(newWeight, performance.weights?.units),
-          ),
+        weight: newWeightKg,
       }));
+
       updateSet(store, set);
     }
   };
@@ -154,6 +158,18 @@ export function SetRow({
     }
   };
 
+  const updateWeights = (set: Set) => {
+    const weights = autoDetectWeights(
+      performance.weights,
+      prevSet?.weight,
+      set.weight,
+    );
+    updatePerformance(store, {
+      ...performance,
+      weights,
+    });
+  };
+
   const completeHandler = async () => {
     if (!set.completed) {
       const set = updateSetInner((set) => {
@@ -165,8 +181,11 @@ export function SetRow({
           return set;
         }
       });
-      updateSet(store, set);
-      addRecords(set);
+      if (set.completed) {
+        updateSet(store, set);
+        addRecords(set);
+        updateWeights(set);
+      }
     } else {
       const set = updateSetInner((set) => ({ ...set, completed: false }));
       updateSet(store, set);

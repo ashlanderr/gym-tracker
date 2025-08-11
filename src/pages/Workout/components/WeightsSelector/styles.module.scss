@@ -28,6 +28,11 @@
   color: inherit;
   background: #444;
   font: inherit;
+
+  &:disabled {
+    background: #666;
+    color: #BBB;
+  }
 }
 
 .selected {

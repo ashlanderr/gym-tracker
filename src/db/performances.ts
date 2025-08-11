@@ -33,6 +33,13 @@ export interface PerformanceWeights {
   count?: number;
 }
 
+export const DEFAULT_AUTO_WEIGHTS: PerformanceWeights = {
+  units: DEFAULT_WEIGHT_UNITS,
+  auto: true,
+  base: 0,
+  steps: 1,
+};
+
 export interface PerformanceLoadout {
   type: EquipmentType;
   base: number;

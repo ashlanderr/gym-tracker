@@ -1,6 +1,7 @@
 import type { WeightsSelectorProps } from "./types.ts";
 import s from "./styles.module.scss";
 import {
+  DEFAULT_AUTO_WEIGHTS,
   DEFAULT_WEIGHT_UNITS,
   type PerformanceWeights,
 } from "../../../../db/performances.ts";
@@ -36,16 +37,23 @@ function autoWeights(
   value: PerformanceWeights,
   onChange: (value: PerformanceWeights | undefined) => void,
 ) {
+  const base = value.base ?? DEFAULT_AUTO_WEIGHTS.base;
+  const steps = value.steps ?? DEFAULT_AUTO_WEIGHTS.steps;
+
   return (
     <div className={s.root}>
       {unitsSelector(value, onChange)}
       <div className={s.title}>Нач. вес</div>
       <div className={s.items}>
-        <div className={s.item}>{value.base ?? 0}</div>
+        <button className={s.item} disabled={true}>
+          {base}
+        </button>
       </div>
       <div className={s.title}>Глав. шаг</div>
       <div className={s.items}>
-        <div className={s.item}>{value.steps ?? 0}</div>
+        <button className={s.item} disabled={true}>
+          {steps}
+        </button>
       </div>
     </div>
   );
@@ -297,12 +305,14 @@ function unitsSelector(
         </button>
         <button
           className={clsx(s.item, value.units === "kg" && s.selected)}
+          disabled={value.auto}
           onClick={() => onChange({ units: "kg" })}
         >
           KG
         </button>
         <button
           className={clsx(s.item, value.units === "lbs" && s.selected)}
+          disabled={value.auto}
           onClick={() => onChange({ units: "lbs" })}
         >
           LBS

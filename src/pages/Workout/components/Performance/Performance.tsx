@@ -33,6 +33,7 @@ import {
   type PerformanceWeights,
   queryPreviousPerformance,
   DEFAULT_WEIGHT_UNITS,
+  DEFAULT_AUTO_WEIGHTS,
 } from "../../../../db/performances.ts";
 import { buildRecommendations } from "./utils.ts";
 import { SetRow } from "../SetRow";
@@ -52,6 +53,7 @@ import {
   type Measurement,
   useQueryLatestMeasurement,
 } from "../../../../db/measurements.ts";
+import { switchUnits } from "../utils.ts";
 
 export function Performance({ performance }: PerformanceProps) {
   const store = useStore();
@@ -186,6 +188,18 @@ export function Performance({ performance }: PerformanceProps) {
     updatePerformance(store, { ...performance, weights });
   };
 
+  const switchUnitsHandler = () => {
+    if (performance.weights?.auto) {
+      updatePerformance(store, {
+        ...performance,
+        weights: {
+          ...DEFAULT_AUTO_WEIGHTS,
+          units: switchUnits(units),
+        },
+      });
+    }
+  };
+
   return (
     <div className={s.exercise}>
       <div className={s.exerciseName} onClick={() => setActionsOpen(true)}>
@@ -196,7 +210,9 @@ export function Performance({ performance }: PerformanceProps) {
           <tr>
             <th className={s.setNumHeader}>Подх.</th>
             <th className={s.prevVolumeHeader}>Пред.</th>
-            <th className={s.currentWeightHeader}>{unitsText}</th>
+            <th className={s.currentWeightHeader} onClick={switchUnitsHandler}>
+              {unitsText}
+            </th>
             <th className={s.currentRepsHeader}>Повт.</th>
             <th className={s.setCompletedHeader}>
               <MdCheck />

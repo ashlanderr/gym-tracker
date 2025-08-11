@@ -1,4 +1,5 @@
 import {
+  DEFAULT_AUTO_WEIGHTS,
   DEFAULT_WEIGHT_UNITS,
   type PerformanceWeights,
   type WeightUnits,
@@ -196,14 +197,7 @@ export function autoDetectWeights(
     currentKg <= previousKg ||
     (weights && !weights.auto)
   ) {
-    return (
-      weights ?? {
-        auto: true,
-        units: DEFAULT_WEIGHT_UNITS,
-        base: 0,
-        steps: 1,
-      }
-    );
+    return weights ?? DEFAULT_AUTO_WEIGHTS;
   }
 
   const units = weights?.units ?? DEFAULT_WEIGHT_UNITS;
@@ -218,4 +212,14 @@ export function autoDetectWeights(
     base,
     steps,
   };
+}
+
+export function switchUnits(units: WeightUnits): WeightUnits {
+  switch (units) {
+    case "kg":
+      return "lbs";
+
+    case "lbs":
+      return "kg";
+  }
 }
