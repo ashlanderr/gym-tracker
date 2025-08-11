@@ -74,6 +74,7 @@ export function Workout() {
       order: Math.max(-1, ...performances.map((p) => p.order)) + 1,
       startedAt: workout.startedAt,
       weights: prevPerformance?.weights,
+      loadout: prevPerformance?.loadout,
     });
 
     if (prevSets) {

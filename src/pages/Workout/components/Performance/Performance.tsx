@@ -138,6 +138,7 @@ export function Performance({ performance }: PerformanceProps) {
       ...performance,
       exercise: exercise.id,
       weights: prevPerformance?.weights,
+      loadout: prevPerformance?.loadout,
     });
 
     if (prevSets) {

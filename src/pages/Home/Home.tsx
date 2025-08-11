@@ -116,6 +116,7 @@ export function Home() {
         order: performance.order,
         startedAt: newWorkout.startedAt,
         weights: prevPerformance?.weights,
+        loadout: prevPerformance?.loadout,
       });
 
       const performanceSets = sets.filter(
