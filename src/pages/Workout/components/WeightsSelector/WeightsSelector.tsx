@@ -7,6 +7,7 @@ import {
 } from "../../../../db/performances.ts";
 import { clsx } from "clsx";
 import React from "react";
+import { convertToAutoWeights } from "../utils.ts";
 
 export function WeightsSelector({
   equipment,
@@ -293,13 +294,21 @@ function unitsSelector(
   value: PerformanceWeights,
   onChange: (value: PerformanceWeights | undefined) => void,
 ) {
+  const autoToggleHandler = () => {
+    if (!value.auto) {
+      onChange(convertToAutoWeights(value));
+    } else {
+      onChange({ units: value.units, auto: false });
+    }
+  };
+
   return (
     <>
       <div className={s.title}>Единицы</div>
       <div className={s.items}>
         <button
           className={clsx(s.item, value.auto && s.selected)}
-          onClick={() => onChange({ auto: !value.auto, units: value.units })}
+          onClick={autoToggleHandler}
         >
           AUTO
         </button>

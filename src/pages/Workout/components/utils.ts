@@ -223,3 +223,24 @@ export function switchUnits(units: WeightUnits): WeightUnits {
       return "kg";
   }
 }
+
+export function convertToAutoWeights(
+  weights: PerformanceWeights,
+): PerformanceWeights {
+  const base = weights.base ?? DEFAULT_AUTO_WEIGHTS.base;
+  const count = weights.count ?? 1;
+  let steps = DEFAULT_AUTO_WEIGHTS.steps;
+
+  if (Array.isArray(weights.steps) && weights.steps.length > 0) {
+    steps = Math.min(...weights.steps) * count;
+  } else if (typeof weights.steps === "number") {
+    steps = weights.steps * count;
+  }
+
+  return {
+    units: weights.units,
+    auto: true,
+    base,
+    steps,
+  };
+}
