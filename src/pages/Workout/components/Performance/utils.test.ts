@@ -318,6 +318,14 @@ describe("single working set", () => {
       recs: [{ type: "working", weight: 41, reps: 16 }],
     });
   });
+
+  test("previous reps is almost maxed out -> increase to max reps", () => {
+    testRecommendations({
+      prev: [{ type: "working", weight: 50, reps: 11 }],
+      curr: [{ type: "working", weight: 0, reps: 0 }],
+      recs: [{ type: "working", weight: 50, reps: 12 }],
+    });
+  });
 });
 
 describe("multiple working sets", () => {

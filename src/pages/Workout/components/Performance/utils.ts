@@ -162,6 +162,7 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
           } else {
             weight = working.weight;
             reps = increaseReps(params, working.oneRepMax, weight);
+            reps = Math.min(reps, DEFAULT_RANGE_MAX_REPS);
           }
         } else if (working && set.weight && !set.reps) {
           if (set.weight === working.weight) {
