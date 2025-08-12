@@ -148,8 +148,10 @@ function dumbbellWeights({
   const ctor = computeWeights(weights, weightKg);
   const isInvalid = !isSameWeight(ctor.totalKg, weightKg);
 
-  const weight = ctor.steps?.[0]?.weight;
-  if (!weight) return null;
+  const step = ctor.steps?.at(0);
+  if (!step) return null;
+
+  const weight = step.weight * step.count;
 
   let repeat: number[];
   if (ctor.count === 2) {
@@ -200,8 +202,10 @@ function machineWeights({ weights, weightKg }: WeightsVisualizerProps) {
 
   const ctor = computeWeights(weights, weightKg);
   const baseWeight = ctor.base ?? 0;
-  const mainWeight = ctor.steps?.[0]?.weight ?? 0;
-  const additionalWeight = ctor.additional ?? 0;
+  const mainStep = ctor.steps?.at(0) ?? { weight: 0, count: 0 };
+  const additionalStep = ctor.steps?.at(1) ?? { weight: 0, count: 0 };
+  const mainWeight = mainStep.weight * mainStep.count;
+  const additionalWeight = additionalStep.weight * additionalStep.count;
 
   return (
     <div className={s.machineWeights}>

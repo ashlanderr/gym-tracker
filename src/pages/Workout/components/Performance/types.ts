@@ -41,5 +41,4 @@ export interface WeightsConstructor {
     weight: number;
     count: number;
   }>;
-  additional?: number;
 }
