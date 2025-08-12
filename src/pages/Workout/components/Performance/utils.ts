@@ -2,6 +2,7 @@ import type { RecommendationParams, SetData, WorkingVolume } from "./types.ts";
 import {
   DEFAULT_RANGE_MAX_REPS,
   DEFAULT_RANGE_MIN_REPS,
+  EXTRA_RANGE_MIN_REPS,
   REPS_INCREASE_WEIGHT_MULTIPLIER,
   WARM_UP_SETS,
   WARM_UP_WEIGHT_MULTIPLIER,
@@ -147,6 +148,13 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
               performanceWeights,
               oneRepMaxToWeight(params, working.oneRepMax, reps),
             );
+            if (weight == working.weight) {
+              reps = EXTRA_RANGE_MIN_REPS;
+              weight = snapWeightKg(
+                performanceWeights,
+                oneRepMaxToWeight(params, working.oneRepMax, reps),
+              );
+            }
             if (weight == working.weight) {
               weight = working.weight;
               reps = increaseReps(params, working.oneRepMax, weight);

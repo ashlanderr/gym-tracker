@@ -273,6 +273,15 @@ describe("single working set", () => {
     });
   });
 
+  test("previous reps is maxed out, weight is small, current set is not filled -> extra low reps", () => {
+    testRecommendations({
+      weights: plateWeights,
+      prev: [{ type: "working", weight: 15, reps: 12 }],
+      curr: [{ type: "working", weight: 0, reps: 0 }],
+      recs: [{ type: "working", weight: 17.5, reps: 6 }],
+    });
+  });
+
   test("current weight equals previous weight -> recommend more reps", () => {
     testRecommendations({
       weights: plateWeights,
