@@ -33,7 +33,7 @@ import { clsx } from "clsx";
 import { signOut, useUser } from "../../firebase/auth.ts";
 import { deleteRecord, queryRecordsByWorkout } from "../../db/records.ts";
 import { useStore } from "../../components";
-import { ModalDialog } from "../Workout/components/ModalDialog";
+import { ModalDialog } from "../Workout/components";
 import { useConnectionStatus } from "../../components/StoreProvider/hooks.ts";
 import { PiMedalFill } from "react-icons/pi";
 
