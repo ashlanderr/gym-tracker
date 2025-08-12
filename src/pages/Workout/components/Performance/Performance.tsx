@@ -53,6 +53,7 @@ import {
   useQueryLatestMeasurement,
 } from "../../../../db/measurements.ts";
 import { switchUnits } from "../utils.ts";
+import { PerformanceTimer } from "../PerformanceTimer";
 
 export function Performance({ performance }: PerformanceProps) {
   const store = useStore();
@@ -138,6 +139,7 @@ export function Performance({ performance }: PerformanceProps) {
       exercise: exercise.id,
       weights: prevPerformance?.weights,
       loadout: prevPerformance?.loadout,
+      timer: prevPerformance?.timer,
     });
 
     if (prevSets) {
@@ -204,6 +206,9 @@ export function Performance({ performance }: PerformanceProps) {
     <div className={s.exercise}>
       <div className={s.exerciseName} onClick={() => setActionsOpen(true)}>
         {exercise?.name ?? "-"}
+      </div>
+      <div className={s.timer}>
+        <PerformanceTimer performance={performance} />
       </div>
       <table className={s.sets}>
         <thead>

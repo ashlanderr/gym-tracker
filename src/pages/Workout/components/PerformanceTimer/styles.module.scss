@@ -1,0 +1,44 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #08F;
+  margin: 0 0 0 -2px;
+  font: inherit;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: none;
+}
+
+.icon {
+  margin: 0 0 2px 0;
+}
+
+.sheetHeader {
+  padding: 24px 16px;
+  border-bottom: 1px solid #666;
+  text-align: center;
+}
+
+.sheetSelector {
+  max-height: 160px;
+  overflow: scroll;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 16px;
+  border-bottom: 1px solid #666;
+  margin: 0 0 32px;
+  font-size: 20px;
+}
+
+.sheetOption {
+  padding: 12px 0;
+  color: inherit;
+  margin: 0;
+  font: inherit;
+  border: none;
+  outline: none;
+  background: none;
+}

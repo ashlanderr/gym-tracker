@@ -1,0 +1,32 @@
+.root {
+  display: flex;
+  padding: 16px;
+  align-items: center;
+  gap: 8px;
+}
+
+.button {
+  margin: 0;
+  background: #444;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: none;
+  outline: none;
+  border-radius: 4px;
+  font-size: inherit;
+  padding: 12px 12px 10px 12px;
+  line-height: 1;
+}
+
+.skipButton {
+  margin-left: auto;
+  background: #06F;
+  color: #fff;
+}
+
+.time {
+  font-size: 24px;
+}

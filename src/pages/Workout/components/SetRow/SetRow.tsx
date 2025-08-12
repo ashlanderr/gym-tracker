@@ -36,6 +36,7 @@ import {
   queryPreviousPerformance,
   updatePerformance,
 } from "../../../../db/performances.ts";
+import { useActiveTimer } from "../ActiveTimer";
 
 export function SetRow({
   exercise,
@@ -51,6 +52,7 @@ export function SetRow({
   const [weightInput, setWeightInput] = useState<string | null>(null);
   const [repsInput, setRepsInput] = useState<string | null>(null);
   const records = useQueryRecordsBySet(store, set.id);
+  const { startTimer } = useActiveTimer();
 
   const updatedSet = useRef(set);
   useEffect(() => {
@@ -193,6 +195,7 @@ export function SetRow({
         updateSet(store, set);
         addRecords(set);
         updateWeights(set);
+        startTimer(performance.timer);
       }
     } else {
       const set = updateSetInner((set) => ({ ...set, completed: false }));

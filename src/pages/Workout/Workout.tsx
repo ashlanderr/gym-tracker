@@ -5,12 +5,6 @@ import { updateWorkout, useQueryWorkoutById } from "../../db/workouts.ts";
 import type { WorkoutParams } from "./types.ts";
 import { usePageParams } from "../hooks.ts";
 import { useState } from "react";
-import { PageModal } from "./components/PageModal";
-import { ModalDialog } from "./components/ModalDialog";
-import {
-  type CompleteWorkoutData,
-  CompleteWorkoutModal,
-} from "./components/CompleteWorkoutModal";
 import { useNavigate } from "react-router";
 import { useTimer } from "../hooks.ts";
 import {
@@ -19,8 +13,15 @@ import {
   queryPreviousPerformance,
   useQueryPerformancesByWorkout,
 } from "../../db/performances.ts";
-import { Performance } from "./components";
-import { ChooseExercise } from "./components/ChooseExercise";
+import {
+  Performance,
+  ChooseExercise,
+  CompleteWorkoutModal,
+  ModalDialog,
+  PageModal,
+  type CompleteWorkoutData,
+  ActiveTimer,
+} from "./components";
 import { generateId } from "../../db/db.ts";
 import {
   addSet,
@@ -75,6 +76,7 @@ export function Workout() {
       startedAt: workout.startedAt,
       weights: prevPerformance?.weights,
       loadout: prevPerformance?.loadout,
+      timer: prevPerformance?.timer,
     });
 
     if (prevSets) {
@@ -152,6 +154,7 @@ export function Workout() {
 
   return (
     <div className={s.root}>
+      <ActiveTimer />
       <div className={s.toolbar}>
         <button
           className={s.backButton}

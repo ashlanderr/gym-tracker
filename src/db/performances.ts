@@ -18,6 +18,7 @@ export interface Performance {
   startedAt: number;
   weights?: PerformanceWeights;
   loadout?: PerformanceLoadout;
+  timer?: number;
 }
 
 export type WeightUnits = "kg" | "lbs";

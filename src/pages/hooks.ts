@@ -34,9 +34,7 @@ export function buildTime(
   const delta = Math.floor(
     Math.max(completedAt.valueOf() / 1000 - startedAt.valueOf() / 1000, 0),
   );
-  const seconds = delta % 60;
-  const minutes = Math.floor(delta / 60) % 60;
-  const hours = Math.floor(delta / 3600);
+  const { seconds, minutes, hours } = buildTimeParts(delta);
   const parts: string[] = [];
 
   if (hours) parts.push(`${hours}h`);
@@ -44,4 +42,11 @@ export function buildTime(
   if (hours || minutes || seconds) parts.push(`${seconds}s`);
 
   return parts.slice(0, 2).join(" ") || "0s";
+}
+
+export function buildTimeParts(deltaSeconds: number) {
+  const seconds = deltaSeconds % 60;
+  const minutes = Math.floor(deltaSeconds / 60) % 60;
+  const hours = Math.floor(deltaSeconds / 3600);
+  return { seconds, minutes, hours };
 }
