@@ -136,7 +136,7 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
         let reps = 0;
 
         if (set.weight && set.reps) {
-          weight = snapWeightKg(performanceWeights, set.weight);
+          weight = set.weight;
           reps = set.reps;
         } else if (filledSet && !set.weight && !set.reps) {
           weight = filledSet.weight;
@@ -166,10 +166,10 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
           }
         } else if (working && set.weight && !set.reps) {
           if (set.weight === working.weight) {
-            weight = snapWeightKg(performanceWeights, set.weight);
+            weight = set.weight;
             reps = increaseReps(params, working.oneRepMax, weight);
           } else {
-            weight = snapWeightKg(performanceWeights, set.weight);
+            weight = set.weight;
             reps = Math.round(
               oneRepMaxToReps(params, working.oneRepMax, weight),
             );
@@ -181,7 +181,7 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
             oneRepMaxToWeight(params, working.oneRepMax, reps),
           );
         } else {
-          weight = snapWeightKg(performanceWeights, set.weight);
+          weight = set.weight;
           reps = set.reps;
         }
 
