@@ -104,7 +104,8 @@ export function computeWeights(
 
   if (Array.isArray(weights.steps) && weights.steps.length !== 0) {
     const steps = [...weights.steps].sort((a, b) => b - a);
-    remaining = separate;
+    const smallestStep = steps[steps.length - 1];
+    remaining = Math.round(separate / smallestStep) * smallestStep;
     while (stepped < separate) {
       const stepIndex = steps.findIndex((s) => s <= remaining);
       if (stepIndex < 0) break;
@@ -114,10 +115,10 @@ export function computeWeights(
       resultSteps.push(stepValue);
     }
   } else if (typeof weights.steps === "number") {
-    stepped = Math.floor(separate / weights.steps) * weights.steps;
+    stepped = Math.round(separate / weights.steps) * weights.steps;
     resultSteps.push(stepped);
   } else {
-    stepped = Math.floor(separate);
+    stepped = Math.round(separate);
     resultSteps.push(stepped);
   }
 

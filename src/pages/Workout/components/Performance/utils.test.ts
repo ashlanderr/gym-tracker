@@ -168,6 +168,7 @@ describe("warm up sets", () => {
 
   test("previous warm-up is filled, current is not filled -> standard recommendation", () => {
     testRecommendations({
+      weights: plateWeights,
       prev: [
         { type: "warm-up", weight: 20, reps: 20 },
         { type: "working", weight: 100, reps: 8 },
@@ -267,18 +268,19 @@ describe("single working set", () => {
 
   test("previous reps is maxed out, weight is too small, current set is not filled -> increase reps", () => {
     testRecommendations({
-      prev: [{ type: "working", weight: 4, reps: 12 }],
+      weights: roundedWeights,
+      prev: [{ type: "working", weight: 3, reps: 12 }],
       curr: [{ type: "working", weight: 0, reps: 0 }],
-      recs: [{ type: "working", weight: 4, reps: 14 }],
+      recs: [{ type: "working", weight: 3, reps: 14 }],
     });
   });
 
   test("previous reps is maxed out, weight is small, current set is not filled -> extra low reps", () => {
     testRecommendations({
       weights: plateWeights,
-      prev: [{ type: "working", weight: 15, reps: 12 }],
+      prev: [{ type: "working", weight: 10, reps: 12 }],
       curr: [{ type: "working", weight: 0, reps: 0 }],
-      recs: [{ type: "working", weight: 17.5, reps: 6 }],
+      recs: [{ type: "working", weight: 12.5, reps: 6 }],
     });
   });
 
@@ -507,11 +509,12 @@ describe("negative exercise weight", () => {
 
   test("previous reps is maxed out, current set is not filled -> decrease weight", () => {
     testRecommendations({
+      weights: roundedWeights,
       exercise: negativeExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 30, reps: 12 }],
       curr: [{ type: "working", weight: 0, reps: 0 }],
-      recs: [{ type: "working", weight: 26, reps: 8 }],
+      recs: [{ type: "working", weight: 27, reps: 8 }],
     });
   });
 
@@ -550,11 +553,12 @@ describe("negative exercise weight", () => {
 
   test("current reps is filled -> compute equivalent 1RM weight", () => {
     testRecommendations({
+      weights: roundedWeights,
       exercise: negativeExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 20, reps: 8 }],
       curr: [{ type: "working", weight: 0, reps: 16 }],
-      recs: [{ type: "working", weight: 26, reps: 16 }],
+      recs: [{ type: "working", weight: 27, reps: 16 }],
     });
   });
 
