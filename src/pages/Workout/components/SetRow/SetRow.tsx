@@ -33,6 +33,7 @@ import { WeightsVisualizer } from "../WeightsVisualizer";
 import {
   DEFAULT_AUTO_WEIGHTS,
   type PerformanceLoadout,
+  queryPreviousPerformance,
   updatePerformance,
 } from "../../../../db/performances.ts";
 
@@ -159,15 +160,22 @@ export function SetRow({
   };
 
   const updateWeights = (set: Set) => {
-    const weights = autoDetectWeights(
-      performance.weights,
-      prevSet?.weight,
-      set.weight,
+    const prevPerformance = queryPreviousPerformance(
+      store,
+      set.exercise,
+      performance.startedAt,
     );
-    updatePerformance(store, {
-      ...performance,
-      weights,
-    });
+    if (prevPerformance?.weights?.units === performance.weights?.units) {
+      const weights = autoDetectWeights(
+        performance.weights,
+        prevSet?.weight,
+        set.weight,
+      );
+      updatePerformance(store, {
+        ...performance,
+        weights,
+      });
+    }
   };
 
   const completeHandler = async () => {
