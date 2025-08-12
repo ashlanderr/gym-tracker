@@ -32,7 +32,6 @@ import {
   type Performance,
   type PerformanceWeights,
   queryPreviousPerformance,
-  DEFAULT_WEIGHT_UNITS,
   DEFAULT_AUTO_WEIGHTS,
 } from "../../../../db/performances.ts";
 import { buildRecommendations } from "./utils.ts";
@@ -74,8 +73,8 @@ export function Performance({ performance }: PerformanceProps) {
   const [orderState, setOrderState] = useState<Performance[]>([]);
   const [editState, setEditState] = useState<Exercise | null>(null);
 
-  const units = performance.weights?.units ?? DEFAULT_WEIGHT_UNITS;
-  const unitsText = UNITS_TRANSLATION[units];
+  const weights = performance.weights ?? DEFAULT_AUTO_WEIGHTS;
+  const unitsText = UNITS_TRANSLATION[weights.units];
 
   const addSetHandler = () => {
     addSet(store, {
@@ -190,12 +189,12 @@ export function Performance({ performance }: PerformanceProps) {
   };
 
   const switchUnitsHandler = () => {
-    if (performance.weights?.auto) {
+    if (weights.auto) {
       updatePerformance(store, {
         ...performance,
         weights: {
           ...DEFAULT_AUTO_WEIGHTS,
-          units: switchUnits(units),
+          units: switchUnits(weights.units),
         },
       });
     }
@@ -234,7 +233,7 @@ export function Performance({ performance }: PerformanceProps) {
           <div className={s.sheetWeights}>
             <WeightsSelector
               equipment={exercise.equipment}
-              value={performance.weights}
+              value={weights}
               onChange={weightsChangeHandler}
             />
           </div>

@@ -133,7 +133,7 @@ function dumbbellWeights({
     loadout = loadout ?? {
       type: equipment,
       base: 0,
-      count: 1,
+      count: 2,
     };
     weights = {
       auto: true,
@@ -232,7 +232,7 @@ function platesWeights({
     loadout = loadout ?? {
       type: equipment,
       base: 0,
-      count: 1,
+      count: 2,
     };
     weights = {
       auto: true,

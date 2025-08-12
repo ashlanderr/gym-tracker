@@ -31,6 +31,7 @@ import {
 import { useStore } from "../../../../components";
 import { WeightsVisualizer } from "../WeightsVisualizer";
 import {
+  DEFAULT_AUTO_WEIGHTS,
   type PerformanceLoadout,
   updatePerformance,
 } from "../../../../db/performances.ts";
@@ -257,7 +258,7 @@ export function SetRow({
         <div className={s.sheetWeights}>
           <WeightsVisualizer
             equipment={exercise?.equipment ?? "none"}
-            weights={performance.weights}
+            weights={performance.weights ?? DEFAULT_AUTO_WEIGHTS}
             loadout={performance.loadout}
             weightKg={expectedWeight}
             onChange={visualizerChangeHandler}
