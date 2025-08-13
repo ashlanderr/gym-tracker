@@ -316,6 +316,9 @@ function buildSets(
   const prevWorking = prevSets.filter(
     (s) => s.type === "working" && s.weight && s.reps,
   );
+  const prevFailure = prevSets.filter(
+    (s) => s.type === "failure" && s.weight && s.reps,
+  );
   const recommendations = buildRecommendations({
     prevSets,
     currentSets: sets,
@@ -327,6 +330,7 @@ function buildSets(
   const result: ReactNode[] = [];
   let warmUpIndex = 0;
   let workingIndex = 0;
+  let failureIndex = 0;
 
   sets.forEach((set, index) => {
     let number = "-";
@@ -341,6 +345,10 @@ function buildSets(
       number = (workingIndex + 1).toString();
       prevSet = prevWorking[workingIndex];
       workingIndex += 1;
+    } else if (set.type === "failure") {
+      number = "F";
+      prevSet = prevFailure[failureIndex];
+      failureIndex += 1;
     }
 
     result.push(

@@ -94,7 +94,7 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
   } = params;
 
   const currentWarmUpSets = currentSets.filter((s) => s.type === "warm-up");
-  const prevWorkingSets = prevSets.filter((s) => s.type === "working");
+  const prevWorkingSets = prevSets.filter((s) => s.type !== "warm-up");
   const warmUpTemplate = WARM_UP_SETS.at(currentWarmUpSets.length - 1) ?? [];
   const working = findWorkingVolume(params, prevWorkingSets);
   const result: SetData[] = [];
@@ -131,7 +131,8 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
         break;
       }
 
-      case "working": {
+      case "working":
+      case "failure": {
         let weight = 0;
         let reps = 0;
 
@@ -186,7 +187,7 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
         }
 
         filledSet = {
-          type: "working",
+          type: set.type,
           weight,
           reps,
         };
