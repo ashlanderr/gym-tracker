@@ -224,7 +224,14 @@ export function SetRow({
       <tr className={clsx(set.completed && s.completed)}>
         <td className={s.setNumValue} onClick={setInfoHandler}>
           {records.length === 0 ? (
-            <span>{number}</span>
+            <span
+              className={clsx({
+                [s.warmUpSet]: set.type === "warm-up",
+                [s.workingSet]: set.type === "working",
+              })}
+            >
+              {number}
+            </span>
           ) : (
             <PiMedalFill className={s.recordMedal} />
           )}
