@@ -1,3 +1,3 @@
 import { atom } from "jotai";
 
-export const TIMER_ATOM = atom(0);
+export const TIMER_DEADLINE_ATOM = atom<number | null>(null);

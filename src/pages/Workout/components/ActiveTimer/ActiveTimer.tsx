@@ -1,38 +1,42 @@
 import { BottomSheet } from "../BottomSheet";
 import { buildTimeParts } from "../../../hooks.ts";
 import { useAtom } from "jotai";
-import { TIMER_ATOM } from "./constants.ts";
+import { TIMER_DEADLINE_ATOM } from "./constants.ts";
 import s from "./styles.module.scss";
 import { clsx } from "clsx";
-import { useEffect } from "react";
-import { clampActiveTimer } from "./utils.ts";
+import { useEffect, useState } from "react";
 
 export function ActiveTimer() {
-  const [timer, setTimer] = useAtom(TIMER_ATOM);
-  const isActive = timer !== 0;
+  const [deadline, setDeadline] = useAtom(TIMER_DEADLINE_ATOM);
+  const [time, setTime] = useState(0);
 
   const changeHandler = (delta: number) => {
-    setTimer(clampActiveTimer(timer + delta));
+    if (!deadline) return;
+    setDeadline(deadline + delta * 1000);
   };
 
   useEffect(() => {
-    if (!isActive) return;
+    if (!deadline) return;
 
-    const interval = setInterval(() => {
-      setTimer((time) => clampActiveTimer(time - 1));
-    }, 1000);
+    const updateTime = () => {
+      setTime(Math.ceil(Math.max(0, deadline - Date.now()) / 1000));
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
 
     return () => {
       clearInterval(interval);
+      setTime(0);
     };
-  }, [setTimer, isActive]);
+  }, [deadline]);
 
-  const { seconds, minutes } = buildTimeParts(timer);
+  if (!time) return null;
+
+  const { seconds, minutes } = buildTimeParts(time);
   const secondsStr = seconds.toString().padStart(2, "0");
   const minutesStr = minutes.toString().padStart(2, "0");
   const timeStr = `${minutesStr}:${secondsStr}`;
-
-  if (!isActive) return null;
 
   return (
     <BottomSheet isOpen={true} hasBackdrop={false}>
@@ -46,7 +50,7 @@ export function ActiveTimer() {
         </button>
         <button
           className={clsx(s.button, s.skipButton)}
-          onClick={() => setTimer(0)}
+          onClick={() => setDeadline(null)}
         >
           Пропустить
         </button>

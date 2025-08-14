@@ -1,12 +1,11 @@
 import { useAtom } from "jotai";
-import { TIMER_ATOM } from "./constants.ts";
-import { clampActiveTimer } from "./utils.ts";
+import { TIMER_DEADLINE_ATOM } from "./constants.ts";
 
 export function useActiveTimer() {
-  const [, setTime] = useAtom(TIMER_ATOM);
+  const [, setDeadline] = useAtom(TIMER_DEADLINE_ATOM);
   return {
-    startTimer: (time: number | undefined) => {
-      setTime(clampActiveTimer(time ?? 0));
+    startTimer: (timeSeconds: number | undefined) => {
+      setDeadline(timeSeconds ? Date.now() + timeSeconds * 1000 : null);
     },
   };
 }
