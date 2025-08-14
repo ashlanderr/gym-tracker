@@ -2,6 +2,7 @@ import type { RecommendationParams, SetData, WorkingVolume } from "./types.ts";
 import {
   DEFAULT_RANGE_MAX_REPS,
   DEFAULT_RANGE_MIN_REPS,
+  DEFAULT_REPS_IN_RESERVE,
   EXTRA_RANGE_MIN_REPS,
   REPS_INCREASE_WEIGHT_MULTIPLIER,
   WARM_UP_SETS,
@@ -60,11 +61,15 @@ function findWorkingVolume(
   let workingReps = Infinity;
 
   for (const set of workingSets) {
-    if (!workingWeight || set.weight < workingWeight) {
+    if (set.weight < workingWeight) {
       workingWeight = set.weight;
       workingReps = set.reps;
     } else if (set.weight === workingWeight) {
-      workingReps = Math.min(workingReps ?? set.reps, set.reps);
+      if (set.type === "working") {
+        workingReps = set.reps;
+      } else if (set.type === "failure") {
+        workingReps = Math.max(workingReps, set.reps - DEFAULT_REPS_IN_RESERVE);
+      }
     }
   }
 

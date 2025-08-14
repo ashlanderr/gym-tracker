@@ -581,3 +581,71 @@ describe("negative exercise weight", () => {
     });
   });
 });
+
+describe("working + failure sets", () => {
+  test("previous failure set has a lot of reps -> increase weights based on failure set", () => {
+    testRecommendations({
+      weights: plateWeights,
+      prev: [
+        { type: "working", weight: 50, reps: 12 },
+        { type: "working", weight: 50, reps: 12 },
+        { type: "failure", weight: 50, reps: 20 },
+      ],
+      curr: [
+        { type: "working", weight: 0, reps: 0 },
+        { type: "working", weight: 0, reps: 0 },
+        { type: "failure", weight: 0, reps: 0 },
+      ],
+      recs: [
+        { type: "working", weight: 62.5, reps: 8 },
+        { type: "working", weight: 62.5, reps: 8 },
+        { type: "failure", weight: 62.5, reps: 8 },
+      ],
+    });
+  });
+
+  test("previous failure set has same reps -> increase weights based on other set", () => {
+    testRecommendations({
+      weights: plateWeights,
+      prev: [
+        { type: "working", weight: 50, reps: 12 },
+        { type: "working", weight: 50, reps: 12 },
+        { type: "failure", weight: 50, reps: 12 },
+      ],
+      curr: [
+        { type: "working", weight: 0, reps: 0 },
+        { type: "working", weight: 0, reps: 0 },
+        { type: "failure", weight: 0, reps: 0 },
+      ],
+      recs: [
+        { type: "working", weight: 55, reps: 8 },
+        { type: "working", weight: 55, reps: 8 },
+        { type: "failure", weight: 55, reps: 8 },
+      ],
+    });
+  });
+
+  test("reps of previous sets are decreasing -> use last set reps for recommendations", () => {
+    testRecommendations({
+      weights: plateWeights,
+      prev: [
+        { type: "working", weight: 50, reps: 12 },
+        { type: "working", weight: 50, reps: 11 },
+        { type: "working", weight: 50, reps: 11 },
+        { type: "working", weight: 50, reps: 10 },
+      ],
+      curr: [
+        { type: "working", weight: 0, reps: 0 },
+        { type: "working", weight: 0, reps: 0 },
+        { type: "failure", weight: 0, reps: 0 },
+        { type: "failure", weight: 0, reps: 0 },
+      ],
+      recs: [
+        { type: "working", weight: 50, reps: 12 },
+        { type: "working", weight: 50, reps: 12 },
+        { type: "failure", weight: 50, reps: 12 },
+        { type: "failure", weight: 50, reps: 12 },
+      ],
+    });
+  });
+});
