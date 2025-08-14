@@ -37,7 +37,7 @@ export function ExerciseHistory({ exercise, onClose }: ExerciseHistoryProps) {
       .map(([recordType, recordName]) => {
         const record = maxBy(
           records.filter((r) => r.type === recordType),
-          (a, b) => a.createdAt - b.createdAt,
+          (a, b) => a.current - b.current,
         );
         return { name: recordName, value: record?.current ?? 0 };
       })
