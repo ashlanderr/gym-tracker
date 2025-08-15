@@ -2,11 +2,11 @@ import type { RecommendationParams, SetData, WorkingVolume } from "./types.ts";
 import {
   DEFAULT_RANGE_MAX_REPS,
   DEFAULT_RANGE_MIN_REPS,
-  DEFAULT_REPS_IN_RESERVE,
   EXTRA_RANGE_MIN_REPS,
   REPS_INCREASE_WEIGHT_MULTIPLIER,
   WARM_UP_SETS,
   WARM_UP_WEIGHT_MULTIPLIER,
+  WEIGHT_INCREASE_MIN_REPS,
 } from "./constants.ts";
 import {
   addSelfWeight,
@@ -16,17 +16,6 @@ import {
   oneRepMaxToReps as oneRepMaxToRepsInner,
   volumeToOneRepMax as volumeToOneRepMaxInner,
 } from "../utils.ts";
-
-export function volumeToOneRepMax(
-  params: RecommendationParams,
-  weight: number,
-  reps: number,
-): number {
-  return volumeToOneRepMaxInner(
-    addSelfWeight(params.exerciseWeights, params.selfWeight, weight),
-    reps,
-  );
-}
 
 export function oneRepMaxToWeight(
   params: RecommendationParams,
@@ -57,26 +46,36 @@ function findWorkingVolume(
 ): WorkingVolume | undefined {
   if (workingSets.length === 0) return undefined;
 
-  let workingWeight = Infinity;
-  let workingReps = Infinity;
+  let totalOneRepMaxSum = 0;
+  let totalWorkingWeight = Infinity;
 
   for (const set of workingSets) {
-    if (set.weight < workingWeight) {
-      workingWeight = set.weight;
-      workingReps = set.reps;
-    } else if (set.weight === workingWeight) {
-      if (set.type === "working") {
-        workingReps = set.reps;
-      } else if (set.type === "failure") {
-        workingReps = Math.max(workingReps, set.reps - DEFAULT_REPS_IN_RESERVE);
-      }
-    }
+    const totalWeight = addSelfWeight(
+      params.exerciseWeights,
+      params.selfWeight,
+      set.weight,
+    );
+    totalOneRepMaxSum += volumeToOneRepMaxInner(totalWeight, set.reps);
+    totalWorkingWeight = Math.min(totalWorkingWeight, totalWeight);
   }
 
+  const totalOneRepMax = totalOneRepMaxSum / workingSets.length;
+  const workingReps = Math.round(
+    oneRepMaxToRepsInner(totalOneRepMax, totalWorkingWeight),
+  );
+  const workingWeight = snapWeightKg(
+    params.performanceWeights,
+    subtractSelfWeight(
+      params.exerciseWeights,
+      params.selfWeight,
+      totalWorkingWeight,
+    ),
+  );
+
   return {
-    weight: snapWeightKg(params.performanceWeights, workingWeight),
+    weight: workingWeight,
     reps: workingReps,
-    oneRepMax: volumeToOneRepMax(params, workingWeight, workingReps),
+    oneRepMax: totalOneRepMax,
   };
 }
 
@@ -148,7 +147,7 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
           weight = filledSet.weight;
           reps = filledSet.reps;
         } else if (working && !set.weight && !set.reps) {
-          if (working.reps >= DEFAULT_RANGE_MAX_REPS) {
+          if (working.reps >= WEIGHT_INCREASE_MIN_REPS) {
             reps = DEFAULT_RANGE_MIN_REPS;
             weight = snapWeightKg(
               performanceWeights,

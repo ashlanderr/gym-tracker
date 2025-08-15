@@ -319,11 +319,11 @@ describe("single working set", () => {
     });
   });
 
-  test("previous reps is almost maxed out -> increase to max reps", () => {
+  test("previous reps is almost maxed out -> increase weight based on 1RM", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 11 }],
       curr: [{ type: "working", weight: 0, reps: 0 }],
-      recs: [{ type: "working", weight: 50, reps: 12 }],
+      recs: [{ type: "working", weight: 54, reps: 8 }],
     });
   });
 });
@@ -597,9 +597,9 @@ describe("working + failure sets", () => {
         { type: "failure", weight: 0, reps: 0 },
       ],
       recs: [
-        { type: "working", weight: 62.5, reps: 8 },
-        { type: "working", weight: 62.5, reps: 8 },
-        { type: "failure", weight: 62.5, reps: 8 },
+        { type: "working", weight: 60, reps: 8 },
+        { type: "working", weight: 60, reps: 8 },
+        { type: "failure", weight: 60, reps: 8 },
       ],
     });
   });
@@ -625,14 +625,14 @@ describe("working + failure sets", () => {
     });
   });
 
-  test("reps of previous sets are decreasing -> use last set reps for recommendations", () => {
+  test("reps of previous sets are decreasing -> use average reps for recommendations", () => {
     testRecommendations({
       weights: plateWeights,
       prev: [
-        { type: "working", weight: 50, reps: 12 },
-        { type: "working", weight: 50, reps: 11 },
-        { type: "working", weight: 50, reps: 11 },
         { type: "working", weight: 50, reps: 10 },
+        { type: "working", weight: 50, reps: 9 },
+        { type: "working", weight: 50, reps: 9 },
+        { type: "working", weight: 50, reps: 8 },
       ],
       curr: [
         { type: "working", weight: 0, reps: 0 },
@@ -641,10 +641,60 @@ describe("working + failure sets", () => {
         { type: "failure", weight: 0, reps: 0 },
       ],
       recs: [
-        { type: "working", weight: 50, reps: 12 },
-        { type: "working", weight: 50, reps: 12 },
-        { type: "failure", weight: 50, reps: 12 },
-        { type: "failure", weight: 50, reps: 12 },
+        { type: "working", weight: 50, reps: 11 },
+        { type: "working", weight: 50, reps: 11 },
+        { type: "failure", weight: 50, reps: 11 },
+        { type: "failure", weight: 50, reps: 11 },
+      ],
+    });
+  });
+});
+
+describe("initial weight adjusting", () => {
+  test("increasing weights in previous sets -> use average 1RM for recommendations", () => {
+    testRecommendations({
+      weights: plateWeights,
+      prev: [
+        { type: "working", weight: 20, reps: 12 },
+        { type: "working", weight: 30, reps: 12 },
+        { type: "working", weight: 40, reps: 8 },
+        { type: "working", weight: 40, reps: 8 },
+      ],
+      curr: [
+        { type: "working", weight: 0, reps: 0 },
+        { type: "working", weight: 0, reps: 0 },
+        { type: "working", weight: 0, reps: 0 },
+        { type: "working", weight: 0, reps: 0 },
+      ],
+      recs: [
+        { type: "working", weight: 35, reps: 8 },
+        { type: "working", weight: 35, reps: 8 },
+        { type: "working", weight: 35, reps: 8 },
+        { type: "working", weight: 35, reps: 8 },
+      ],
+    });
+  });
+
+  test("one set have too heavy weight -> use average 1RM for recommendations", () => {
+    testRecommendations({
+      weights: plateWeights,
+      prev: [
+        { type: "working", weight: 20, reps: 12 },
+        { type: "working", weight: 30, reps: 8 },
+        { type: "working", weight: 40, reps: 4 },
+        { type: "working", weight: 30, reps: 8 },
+      ],
+      curr: [
+        { type: "working", weight: 0, reps: 0 },
+        { type: "working", weight: 0, reps: 0 },
+        { type: "working", weight: 0, reps: 0 },
+        { type: "working", weight: 0, reps: 0 },
+      ],
+      recs: [
+        { type: "working", weight: 30, reps: 8 },
+        { type: "working", weight: 30, reps: 8 },
+        { type: "working", weight: 30, reps: 8 },
+        { type: "working", weight: 30, reps: 8 },
       ],
     });
   });
