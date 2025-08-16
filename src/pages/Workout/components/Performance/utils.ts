@@ -98,11 +98,13 @@ function findWorkingVolume(
     ),
   );
 
-  return {
-    weight: workingWeight,
-    reps: workingReps,
-    oneRepMax: totalOneRepMax,
-  };
+  return totalOneRepMax > 0
+    ? {
+        weight: workingWeight,
+        reps: workingReps,
+        oneRepMax: totalOneRepMax,
+      }
+    : undefined;
 }
 
 function increaseReps(

@@ -582,6 +582,25 @@ describe("negative exercise weight", () => {
       recs: [{ type: "warm-up", weight: 35, reps: 12 }],
     });
   });
+
+  test("self weight not filled -> no recommendations", () => {
+    testRecommendations({
+      exercise: negativeExerciseWeights,
+      prev: [{ type: "working", weight: 25, reps: 12 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
+      recs: [{ type: "working", weight: _, reps: _ }],
+    });
+  });
+
+  test("previous set maxed out with zero weight -> increase reps", () => {
+    testRecommendations({
+      exercise: negativeExerciseWeights,
+      selfWeight: 60,
+      prev: [{ type: "working", weight: 0, reps: 12 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
+      recs: [{ type: "working", weight: 0, reps: 14 }],
+    });
+  });
 });
 
 describe("working + failure sets", () => {
