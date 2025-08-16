@@ -7,7 +7,7 @@ import {
 } from "./db.ts";
 import type { Store } from "./doc.ts";
 
-export type SetType = "warm-up" | "working" | "failure";
+export type SetType = "warm-up" | "working" | "failure" | "light";
 
 export interface Set {
   id: string;

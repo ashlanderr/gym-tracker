@@ -228,6 +228,7 @@ export function SetRow({
               className={clsx({
                 [s.warmUpSet]: set.type === "warm-up",
                 [s.workingSet]: set.type === "working",
+                [s.lightSet]: set.type === "light",
                 [s.failureSet]: set.type === "failure",
               })}
             >
@@ -297,6 +298,13 @@ export function SetRow({
           >
             <span className={s.workingSet}>1</span>
             <span>Обычный подход</span>
+          </button>
+          <button
+            className={s.sheetAction}
+            onClick={() => setTypeHandler("light")}
+          >
+            <span className={s.lightSet}>L</span>
+            <span>Легкий подход</span>
           </button>
           <button
             className={s.sheetAction}

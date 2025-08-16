@@ -699,3 +699,62 @@ describe("initial weight adjusting", () => {
     });
   });
 });
+
+describe("light weights", () => {
+  test("previous working, current light not filled -> recommend lower weights, max reps", () => {
+    testRecommendations({
+      prev: [{ type: "working", weight: 50, reps: 12 }],
+      curr: [{ type: "light", weight: 0, reps: 0 }],
+      recs: [{ type: "light", weight: 35, reps: 12 }],
+    });
+  });
+
+  test("previous light, current working not filled -> restore normal recommendations", () => {
+    testRecommendations({
+      prev: [{ type: "light", weight: 35, reps: 12 }],
+      curr: [{ type: "working", weight: 0, reps: 0 }],
+      recs: [{ type: "working", weight: 55, reps: 8 }],
+    });
+  });
+
+  test("previous light, current light not filled -> recommend the same light weights", () => {
+    testRecommendations({
+      prev: [{ type: "light", weight: 35, reps: 12 }],
+      curr: [{ type: "light", weight: 0, reps: 0 }],
+      recs: [{ type: "light", weight: 35, reps: 12 }],
+    });
+  });
+
+  test("previous working, current light reps filled -> recommend weights based on reps", () => {
+    testRecommendations({
+      prev: [{ type: "working", weight: 50, reps: 12 }],
+      curr: [{ type: "light", weight: 0, reps: 8 }],
+      recs: [{ type: "light", weight: 39, reps: 8 }],
+    });
+  });
+
+  test("previous working, current light weight filled -> recommend reps based on weights", () => {
+    testRecommendations({
+      prev: [{ type: "working", weight: 50, reps: 12 }],
+      curr: [{ type: "light", weight: 32, reps: 0 }],
+      recs: [{ type: "light", weight: 32, reps: 16 }],
+    });
+  });
+
+  test("previous working, current light filled -> duplicated filled values", () => {
+    testRecommendations({
+      prev: [
+        { type: "working", weight: 50, reps: 12 },
+        { type: "working", weight: 50, reps: 12 },
+      ],
+      curr: [
+        { type: "light", weight: 32, reps: 16 },
+        { type: "light", weight: 0, reps: 0 },
+      ],
+      recs: [
+        { type: "light", weight: 32, reps: 16 },
+        { type: "light", weight: 32, reps: 16 },
+      ],
+    });
+  });
+});

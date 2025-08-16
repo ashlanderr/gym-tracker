@@ -54,6 +54,7 @@ import {
 } from "../../../../db/measurements.ts";
 import { switchUnits } from "../utils.ts";
 import { PerformanceTimer } from "../PerformanceTimer";
+import { assertNever } from "../../../../utils";
 
 export function Performance({ performance }: PerformanceProps) {
   const store = useStore();
@@ -319,6 +320,9 @@ function buildSets(
   const prevFailure = prevSets.filter(
     (s) => s.type === "failure" && s.weight && s.reps,
   );
+  const prevLight = prevSets.filter(
+    (s) => s.type === "light" && s.weight && s.reps,
+  );
   const recommendations = buildRecommendations({
     prevSets,
     currentSets: sets,
@@ -331,6 +335,7 @@ function buildSets(
   let warmUpIndex = 0;
   let workingIndex = 0;
   let failureIndex = 0;
+  let lightIndex = 0;
 
   sets.forEach((set, index) => {
     let number = "-";
@@ -349,6 +354,12 @@ function buildSets(
       number = "F";
       prevSet = prevFailure[failureIndex];
       failureIndex += 1;
+    } else if (set.type === "light") {
+      number = "L";
+      prevSet = prevLight[lightIndex];
+      lightIndex += 1;
+    } else {
+      assertNever(set.type);
     }
 
     result.push(

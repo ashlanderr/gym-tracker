@@ -1,5 +1,7 @@
 export const WARM_UP_WEIGHT_MULTIPLIER = 0.8;
 
+export const LIGHT_WEIGHT_MULTIPLIER = 0.7;
+
 export const DEFAULT_RANGE_MIN_REPS = 8;
 
 export const EXTRA_RANGE_MIN_REPS = 6;

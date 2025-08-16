@@ -3,6 +3,7 @@ import {
   DEFAULT_RANGE_MAX_REPS,
   DEFAULT_RANGE_MIN_REPS,
   EXTRA_RANGE_MIN_REPS,
+  LIGHT_WEIGHT_MULTIPLIER,
   REPS_INCREASE_WEIGHT_MULTIPLIER,
   WARM_UP_SETS,
   WARM_UP_WEIGHT_MULTIPLIER,
@@ -16,6 +17,8 @@ import {
   oneRepMaxToReps as oneRepMaxToRepsInner,
   volumeToOneRepMax as volumeToOneRepMaxInner,
 } from "../utils.ts";
+import { assertNever } from "../../../../utils";
+import type { SetType } from "../../../../db/sets.ts";
 
 export function oneRepMaxToWeight(
   params: RecommendationParams,
@@ -40,6 +43,20 @@ export function oneRepMaxToReps(
   );
 }
 
+function weightToOneRepMaxMultiplier(type: SetType): number {
+  switch (type) {
+    case "warm-up":
+      return 1 / WARM_UP_WEIGHT_MULTIPLIER;
+
+    case "light":
+      return 1 / LIGHT_WEIGHT_MULTIPLIER;
+
+    case "working":
+    case "failure":
+      return 1;
+  }
+}
+
 function findWorkingVolume(
   params: RecommendationParams,
   workingSets: SetData[],
@@ -50,12 +67,16 @@ function findWorkingVolume(
   let totalWorkingWeight = Infinity;
 
   for (const set of workingSets) {
+    const multiplier = weightToOneRepMaxMultiplier(set.type);
     const totalWeight = addSelfWeight(
       params.exerciseWeights,
       params.selfWeight,
       set.weight,
     );
-    totalOneRepMaxSum += volumeToOneRepMaxInner(totalWeight, set.reps);
+    totalOneRepMaxSum += volumeToOneRepMaxInner(
+      totalWeight * multiplier,
+      set.reps,
+    );
     totalWorkingWeight = Math.min(totalWorkingWeight, totalWeight);
   }
 
@@ -106,6 +127,10 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
   let filledSet: SetData | undefined = undefined;
 
   for (const set of currentSets) {
+    if (filledSet && filledSet.type !== set.type) {
+      filledSet = undefined;
+    }
+
     switch (set.type) {
       case "warm-up": {
         let weight = 0;
@@ -132,6 +157,53 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
           reps,
         });
         warmUpIndex += 1;
+        break;
+      }
+
+      case "light": {
+        let weight = 0;
+        let reps = 0;
+
+        const lightRepMax = working
+          ? working.oneRepMax * LIGHT_WEIGHT_MULTIPLIER
+          : undefined;
+
+        if (set.weight && set.reps) {
+          weight = set.weight;
+          reps = set.reps;
+        } else if (filledSet && !set.weight && !set.reps) {
+          weight = filledSet.weight;
+          reps = filledSet.reps;
+        } else if (lightRepMax && !set.weight && !set.reps) {
+          reps = DEFAULT_RANGE_MAX_REPS;
+          weight = snapWeightKg(
+            performanceWeights,
+            oneRepMaxToWeight(params, lightRepMax, reps),
+          );
+        } else if (lightRepMax && set.weight && !set.reps) {
+          weight = set.weight;
+          reps = Math.round(oneRepMaxToReps(params, lightRepMax, weight));
+        } else if (lightRepMax && !set.weight && set.reps) {
+          reps = set.reps;
+          weight = snapWeightKg(
+            performanceWeights,
+            oneRepMaxToWeight(params, lightRepMax, reps),
+          );
+        } else {
+          weight = set.weight;
+          reps = set.reps;
+        }
+
+        filledSet = {
+          type: set.type,
+          weight,
+          reps,
+        };
+        result.push({
+          type: "light",
+          weight,
+          reps,
+        });
         break;
       }
 
@@ -198,6 +270,9 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
         result.push(filledSet);
         break;
       }
+
+      default:
+        assertNever(set.type);
     }
   }
 
