@@ -1,4 +1,9 @@
-import type { RecommendationParams, SetData, WorkingVolume } from "./types.ts";
+import type {
+  CompletedSetData,
+  RecommendationParams,
+  DraftSetData,
+  WorkingVolume,
+} from "./types.ts";
 import {
   DEFAULT_RANGE_MAX_REPS,
   DEFAULT_RANGE_MIN_REPS,
@@ -59,7 +64,7 @@ function weightToOneRepMaxMultiplier(type: SetType): number {
 
 function findWorkingVolume(
   params: RecommendationParams,
-  workingSets: SetData[],
+  workingSets: CompletedSetData[],
 ): WorkingVolume | undefined {
   if (workingSets.length === 0) return undefined;
 
@@ -109,7 +114,9 @@ function increaseReps(
   return Math.round(oneRepMaxToReps(params, newRepMax, weight));
 }
 
-export function buildRecommendations(params: RecommendationParams): SetData[] {
+export function buildRecommendations(
+  params: RecommendationParams,
+): DraftSetData[] {
   const {
     prevSets,
     currentSets,
@@ -122,9 +129,9 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
   const prevWorkingSets = prevSets.filter((s) => s.type !== "warm-up");
   const warmUpTemplate = WARM_UP_SETS.at(currentWarmUpSets.length - 1) ?? [];
   const working = findWorkingVolume(params, prevWorkingSets);
-  const result: SetData[] = [];
+  const result: DraftSetData[] = [];
   let warmUpIndex = 0;
-  let filledSet: SetData | undefined = undefined;
+  let filledSet: DraftSetData | undefined = undefined;
 
   for (const set of currentSets) {
     if (filledSet && filledSet.type !== set.type) {
@@ -133,15 +140,20 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
 
     switch (set.type) {
       case "warm-up": {
-        let weight = 0;
-        let reps = 0;
+        let weight: number | undefined = undefined;
+        let reps: number | undefined = undefined;
 
         const template = warmUpTemplate.at(warmUpIndex);
         const warmUpMax = working
           ? working.oneRepMax * WARM_UP_WEIGHT_MULTIPLIER
           : undefined;
 
-        if (warmUpMax && template && !set.weight && !set.reps) {
+        if (
+          warmUpMax &&
+          template &&
+          set.weight === undefined &&
+          set.reps === undefined
+        ) {
           reps = template.reps;
           weight = subtractSelfWeight(
             exerciseWeights,
@@ -161,29 +173,45 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
       }
 
       case "light": {
-        let weight = 0;
-        let reps = 0;
+        let weight: number | undefined = 0;
+        let reps: number | undefined = 0;
 
         const lightRepMax = working
           ? working.oneRepMax * LIGHT_WEIGHT_MULTIPLIER
           : undefined;
 
-        if (set.weight && set.reps) {
+        if (set.weight !== undefined && set.reps !== undefined) {
           weight = set.weight;
           reps = set.reps;
-        } else if (filledSet && !set.weight && !set.reps) {
+        } else if (
+          filledSet &&
+          set.weight === undefined &&
+          set.reps === undefined
+        ) {
           weight = filledSet.weight;
           reps = filledSet.reps;
-        } else if (lightRepMax && !set.weight && !set.reps) {
+        } else if (
+          lightRepMax &&
+          set.weight === undefined &&
+          set.reps === undefined
+        ) {
           reps = DEFAULT_RANGE_MAX_REPS;
           weight = snapWeightKg(
             performanceWeights,
             oneRepMaxToWeight(params, lightRepMax, reps),
           );
-        } else if (lightRepMax && set.weight && !set.reps) {
+        } else if (
+          lightRepMax &&
+          set.weight !== undefined &&
+          set.reps === undefined
+        ) {
           weight = set.weight;
           reps = Math.round(oneRepMaxToReps(params, lightRepMax, weight));
-        } else if (lightRepMax && !set.weight && set.reps) {
+        } else if (
+          lightRepMax &&
+          set.weight === undefined &&
+          set.reps !== undefined
+        ) {
           reps = set.reps;
           weight = snapWeightKg(
             performanceWeights,
@@ -199,26 +227,30 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
           weight,
           reps,
         };
-        result.push({
-          type: "light",
-          weight,
-          reps,
-        });
+        result.push(filledSet);
         break;
       }
 
       case "working":
       case "failure": {
-        let weight = 0;
-        let reps = 0;
+        let weight: number | undefined = 0;
+        let reps: number | undefined = 0;
 
-        if (set.weight && set.reps) {
+        if (set.weight !== undefined && set.reps !== undefined) {
           weight = set.weight;
           reps = set.reps;
-        } else if (filledSet && !set.weight && !set.reps) {
+        } else if (
+          filledSet &&
+          set.weight === undefined &&
+          set.reps === undefined
+        ) {
           weight = filledSet.weight;
           reps = filledSet.reps;
-        } else if (working && !set.weight && !set.reps) {
+        } else if (
+          working &&
+          set.weight === undefined &&
+          set.reps === undefined
+        ) {
           if (working.reps >= WEIGHT_INCREASE_MIN_REPS) {
             reps = DEFAULT_RANGE_MIN_REPS;
             weight = snapWeightKg(
@@ -241,7 +273,11 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
             reps = increaseReps(params, working.oneRepMax, weight);
             reps = Math.min(reps, DEFAULT_RANGE_MAX_REPS);
           }
-        } else if (working && set.weight && !set.reps) {
+        } else if (
+          working &&
+          set.weight !== undefined &&
+          set.reps === undefined
+        ) {
           if (set.weight === working.weight) {
             weight = set.weight;
             reps = increaseReps(params, working.oneRepMax, weight);
@@ -251,7 +287,11 @@ export function buildRecommendations(params: RecommendationParams): SetData[] {
               oneRepMaxToReps(params, working.oneRepMax, weight),
             );
           }
-        } else if (working && !set.weight && set.reps) {
+        } else if (
+          working &&
+          set.weight === undefined &&
+          set.reps !== undefined
+        ) {
           reps = set.reps;
           weight = snapWeightKg(
             performanceWeights,

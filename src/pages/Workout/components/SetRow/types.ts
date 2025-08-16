@@ -1,13 +1,13 @@
-import type { Set } from "../../../../db/sets.ts";
-import type { SetData } from "../Performance/types.ts";
+import type { CompletedSet, Set } from "../../../../db/sets.ts";
 import type { Performance } from "../../../../db/performances.ts";
 import type { Exercise } from "../../../../db/exercises.ts";
+import type { DraftSetData } from "../Performance/types.ts";
 
 export interface SetRowProps {
   exercise: Exercise | null;
   performance: Performance;
   number: string;
   set: Set;
-  prevSet: Set | undefined;
-  recSet: SetData | undefined;
+  prevSet: CompletedSet | undefined;
+  recSet: DraftSetData | undefined;
 }

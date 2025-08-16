@@ -1,8 +1,10 @@
 import { buildRecommendations } from "./utils.ts";
 import { describe } from "vitest";
-import type { SetData } from "./types.ts";
 import type { PerformanceWeights } from "../../../../db/performances.ts";
 import type { ExerciseWeight } from "../../../../db/exercises.ts";
+import type { CompletedSetData, DraftSetData } from "./types.ts";
+
+const _ = undefined;
 
 const roundedWeights: PerformanceWeights = {
   units: "kg",
@@ -39,9 +41,9 @@ function testRecommendations({
   exercise,
 }: {
   weights?: PerformanceWeights;
-  prev: SetData[];
-  curr: SetData[];
-  recs: SetData[];
+  prev: CompletedSetData[];
+  curr: DraftSetData[];
+  recs: DraftSetData[];
   selfWeight?: number;
   exercise?: ExerciseWeight;
 }) {
@@ -69,24 +71,24 @@ describe("warm up sets", () => {
   test("no previous set, current set is not filled -> no recommendation", () => {
     testRecommendations({
       prev: [],
-      curr: [{ type: "warm-up", weight: 0, reps: 0 }],
-      recs: [{ type: "warm-up", weight: 0, reps: 0 }],
+      curr: [{ type: "warm-up", weight: _, reps: _ }],
+      recs: [{ type: "warm-up", weight: _, reps: _ }],
     });
   });
 
   test("no previous set, current weight is filled -> no recommendation", () => {
     testRecommendations({
       prev: [],
-      curr: [{ type: "warm-up", weight: 0, reps: 0 }],
-      recs: [{ type: "warm-up", weight: 0, reps: 0 }],
+      curr: [{ type: "warm-up", weight: _, reps: _ }],
+      recs: [{ type: "warm-up", weight: _, reps: _ }],
     });
   });
 
   test("no previous set, current reps is filled -> no recommendation", () => {
     testRecommendations({
       prev: [],
-      curr: [{ type: "warm-up", weight: 0, reps: 30 }],
-      recs: [{ type: "warm-up", weight: 0, reps: 0 }],
+      curr: [{ type: "warm-up", weight: _, reps: 30 }],
+      recs: [{ type: "warm-up", weight: _, reps: _ }],
     });
   });
 
@@ -94,7 +96,7 @@ describe("warm up sets", () => {
     testRecommendations({
       weights: plateWeights,
       prev: [{ type: "working", weight: 100, reps: 8 }],
-      curr: [{ type: "warm-up", weight: 0, reps: 0 }],
+      curr: [{ type: "warm-up", weight: _, reps: _ }],
       recs: [{ type: "warm-up", weight: 60, reps: 12 }],
     });
   });
@@ -104,8 +106,8 @@ describe("warm up sets", () => {
       weights: plateWeights,
       prev: [{ type: "working", weight: 100, reps: 8 }],
       curr: [
-        { type: "warm-up", weight: 0, reps: 0 },
-        { type: "warm-up", weight: 0, reps: 0 },
+        { type: "warm-up", weight: _, reps: _ },
+        { type: "warm-up", weight: _, reps: _ },
       ],
       recs: [
         { type: "warm-up", weight: 50, reps: 12 },
@@ -119,9 +121,9 @@ describe("warm up sets", () => {
       weights: plateWeights,
       prev: [{ type: "working", weight: 100, reps: 8 }],
       curr: [
-        { type: "warm-up", weight: 0, reps: 0 },
-        { type: "warm-up", weight: 0, reps: 0 },
-        { type: "warm-up", weight: 0, reps: 0 },
+        { type: "warm-up", weight: _, reps: _ },
+        { type: "warm-up", weight: _, reps: _ },
+        { type: "warm-up", weight: _, reps: _ },
       ],
       recs: [
         { type: "warm-up", weight: 40, reps: 15 },
@@ -136,10 +138,10 @@ describe("warm up sets", () => {
       weights: plateWeights,
       prev: [{ type: "working", weight: 100, reps: 8 }],
       curr: [
-        { type: "warm-up", weight: 0, reps: 0 },
-        { type: "warm-up", weight: 0, reps: 0 },
-        { type: "warm-up", weight: 0, reps: 0 },
-        { type: "warm-up", weight: 0, reps: 0 },
+        { type: "warm-up", weight: _, reps: _ },
+        { type: "warm-up", weight: _, reps: _ },
+        { type: "warm-up", weight: _, reps: _ },
+        { type: "warm-up", weight: _, reps: _ },
       ],
       recs: [
         { type: "warm-up", weight: 30, reps: 15 },
@@ -153,16 +155,16 @@ describe("warm up sets", () => {
   test("no previous warm-up set, current reps is filled -> no recommendation", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 8 }],
-      curr: [{ type: "warm-up", weight: 0, reps: 30 }],
-      recs: [{ type: "warm-up", weight: 0, reps: 0 }],
+      curr: [{ type: "warm-up", weight: _, reps: 30 }],
+      recs: [{ type: "warm-up", weight: _, reps: _ }],
     });
   });
 
   test("no previous warm-up set, current weight is filled -> no recommendation", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 8 }],
-      curr: [{ type: "warm-up", weight: 30, reps: 0 }],
-      recs: [{ type: "warm-up", weight: 0, reps: 0 }],
+      curr: [{ type: "warm-up", weight: 30, reps: _ }],
+      recs: [{ type: "warm-up", weight: _, reps: _ }],
     });
   });
 
@@ -173,7 +175,7 @@ describe("warm up sets", () => {
         { type: "warm-up", weight: 20, reps: 20 },
         { type: "working", weight: 100, reps: 8 },
       ],
-      curr: [{ type: "warm-up", weight: 0, reps: 0 }],
+      curr: [{ type: "warm-up", weight: _, reps: _ }],
       recs: [{ type: "warm-up", weight: 60, reps: 12 }],
     });
   });
@@ -186,8 +188,8 @@ describe("warm up sets", () => {
         { type: "working", weight: 50, reps: 8 },
       ],
       curr: [
-        { type: "warm-up", weight: 0, reps: 0 },
-        { type: "warm-up", weight: 0, reps: 0 },
+        { type: "warm-up", weight: _, reps: _ },
+        { type: "warm-up", weight: _, reps: _ },
       ],
       recs: [
         { type: "warm-up", weight: 25, reps: 12 },
@@ -211,16 +213,16 @@ describe("single working set", () => {
     testRecommendations({
       weights: plateWeights,
       prev: [],
-      curr: [{ type: "working", weight: 27.5, reps: 0 }],
-      recs: [{ type: "working", weight: 27.5, reps: 0 }],
+      curr: [{ type: "working", weight: 27.5, reps: _ }],
+      recs: [{ type: "working", weight: 27.5, reps: _ }],
     });
   });
 
   test("no previous set, reps filled -> use filled values", () => {
     testRecommendations({
       prev: [],
-      curr: [{ type: "working", weight: 0, reps: 20 }],
-      recs: [{ type: "working", weight: 0, reps: 20 }],
+      curr: [{ type: "working", weight: _, reps: 20 }],
+      recs: [{ type: "working", weight: _, reps: 20 }],
     });
   });
 
@@ -236,8 +238,8 @@ describe("single working set", () => {
   test("no previous set, current set is not filled -> no recommendation", () => {
     testRecommendations({
       prev: [],
-      curr: [{ type: "working", weight: 0, reps: 0 }],
-      recs: [{ type: "working", weight: 0, reps: 0 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
+      recs: [{ type: "working", weight: _, reps: _ }],
     });
   });
 
@@ -245,7 +247,7 @@ describe("single working set", () => {
     testRecommendations({
       weights: plateWeights,
       prev: [{ type: "working", weight: 32.5, reps: 8 }],
-      curr: [{ type: "working", weight: 0, reps: 0 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 32.5, reps: 10 }],
     });
   });
@@ -253,7 +255,7 @@ describe("single working set", () => {
   test("previous reps is very small, current set is not filled -> increase reps", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 30, reps: 1 }],
-      curr: [{ type: "working", weight: 0, reps: 0 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 30, reps: 3 }],
     });
   });
@@ -261,7 +263,7 @@ describe("single working set", () => {
   test("previous reps is maxed out, current set is not filled -> increase weight", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 30, reps: 12 }],
-      curr: [{ type: "working", weight: 0, reps: 0 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 33, reps: 8 }],
     });
   });
@@ -270,7 +272,7 @@ describe("single working set", () => {
     testRecommendations({
       weights: roundedWeights,
       prev: [{ type: "working", weight: 3, reps: 12 }],
-      curr: [{ type: "working", weight: 0, reps: 0 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 3, reps: 14 }],
     });
   });
@@ -279,7 +281,7 @@ describe("single working set", () => {
     testRecommendations({
       weights: plateWeights,
       prev: [{ type: "working", weight: 10, reps: 12 }],
-      curr: [{ type: "working", weight: 0, reps: 0 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 12.5, reps: 6 }],
     });
   });
@@ -288,7 +290,7 @@ describe("single working set", () => {
     testRecommendations({
       weights: plateWeights,
       prev: [{ type: "working", weight: 12.5, reps: 12 }],
-      curr: [{ type: "working", weight: 12.5, reps: 0 }],
+      curr: [{ type: "working", weight: 12.5, reps: _ }],
       recs: [{ type: "working", weight: 12.5, reps: 14 }],
     });
   });
@@ -297,7 +299,7 @@ describe("single working set", () => {
     testRecommendations({
       weights: plateWeights,
       prev: [{ type: "working", weight: 10, reps: 12 }],
-      curr: [{ type: "working", weight: 12.5, reps: 0 }],
+      curr: [{ type: "working", weight: 12.5, reps: _ }],
       recs: [{ type: "working", weight: 12.5, reps: 4 }],
     });
   });
@@ -306,7 +308,7 @@ describe("single working set", () => {
     testRecommendations({
       weights: plateWeights,
       prev: [{ type: "working", weight: 10, reps: 8 }],
-      curr: [{ type: "working", weight: 7.5, reps: 0 }],
+      curr: [{ type: "working", weight: 7.5, reps: _ }],
       recs: [{ type: "working", weight: 7.5, reps: 21 }],
     });
   });
@@ -314,7 +316,7 @@ describe("single working set", () => {
   test("current reps is filled -> compute equivalent 1RM weight", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 8 }],
-      curr: [{ type: "working", weight: 0, reps: 16 }],
+      curr: [{ type: "working", weight: _, reps: 16 }],
       recs: [{ type: "working", weight: 41, reps: 16 }],
     });
   });
@@ -322,7 +324,7 @@ describe("single working set", () => {
   test("previous reps is almost maxed out -> increase weight based on 1RM", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 11 }],
-      curr: [{ type: "working", weight: 0, reps: 0 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 54, reps: 8 }],
     });
   });
@@ -334,9 +336,9 @@ describe("multiple working sets", () => {
       prev: [{ type: "working", weight: 50, reps: 8 }],
       curr: [
         { type: "working", weight: 30, reps: 12 },
-        { type: "working", weight: 0, reps: 0 },
+        { type: "working", weight: _, reps: _ },
         { type: "working", weight: 35, reps: 8 },
-        { type: "working", weight: 0, reps: 0 },
+        { type: "working", weight: _, reps: _ },
       ],
       recs: [
         { type: "working", weight: 30, reps: 12 },
@@ -352,9 +354,9 @@ describe("multiple working sets", () => {
       prev: [{ type: "working", weight: 50, reps: 8 }],
       curr: [
         { type: "working", weight: 50, reps: 12 },
-        { type: "working", weight: 50, reps: 0 },
-        { type: "working", weight: 0, reps: 0 },
-        { type: "working", weight: 0, reps: 0 },
+        { type: "working", weight: 50, reps: _ },
+        { type: "working", weight: _, reps: _ },
+        { type: "working", weight: _, reps: _ },
       ],
       recs: [
         { type: "working", weight: 50, reps: 12 },
@@ -370,9 +372,9 @@ describe("multiple working sets", () => {
       prev: [{ type: "working", weight: 50, reps: 8 }],
       curr: [
         { type: "working", weight: 50, reps: 12 },
-        { type: "working", weight: 0, reps: 15 },
-        { type: "working", weight: 0, reps: 0 },
-        { type: "working", weight: 0, reps: 0 },
+        { type: "working", weight: _, reps: 15 },
+        { type: "working", weight: _, reps: _ },
+        { type: "working", weight: _, reps: _ },
       ],
       recs: [
         { type: "working", weight: 50, reps: 12 },
@@ -391,7 +393,7 @@ describe("positive exercise weight", () => {
       exercise: positiveExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 0, reps: 8 }],
-      curr: [{ type: "working", weight: 0, reps: 0 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 0, reps: 10 }],
     });
   });
@@ -402,7 +404,7 @@ describe("positive exercise weight", () => {
       exercise: positiveExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 20, reps: 8 }],
-      curr: [{ type: "working", weight: 0, reps: 0 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 20, reps: 10 }],
     });
   });
@@ -412,7 +414,7 @@ describe("positive exercise weight", () => {
       exercise: positiveExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 30, reps: 1 }],
-      curr: [{ type: "working", weight: 0, reps: 0 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 30, reps: 3 }],
     });
   });
@@ -422,7 +424,7 @@ describe("positive exercise weight", () => {
       exercise: positiveExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 30, reps: 12 }],
-      curr: [{ type: "working", weight: 0, reps: 0 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 36, reps: 8 }],
     });
   });
@@ -433,7 +435,7 @@ describe("positive exercise weight", () => {
       exercise: positiveExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 12.5, reps: 12 }],
-      curr: [{ type: "working", weight: 12.5, reps: 0 }],
+      curr: [{ type: "working", weight: 12.5, reps: _ }],
       recs: [{ type: "working", weight: 12.5, reps: 14 }],
     });
   });
@@ -444,7 +446,7 @@ describe("positive exercise weight", () => {
       exercise: positiveExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 10, reps: 12 }],
-      curr: [{ type: "working", weight: 12.5, reps: 0 }],
+      curr: [{ type: "working", weight: 12.5, reps: _ }],
       recs: [{ type: "working", weight: 12.5, reps: 10 }],
     });
   });
@@ -455,7 +457,7 @@ describe("positive exercise weight", () => {
       exercise: positiveExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 10, reps: 8 }],
-      curr: [{ type: "working", weight: 7.5, reps: 0 }],
+      curr: [{ type: "working", weight: 7.5, reps: _ }],
       recs: [{ type: "working", weight: 7.5, reps: 11 }],
     });
   });
@@ -465,7 +467,7 @@ describe("positive exercise weight", () => {
       exercise: positiveExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 50, reps: 8 }],
-      curr: [{ type: "working", weight: 0, reps: 16 }],
+      curr: [{ type: "working", weight: _, reps: 16 }],
       recs: [{ type: "working", weight: 36, reps: 16 }],
     });
   });
@@ -476,7 +478,7 @@ describe("positive exercise weight", () => {
       exercise: positiveExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 40, reps: 8 }],
-      curr: [{ type: "warm-up", weight: 0, reps: 0 }],
+      curr: [{ type: "warm-up", weight: _, reps: _ }],
       recs: [{ type: "warm-up", weight: 12.5, reps: 12 }],
     });
   });
@@ -489,7 +491,7 @@ describe("negative exercise weight", () => {
       exercise: negativeExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 0, reps: 8 }],
-      curr: [{ type: "working", weight: 0, reps: 0 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 0, reps: 10 }],
     });
   });
@@ -500,7 +502,7 @@ describe("negative exercise weight", () => {
       exercise: negativeExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 20, reps: 8 }],
-      curr: [{ type: "working", weight: 0, reps: 0 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 20, reps: 10 }],
     });
   });
@@ -510,7 +512,7 @@ describe("negative exercise weight", () => {
       exercise: negativeExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 30, reps: 1 }],
-      curr: [{ type: "working", weight: 0, reps: 0 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 30, reps: 3 }],
     });
   });
@@ -521,7 +523,7 @@ describe("negative exercise weight", () => {
       exercise: negativeExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 30, reps: 12 }],
-      curr: [{ type: "working", weight: 0, reps: 0 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 27, reps: 8 }],
     });
   });
@@ -532,7 +534,7 @@ describe("negative exercise weight", () => {
       exercise: negativeExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 12.5, reps: 12 }],
-      curr: [{ type: "working", weight: 12.5, reps: 0 }],
+      curr: [{ type: "working", weight: 12.5, reps: _ }],
       recs: [{ type: "working", weight: 12.5, reps: 14 }],
     });
   });
@@ -543,7 +545,7 @@ describe("negative exercise weight", () => {
       exercise: negativeExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 10, reps: 12 }],
-      curr: [{ type: "working", weight: 12.5, reps: 0 }],
+      curr: [{ type: "working", weight: 12.5, reps: _ }],
       recs: [{ type: "working", weight: 12.5, reps: 14 }],
     });
   });
@@ -554,7 +556,7 @@ describe("negative exercise weight", () => {
       exercise: negativeExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 10, reps: 8 }],
-      curr: [{ type: "working", weight: 7.5, reps: 0 }],
+      curr: [{ type: "working", weight: 7.5, reps: _ }],
       recs: [{ type: "working", weight: 7.5, reps: 6 }],
     });
   });
@@ -565,7 +567,7 @@ describe("negative exercise weight", () => {
       exercise: negativeExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 20, reps: 8 }],
-      curr: [{ type: "working", weight: 0, reps: 16 }],
+      curr: [{ type: "working", weight: _, reps: 16 }],
       recs: [{ type: "working", weight: 27, reps: 16 }],
     });
   });
@@ -576,7 +578,7 @@ describe("negative exercise weight", () => {
       exercise: negativeExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 20, reps: 8 }],
-      curr: [{ type: "warm-up", weight: 0, reps: 0 }],
+      curr: [{ type: "warm-up", weight: _, reps: _ }],
       recs: [{ type: "warm-up", weight: 35, reps: 12 }],
     });
   });
@@ -592,9 +594,9 @@ describe("working + failure sets", () => {
         { type: "failure", weight: 50, reps: 20 },
       ],
       curr: [
-        { type: "working", weight: 0, reps: 0 },
-        { type: "working", weight: 0, reps: 0 },
-        { type: "failure", weight: 0, reps: 0 },
+        { type: "working", weight: _, reps: _ },
+        { type: "working", weight: _, reps: _ },
+        { type: "failure", weight: _, reps: _ },
       ],
       recs: [
         { type: "working", weight: 60, reps: 8 },
@@ -613,9 +615,9 @@ describe("working + failure sets", () => {
         { type: "failure", weight: 50, reps: 12 },
       ],
       curr: [
-        { type: "working", weight: 0, reps: 0 },
-        { type: "working", weight: 0, reps: 0 },
-        { type: "failure", weight: 0, reps: 0 },
+        { type: "working", weight: _, reps: _ },
+        { type: "working", weight: _, reps: _ },
+        { type: "failure", weight: _, reps: _ },
       ],
       recs: [
         { type: "working", weight: 55, reps: 8 },
@@ -635,10 +637,10 @@ describe("working + failure sets", () => {
         { type: "working", weight: 50, reps: 8 },
       ],
       curr: [
-        { type: "working", weight: 0, reps: 0 },
-        { type: "working", weight: 0, reps: 0 },
-        { type: "failure", weight: 0, reps: 0 },
-        { type: "failure", weight: 0, reps: 0 },
+        { type: "working", weight: _, reps: _ },
+        { type: "working", weight: _, reps: _ },
+        { type: "failure", weight: _, reps: _ },
+        { type: "failure", weight: _, reps: _ },
       ],
       recs: [
         { type: "working", weight: 50, reps: 11 },
@@ -661,10 +663,10 @@ describe("initial weight adjusting", () => {
         { type: "working", weight: 40, reps: 8 },
       ],
       curr: [
-        { type: "working", weight: 0, reps: 0 },
-        { type: "working", weight: 0, reps: 0 },
-        { type: "working", weight: 0, reps: 0 },
-        { type: "working", weight: 0, reps: 0 },
+        { type: "working", weight: _, reps: _ },
+        { type: "working", weight: _, reps: _ },
+        { type: "working", weight: _, reps: _ },
+        { type: "working", weight: _, reps: _ },
       ],
       recs: [
         { type: "working", weight: 35, reps: 8 },
@@ -685,10 +687,10 @@ describe("initial weight adjusting", () => {
         { type: "working", weight: 30, reps: 8 },
       ],
       curr: [
-        { type: "working", weight: 0, reps: 0 },
-        { type: "working", weight: 0, reps: 0 },
-        { type: "working", weight: 0, reps: 0 },
-        { type: "working", weight: 0, reps: 0 },
+        { type: "working", weight: _, reps: _ },
+        { type: "working", weight: _, reps: _ },
+        { type: "working", weight: _, reps: _ },
+        { type: "working", weight: _, reps: _ },
       ],
       recs: [
         { type: "working", weight: 30, reps: 8 },
@@ -704,7 +706,7 @@ describe("light weights", () => {
   test("previous working, current light not filled -> recommend lower weights, max reps", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 12 }],
-      curr: [{ type: "light", weight: 0, reps: 0 }],
+      curr: [{ type: "light", weight: _, reps: _ }],
       recs: [{ type: "light", weight: 35, reps: 12 }],
     });
   });
@@ -712,7 +714,7 @@ describe("light weights", () => {
   test("previous light, current working not filled -> restore normal recommendations", () => {
     testRecommendations({
       prev: [{ type: "light", weight: 35, reps: 12 }],
-      curr: [{ type: "working", weight: 0, reps: 0 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 55, reps: 8 }],
     });
   });
@@ -720,7 +722,7 @@ describe("light weights", () => {
   test("previous light, current light not filled -> recommend the same light weights", () => {
     testRecommendations({
       prev: [{ type: "light", weight: 35, reps: 12 }],
-      curr: [{ type: "light", weight: 0, reps: 0 }],
+      curr: [{ type: "light", weight: _, reps: _ }],
       recs: [{ type: "light", weight: 35, reps: 12 }],
     });
   });
@@ -728,7 +730,7 @@ describe("light weights", () => {
   test("previous working, current light reps filled -> recommend weights based on reps", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 12 }],
-      curr: [{ type: "light", weight: 0, reps: 8 }],
+      curr: [{ type: "light", weight: _, reps: 8 }],
       recs: [{ type: "light", weight: 39, reps: 8 }],
     });
   });
@@ -736,7 +738,7 @@ describe("light weights", () => {
   test("previous working, current light weight filled -> recommend reps based on weights", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 12 }],
-      curr: [{ type: "light", weight: 32, reps: 0 }],
+      curr: [{ type: "light", weight: 32, reps: _ }],
       recs: [{ type: "light", weight: 32, reps: 16 }],
     });
   });
@@ -749,7 +751,7 @@ describe("light weights", () => {
       ],
       curr: [
         { type: "light", weight: 32, reps: 16 },
-        { type: "light", weight: 0, reps: 0 },
+        { type: "light", weight: _, reps: _ },
       ],
       recs: [
         { type: "light", weight: 32, reps: 16 },

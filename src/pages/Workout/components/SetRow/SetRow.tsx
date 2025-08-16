@@ -8,6 +8,7 @@ import {
   type SetType,
   updateSet,
   type Set,
+  type CompletedSet,
 } from "../../../../db/sets.ts";
 import { clsx } from "clsx";
 import {
@@ -69,12 +70,12 @@ export function SetRow({
     ? `${convertWeight(prevSet.weight)} x ${prevSet.reps}`
     : "-";
 
-  const weight = (convertWeight(set.weight) || "").toString();
-  const weightPlaceholder = (convertWeight(recSet?.weight) || "-").toString();
-  const expectedWeight = set.weight || recSet?.weight || 0;
+  const weight = (convertWeight(set.weight) ?? "").toString();
+  const weightPlaceholder = (convertWeight(recSet?.weight) ?? "-").toString();
+  const expectedWeight = set.weight ?? recSet?.weight;
 
-  const reps = set.reps ? set.reps.toString() : "";
-  const repsPlaceholder = (recSet?.reps || "-").toString();
+  const reps = set.reps?.toString() ?? "";
+  const repsPlaceholder = recSet?.reps?.toString() ?? "-";
 
   const updateSetInner = (updater: (set: Set) => Set): Set => {
     updatedSet.current = updater(updatedSet.current);
@@ -95,37 +96,37 @@ export function SetRow({
 
   const weightBlurHandler = () => {
     if (weightInput === null) return;
-    const newWeight = Number.parseFloat(weightInput || "0");
+    const newWeight = Number.parseFloat(weightInput);
     setWeightInput(null);
 
-    if (!Number.isNaN(newWeight) && newWeight >= 0) {
-      let newWeightKg = unitsToKg(newWeight, performance.weights?.units);
+    let newWeightKg = !Number.isNaN(newWeight)
+      ? unitsToKg(newWeight, performance.weights?.units)
+      : undefined;
 
-      if (newWeightKg && !performance.weights?.auto) {
-        newWeightKg = snapWeightKg(performance.weights, newWeightKg);
-      }
-
-      const set = updateSetInner((set) => ({
-        ...set,
-        weight: newWeightKg,
-      }));
-
-      updateSet(store, set);
+    if (newWeightKg !== undefined && !performance.weights?.auto) {
+      newWeightKg = snapWeightKg(performance.weights, newWeightKg);
     }
+
+    const set = updateSetInner((set) =>
+      !set.completed ? { ...set, weight: newWeightKg } : set,
+    );
+    updateSet(store, set);
   };
 
   const repsBlurHandler = () => {
     if (repsInput === null) return;
-    const newReps = Number.parseFloat(repsInput || "0");
+    const newReps = Number.parseFloat(repsInput);
     setRepsInput(null);
 
-    if (!Number.isNaN(newReps) && newReps >= 0) {
-      const set = updateSetInner((set) => ({ ...set, reps: newReps }));
-      updateSet(store, set);
-    }
+    const newRepsValue = !Number.isNaN(newReps) ? newReps : undefined;
+
+    const set = updateSetInner((set) =>
+      !set.completed ? { ...set, reps: newRepsValue } : set,
+    );
+    updateSet(store, set);
   };
 
-  const addRecords = (set: Set) => {
+  const addRecords = (set: CompletedSet) => {
     // todo support negative weights
     if (exercise?.weight?.type === "negative") return;
 
@@ -183,9 +184,9 @@ export function SetRow({
   const completeHandler = async () => {
     if (!set.completed) {
       const set = updateSetInner((set) => {
-        const weight = set.weight || recSet?.weight;
-        const reps = set.reps || recSet?.reps;
-        if (weight && reps) {
+        const weight = set.weight ?? recSet?.weight;
+        const reps = set.reps ?? recSet?.reps;
+        if (weight !== undefined && reps !== undefined) {
           return { ...set, weight, reps, completed: true };
         } else {
           return set;
@@ -276,13 +277,15 @@ export function SetRow({
       <BottomSheet isOpen={isActionsOpen} onClose={() => setActionsOpen(false)}>
         <div className={s.sheetHeader}>Подход</div>
         <div className={s.sheetWeights}>
-          <WeightsVisualizer
-            equipment={exercise?.equipment ?? "none"}
-            weights={performance.weights ?? DEFAULT_AUTO_WEIGHTS}
-            loadout={performance.loadout}
-            weightKg={expectedWeight}
-            onChange={visualizerChangeHandler}
-          />
+          {expectedWeight !== undefined && (
+            <WeightsVisualizer
+              equipment={exercise?.equipment ?? "none"}
+              weights={performance.weights ?? DEFAULT_AUTO_WEIGHTS}
+              loadout={performance.loadout}
+              weightKg={expectedWeight}
+              onChange={visualizerChangeHandler}
+            />
+          )}
         </div>
         <div className={s.sheetActions}>
           <button

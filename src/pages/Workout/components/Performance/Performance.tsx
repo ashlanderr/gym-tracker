@@ -16,6 +16,7 @@ import {
   addSet,
   deleteSet,
   querySetsByPerformance,
+  type CompletedSet,
 } from "../../../../db/sets.ts";
 import {
   type Exercise,
@@ -67,7 +68,10 @@ export function Performance({ performance }: PerformanceProps) {
     performance.exercise,
     performance.startedAt,
   );
-  const prevSets = useQuerySetsByPerformance(store, prevPerformance?.id ?? "");
+  const prevSets = useQuerySetsByPerformance(
+    store,
+    prevPerformance?.id ?? "",
+  ).filter((s) => s.completed);
 
   const [isActionsOpen, setActionsOpen] = useState(false);
   const [isReplaceOpen, setReplaceOpen] = useState(false);
@@ -87,8 +91,8 @@ export function Performance({ performance }: PerformanceProps) {
       performance: performance.id,
       order: Math.max(-1, ...sets.map((s) => s.order)) + 1,
       type: "working",
-      weight: 0,
-      reps: 0,
+      weight: undefined,
+      reps: undefined,
       completed: false,
     });
   };
@@ -153,8 +157,8 @@ export function Performance({ performance }: PerformanceProps) {
           exercise: exercise.id,
           order: set.order,
           type: set.type,
-          weight: 0,
-          reps: 0,
+          weight: undefined,
+          reps: undefined,
           completed: false,
         });
       }
@@ -167,8 +171,8 @@ export function Performance({ performance }: PerformanceProps) {
         exercise: exercise.id,
         order: 0,
         type: "working",
-        weight: 0,
-        reps: 0,
+        weight: undefined,
+        reps: undefined,
         completed: false,
       });
     }
@@ -305,7 +309,7 @@ export function Performance({ performance }: PerformanceProps) {
 }
 
 function buildSets(
-  prevSets: Set[],
+  prevSets: CompletedSet[],
   sets: Set[],
   performance: Performance,
   exercise: Exercise | null,
@@ -339,7 +343,7 @@ function buildSets(
 
   sets.forEach((set, index) => {
     let number = "-";
-    let prevSet: Set | undefined;
+    let prevSet: CompletedSet | undefined;
     const recSet = recommendations[index];
 
     if (set.type === "warm-up") {

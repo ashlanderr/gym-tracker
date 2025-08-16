@@ -89,8 +89,8 @@ export function Workout() {
           exercise: performance.exercise,
           order: set.order,
           type: set.type,
-          weight: 0,
-          reps: 0,
+          weight: undefined,
+          reps: undefined,
           completed: false,
         });
       }
@@ -103,8 +103,8 @@ export function Workout() {
         exercise: performance.exercise,
         order: 0,
         type: "working",
-        weight: 0,
-        reps: 0,
+        weight: undefined,
+        reps: undefined,
         completed: false,
       });
     }

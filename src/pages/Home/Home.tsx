@@ -133,8 +133,8 @@ export function Home() {
           performance: newPerformance.id,
           order: set.order,
           type: set.type,
-          weight: 0,
-          reps: 0,
+          weight: undefined,
+          reps: undefined,
           completed: false,
         });
       }

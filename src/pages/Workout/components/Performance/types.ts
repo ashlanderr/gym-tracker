@@ -16,16 +16,21 @@ export interface WorkingVolume {
   oneRepMax: number;
 }
 
-export interface SetData {
+export interface CompletedSetData {
   type: SetType;
   weight: number;
   reps: number;
-  weights?: WeightsConstructor;
+}
+
+export interface DraftSetData {
+  type: SetType;
+  weight: number | undefined;
+  reps: number | undefined;
 }
 
 export interface RecommendationParams {
-  prevSets: SetData[];
-  currentSets: SetData[];
+  prevSets: CompletedSetData[];
+  currentSets: DraftSetData[];
   exerciseWeights?: ExerciseWeight;
   performanceWeights?: PerformanceWeights;
   selfWeight?: number;
