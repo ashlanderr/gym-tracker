@@ -220,6 +220,17 @@ export function SetRow({
     });
   };
 
+  const copyPreviousHandler = () => {
+    if (prevSet && !set.completed) {
+      const set = updateSetInner(set => ({
+        ...set,
+        weight: prevSet.weight,
+        reps: prevSet.reps,
+      }));
+      updateSet(store, set);
+    }
+  }
+
   return (
     <>
       <tr className={clsx(set.completed && s.completed)}>
@@ -239,7 +250,7 @@ export function SetRow({
             <PiMedalFill className={s.recordMedal} />
           )}
         </td>
-        <td className={s.prevVolumeValue}>{prev}</td>
+        <td className={s.prevVolumeValue} onClick={copyPreviousHandler}>{prev}</td>
         <td className={s.currentWeightValue}>
           <input
             className={s.input}
