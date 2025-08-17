@@ -12,7 +12,6 @@ import {
   REPS_INCREASE_WEIGHT_MULTIPLIER,
   WARM_UP_SETS,
   WARM_UP_WEIGHT_MULTIPLIER,
-  WEIGHT_INCREASE_MIN_REPS,
 } from "./constants.ts";
 import {
   addSelfWeight,
@@ -253,7 +252,7 @@ export function buildRecommendations(
           set.weight === undefined &&
           set.reps === undefined
         ) {
-          if (working.reps >= WEIGHT_INCREASE_MIN_REPS) {
+          if (working.reps >= DEFAULT_RANGE_MAX_REPS) {
             reps = DEFAULT_RANGE_MIN_REPS;
             weight = snapWeightKg(
               performanceWeights,

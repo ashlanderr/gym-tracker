@@ -248,7 +248,7 @@ describe("single working set", () => {
       weights: plateWeights,
       prev: [{ type: "working", weight: 32.5, reps: 8 }],
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 32.5, reps: 10 }],
+      recs: [{ type: "working", weight: 32.5, reps: 9 }],
     });
   });
 
@@ -256,7 +256,7 @@ describe("single working set", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 30, reps: 1 }],
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 30, reps: 3 }],
+      recs: [{ type: "working", weight: 30, reps: 2 }],
     });
   });
 
@@ -273,7 +273,7 @@ describe("single working set", () => {
       weights: roundedWeights,
       prev: [{ type: "working", weight: 3, reps: 12 }],
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 3, reps: 14 }],
+      recs: [{ type: "working", weight: 3, reps: 13 }],
     });
   });
 
@@ -291,7 +291,7 @@ describe("single working set", () => {
       weights: plateWeights,
       prev: [{ type: "working", weight: 12.5, reps: 12 }],
       curr: [{ type: "working", weight: 12.5, reps: _ }],
-      recs: [{ type: "working", weight: 12.5, reps: 14 }],
+      recs: [{ type: "working", weight: 12.5, reps: 13 }],
     });
   });
 
@@ -318,14 +318,6 @@ describe("single working set", () => {
       prev: [{ type: "working", weight: 50, reps: 8 }],
       curr: [{ type: "working", weight: _, reps: 16 }],
       recs: [{ type: "working", weight: 41, reps: 16 }],
-    });
-  });
-
-  test("previous reps is almost maxed out -> increase weight based on 1RM", () => {
-    testRecommendations({
-      prev: [{ type: "working", weight: 50, reps: 11 }],
-      curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 54, reps: 8 }],
     });
   });
 });
@@ -360,9 +352,9 @@ describe("multiple working sets", () => {
       ],
       recs: [
         { type: "working", weight: 50, reps: 12 },
-        { type: "working", weight: 50, reps: 10 },
-        { type: "working", weight: 50, reps: 10 },
-        { type: "working", weight: 50, reps: 10 },
+        { type: "working", weight: 50, reps: 9 },
+        { type: "working", weight: 50, reps: 9 },
+        { type: "working", weight: 50, reps: 9 },
       ],
     });
   });
@@ -384,6 +376,18 @@ describe("multiple working sets", () => {
       ],
     });
   });
+
+  test("previous reps is almost maxed out -> increase weight based on 1RM", () => {
+    testRecommendations({
+      prev: [
+        { type: "working", weight: 50, reps: 12 },
+        { type: "working", weight: 50, reps: 12 },
+        { type: "working", weight: 50, reps: 11 },
+      ],
+      curr: [{ type: "working", weight: _, reps: _ }],
+      recs: [{ type: "working", weight: 55, reps: 8 }],
+    });
+  });
 });
 
 describe("positive exercise weight", () => {
@@ -394,7 +398,7 @@ describe("positive exercise weight", () => {
       selfWeight: 60,
       prev: [{ type: "working", weight: 0, reps: 8 }],
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 0, reps: 10 }],
+      recs: [{ type: "working", weight: 0, reps: 9 }],
     });
   });
 
@@ -405,7 +409,7 @@ describe("positive exercise weight", () => {
       selfWeight: 60,
       prev: [{ type: "working", weight: 20, reps: 8 }],
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 20, reps: 10 }],
+      recs: [{ type: "working", weight: 20, reps: 9 }],
     });
   });
 
@@ -415,7 +419,7 @@ describe("positive exercise weight", () => {
       selfWeight: 60,
       prev: [{ type: "working", weight: 30, reps: 1 }],
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 30, reps: 3 }],
+      recs: [{ type: "working", weight: 30, reps: 2 }],
     });
   });
 
@@ -436,7 +440,7 @@ describe("positive exercise weight", () => {
       selfWeight: 60,
       prev: [{ type: "working", weight: 12.5, reps: 12 }],
       curr: [{ type: "working", weight: 12.5, reps: _ }],
-      recs: [{ type: "working", weight: 12.5, reps: 14 }],
+      recs: [{ type: "working", weight: 12.5, reps: 13 }],
     });
   });
 
@@ -492,7 +496,7 @@ describe("negative exercise weight", () => {
       selfWeight: 60,
       prev: [{ type: "working", weight: 0, reps: 8 }],
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 0, reps: 10 }],
+      recs: [{ type: "working", weight: 0, reps: 9 }],
     });
   });
 
@@ -503,7 +507,7 @@ describe("negative exercise weight", () => {
       selfWeight: 60,
       prev: [{ type: "working", weight: 20, reps: 8 }],
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 20, reps: 10 }],
+      recs: [{ type: "working", weight: 20, reps: 9 }],
     });
   });
 
@@ -513,7 +517,7 @@ describe("negative exercise weight", () => {
       selfWeight: 60,
       prev: [{ type: "working", weight: 30, reps: 1 }],
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 30, reps: 3 }],
+      recs: [{ type: "working", weight: 30, reps: 2 }],
     });
   });
 
@@ -535,7 +539,7 @@ describe("negative exercise weight", () => {
       selfWeight: 60,
       prev: [{ type: "working", weight: 12.5, reps: 12 }],
       curr: [{ type: "working", weight: 12.5, reps: _ }],
-      recs: [{ type: "working", weight: 12.5, reps: 14 }],
+      recs: [{ type: "working", weight: 12.5, reps: 13 }],
     });
   });
 
@@ -598,7 +602,7 @@ describe("negative exercise weight", () => {
       selfWeight: 60,
       prev: [{ type: "working", weight: 0, reps: 12 }],
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 0, reps: 14 }],
+      recs: [{ type: "working", weight: 0, reps: 13 }],
     });
   });
 });
@@ -662,10 +666,10 @@ describe("working + failure sets", () => {
         { type: "failure", weight: _, reps: _ },
       ],
       recs: [
-        { type: "working", weight: 50, reps: 11 },
-        { type: "working", weight: 50, reps: 11 },
-        { type: "failure", weight: 50, reps: 11 },
-        { type: "failure", weight: 50, reps: 11 },
+        { type: "working", weight: 50, reps: 10 },
+        { type: "working", weight: 50, reps: 10 },
+        { type: "failure", weight: 50, reps: 10 },
+        { type: "failure", weight: 50, reps: 10 },
       ],
     });
   });

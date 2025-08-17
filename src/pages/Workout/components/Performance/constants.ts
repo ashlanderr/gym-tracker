@@ -8,9 +8,7 @@ export const EXTRA_RANGE_MIN_REPS = 6;
 
 export const DEFAULT_RANGE_MAX_REPS = 12;
 
-export const WEIGHT_INCREASE_MIN_REPS = DEFAULT_RANGE_MAX_REPS - 1;
-
-export const REPS_INCREASE_WEIGHT_MULTIPLIER = 1.05;
+export const REPS_INCREASE_WEIGHT_MULTIPLIER = 1.025;
 
 export const WARM_UP_SETS = [
   [
