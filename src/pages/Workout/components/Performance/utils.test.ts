@@ -1,7 +1,6 @@
 import { buildRecommendations } from "./utils.ts";
 import { describe } from "vitest";
-import type { PerformanceWeights } from "../../../../db/performances.ts";
-import type { ExerciseWeight } from "../../../../db/exercises.ts";
+import type { PerformanceWeights, ExerciseWeight } from "../../../../db";
 import type { CompletedSetData, DraftSetData } from "./types.ts";
 
 const _ = undefined;
