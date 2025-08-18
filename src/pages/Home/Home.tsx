@@ -1,10 +1,19 @@
 import {
+  addPerformance,
+  deletePerformance,
+  queryPerformancesByWorkout,
+  queryPreviousPerformance,
+  deleteSet,
+  querySetsByWorkout,
+  generateId,
+  deleteRecord,
+  queryRecordsByWorkout,
   addWorkout,
   deleteWorkout,
   useQueryActiveWorkouts,
   useQueryCompletedWorkouts,
   type Workout,
-} from "../../db/workouts.ts";
+} from "../../db";
 import { buildTime, useTimer } from "../hooks.ts";
 import s from "./styles.module.scss";
 import { APP_VERSION, DATE_FORMATTER } from "./constants.ts";
@@ -21,21 +30,13 @@ import {
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { BottomSheet } from "../Workout/components/BottomSheet";
-import {
-  addPerformance,
-  deletePerformance,
-  queryPerformancesByWorkout,
-  queryPreviousPerformance,
-} from "../../db/performances.ts";
-import { addSet, deleteSet, querySetsByWorkout } from "../../db/sets.ts";
-import { generateId } from "../../db/db.ts";
 import { clsx } from "clsx";
 import { signOut, useUser } from "../../firebase/auth.ts";
-import { deleteRecord, queryRecordsByWorkout } from "../../db/records.ts";
 import { useStore } from "../../components";
 import { ModalDialog } from "../Workout/components";
 import { useConnectionStatus } from "../../components/StoreProvider/hooks.ts";
 import { PiMedalFill } from "react-icons/pi";
+import { duplicateSet } from "../../domain";
 
 export function Home() {
   const user = useUser();
@@ -124,19 +125,8 @@ export function Home() {
         (s) => s.performance === performance.id,
       );
 
-      for (const set of performanceSets) {
-        addSet(store, {
-          id: generateId(),
-          user: newWorkout.user,
-          workout: newWorkout.id,
-          exercise: newPerformance.exercise,
-          performance: newPerformance.id,
-          order: set.order,
-          type: set.type,
-          weight: undefined,
-          reps: undefined,
-          completed: false,
-        });
+      for (const oldSet of performanceSets) {
+        duplicateSet(store, newPerformance, oldSet);
       }
     }
 

@@ -13,19 +13,11 @@ import { type ReactNode, useState } from "react";
 import {
   useQuerySetsByPerformance,
   type Set,
-  addSet,
   deleteSet,
   querySetsByPerformance,
   type CompletedSet,
-} from "../../../../db/sets.ts";
-import {
   type Exercise,
   useQueryExerciseById,
-} from "../../../../db/exercises.ts";
-import { BottomSheet } from "../BottomSheet";
-import { ChooseExercise } from "../ChooseExercise";
-import { PageModal } from "../PageModal";
-import {
   deletePerformance,
   queryPerformancesByWorkout,
   updatePerformance,
@@ -34,14 +26,16 @@ import {
   type PerformanceWeights,
   queryPreviousPerformance,
   DEFAULT_AUTO_WEIGHTS,
-} from "../../../../db/performances.ts";
+  deleteRecord,
+  type Measurement,
+  useQueryLatestMeasurement,
+  queryRecordsByPerformance,
+} from "../../../../db";
+import { BottomSheet } from "../BottomSheet";
+import { ChooseExercise } from "../ChooseExercise";
+import { PageModal } from "../PageModal";
 import { buildRecommendations } from "./utils.ts";
 import { SetRow } from "../SetRow";
-import { generateId } from "../../../../db/db.ts";
-import {
-  deleteRecord,
-  queryRecordsByPerformance,
-} from "../../../../db/records.ts";
 import { useStore } from "../../../../components";
 import { PerformanceOrder } from "../PerformanceOrder";
 import { ExerciseHistory } from "../ExerciseHistory";
@@ -49,13 +43,10 @@ import { clsx } from "clsx";
 import { WeightsSelector } from "../WeightsSelector";
 import { UNITS_TRANSLATION } from "../../../constants.ts";
 import { AddExercise } from "../AddExercise";
-import {
-  type Measurement,
-  useQueryLatestMeasurement,
-} from "../../../../db/measurements.ts";
 import { switchUnits } from "../utils.ts";
 import { PerformanceTimer } from "../PerformanceTimer";
 import { assertNever } from "../../../../utils";
+import { addNextSet, duplicateSet } from "../../../../domain";
 
 export function Performance({ performance }: PerformanceProps) {
   const store = useStore();
@@ -83,18 +74,7 @@ export function Performance({ performance }: PerformanceProps) {
   const unitsText = UNITS_TRANSLATION[weights.units];
 
   const addSetHandler = () => {
-    addSet(store, {
-      id: generateId(),
-      user: performance.user,
-      workout: performance.workout,
-      exercise: performance.exercise,
-      performance: performance.id,
-      order: Math.max(-1, ...sets.map((s) => s.order)) + 1,
-      type: "working",
-      weight: undefined,
-      reps: undefined,
-      completed: false,
-    });
+    addNextSet(store, performance);
   };
 
   const historyHandler = () => {
@@ -139,7 +119,7 @@ export function Performance({ performance }: PerformanceProps) {
     const prevSets =
       prevPerformance && querySetsByPerformance(store, prevPerformance.id);
 
-    updatePerformance(store, {
+    const newPerformance = updatePerformance(store, {
       ...performance,
       exercise: exercise.id,
       weights: prevPerformance?.weights,
@@ -148,33 +128,11 @@ export function Performance({ performance }: PerformanceProps) {
     });
 
     if (prevSets) {
-      for (const set of prevSets) {
-        addSet(store, {
-          id: generateId(),
-          user: performance.user,
-          workout: performance.workout,
-          performance: performance.id,
-          exercise: exercise.id,
-          order: set.order,
-          type: set.type,
-          weight: undefined,
-          reps: undefined,
-          completed: false,
-        });
+      for (const oldSet of prevSets) {
+        duplicateSet(store, newPerformance, oldSet);
       }
     } else {
-      addSet(store, {
-        id: generateId(),
-        user: performance.user,
-        workout: performance.workout,
-        performance: performance.id,
-        exercise: exercise.id,
-        order: 0,
-        type: "working",
-        weight: undefined,
-        reps: undefined,
-        completed: false,
-      });
+      addNextSet(store, newPerformance);
     }
 
     setReplaceOpen(false);
@@ -316,16 +274,10 @@ function buildSets(
   measurement: Measurement | null,
 ): ReactNode[] {
   const prevWarmUp = prevSets.filter(
-    (s) => s.type === "warm-up" && s.weight && s.reps,
+    (s) => s.type === "warm-up" && s.completed,
   );
   const prevWorking = prevSets.filter(
-    (s) => s.type === "working" && s.weight && s.reps,
-  );
-  const prevFailure = prevSets.filter(
-    (s) => s.type === "failure" && s.weight && s.reps,
-  );
-  const prevLight = prevSets.filter(
-    (s) => s.type === "light" && s.weight && s.reps,
+    (s) => s.type !== "warm-up" && s.completed,
   );
   const recommendations = buildRecommendations({
     prevSets,
@@ -338,8 +290,6 @@ function buildSets(
   const result: ReactNode[] = [];
   let warmUpIndex = 0;
   let workingIndex = 0;
-  let failureIndex = 0;
-  let lightIndex = 0;
 
   sets.forEach((set, index) => {
     let number = "-";
@@ -348,22 +298,22 @@ function buildSets(
 
     if (set.type === "warm-up") {
       number = "W";
-      prevSet = prevWarmUp[warmUpIndex];
-      warmUpIndex += 1;
     } else if (set.type === "working") {
       number = (workingIndex + 1).toString();
-      prevSet = prevWorking[workingIndex];
-      workingIndex += 1;
     } else if (set.type === "failure") {
       number = "F";
-      prevSet = prevFailure[failureIndex];
-      failureIndex += 1;
     } else if (set.type === "light") {
       number = "L";
-      prevSet = prevLight[lightIndex];
-      lightIndex += 1;
     } else {
       assertNever(set.type);
+    }
+
+    if (set.type === "warm-up") {
+      prevSet = prevWarmUp[warmUpIndex];
+      warmUpIndex += 1;
+    } else {
+      prevSet = prevWorking[workingIndex];
+      workingIndex += 1;
     }
 
     result.push(

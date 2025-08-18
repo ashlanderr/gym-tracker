@@ -22,7 +22,6 @@ import {
   volumeToOneRepMax as volumeToOneRepMaxInner,
 } from "../utils.ts";
 import { assertNever } from "../../../../utils";
-import type { SetType } from "../../../../db/sets.ts";
 
 export function oneRepMaxToWeight(
   params: RecommendationParams,
@@ -47,20 +46,6 @@ export function oneRepMaxToReps(
   );
 }
 
-function weightToOneRepMaxMultiplier(type: SetType): number {
-  switch (type) {
-    case "warm-up":
-      return 1 / WARM_UP_WEIGHT_MULTIPLIER;
-
-    case "light":
-      return 1 / LIGHT_WEIGHT_MULTIPLIER;
-
-    case "working":
-    case "failure":
-      return 1;
-  }
-}
-
 function findWorkingVolume(
   params: RecommendationParams,
   workingSets: CompletedSetData[],
@@ -71,16 +56,12 @@ function findWorkingVolume(
   let totalWorkingWeight = Infinity;
 
   for (const set of workingSets) {
-    const multiplier = weightToOneRepMaxMultiplier(set.type);
     const totalWeight = addSelfWeight(
       params.exerciseWeights,
       params.selfWeight,
       set.weight,
     );
-    totalOneRepMaxSum += volumeToOneRepMaxInner(
-      totalWeight * multiplier,
-      set.reps,
-    );
+    totalOneRepMaxSum += volumeToOneRepMaxInner(totalWeight, set.reps);
     totalWorkingWeight = Math.min(totalWorkingWeight, totalWeight);
   }
 

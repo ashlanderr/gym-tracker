@@ -1,18 +1,25 @@
 import s from "./styles.module.scss";
 import { MdAdd, MdArrowBack } from "react-icons/md";
 import { clsx } from "clsx";
-import { updateWorkout, useQueryWorkoutById } from "../../db/workouts.ts";
+import {
+  updateWorkout,
+  useQueryWorkoutById,
+  addPerformance,
+  deletePerformance,
+  queryPreviousPerformance,
+  useQueryPerformancesByWorkout,
+  generateId,
+  deleteSet,
+  querySetsByPerformance,
+  useQuerySetsByWorkout,
+  type Exercise,
+  queryRecordsByWorkout,
+} from "../../db";
 import type { WorkoutParams } from "./types.ts";
 import { usePageParams } from "../hooks.ts";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useTimer } from "../hooks.ts";
-import {
-  addPerformance,
-  deletePerformance,
-  queryPreviousPerformance,
-  useQueryPerformancesByWorkout,
-} from "../../db/performances.ts";
 import {
   Performance,
   ChooseExercise,
@@ -22,16 +29,8 @@ import {
   type CompleteWorkoutData,
   ActiveTimer,
 } from "./components";
-import { generateId } from "../../db/db.ts";
-import {
-  addSet,
-  deleteSet,
-  querySetsByPerformance,
-  useQuerySetsByWorkout,
-} from "../../db/sets.ts";
-import type { Exercise } from "../../db/exercises.ts";
 import { useStore } from "../../components";
-import { queryRecordsByWorkout } from "../../db/records.ts";
+import { addNextSet, duplicateSet } from "../../domain";
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
@@ -80,33 +79,11 @@ export function Workout() {
     });
 
     if (prevSets) {
-      for (const set of prevSets) {
-        addSet(store, {
-          id: generateId(),
-          user: workout.user,
-          workout: workout.id,
-          performance: performance.id,
-          exercise: performance.exercise,
-          order: set.order,
-          type: set.type,
-          weight: undefined,
-          reps: undefined,
-          completed: false,
-        });
+      for (const oldSet of prevSets) {
+        duplicateSet(store, performance, oldSet);
       }
     } else {
-      addSet(store, {
-        id: generateId(),
-        user: workout.user,
-        workout: workout.id,
-        performance: performance.id,
-        exercise: performance.exercise,
-        order: 0,
-        type: "working",
-        weight: undefined,
-        reps: undefined,
-        completed: false,
-      });
+      addNextSet(store, performance);
     }
   };
 
