@@ -734,19 +734,19 @@ describe("light weights", () => {
     });
   });
 
-  test("previous light, current working not filled -> restore normal recommendations", () => {
-    testRecommendations({
-      prev: [{ type: "light", weight: 35, reps: 12 }],
-      curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 55, reps: 8 }],
-    });
-  });
-
-  test("previous light, current light not filled -> recommend the same light weights", () => {
+  test("previous light, current light not filled -> recommend even lighter weights", () => {
     testRecommendations({
       prev: [{ type: "light", weight: 35, reps: 12 }],
       curr: [{ type: "light", weight: _, reps: _ }],
-      recs: [{ type: "light", weight: 35, reps: 12 }],
+      recs: [{ type: "light", weight: 25, reps: 12 }],
+    });
+  });
+
+  test("previous light, current working not filled -> resume progression from light 1RM", () => {
+    testRecommendations({
+      prev: [{ type: "light", weight: 35, reps: 12 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
+      recs: [{ type: "working", weight: 39, reps: 8 }],
     });
   });
 
