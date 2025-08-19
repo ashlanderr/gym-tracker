@@ -151,19 +151,19 @@ describe("warm up sets", () => {
     });
   });
 
-  test("no previous warm-up set, current reps is filled -> no recommendation", () => {
+  test("no previous warm-up set, current reps is filled -> standard recommendation", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 8 }],
       curr: [{ type: "warm-up", weight: _, reps: 30 }],
-      recs: [{ type: "warm-up", weight: _, reps: _ }],
+      recs: [{ type: "warm-up", weight: 30, reps: 12 }],
     });
   });
 
-  test("no previous warm-up set, current weight is filled -> no recommendation", () => {
+  test("no previous warm-up set, current weight is filled -> standard recommendation", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 8 }],
       curr: [{ type: "warm-up", weight: 30, reps: _ }],
-      recs: [{ type: "warm-up", weight: _, reps: _ }],
+      recs: [{ type: "warm-up", weight: 30, reps: 12 }],
     });
   });
 
@@ -199,38 +199,38 @@ describe("warm up sets", () => {
 });
 
 describe("single working set", () => {
-  test("current set is filled -> use filled values", () => {
+  test("current set is filled -> no recommendations", () => {
     testRecommendations({
       weights: plateWeights,
       prev: [{ type: "working", weight: 30, reps: 8 }],
       curr: [{ type: "working", weight: 27.5, reps: 20 }],
-      recs: [{ type: "working", weight: 27.5, reps: 20 }],
+      recs: [{ type: "working", weight: 30, reps: 9 }],
     });
   });
 
-  test("no previous set, weight filled -> use filled values", () => {
+  test("no previous set, weight filled -> no recommendations", () => {
     testRecommendations({
       weights: plateWeights,
       prev: [],
       curr: [{ type: "working", weight: 27.5, reps: _ }],
-      recs: [{ type: "working", weight: 27.5, reps: _ }],
+      recs: [{ type: "working", weight: _, reps: _ }],
     });
   });
 
-  test("no previous set, reps filled -> use filled values", () => {
+  test("no previous set, reps filled -> no recommendations", () => {
     testRecommendations({
       prev: [],
       curr: [{ type: "working", weight: _, reps: 20 }],
-      recs: [{ type: "working", weight: _, reps: 20 }],
+      recs: [{ type: "working", weight: _, reps: _ }],
     });
   });
 
-  test("no previous set, current set filled -> use filled values", () => {
+  test("no previous set, current set filled -> no recommendations", () => {
     testRecommendations({
       weights: plateWeights,
       prev: [],
       curr: [{ type: "working", weight: 27.5, reps: 20 }],
-      recs: [{ type: "working", weight: 27.5, reps: 20 }],
+      recs: [{ type: "working", weight: _, reps: _ }],
     });
   });
 
@@ -251,11 +251,11 @@ describe("single working set", () => {
     });
   });
 
-  test("previous reps is very small, current set is not filled -> increase reps", () => {
+  test("previous reps is very small, current set is not filled -> increase reps and decrease weight", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 30, reps: 1 }],
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 30, reps: 2 }],
+      recs: [{ type: "working", weight: 25, reps: 8 }],
     });
   });
 
@@ -276,71 +276,44 @@ describe("single working set", () => {
     });
   });
 
-  test("previous reps is maxed out, weight is small, current set is not filled -> extra low reps", () => {
-    testRecommendations({
-      weights: plateWeights,
-      prev: [{ type: "working", weight: 10, reps: 12 }],
-      curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 12.5, reps: 6 }],
-    });
-  });
-
-  test("current weight equals previous weight -> recommend more reps", () => {
-    testRecommendations({
-      weights: plateWeights,
-      prev: [{ type: "working", weight: 12.5, reps: 12 }],
-      curr: [{ type: "working", weight: 12.5, reps: _ }],
-      recs: [{ type: "working", weight: 12.5, reps: 13 }],
-    });
-  });
-
-  test("current weight greater than previous weight -> recommend less reps", () => {
-    testRecommendations({
-      weights: plateWeights,
-      prev: [{ type: "working", weight: 10, reps: 12 }],
-      curr: [{ type: "working", weight: 12.5, reps: _ }],
-      recs: [{ type: "working", weight: 12.5, reps: 4 }],
-    });
-  });
-
-  test("current weight less than previous weight -> recommend more reps", () => {
+  test("current weight is filled -> use default recommendations", () => {
     testRecommendations({
       weights: plateWeights,
       prev: [{ type: "working", weight: 10, reps: 8 }],
       curr: [{ type: "working", weight: 7.5, reps: _ }],
-      recs: [{ type: "working", weight: 7.5, reps: 21 }],
+      recs: [{ type: "working", weight: 10, reps: 9 }],
     });
   });
 
-  test("current reps is filled -> compute equivalent 1RM weight", () => {
+  test("current reps is filled -> use default recommendations", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 8 }],
       curr: [{ type: "working", weight: _, reps: 16 }],
-      recs: [{ type: "working", weight: 41, reps: 16 }],
+      recs: [{ type: "working", weight: 50, reps: 9 }],
     });
   });
 });
 
 describe("multiple working sets", () => {
-  test("some sets are filled, next sets are not filled -> duplicate filled set to next sets", () => {
+  test("some sets are filled with greater 1RM, next sets are not filled -> use default recommendations", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 8 }],
       curr: [
-        { type: "working", weight: 30, reps: 12 },
+        { type: "working", weight: 50, reps: 12 },
         { type: "working", weight: _, reps: _ },
-        { type: "working", weight: 35, reps: 8 },
+        { type: "working", weight: 55, reps: 8 },
         { type: "working", weight: _, reps: _ },
       ],
       recs: [
-        { type: "working", weight: 30, reps: 12 },
-        { type: "working", weight: 30, reps: 12 },
-        { type: "working", weight: 35, reps: 8 },
-        { type: "working", weight: 35, reps: 8 },
+        { type: "working", weight: 50, reps: 9 },
+        { type: "working", weight: 50, reps: 9 },
+        { type: "working", weight: 50, reps: 9 },
+        { type: "working", weight: 50, reps: 9 },
       ],
     });
   });
 
-  test("some sets are filled, next weight is filled -> use recommendations for next set", () => {
+  test("some sets are filled, next weight is filled -> use default recommendations", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 8 }],
       curr: [
@@ -350,7 +323,7 @@ describe("multiple working sets", () => {
         { type: "working", weight: _, reps: _ },
       ],
       recs: [
-        { type: "working", weight: 50, reps: 12 },
+        { type: "working", weight: 50, reps: 9 },
         { type: "working", weight: 50, reps: 9 },
         { type: "working", weight: 50, reps: 9 },
         { type: "working", weight: 50, reps: 9 },
@@ -358,7 +331,25 @@ describe("multiple working sets", () => {
     });
   });
 
-  test("some sets are filled, next reps is filled -> use recommendations for next set", () => {
+  test("some sets are filled with lower 1RM -> use lower 1RM in recommendations", () => {
+    testRecommendations({
+      prev: [{ type: "working", weight: 50, reps: 10 }],
+      curr: [
+        { type: "working", weight: 50, reps: 9 },
+        { type: "working", weight: _, reps: _ },
+        { type: "working", weight: _, reps: _ },
+        { type: "working", weight: _, reps: _ },
+      ],
+      recs: [
+        { type: "working", weight: 50, reps: 11 },
+        { type: "working", weight: 50, reps: 9 },
+        { type: "working", weight: 50, reps: 9 },
+        { type: "working", weight: 50, reps: 9 },
+      ],
+    });
+  });
+
+  test("some sets are filled with greater 1RM -> use default recommendations", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 8 }],
       curr: [
@@ -368,10 +359,10 @@ describe("multiple working sets", () => {
         { type: "working", weight: _, reps: _ },
       ],
       recs: [
-        { type: "working", weight: 50, reps: 12 },
-        { type: "working", weight: 42, reps: 15 },
-        { type: "working", weight: 42, reps: 15 },
-        { type: "working", weight: 42, reps: 15 },
+        { type: "working", weight: 50, reps: 9 },
+        { type: "working", weight: 50, reps: 9 },
+        { type: "working", weight: 50, reps: 9 },
+        { type: "working", weight: 50, reps: 9 },
       ],
     });
   });
@@ -418,7 +409,7 @@ describe("positive exercise weight", () => {
       selfWeight: 60,
       prev: [{ type: "working", weight: 30, reps: 1 }],
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 30, reps: 2 }],
+      recs: [{ type: "working", weight: 20, reps: 8 }],
     });
   });
 
@@ -432,46 +423,24 @@ describe("positive exercise weight", () => {
     });
   });
 
-  test("current weight equals previous weight -> recommend more reps", () => {
-    testRecommendations({
-      weights: plateWeights,
-      exercise: positiveExerciseWeights,
-      selfWeight: 60,
-      prev: [{ type: "working", weight: 12.5, reps: 12 }],
-      curr: [{ type: "working", weight: 12.5, reps: _ }],
-      recs: [{ type: "working", weight: 12.5, reps: 13 }],
-    });
-  });
-
-  test("current weight greater than previous weight -> recommend less reps", () => {
-    testRecommendations({
-      weights: plateWeights,
-      exercise: positiveExerciseWeights,
-      selfWeight: 60,
-      prev: [{ type: "working", weight: 10, reps: 12 }],
-      curr: [{ type: "working", weight: 12.5, reps: _ }],
-      recs: [{ type: "working", weight: 12.5, reps: 10 }],
-    });
-  });
-
-  test("current weight less than previous weight -> recommend more reps", () => {
+  test("current weight is filled -> use default recommendations", () => {
     testRecommendations({
       weights: plateWeights,
       exercise: positiveExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 10, reps: 8 }],
       curr: [{ type: "working", weight: 7.5, reps: _ }],
-      recs: [{ type: "working", weight: 7.5, reps: 11 }],
+      recs: [{ type: "working", weight: 10, reps: 9 }],
     });
   });
 
-  test("current reps is filled -> compute equivalent 1RM weight", () => {
+  test("current reps is filled -> use default recommendations", () => {
     testRecommendations({
       exercise: positiveExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 50, reps: 8 }],
       curr: [{ type: "working", weight: _, reps: 16 }],
-      recs: [{ type: "working", weight: 36, reps: 16 }],
+      recs: [{ type: "working", weight: 50, reps: 9 }],
     });
   });
 
@@ -516,7 +485,7 @@ describe("negative exercise weight", () => {
       selfWeight: 60,
       prev: [{ type: "working", weight: 30, reps: 1 }],
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 30, reps: 2 }],
+      recs: [{ type: "working", weight: 35, reps: 8 }],
     });
   });
 
@@ -531,47 +500,25 @@ describe("negative exercise weight", () => {
     });
   });
 
-  test("current weight equals previous weight -> recommend more reps", () => {
-    testRecommendations({
-      weights: plateWeights,
-      exercise: negativeExerciseWeights,
-      selfWeight: 60,
-      prev: [{ type: "working", weight: 12.5, reps: 12 }],
-      curr: [{ type: "working", weight: 12.5, reps: _ }],
-      recs: [{ type: "working", weight: 12.5, reps: 13 }],
-    });
-  });
-
-  test("current weight greater than previous weight -> recommend more reps", () => {
-    testRecommendations({
-      weights: plateWeights,
-      exercise: negativeExerciseWeights,
-      selfWeight: 60,
-      prev: [{ type: "working", weight: 10, reps: 12 }],
-      curr: [{ type: "working", weight: 12.5, reps: _ }],
-      recs: [{ type: "working", weight: 12.5, reps: 14 }],
-    });
-  });
-
-  test("current weight less than previous weight -> recommend less reps", () => {
+  test("current weight is filled -> use default recommendations", () => {
     testRecommendations({
       weights: plateWeights,
       exercise: negativeExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 10, reps: 8 }],
       curr: [{ type: "working", weight: 7.5, reps: _ }],
-      recs: [{ type: "working", weight: 7.5, reps: 6 }],
+      recs: [{ type: "working", weight: 10, reps: 9 }],
     });
   });
 
-  test("current reps is filled -> compute equivalent 1RM weight", () => {
+  test("current reps is filled -> use default recommendations", () => {
     testRecommendations({
       weights: roundedWeights,
       exercise: negativeExerciseWeights,
       selfWeight: 60,
       prev: [{ type: "working", weight: 20, reps: 8 }],
       curr: [{ type: "working", weight: _, reps: 16 }],
-      recs: [{ type: "working", weight: 27, reps: 16 }],
+      recs: [{ type: "working", weight: 20, reps: 9 }],
     });
   });
 
@@ -621,9 +568,9 @@ describe("working + failure sets", () => {
         { type: "failure", weight: _, reps: _ },
       ],
       recs: [
-        { type: "working", weight: 60, reps: 8 },
-        { type: "working", weight: 60, reps: 8 },
-        { type: "failure", weight: 60, reps: 8 },
+        { type: "working", weight: 55, reps: 8 },
+        { type: "working", weight: 55, reps: 8 },
+        { type: "failure", weight: 55, reps: 8 },
       ],
     });
   });
@@ -749,23 +696,23 @@ describe("light weights", () => {
     });
   });
 
-  test("previous working, current light reps filled -> recommend weights based on reps", () => {
+  test("previous working, current light reps filled -> use default recommendations", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 12 }],
       curr: [{ type: "light", weight: _, reps: 8 }],
-      recs: [{ type: "light", weight: 39, reps: 8 }],
+      recs: [{ type: "light", weight: 35, reps: 12 }],
     });
   });
 
-  test("previous working, current light weight filled -> recommend reps based on weights", () => {
+  test("previous working, current light weight filled -> use default recommendations", () => {
     testRecommendations({
       prev: [{ type: "working", weight: 50, reps: 12 }],
       curr: [{ type: "light", weight: 32, reps: _ }],
-      recs: [{ type: "light", weight: 32, reps: 16 }],
+      recs: [{ type: "light", weight: 35, reps: 12 }],
     });
   });
 
-  test("previous working, current light filled -> duplicated filled values", () => {
+  test("previous working, current light filled -> use default recommendations", () => {
     testRecommendations({
       prev: [
         { type: "working", weight: 50, reps: 12 },
@@ -776,8 +723,8 @@ describe("light weights", () => {
         { type: "light", weight: _, reps: _ },
       ],
       recs: [
-        { type: "light", weight: 32, reps: 16 },
-        { type: "light", weight: 32, reps: 16 },
+        { type: "light", weight: 35, reps: 12 },
+        { type: "light", weight: 35, reps: 12 },
       ],
     });
   });
