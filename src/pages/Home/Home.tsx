@@ -1,8 +1,6 @@
 import {
-  addPerformance,
   deletePerformance,
   queryPerformancesByWorkout,
-  queryPreviousPerformance,
   deleteSet,
   querySetsByWorkout,
   generateId,
@@ -36,7 +34,7 @@ import { useStore } from "../../components";
 import { ModalDialog } from "../Workout/components";
 import { useConnectionStatus } from "../../components/StoreProvider/hooks.ts";
 import { PiMedalFill } from "react-icons/pi";
-import { duplicateSet } from "../../domain";
+import { addPerformance } from "../../domain";
 
 export function Home() {
   const user = useUser();
@@ -90,7 +88,6 @@ export function Home() {
     if (!workoutActions) return;
 
     const performances = queryPerformancesByWorkout(store, workoutActions.id);
-    const sets = querySetsByWorkout(store, workoutActions.id);
 
     const newWorkout = addWorkout(store, {
       id: generateId(),
@@ -102,32 +99,8 @@ export function Home() {
       sets: 0,
     });
 
-    for (const performance of performances) {
-      const prevPerformance = queryPreviousPerformance(
-        store,
-        performance.exercise,
-        Date.now(),
-      );
-
-      const newPerformance = addPerformance(store, {
-        id: generateId(),
-        user: newWorkout.user,
-        workout: newWorkout.id,
-        exercise: performance.exercise,
-        order: performance.order,
-        startedAt: newWorkout.startedAt,
-        weights: prevPerformance?.weights,
-        loadout: prevPerformance?.loadout,
-        timer: prevPerformance?.timer,
-      });
-
-      const performanceSets = sets.filter(
-        (s) => s.performance === performance.id,
-      );
-
-      for (const oldSet of performanceSets) {
-        duplicateSet(store, newPerformance, oldSet);
-      }
+    for (const oldPerformance of performances) {
+      addPerformance(store, newWorkout, oldPerformance.exercise);
     }
 
     openWorkoutHandler(newWorkout);

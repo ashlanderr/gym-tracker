@@ -13,23 +13,17 @@ import { type ReactNode, useState } from "react";
 import {
   useQuerySetsByPerformance,
   type Set,
-  deleteSet,
-  querySetsByPerformance,
   type CompletedSet,
   type Exercise,
   useQueryExerciseById,
-  deletePerformance,
   queryPerformancesByWorkout,
   updatePerformance,
   useQueryPreviousPerformance,
   type Performance,
   type PerformanceWeights,
-  queryPreviousPerformance,
   DEFAULT_AUTO_WEIGHTS,
-  deleteRecord,
   type Measurement,
   useQueryLatestMeasurement,
-  queryRecordsByPerformance,
 } from "../../../../db";
 import { BottomSheet } from "../BottomSheet";
 import { ChooseExercise } from "../ChooseExercise";
@@ -46,7 +40,11 @@ import { AddExercise } from "../AddExercise";
 import { switchUnits } from "../utils.ts";
 import { PerformanceTimer } from "../PerformanceTimer";
 import { assertNever } from "../../../../utils";
-import { addNextSet, duplicateSet } from "../../../../domain";
+import {
+  addNextSet,
+  deletePerformance,
+  replacePerformance,
+} from "../../../../domain";
 
 export function Performance({ performance }: PerformanceProps) {
   const store = useStore();
@@ -104,48 +102,12 @@ export function Performance({ performance }: PerformanceProps) {
   };
 
   const replaceCompleteHandler = (exercise: Exercise) => {
-    const sets = querySetsByPerformance(store, performance.id);
-    const records = queryRecordsByPerformance(store, performance.id);
-
-    records.forEach((record) => deleteRecord(store, record));
-    sets.forEach((set) => deleteSet(store, set));
-
-    const prevPerformance = queryPreviousPerformance(
-      store,
-      exercise.id,
-      Date.now(),
-    );
-
-    const prevSets =
-      prevPerformance && querySetsByPerformance(store, prevPerformance.id);
-
-    const newPerformance = updatePerformance(store, {
-      ...performance,
-      exercise: exercise.id,
-      weights: prevPerformance?.weights,
-      loadout: prevPerformance?.loadout,
-      timer: prevPerformance?.timer,
-    });
-
-    if (prevSets) {
-      for (const oldSet of prevSets) {
-        duplicateSet(store, newPerformance, oldSet);
-      }
-    } else {
-      addNextSet(store, newPerformance);
-    }
-
+    replacePerformance(store, performance, exercise.id);
     setReplaceOpen(false);
   };
 
   const deleteHandler = () => {
-    const sets = querySetsByPerformance(store, performance.id);
-    const records = queryRecordsByPerformance(store, performance.id);
-
-    records.forEach((record) => deleteRecord(store, record));
-    sets.forEach((set) => deleteSet(store, set));
     deletePerformance(store, performance);
-
     setActionsOpen(false);
   };
 

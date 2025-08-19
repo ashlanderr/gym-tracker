@@ -123,7 +123,10 @@ export function addPerformance(store: Store, entity: Performance): Performance {
   return entity;
 }
 
-export function updatePerformance(store: Store, entity: Performance): Performance {
+export function updatePerformance(
+  store: Store,
+  entity: Performance,
+): Performance {
   insertEntity(collection(store.personal, "performances"), entity);
   return entity;
 }

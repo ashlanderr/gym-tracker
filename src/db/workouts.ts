@@ -1,6 +1,7 @@
 import {
   collection,
   deleteEntity,
+  getEntity,
   insertEntity,
   useGetEntity,
   useQueryCollection,
@@ -16,6 +17,10 @@ export interface Workout {
   volume?: number;
   sets?: number;
   records?: number;
+}
+
+export function queryWorkoutById(store: Store, id: string): Workout | null {
+  return getEntity(collection(store.personal, "workouts"), id);
 }
 
 export function useQueryWorkoutById(store: Store, id: string): Workout | null {
