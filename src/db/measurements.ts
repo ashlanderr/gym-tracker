@@ -1,4 +1,10 @@
-import { collection, insertEntity, maxBy, useQueryCollection } from "./db.ts";
+import {
+  collection,
+  insertEntity,
+  maxBy,
+  queryCollection,
+  useQueryCollection,
+} from "./db.ts";
 import type { Store } from "./doc.ts";
 
 export interface Measurement {
@@ -7,6 +13,19 @@ export interface Measurement {
   createdAt: number;
   weight: number;
   height: number;
+}
+
+export function queryLatestMeasurement(
+  store: Store,
+  beforeDate: number | null,
+): Measurement | null {
+  const entities = queryCollection<Measurement>(
+    collection(store.personal, "measurements"),
+    {
+      createdAt: { lt: beforeDate ?? Infinity },
+    },
+  );
+  return maxBy(entities, (a, b) => a.createdAt - b.createdAt);
 }
 
 export function useQueryLatestMeasurement(

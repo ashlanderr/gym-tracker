@@ -6,7 +6,13 @@ export const DEFAULT_RANGE_MIN_REPS = 8;
 
 export const DEFAULT_RANGE_MAX_REPS = 12;
 
+export const PROGRESSION_MIN = 1.0;
+
+export const PROGRESSION_MAX = 1.2;
+
 export const DEFAULT_PROGRESSION = 1.025;
+
+export const PROGRESSION_INCREASE = 1.007;
 
 export const WARM_UP_SETS = [
   [

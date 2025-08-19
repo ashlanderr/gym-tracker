@@ -14,6 +14,10 @@ import {
   useQuerySetsByWorkout,
   type Exercise,
   queryRecordsByWorkout,
+  type Performance as PerformanceEntity,
+  queryExerciseById,
+  queryLatestMeasurement,
+  updatePerformance,
 } from "../../db";
 import type { WorkoutParams } from "./types.ts";
 import { usePageParams } from "../hooks.ts";
@@ -31,6 +35,7 @@ import {
 } from "./components";
 import { useStore } from "../../components";
 import { addNextSet, duplicateSet } from "../../domain";
+import { computeNextProgression } from "./components/Performance/utils.ts";
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
@@ -92,6 +97,40 @@ export function Workout() {
     setCompleteModal(completed ? "form" : "warning");
   };
 
+  const updateProgression = (performance: PerformanceEntity) => {
+    const measurement = queryLatestMeasurement(store, performance.startedAt);
+    const exercise = queryExerciseById(store, performance.exercise);
+
+    const currentSets = querySetsByPerformance(store, performance.id).filter(
+      (s) => s.completed,
+    );
+
+    const prevPerformance = queryPreviousPerformance(
+      store,
+      performance.exercise,
+      performance.startedAt,
+    );
+
+    const prevSets = querySetsByPerformance(
+      store,
+      prevPerformance?.id ?? "",
+    ).filter((s) => s.completed);
+
+    const progression = computeNextProgression({
+      performanceWeights: performance.weights,
+      selfWeight: measurement?.weight,
+      exerciseWeights: exercise?.weight,
+      progression: prevPerformance?.progression,
+      prevSets,
+      currentSets,
+    });
+
+    updatePerformance(store, {
+      ...performance,
+      progression,
+    });
+  };
+
   const completeEndHandler = (data: CompleteWorkoutData) => {
     if (!workout) return;
 
@@ -111,7 +150,10 @@ export function Workout() {
 
       if (emptyPerformance) {
         deletePerformance(store, performance);
+        continue;
       }
+
+      updateProgression(performance);
     }
 
     const records = queryRecordsByWorkout(store, workout.id);

@@ -11,6 +11,9 @@ import {
   DEFAULT_PROGRESSION,
   WARM_UP_SETS,
   WARM_UP_WEIGHT_MULTIPLIER,
+  PROGRESSION_INCREASE,
+  PROGRESSION_MAX,
+  PROGRESSION_MIN,
 } from "./constants.ts";
 import {
   addSelfWeight,
@@ -227,4 +230,48 @@ export function buildRecommendations(
   }
 
   return result;
+}
+
+export function computeNextProgression(params: RecommendationParams): number {
+  const oldProgression = params.progression ?? DEFAULT_PROGRESSION;
+
+  const baseRecs = buildRecommendations({
+    ...params,
+    currentSets: [{ type: "working", weight: undefined, reps: undefined }],
+  });
+
+  const recSet = baseRecs.at(0);
+  if (!recSet || recSet.weight === undefined || recSet.reps === undefined) {
+    return oldProgression;
+  }
+
+  const recRepMax = volumeToOneRepMax(params, recSet.weight, recSet.reps);
+
+  const currSets = params.currentSets.filter(
+    (s): s is CompletedSetData =>
+      s.type !== "warm-up" && s.weight !== undefined && s.reps !== undefined,
+  );
+
+  const currVolume = findWorkingVolume(params, currSets);
+  const currRepMax = currVolume?.oneRepMax;
+  if (currRepMax === undefined) {
+    return oldProgression;
+  }
+
+  if (currRepMax >= recRepMax) {
+    return Math.min(oldProgression * PROGRESSION_INCREASE, PROGRESSION_MAX);
+  }
+
+  const prevSets = params.prevSets.filter((s) => s.type !== "warm-up");
+
+  const prevVolume = findWorkingVolume(params, prevSets);
+  const prevRepMax = prevVolume?.oneRepMax;
+  if (prevRepMax === undefined) {
+    return oldProgression;
+  }
+
+  return Math.max(
+    PROGRESSION_MIN,
+    Math.min(currRepMax / prevRepMax, PROGRESSION_MAX),
+  );
 }

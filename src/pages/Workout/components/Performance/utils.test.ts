@@ -1,7 +1,8 @@
-import { buildRecommendations } from "./utils.ts";
+import { buildRecommendations, computeNextProgression } from "./utils.ts";
 import { describe } from "vitest";
 import type { PerformanceWeights, ExerciseWeight } from "../../../../db";
 import type { CompletedSetData, DraftSetData } from "./types.ts";
+import { DEFAULT_PROGRESSION, PROGRESSION_INCREASE } from "./constants.ts";
 
 const _ = undefined;
 
@@ -795,6 +796,95 @@ describe("different progression", () => {
       prev: [{ type: "working", weight: 5, reps: 20 }],
       curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 7.5, reps: 8 }],
+    });
+  });
+});
+
+function testNextProgression({
+  prevSets,
+  currSets,
+  prevProgression,
+  nextProgression,
+}: {
+  prevSets: CompletedSetData[];
+  currSets: DraftSetData[];
+  prevProgression: number;
+  nextProgression: number;
+}) {
+  const actualProgression = computeNextProgression({
+    prevSets,
+    currentSets: currSets,
+    performanceWeights: roundedWeights,
+    progression: prevProgression,
+  });
+  expect(actualProgression).closeTo(nextProgression, 1e-3);
+}
+
+function stepProgression(steps: number) {
+  return DEFAULT_PROGRESSION * Math.pow(PROGRESSION_INCREASE, steps);
+}
+
+describe("compute next progression", () => {
+  test("successful set, zero step progression -> next progression step", () => {
+    testNextProgression({
+      prevSets: [{ type: "working", weight: 50, reps: 8 }],
+      currSets: [{ type: "working", weight: 50, reps: 9 }],
+      prevProgression: stepProgression(0),
+      nextProgression: stepProgression(1),
+    });
+  });
+
+  test("successful set, two step progression -> next progression step", () => {
+    testNextProgression({
+      prevSets: [{ type: "working", weight: 50, reps: 8 }],
+      currSets: [{ type: "working", weight: 50, reps: 9 }],
+      prevProgression: stepProgression(2),
+      nextProgression: stepProgression(3),
+    });
+  });
+
+  test("successful set, two reps progression -> next progression step", () => {
+    testNextProgression({
+      prevSets: [{ type: "working", weight: 50, reps: 8 }],
+      currSets: [{ type: "working", weight: 50, reps: 10 }],
+      prevProgression: stepProgression(3),
+      nextProgression: stepProgression(4),
+    });
+  });
+
+  test("failed set, two reps progression -> reset progression", () => {
+    testNextProgression({
+      prevSets: [{ type: "working", weight: 50, reps: 8 }],
+      currSets: [{ type: "working", weight: 50, reps: 9 }],
+      prevProgression: stepProgression(3),
+      nextProgression: 1.026,
+    });
+  });
+
+  test("failed set, zero step progression -> reset progression", () => {
+    testNextProgression({
+      prevSets: [{ type: "working", weight: 50, reps: 8 }],
+      currSets: [{ type: "working", weight: 50, reps: 8 }],
+      prevProgression: stepProgression(0),
+      nextProgression: 1.0,
+    });
+  });
+
+  test("successful set, next weight progression -> next progression step", () => {
+    testNextProgression({
+      prevSets: [{ type: "working", weight: 50, reps: 8 }],
+      currSets: [{ type: "working", weight: 55, reps: 8 }],
+      prevProgression: stepProgression(15),
+      nextProgression: stepProgression(16),
+    });
+  });
+
+  test("failed set, next weight progression -> reset progression", () => {
+    testNextProgression({
+      prevSets: [{ type: "working", weight: 50, reps: 8 }],
+      currSets: [{ type: "working", weight: 55, reps: 4 }],
+      prevProgression: stepProgression(15),
+      nextProgression: 1,
     });
   });
 });
