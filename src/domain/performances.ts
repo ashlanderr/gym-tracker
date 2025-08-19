@@ -40,6 +40,7 @@ export function addPerformance(
     weights: prevPerformance?.weights,
     loadout: prevPerformance?.loadout,
     timer: prevPerformance?.timer,
+    progression: prevPerformance?.progression,
   });
 
   if (prevSets) {

@@ -19,6 +19,7 @@ export interface Performance {
   weights?: PerformanceWeights;
   loadout?: PerformanceLoadout;
   timer?: number;
+  progression?: number;
 }
 
 export type WeightUnits = "kg" | "lbs";

@@ -38,6 +38,7 @@ function testRecommendations({
   recs,
   selfWeight,
   exercise,
+  progression,
 }: {
   weights?: PerformanceWeights;
   prev: CompletedSetData[];
@@ -45,6 +46,7 @@ function testRecommendations({
   recs: DraftSetData[];
   selfWeight?: number;
   exercise?: ExerciseWeight;
+  progression?: number;
 }) {
   const rec = buildRecommendations({
     prevSets: prev,
@@ -52,6 +54,7 @@ function testRecommendations({
     performanceWeights: weights ?? roundedWeights,
     exerciseWeights: exercise,
     selfWeight,
+    progression,
   });
   expect(rec).toEqual(recs);
 }
@@ -290,6 +293,15 @@ describe("single working set", () => {
       prev: [{ type: "working", weight: 50, reps: 8 }],
       curr: [{ type: "working", weight: _, reps: 16 }],
       recs: [{ type: "working", weight: 50, reps: 9 }],
+    });
+  });
+
+  test("previous weight is very small, reps is very high, current not filled -> increase weight", () => {
+    testRecommendations({
+      weights: plateWeights,
+      prev: [{ type: "working", weight: 5, reps: 18 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
+      recs: [{ type: "working", weight: 7.5, reps: 8 }],
     });
   });
 });
@@ -568,9 +580,9 @@ describe("working + failure sets", () => {
         { type: "failure", weight: _, reps: _ },
       ],
       recs: [
-        { type: "working", weight: 55, reps: 8 },
-        { type: "working", weight: 55, reps: 8 },
-        { type: "failure", weight: 55, reps: 8 },
+        { type: "working", weight: 60, reps: 8 },
+        { type: "working", weight: 60, reps: 8 },
+        { type: "failure", weight: 60, reps: 8 },
       ],
     });
   });
@@ -726,6 +738,63 @@ describe("light weights", () => {
         { type: "light", weight: 35, reps: 12 },
         { type: "light", weight: 35, reps: 12 },
       ],
+    });
+  });
+});
+
+describe("different progression", () => {
+  test("no progression", () => {
+    testRecommendations({
+      progression: 1.0,
+      prev: [{ type: "working", weight: 50, reps: 8 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
+      recs: [{ type: "working", weight: 50, reps: 8 }],
+    });
+  });
+
+  test("one rep progression", () => {
+    testRecommendations({
+      progression: 1.025,
+      prev: [{ type: "working", weight: 50, reps: 8 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
+      recs: [{ type: "working", weight: 50, reps: 9 }],
+    });
+  });
+
+  test("two reps progression", () => {
+    testRecommendations({
+      progression: 1.05,
+      prev: [{ type: "working", weight: 50, reps: 8 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
+      recs: [{ type: "working", weight: 50, reps: 10 }],
+    });
+  });
+
+  test("low reps, next weight progression", () => {
+    testRecommendations({
+      progression: 1.2,
+      prev: [{ type: "working", weight: 50, reps: 8 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
+      recs: [{ type: "working", weight: 55, reps: 8 }],
+    });
+  });
+
+  test("high reps, next weight progression", () => {
+    testRecommendations({
+      progression: 1.2,
+      prev: [{ type: "working", weight: 50, reps: 12 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
+      recs: [{ type: "working", weight: 55, reps: 8 }],
+    });
+  });
+
+  test("very high reps, next weight progression", () => {
+    testRecommendations({
+      progression: 1.2,
+      weights: plateWeights,
+      prev: [{ type: "working", weight: 5, reps: 20 }],
+      curr: [{ type: "working", weight: _, reps: _ }],
+      recs: [{ type: "working", weight: 7.5, reps: 8 }],
     });
   });
 });

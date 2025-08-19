@@ -8,7 +8,7 @@ import {
   DEFAULT_RANGE_MAX_REPS,
   DEFAULT_RANGE_MIN_REPS,
   LIGHT_WEIGHT_MULTIPLIER,
-  REPS_INCREASE_WEIGHT_MULTIPLIER,
+  DEFAULT_PROGRESSION,
   WARM_UP_SETS,
   WARM_UP_WEIGHT_MULTIPLIER,
 } from "./constants.ts";
@@ -108,6 +108,7 @@ export function buildRecommendations(
     selfWeight,
   } = params;
 
+  const progression = params.progression ?? DEFAULT_PROGRESSION;
   const currentWarmUpSets = currentSets.filter((s) => s.type === "warm-up");
   const prevWorkingSets = prevSets.filter((s) => s.type !== "warm-up");
   const warmUpTemplate = WARM_UP_SETS.at(currentWarmUpSets.length - 1) ?? [];
@@ -177,7 +178,7 @@ export function buildRecommendations(
 
         if (working) {
           const nextRepMax = Math.min(
-            working.oneRepMax * REPS_INCREASE_WEIGHT_MULTIPLIER,
+            working.oneRepMax * progression,
             topOneRepMax,
           );
           weight = working.weight;
@@ -186,7 +187,7 @@ export function buildRecommendations(
             const clampedRepMax = volumeToOneRepMax(
               params,
               weight,
-              DEFAULT_RANGE_MAX_REPS,
+              Math.max(DEFAULT_RANGE_MAX_REPS, working.reps),
             );
             const nextWeight = snapWeightKg(
               performanceWeights,

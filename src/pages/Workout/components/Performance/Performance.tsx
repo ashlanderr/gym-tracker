@@ -150,7 +150,14 @@ export function Performance({ performance }: PerformanceProps) {
           </tr>
         </thead>
         <tbody>
-          {buildSets(prevSets, sets, performance, exercise, measurement)}
+          {buildSets(
+            prevPerformance,
+            prevSets,
+            sets,
+            performance,
+            exercise,
+            measurement,
+          )}
         </tbody>
       </table>
       <button className={s.addSetButton} onClick={addSetHandler}>
@@ -229,6 +236,7 @@ export function Performance({ performance }: PerformanceProps) {
 }
 
 function buildSets(
+  prevPerformance: Performance | null,
   prevSets: CompletedSet[],
   sets: Set[],
   performance: Performance,
@@ -247,6 +255,7 @@ function buildSets(
     performanceWeights: performance.weights,
     exerciseWeights: exercise?.weight,
     selfWeight: measurement?.weight,
+    progression: prevPerformance?.progression,
   });
 
   const result: ReactNode[] = [];

@@ -2,9 +2,9 @@ import type {
   Performance,
   PerformanceWeights,
   WeightUnits,
-} from "../../../../db/performances.ts";
-import type { SetType } from "../../../../db/sets.ts";
-import type { ExerciseWeight } from "../../../../db/exercises.ts";
+  SetType,
+  ExerciseWeight,
+} from "../../../../db";
 
 export interface PerformanceProps {
   performance: Performance;
@@ -34,6 +34,7 @@ export interface RecommendationParams {
   exerciseWeights?: ExerciseWeight;
   performanceWeights?: PerformanceWeights;
   selfWeight?: number;
+  progression?: number;
 }
 
 export interface WeightsConstructor {
