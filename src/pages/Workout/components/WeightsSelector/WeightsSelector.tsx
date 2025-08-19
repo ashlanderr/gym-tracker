@@ -204,7 +204,7 @@ function machineWeights(
   return (
     <div className={s.root}>
       <div className={s.title}>Тип</div>
-      <div className={s.title}>Тренажёр</div>
+      <div className={s.title}>Блок</div>
       {unitsSelector(value, onChange)}
       {weights.map((w) => (
         <React.Fragment key={w.label}>
