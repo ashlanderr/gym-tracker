@@ -30,7 +30,7 @@ export const EQUIPMENT_TRANSLATION: Record<EquipmentType, string> = {
   none: "Нет",
   barbell: "Штанга",
   dumbbell: "Гантели",
-  machine: "Тренажёр",
+  machine: "Блок",
   plates: "Блины",
 };
 
