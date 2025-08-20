@@ -28,12 +28,10 @@ import {
   Performance,
   ChooseExercise,
   CompleteWorkoutModal,
-  ModalDialog,
-  PageModal,
   type CompleteWorkoutData,
   ActiveTimer,
 } from "./components";
-import { useStore } from "../../components";
+import { PageModal, ModalDialog, useStore } from "../../components";
 import { addNextSet, duplicateSet } from "../../domain";
 import { computeNextProgression } from "./components/Performance/utils.ts";
 

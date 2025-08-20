@@ -1,5 +1,4 @@
-import { type Performance } from "../../../../db/performances";
-import { type Set } from "../../../../db/sets";
+import { type Performance, type Set } from "../../../../db";
 import type { HistoryPoint } from "./types.ts";
 import { volumeToOneRepMax } from "../utils.ts";
 

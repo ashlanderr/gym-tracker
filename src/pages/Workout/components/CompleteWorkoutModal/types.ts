@@ -1,4 +1,4 @@
-import type { Workout } from "../../../../db/workouts.ts";
+import type { Workout } from "../../../../db";
 
 export interface CompleteWorkoutData {
   name: string;

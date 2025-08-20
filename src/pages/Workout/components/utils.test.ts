@@ -4,7 +4,7 @@ import {
   snapWeightKg,
   unitsToKg,
 } from "./utils.ts";
-import type { PerformanceWeights } from "../../../db/performances.ts";
+import type { PerformanceWeights } from "../../../db";
 import type { WeightsConstructor } from "./Performance/types.ts";
 
 function testAutoDetect({

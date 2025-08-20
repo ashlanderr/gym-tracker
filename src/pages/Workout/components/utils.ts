@@ -3,12 +3,10 @@ import {
   DEFAULT_WEIGHT_UNITS,
   type PerformanceWeights,
   type WeightUnits,
-} from "../../../db/performances.ts";
-import type { WeightsConstructor } from "./Performance/types.ts";
-import {
   DEFAULT_EXERCISE_WEIGHT,
   type ExerciseWeight,
-} from "../../../db/exercises.ts";
+} from "../../../db";
+import type { WeightsConstructor } from "./Performance/types.ts";
 
 export function addSelfWeight(
   exerciseWeight: ExerciseWeight | undefined,

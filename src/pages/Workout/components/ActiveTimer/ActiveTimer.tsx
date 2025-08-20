@@ -1,4 +1,4 @@
-import { BottomSheet } from "../BottomSheet";
+import { BottomSheet } from "../../../../components";
 import { buildTimeParts } from "../../../hooks.ts";
 import { useAtom } from "jotai";
 import { TIMER_DEADLINE_ATOM } from "./constants.ts";

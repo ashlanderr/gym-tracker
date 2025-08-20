@@ -2,13 +2,13 @@ import { useStore } from "../../components";
 import {
   addMeasurement,
   useQueryLatestMeasurement,
-} from "../../db/measurements.ts";
+  generateId,
+} from "../../db";
 import { useState } from "react";
 import { useUser } from "../../firebase/auth.ts";
 import s from "./styles.module.scss";
 import { useNavigate } from "react-router";
 import { MdArrowBack } from "react-icons/md";
-import { generateId } from "../../db/db.ts";
 
 export function User() {
   const store = useStore();

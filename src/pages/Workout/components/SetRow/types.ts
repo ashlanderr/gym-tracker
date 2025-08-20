@@ -1,6 +1,4 @@
-import type { CompletedSet, Set } from "../../../../db/sets.ts";
-import type { Performance } from "../../../../db/performances.ts";
-import type { Exercise } from "../../../../db/exercises.ts";
+import type { CompletedSet, Set, Performance, Exercise } from "../../../../db";
 import type { DraftSetData } from "../Performance/types.ts";
 
 export interface SetRowProps {

@@ -1,7 +1,7 @@
 import type { SetRowProps } from "./types.ts";
 import s from "./styles.module.scss";
 import { MdArrowUpward, MdCheck, MdDelete } from "react-icons/md";
-import { BottomSheet } from "../BottomSheet";
+import { BottomSheet, useStore } from "../../../../components";
 import { useEffect, useRef, useState } from "react";
 import {
   deleteSet,
@@ -9,16 +9,18 @@ import {
   updateSet,
   type Set,
   type CompletedSet,
-} from "../../../../db/sets.ts";
-import { clsx } from "clsx";
-import {
   addRecord,
   deleteRecord,
   queryPreviousRecordByExercise,
   type RecordType,
   useQueryRecordsBySet,
-} from "../../../../db/records.ts";
-import { generateId } from "../../../../db/db.ts";
+  generateId,
+  DEFAULT_AUTO_WEIGHTS,
+  type PerformanceLoadout,
+  queryPreviousPerformance,
+  updatePerformance,
+} from "../../../../db";
+import { clsx } from "clsx";
 import { RECORDS_TRANSLATION } from "../../../constants.ts";
 import { PiMedalFill } from "react-icons/pi";
 import {
@@ -29,14 +31,7 @@ import {
   unitsToKg,
   volumeToOneRepMax,
 } from "../utils.ts";
-import { useStore } from "../../../../components";
 import { WeightsVisualizer } from "../WeightsVisualizer";
-import {
-  DEFAULT_AUTO_WEIGHTS,
-  type PerformanceLoadout,
-  queryPreviousPerformance,
-  updatePerformance,
-} from "../../../../db/performances.ts";
 import { useActiveTimer } from "../ActiveTimer";
 
 export function SetRow({
@@ -222,14 +217,14 @@ export function SetRow({
 
   const copyPreviousHandler = () => {
     if (prevSet && !set.completed) {
-      const set = updateSetInner(set => ({
+      const set = updateSetInner((set) => ({
         ...set,
         weight: prevSet.weight,
         reps: prevSet.reps,
       }));
       updateSet(store, set);
     }
-  }
+  };
 
   return (
     <>
@@ -250,7 +245,9 @@ export function SetRow({
             <PiMedalFill className={s.recordMedal} />
           )}
         </td>
-        <td className={s.prevVolumeValue} onClick={copyPreviousHandler}>{prev}</td>
+        <td className={s.prevVolumeValue} onClick={copyPreviousHandler}>
+          {prev}
+        </td>
         <td className={s.currentWeightValue}>
           <input
             className={s.input}

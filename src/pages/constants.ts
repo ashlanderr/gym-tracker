@@ -2,9 +2,9 @@ import type {
   EquipmentType,
   ExerciseWeight,
   MuscleType,
-} from "../db/exercises.ts";
-import type { WeightUnits } from "../db/performances.ts";
-import type { RecordType } from "../db/records.ts";
+  WeightUnits,
+  RecordType,
+} from "../db";
 
 export const MUSCLES_TRANSLATION: Record<MuscleType, string> = {
   abs: "Пресс",

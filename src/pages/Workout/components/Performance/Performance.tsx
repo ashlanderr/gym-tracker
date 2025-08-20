@@ -25,12 +25,10 @@ import {
   type Measurement,
   useQueryLatestMeasurement,
 } from "../../../../db";
-import { BottomSheet } from "../BottomSheet";
+import { BottomSheet, PageModal, useStore } from "../../../../components";
 import { ChooseExercise } from "../ChooseExercise";
-import { PageModal } from "../PageModal";
 import { buildRecommendations } from "./utils.ts";
 import { SetRow } from "../SetRow";
-import { useStore } from "../../../../components";
 import { PerformanceOrder } from "../PerformanceOrder";
 import { ExerciseHistory } from "../ExerciseHistory";
 import { clsx } from "clsx";

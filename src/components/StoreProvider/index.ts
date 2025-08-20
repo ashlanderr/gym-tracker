@@ -1,2 +1,2 @@
 export * from "./StoreProvider";
-export { useStore } from "./hooks.ts";
+export { useStore, useConnectionStatus } from "./hooks.ts";

@@ -27,12 +27,14 @@ import {
 } from "react-icons/md";
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import { BottomSheet } from "../Workout/components/BottomSheet";
 import { clsx } from "clsx";
 import { signOut, useUser } from "../../firebase/auth.ts";
-import { useStore } from "../../components";
-import { ModalDialog } from "../Workout/components";
-import { useConnectionStatus } from "../../components/StoreProvider/hooks.ts";
+import {
+  BottomSheet,
+  ModalDialog,
+  useStore,
+  useConnectionStatus,
+} from "../../components";
 import { PiMedalFill } from "react-icons/pi";
 import { addPerformance } from "../../domain";
 

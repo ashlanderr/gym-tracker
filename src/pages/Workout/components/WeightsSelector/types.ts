@@ -1,5 +1,4 @@
-import type { PerformanceWeights } from "../../../../db/performances.ts";
-import type { EquipmentType } from "../../../../db/exercises.ts";
+import type { PerformanceWeights, EquipmentType } from "../../../../db";
 
 export interface WeightsSelectorProps {
   equipment: EquipmentType;

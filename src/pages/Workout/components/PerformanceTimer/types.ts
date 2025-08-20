@@ -1,4 +1,4 @@
-import { type Performance } from "../../../../db/performances";
+import { type Performance } from "../../../../db";
 
 export interface PerformanceTimerProps {
   performance: Performance;

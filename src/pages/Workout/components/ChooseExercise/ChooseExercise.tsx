@@ -3,18 +3,20 @@ import {
   deleteExercise,
   type Exercise,
   useQueryAllExercises,
-} from "../../../../db/exercises.ts";
+} from "../../../../db";
 import s from "./styles.module.scss";
 import { MdAdd, MdArrowBack, MdDelete, MdEdit } from "react-icons/md";
 import { MUSCLES_TRANSLATION } from "../../../constants.ts";
 import { useState } from "react";
-import { PageModal } from "../PageModal";
+import {
+  PageModal,
+  BottomSheet,
+  ModalDialog,
+  useStore,
+} from "../../../../components";
 import { AddExercise } from "../AddExercise";
-import { useStore } from "../../../../components";
 import { type MouseEvent } from "react";
-import { BottomSheet } from "../BottomSheet";
 import { clsx } from "clsx";
-import { ModalDialog } from "../ModalDialog";
 
 export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
   const store = useStore();

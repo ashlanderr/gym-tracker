@@ -1,5 +1,4 @@
-import type { Performance } from "../../../../db/performances.ts";
-import type { Exercise } from "../../../../db/exercises.ts";
+import type { Performance, Exercise } from "../../../../db";
 
 export interface PerformanceOrderProps {
   performances: Performance[];

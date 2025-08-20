@@ -9,14 +9,14 @@ import {
   type ExerciseWeight,
   type MuscleType,
   updateExercise,
-} from "../../../../db/exercises.ts";
+  generateId,
+} from "../../../../db";
 import {
   EQUIPMENT_TRANSLATION,
   EXERCISE_WEIGHT_TRANSLATION,
   MUSCLES_TRANSLATION,
 } from "../../../constants.ts";
 import { clsx } from "clsx";
-import { generateId } from "../../../../db/db.ts";
 import { useStore } from "../../../../components";
 
 export function AddExercise({

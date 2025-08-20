@@ -1,12 +1,12 @@
-import type { EquipmentType } from "../../../../db/exercises.ts";
+import type {
+  EquipmentType,
+  PerformanceLoadout,
+  PerformanceWeights,
+} from "../../../../db";
 import s from "./styles.module.scss";
 import { clsx } from "clsx";
 import { RiPlayList2Fill } from "react-icons/ri";
 import { LuCircleGauge } from "react-icons/lu";
-import {
-  type PerformanceLoadout,
-  type PerformanceWeights,
-} from "../../../../db/performances.ts";
 import {
   BARBELL_BASES,
   BARBELL_DEFAULT_BASE,

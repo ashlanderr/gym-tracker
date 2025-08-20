@@ -2,9 +2,13 @@ import s from "./styles.module.scss";
 import { MdArrowBack } from "react-icons/md";
 import type { ChartParameterType, ExerciseHistoryProps } from "./types.ts";
 import { MUSCLES_TRANSLATION } from "../../../constants.ts";
-import { useQuerySetsByExercise } from "../../../../db/sets.ts";
+import {
+  useQuerySetsByExercise,
+  useQueryPerformancesByExercise,
+  useQueryRecordsByExercise,
+  maxBy,
+} from "../../../../db";
 import { useStore } from "../../../../components";
-import { useQueryPerformancesByExercise } from "../../../../db/performances.ts";
 import { useMemo, useState } from "react";
 import { buildHistory } from "./utils.ts";
 import { CHART_PARAMETERS, DATE_FORMATTER } from "./constants.ts";
@@ -17,9 +21,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useQueryRecordsByExercise } from "../../../../db/records.ts";
 import { RECORDS_TRANSLATION } from "../../../constants.ts";
-import { maxBy } from "../../../../db/db.ts";
 import { formatRecordValue } from "../utils.ts";
 import { PiMedalFill } from "react-icons/pi";
 

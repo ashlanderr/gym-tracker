@@ -1,7 +1,7 @@
 import type { OrderItem, PerformanceOrderProps } from "./types.ts";
 import { useState } from "react";
 import { useStore } from "../../../../components";
-import { queryExerciseById } from "../../../../db/exercises.ts";
+import { queryExerciseById } from "../../../../db";
 import s from "./styles.module.scss";
 import { MdArrowBack, MdCheck } from "react-icons/md";
 import {

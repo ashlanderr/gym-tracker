@@ -1,4 +1,4 @@
-import type { Exercise } from "../../../../db/exercises.ts";
+import type { Exercise } from "../../../../db";
 
 export interface ExerciseHistoryProps {
   exercise: Exercise;

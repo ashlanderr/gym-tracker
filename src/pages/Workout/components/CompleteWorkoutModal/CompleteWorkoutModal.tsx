@@ -1,5 +1,5 @@
 import type { CompleteWorkoutModalProps } from "./types.ts";
-import { ModalDialog } from "../ModalDialog";
+import { ModalDialog } from "../../../../components";
 import { useEffect, useState } from "react";
 import s from "./styles.module.scss";
 

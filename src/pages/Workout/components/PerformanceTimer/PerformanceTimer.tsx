@@ -3,10 +3,9 @@ import { MdOutlineTimer } from "react-icons/md";
 import s from "./styles.module.scss";
 import { buildTime } from "../../../hooks.ts";
 import { useState } from "react";
-import { BottomSheet } from "../BottomSheet";
+import { BottomSheet, useStore } from "../../../../components";
 import { TIMER_OPTIONS } from "./constants.ts";
-import { updatePerformance } from "../../../../db/performances.ts";
-import { useStore } from "../../../../components";
+import { updatePerformance } from "../../../../db";
 
 export function PerformanceTimer({ performance }: PerformanceTimerProps) {
   const store = useStore();
