@@ -4,11 +4,12 @@ import {
   DEFAULT_AUTO_WEIGHTS,
   DEFAULT_WEIGHT_UNITS,
   type PerformanceWeights,
-} from "../../../../db/performances.ts";
+} from "../../../../db";
 import { clsx } from "clsx";
 import React from "react";
 import { convertToAutoWeights } from "../utils.ts";
 import { BARBELL_BASES, DEFAULT_PLATES } from "../constants.ts";
+import { EQUIPMENT_TRANSLATION } from "../../../constants.ts";
 
 export function WeightsSelector({
   equipment,
@@ -99,7 +100,7 @@ function barbellWeights(
   return (
     <div className={s.root}>
       <div className={s.title}>Тип</div>
-      <div className={s.title}>Штанга</div>
+      <div className={s.title}>{EQUIPMENT_TRANSLATION.barbell}</div>
       {unitsSelector(value, onChange)}
       {weights.map((w) => (
         <React.Fragment key={w.label}>
@@ -148,7 +149,7 @@ function dumbbellWeights(
   return (
     <div className={s.root}>
       <div className={s.title}>Тип</div>
-      <div className={s.title}>Гантели</div>
+      <div className={s.title}>{EQUIPMENT_TRANSLATION.dumbbell}</div>
       {unitsSelector(value, onChange)}
       {weights.map((w) => (
         <React.Fragment key={w.label}>
@@ -204,7 +205,7 @@ function machineWeights(
   return (
     <div className={s.root}>
       <div className={s.title}>Тип</div>
-      <div className={s.title}>Блок</div>
+      <div className={s.title}>{EQUIPMENT_TRANSLATION.machine}</div>
       {unitsSelector(value, onChange)}
       {weights.map((w) => (
         <React.Fragment key={w.label}>
@@ -263,7 +264,7 @@ function platesWeights(
   return (
     <div className={s.root}>
       <div className={s.title}>Тип</div>
-      <div className={s.title}>Блины</div>
+      <div className={s.title}>{EQUIPMENT_TRANSLATION.plates}</div>
       {unitsSelector(value, onChange)}
       {weights.map((w) => (
         <React.Fragment key={w.label}>

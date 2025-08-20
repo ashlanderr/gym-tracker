@@ -1,7 +1,7 @@
-import type { WeightUnits } from "../../../db/performances.ts";
+import type { WeightUnits } from "../../../db";
 
 export const DEFAULT_PLATES: Record<WeightUnits, number[]> = {
-  kg: [1.25, 2.5, 5, 10, 20],
+  kg: [1.25, 2.5, 5, 10, 20, 25],
   lbs: [2.5, 5, 10, 25, 35, 45],
 };
 
