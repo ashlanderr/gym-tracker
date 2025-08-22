@@ -29,11 +29,22 @@ export interface RecSetData {
   reps: RepRange | undefined;
 }
 
+export type PeriodizationMode = "light" | "medium" | "heavy";
+
+export interface Periodization {
+  counter: number;
+  light: number;
+  medium: number;
+  heavy: number;
+}
+
 export interface RecommendationParams {
   prevSets: CompletedSetData[];
   currentSets: DraftSetData[];
   exerciseWeights?: ExerciseWeight;
   performanceWeights?: PerformanceWeights;
   selfWeight?: number;
+  oneRepMax?: number;
   progression?: number;
+  periodization?: Periodization;
 }

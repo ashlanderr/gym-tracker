@@ -11,3 +11,5 @@ export interface WeightsConstructor {
     count: number;
   }>;
 }
+
+export type RoundingMode = "floor" | "ceil" | "round";

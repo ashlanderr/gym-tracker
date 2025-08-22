@@ -3,14 +3,19 @@ import {
   buildRecommendations as simpleRecommendations,
   computeNextProgression as simpleProgression,
 } from "./simple";
+import { buildRecommendations as periodizationRecommendations } from "./periodization";
 
 export function buildRecommendations(
   params: RecommendationParams,
 ): RecSetData[] {
-  return simpleRecommendations(params).map((s) => ({
-    ...s,
-    reps: s.reps !== undefined ? { min: s.reps, max: s.reps } : undefined,
-  }));
+  if (params.periodization) {
+    return periodizationRecommendations(params);
+  } else {
+    return simpleRecommendations(params).map((s) => ({
+      ...s,
+      reps: s.reps !== undefined ? { min: s.reps, max: s.reps } : undefined,
+    }));
+  }
 }
 
 export function computeNextProgression(params: RecommendationParams) {

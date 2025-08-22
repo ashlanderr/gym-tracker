@@ -6,7 +6,7 @@ import {
   DEFAULT_EXERCISE_WEIGHT,
   type ExerciseWeight,
 } from "../../db";
-import type { WeightsConstructor } from "./types.ts";
+import type { RoundingMode, WeightsConstructor } from "./types.ts";
 
 export function addSelfWeight(
   exerciseWeight: ExerciseWeight | undefined,
@@ -73,13 +73,15 @@ export function formatRecordValue(value: number) {
 export function snapWeightKg(
   weights: PerformanceWeights | undefined,
   valueKg: number,
+  rounding: RoundingMode = "round",
 ): number {
-  return computeWeights(weights, valueKg).totalKg;
+  return computeWeights(weights, valueKg, rounding).totalKg;
 }
 
 export function computeWeights(
   weights: PerformanceWeights | undefined,
   valueKg: number,
+  rounding: RoundingMode = "round",
 ): WeightsConstructor {
   if (!weights) {
     return {
@@ -113,7 +115,7 @@ export function computeWeights(
   const withoutBase = valueUnits - base;
   const count = weights.count ?? 1;
   const separate =
-    Math.round(withoutBase / count / smallestStep) * smallestStep;
+    round(withoutBase / count / smallestStep, rounding) * smallestStep;
 
   let stepped = 0;
   let remaining = separate;
@@ -242,4 +244,15 @@ export function convertToAutoWeights(
     base,
     steps,
   };
+}
+
+function round(value: number, mode: RoundingMode): number {
+  switch (mode) {
+    case "floor":
+      return Math.floor(value);
+    case "ceil":
+      return Math.ceil(value);
+    case "round":
+      return Math.round(value);
+  }
 }
