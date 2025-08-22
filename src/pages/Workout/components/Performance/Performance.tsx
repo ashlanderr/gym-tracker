@@ -32,7 +32,6 @@ import { SetRow } from "../SetRow";
 import { PerformanceOrder } from "../PerformanceOrder";
 import { ExerciseHistory } from "../ExerciseHistory";
 import { clsx } from "clsx";
-import { WeightsSelector } from "../WeightsSelector";
 import { UNITS_TRANSLATION } from "../../../constants.ts";
 import { AddExercise } from "../AddExercise";
 import { switchUnits } from "../utils.ts";
@@ -43,6 +42,8 @@ import {
   deletePerformance,
   replacePerformance,
 } from "../../../../domain";
+import { WeightSelector2 } from "../WeightSelector2";
+import { PiBarbell } from "react-icons/pi";
 
 export function Performance({ performance }: PerformanceProps) {
   const store = useStore();
@@ -63,6 +64,7 @@ export function Performance({ performance }: PerformanceProps) {
   const [isActionsOpen, setActionsOpen] = useState(false);
   const [isReplaceOpen, setReplaceOpen] = useState(false);
   const [isHistoryOpen, setHistoryOpen] = useState(false);
+  const [isWeightsOpen, setWeightsOpen] = useState(false);
   const [orderState, setOrderState] = useState<Performance[]>([]);
   const [editState, setEditState] = useState<Exercise | null>(null);
 
@@ -109,7 +111,12 @@ export function Performance({ performance }: PerformanceProps) {
     setActionsOpen(false);
   };
 
-  const weightsChangeHandler = (weights: PerformanceWeights | undefined) => {
+  const weightsBeginHandler = () => {
+    setActionsOpen(false);
+    setWeightsOpen(true);
+  };
+
+  const weightsCompleteHandler = (weights: PerformanceWeights | undefined) => {
     updatePerformance(store, { ...performance, weights });
   };
 
@@ -164,15 +171,6 @@ export function Performance({ performance }: PerformanceProps) {
       </button>
       <BottomSheet isOpen={isActionsOpen} onClose={() => setActionsOpen(false)}>
         <div className={s.sheetHeader}>Упражнение</div>
-        {exercise?.equipment && (
-          <div className={s.sheetWeights}>
-            <WeightsSelector
-              equipment={exercise.equipment}
-              value={weights}
-              onChange={weightsChangeHandler}
-            />
-          </div>
-        )}
         <div className={s.sheetActions}>
           <button className={s.sheetAction} onClick={historyHandler}>
             <MdBarChart />
@@ -186,6 +184,12 @@ export function Performance({ performance }: PerformanceProps) {
             <MdAutorenew />
             <span>Заменить на другое</span>
           </button>
+          {exercise?.equipment && (
+            <button className={s.sheetAction} onClick={weightsBeginHandler}>
+              <PiBarbell />
+              <span>Настройка весов</span>
+            </button>
+          )}
           <button className={s.sheetAction} onClick={editBeginHandler}>
             <MdEdit />
             <span>Изменить упражнение</span>
@@ -229,6 +233,14 @@ export function Performance({ performance }: PerformanceProps) {
           />
         </PageModal>
       )}
+      <PageModal isOpen={isWeightsOpen}>
+        <WeightSelector2
+          equipment={exercise?.equipment ?? "none"}
+          weights={performance.weights}
+          onCancel={() => setWeightsOpen(false)}
+          onSubmit={weightsCompleteHandler}
+        />
+      </PageModal>
     </div>
   );
 }
