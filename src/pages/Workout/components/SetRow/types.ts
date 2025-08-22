@@ -1,5 +1,5 @@
 import type { CompletedSet, Set, Performance, Exercise } from "../../../../db";
-import type { DraftSetData } from "../../../../domain";
+import type { RecSetData } from "../../../../domain";
 
 export interface SetRowProps {
   exercise: Exercise | null;
@@ -7,5 +7,5 @@ export interface SetRowProps {
   number: string;
   set: Set;
   prevSet: CompletedSet | undefined;
-  recSet: DraftSetData | undefined;
+  recSet: RecSetData | undefined;
 }

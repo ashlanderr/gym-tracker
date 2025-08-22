@@ -18,6 +18,17 @@ export interface DraftSetData {
   reps: number | undefined;
 }
 
+export interface RepRange {
+  min: number;
+  max: number;
+}
+
+export interface RecSetData {
+  type: SetType;
+  weight: number | undefined;
+  reps: RepRange | undefined;
+}
+
 export interface RecommendationParams {
   prevSets: CompletedSetData[];
   currentSets: DraftSetData[];

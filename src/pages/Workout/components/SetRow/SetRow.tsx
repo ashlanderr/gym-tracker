@@ -33,6 +33,7 @@ import {
 } from "../../../../domain";
 import { WeightsVisualizer } from "../WeightsVisualizer";
 import { useActiveTimer } from "../ActiveTimer";
+import { formatRepRange } from "./utils.ts";
 
 export function SetRow({
   exercise,
@@ -70,7 +71,7 @@ export function SetRow({
   const expectedWeight = set.weight ?? recSet?.weight;
 
   const reps = set.reps?.toString() ?? "";
-  const repsPlaceholder = recSet?.reps?.toString() ?? "-";
+  const repsPlaceholder = recSet?.reps ? formatRepRange(recSet.reps) : "-";
 
   const updateSetInner = (updater: (set: Set) => Set): Set => {
     updatedSet.current = updater(updatedSet.current);
@@ -180,7 +181,7 @@ export function SetRow({
     if (!set.completed) {
       const set = updateSetInner((set) => {
         const weight = set.weight ?? recSet?.weight;
-        const reps = set.reps ?? recSet?.reps;
+        const reps = set.reps ?? recSet?.reps?.max;
         if (weight !== undefined && reps !== undefined) {
           return { ...set, weight, reps, completed: true };
         } else {
