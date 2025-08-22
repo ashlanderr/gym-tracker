@@ -2,6 +2,7 @@ import type { RecommendationParams, RecSetData } from "./types.ts";
 import {
   buildRecommendations as simpleRecommendations,
   computeNextProgression as simpleProgression,
+  DEFAULT_PROGRESSION,
 } from "./simple";
 import { buildRecommendations as periodizationRecommendations } from "./periodization";
 
@@ -18,6 +19,10 @@ export function buildRecommendations(
   }
 }
 
-export function computeNextProgression(params: RecommendationParams) {
-  return simpleProgression(params);
+export function computeNextProgression(params: RecommendationParams): number {
+  if (params.periodization) {
+    return DEFAULT_PROGRESSION;
+  } else {
+    return simpleProgression(params);
+  }
 }

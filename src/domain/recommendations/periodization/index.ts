@@ -1,1 +1,4 @@
-export * from "./periodization.ts";
+export {
+  buildRecommendations,
+  computeNextPeriodization,
+} from "./periodization.ts";

@@ -1,5 +1,9 @@
-import type { ExerciseWeight, PerformanceWeights } from "../../../db";
-import type { DraftSetData, Periodization, RecSetData } from "../types.ts";
+import type {
+  ExerciseWeight,
+  PerformanceWeights,
+  PeriodizationData,
+} from "../../../db";
+import type { DraftSetData, RecSetData } from "../types.ts";
 import { buildRecommendations, selectMode } from "./periodization.ts";
 
 const _ = undefined;
@@ -25,21 +29,21 @@ const positive: ExerciseWeight = {
   selfWeightPercent: 100,
 };
 
-const light: Periodization = {
+const light: PeriodizationData = {
   counter: 0,
   light: 1,
   medium: 0,
   heavy: 0,
 };
 
-const medium: Periodization = {
+const medium: PeriodizationData = {
   counter: 0,
   light: 0,
   medium: 1,
   heavy: 0,
 };
 
-const heavy: Periodization = {
+const heavy: PeriodizationData = {
   counter: 0,
   light: 0,
   medium: 0,
@@ -62,7 +66,7 @@ function testRecommendations({
   selfWeight?: number;
   exercise?: ExerciseWeight;
   progression?: number;
-  periodization: Periodization;
+  periodization: PeriodizationData;
   oneRepMax: number;
 }) {
   const rec = buildRecommendations({
@@ -239,7 +243,7 @@ test("periodization selector", () => {
   expect(selectMode(medium)).toEqual("medium");
   expect(selectMode(heavy)).toEqual("heavy");
 
-  const periodization: Periodization = {
+  const periodization: PeriodizationData = {
     light: 2,
     medium: 2,
     heavy: 1,

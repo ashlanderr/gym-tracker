@@ -2,22 +2,14 @@ import s from "./styles.module.scss";
 import { MdAdd, MdArrowBack } from "react-icons/md";
 import { clsx } from "clsx";
 import {
-  updateWorkout,
   useQueryWorkoutById,
   addPerformance,
-  deletePerformance,
   queryPreviousPerformance,
   useQueryPerformancesByWorkout,
   generateId,
-  deleteSet,
   querySetsByPerformance,
   useQuerySetsByWorkout,
   type Exercise,
-  queryRecordsByWorkout,
-  type Performance as PerformanceEntity,
-  queryExerciseById,
-  queryLatestMeasurement,
-  updatePerformance,
 } from "../../db";
 import type { WorkoutParams } from "./types.ts";
 import { usePageParams } from "../hooks.ts";
@@ -32,7 +24,7 @@ import {
   ActiveTimer,
 } from "./components";
 import { PageModal, ModalDialog, useStore } from "../../components";
-import { addNextSet, duplicateSet, computeNextProgression } from "../../domain";
+import { addNextSet, duplicateSet, completeWorkout } from "../../domain";
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
@@ -94,76 +86,9 @@ export function Workout() {
     setCompleteModal(completed ? "form" : "warning");
   };
 
-  const updateProgression = (performance: PerformanceEntity) => {
-    const measurement = queryLatestMeasurement(store, performance.startedAt);
-    const exercise = queryExerciseById(store, performance.exercise);
-
-    const currentSets = querySetsByPerformance(store, performance.id).filter(
-      (s) => s.completed,
-    );
-
-    const prevPerformance = queryPreviousPerformance(
-      store,
-      performance.exercise,
-      performance.startedAt,
-    );
-
-    const prevSets = querySetsByPerformance(
-      store,
-      prevPerformance?.id ?? "",
-    ).filter((s) => s.completed);
-
-    const progression = computeNextProgression({
-      performanceWeights: performance.weights,
-      selfWeight: measurement?.weight,
-      exerciseWeights: exercise?.weight,
-      progression: prevPerformance?.progression,
-      prevSets,
-      currentSets,
-    });
-
-    updatePerformance(store, {
-      ...performance,
-      progression,
-    });
-  };
-
   const completeEndHandler = (data: CompleteWorkoutData) => {
     if (!workout) return;
-
-    for (const performance of performances) {
-      const performanceSets = sets.filter(
-        (s) => s.performance === performance.id,
-      );
-      let emptyPerformance = true;
-
-      for (const set of performanceSets) {
-        if (!set.completed) {
-          deleteSet(store, set);
-        } else {
-          emptyPerformance = false;
-        }
-      }
-
-      if (emptyPerformance) {
-        deletePerformance(store, performance);
-        continue;
-      }
-
-      updateProgression(performance);
-    }
-
-    const records = queryRecordsByWorkout(store, workout.id);
-
-    updateWorkout(store, {
-      ...workout,
-      completedAt: workout.completedAt ?? Date.now(),
-      name: data.name,
-      sets: completedSets.length,
-      records: records.length !== 0 ? records.length : undefined,
-      volume,
-    });
-
+    completeWorkout(store, workout, data.name);
     setCompleteModal(null);
     navigate("/", { replace: true });
   };

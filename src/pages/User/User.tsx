@@ -3,6 +3,10 @@ import {
   addMeasurement,
   useQueryLatestMeasurement,
   generateId,
+  useQueryPeriodizationByUser,
+  type PeriodizationData,
+  addPeriodization,
+  deletePeriodization,
 } from "../../db";
 import { useState } from "react";
 import { useUser } from "../../firebase/auth.ts";
@@ -15,10 +19,13 @@ export function User() {
   const user = useUser();
   const navigate = useNavigate();
   const measurement = useQueryLatestMeasurement(store, null);
+  const period = useQueryPeriodizationByUser(store, user.uid);
 
   const [weightInput, setWeightInput] = useState<string | null>(null);
   const [heightInput, setHeightInput] = useState<string | null>(null);
-  const canSave = weightInput !== null || heightInput !== null;
+  const [periodInput, setPeriodInput] = useState<string | null>(null);
+  const canSave =
+    weightInput !== null || heightInput !== null || periodInput !== null;
 
   const parseValue = (value: string | null, defaultValue: number): number => {
     if (!value) return defaultValue;
@@ -44,16 +51,38 @@ export function User() {
     }
   };
 
+  const periodBlurHandler = () => {
+    if (periodInput !== null) {
+      const newPeriod = periodFromString(periodInput);
+      setPeriodInput(periodToString(newPeriod));
+    }
+  };
+
   const saveHandler = () => {
-    addMeasurement(store, {
-      id: generateId(),
-      user: user.uid,
-      weight: parseValue(weightInput, measurement?.weight ?? 0),
-      height: parseValue(heightInput, measurement?.height ?? 0),
-      createdAt: Date.now(),
-    });
+    if (weightInput !== null || heightInput !== null) {
+      addMeasurement(store, {
+        id: generateId(),
+        user: user.uid,
+        weight: parseValue(weightInput, measurement?.weight ?? 0),
+        height: parseValue(heightInput, measurement?.height ?? 0),
+        createdAt: Date.now(),
+      });
+    }
+    if (periodInput !== null) {
+      const newPeriod = periodFromString(periodInput);
+      if (newPeriod !== null) {
+        addPeriodization(store, {
+          id: period?.id ?? generateId(),
+          user: user.uid,
+          ...newPeriod,
+        });
+      } else if (period) {
+        deletePeriodization(store, period);
+      }
+    }
     setWeightInput(null);
     setHeightInput(null);
+    setPeriodInput(null);
   };
 
   return (
@@ -97,7 +126,34 @@ export function User() {
           />
           <label className={s.fieldLabel}>см</label>
         </div>
+        <div className={s.field}>
+          <label className={s.fieldLabel}>Периодизация</label>
+          <input
+            className={s.fieldInput}
+            value={periodInput ?? periodToString(period)}
+            placeholder="L, M, H"
+            onChange={(e) => setPeriodInput(e.target.value)}
+            onBlur={periodBlurHandler}
+          />
+          <label className={s.fieldLabel}></label>
+        </div>
       </div>
     </div>
   );
+}
+
+function periodToString(period: PeriodizationData | null): string {
+  return period ? `${period.light}, ${period.medium}, ${period.heavy}` : "";
+}
+
+function periodFromString(str: string): PeriodizationData | null {
+  const [light, medium, heavy] = str
+    .split(",")
+    .map((p) => Number.parseInt(p.trim(), 10));
+
+  if (!Number.isNaN(heavy) && !Number.isNaN(medium) && !Number.isNaN(light)) {
+    return { heavy, medium, light, counter: 0 };
+  } else {
+    return null;
+  }
 }

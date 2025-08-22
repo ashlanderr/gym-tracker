@@ -1,8 +1,4 @@
-import type {
-  Periodization,
-  RecommendationParams,
-  RecSetData,
-} from "../types.ts";
+import type { RecommendationParams, RecSetData } from "../types.ts";
 import {
   addSelfWeight,
   oneRepMaxToReps,
@@ -12,9 +8,9 @@ import {
   subtractSelfWeight,
   volumeToOneRepMax,
 } from "../../weights";
-import type { PeriodizationMode } from "../types.ts";
 import { assertNever } from "../../../utils";
 import { WARM_UP_SETS } from "./constants.ts";
+import type { PeriodizationData, PeriodizationMode } from "../../../db";
 
 export function buildRecommendations(
   params: RecommendationParams,
@@ -51,7 +47,9 @@ export function buildRecommendations(
   return result;
 }
 
-export function selectMode(periodization: Periodization): PeriodizationMode {
+export function selectMode(
+  periodization: PeriodizationData,
+): PeriodizationMode {
   const { light, medium, heavy, counter } = periodization;
   const total = heavy + medium + light;
   const index = counter % total;
@@ -165,4 +163,10 @@ function computeWarmUpSet(
     weight,
     reps: reps ? { min: reps, max: reps } : undefined,
   };
+}
+
+export function computeNextPeriodization(
+  periodization: PeriodizationData,
+): PeriodizationData {
+  return { ...periodization, counter: periodization.counter + 1 };
 }

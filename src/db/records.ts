@@ -7,6 +7,7 @@ import {
   useQueryCollection,
 } from "./db.ts";
 import type { Store } from "./doc.ts";
+import { useMemo } from "react";
 
 export type RecordType = "one_rep_max" | "weight" | "volume";
 
@@ -76,6 +77,27 @@ export function queryPreviousRecordByExercise(
     },
   );
   return maxBy(records, (a, b) => a.current - b.current);
+}
+
+export function useQueryPreviousRecordByExercise(
+  store: Store,
+  type: RecordType,
+  exercise: string,
+  createdAt: number,
+): Record | null {
+  const records = useQueryCollection<Record>({
+    collection: collection(store.personal, "records"),
+    filter: {
+      type: { eq: type },
+      exercise: { eq: exercise },
+      createdAt: { le: createdAt },
+    },
+    deps: [type, exercise, createdAt],
+  });
+  return useMemo(
+    () => maxBy(records, (a, b) => a.current - b.current),
+    [records],
+  );
 }
 
 export function addRecord(store: Store, entity: Record) {

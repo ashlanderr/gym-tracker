@@ -1,13 +1,4 @@
 import {
-  deletePerformance,
-  queryPerformancesByWorkout,
-  deleteSet,
-  querySetsByWorkout,
-  generateId,
-  deleteRecord,
-  queryRecordsByWorkout,
-  addWorkout,
-  deleteWorkout,
   useQueryActiveWorkouts,
   useQueryCompletedWorkouts,
   type Workout,
@@ -36,7 +27,7 @@ import {
   useConnectionStatus,
 } from "../../components";
 import { PiMedalFill } from "react-icons/pi";
-import { addPerformance } from "../../domain";
+import { addWorkout, cancelWorkout, duplicateWorkout } from "../../domain";
 
 export function Home() {
   const user = useUser();
@@ -47,7 +38,9 @@ export function Home() {
   const [activeWorkout] = useQueryActiveWorkouts(store);
   const [workoutActions, setWorkoutActions] = useState<Workout | null>(null);
   const activeTimer = useTimer(activeWorkout?.startedAt ?? null, null);
-  const [cancelWorkout, setCancelWorkout] = useState<Workout | null>(null);
+  const [cancellingWorkout, setCancellingWorkout] = useState<Workout | null>(
+    null,
+  );
 
   const openWorkoutHandler = (workout: Workout | null) => {
     if (!workout) return;
@@ -55,56 +48,23 @@ export function Home() {
   };
 
   const startWorkoutHandler = () => {
-    const newWorkout = addWorkout(store, {
-      id: generateId(),
-      user: user.uid,
-      name: "Новая тренировка",
-      startedAt: Date.now(),
-      completedAt: null,
-      volume: 0,
-      sets: 0,
-    });
+    const newWorkout = addWorkout(store, user.uid);
     openWorkoutHandler(newWorkout);
   };
 
   const cancelWorkoutBeginHandler = (workout: Workout) => {
-    setCancelWorkout(workout);
+    setCancellingWorkout(workout);
   };
 
   const cancelWorkoutCompleteHandler = () => {
-    if (!cancelWorkout) return;
-
-    const performances = queryPerformancesByWorkout(store, cancelWorkout.id);
-    const sets = querySetsByWorkout(store, cancelWorkout.id);
-    const records = queryRecordsByWorkout(store, cancelWorkout.id);
-
-    records.map((r) => deleteRecord(store, r));
-    sets.forEach((s) => deleteSet(store, s));
-    performances.forEach((p) => deletePerformance(store, p));
-    deleteWorkout(store, cancelWorkout);
-
-    setCancelWorkout(null);
+    if (!cancellingWorkout) return;
+    cancelWorkout(store, cancellingWorkout);
+    setCancellingWorkout(null);
   };
 
   const duplicateWorkoutHandler = () => {
     if (!workoutActions) return;
-
-    const performances = queryPerformancesByWorkout(store, workoutActions.id);
-
-    const newWorkout = addWorkout(store, {
-      id: generateId(),
-      user: workoutActions.user,
-      name: workoutActions.name,
-      startedAt: Date.now(),
-      completedAt: null,
-      volume: 0,
-      sets: 0,
-    });
-
-    for (const oldPerformance of performances) {
-      addPerformance(store, newWorkout, oldPerformance.exercise);
-    }
-
+    const newWorkout = duplicateWorkout(store, workoutActions);
     openWorkoutHandler(newWorkout);
   };
 
@@ -244,14 +204,14 @@ export function Home() {
           </button>
         </div>
       </BottomSheet>
-      {cancelWorkout && (
+      {cancellingWorkout && (
         <ModalDialog
           title={"Подтверждение"}
           isOpen={true}
           cancelText="НЕТ"
           submitText="ДА"
           submitColor="#a00"
-          onClose={() => setCancelWorkout(null)}
+          onClose={() => setCancellingWorkout(null)}
           onSubmit={cancelWorkoutCompleteHandler}
         >
           Вы уверены, что хотите отменить тренировку?

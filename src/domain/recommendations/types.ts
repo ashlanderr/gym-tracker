@@ -1,4 +1,9 @@
-import type { PerformanceWeights, SetType, ExerciseWeight } from "../../db";
+import type {
+  PerformanceWeights,
+  SetType,
+  ExerciseWeight,
+  PeriodizationData,
+} from "../../db";
 
 export interface WorkingVolume {
   weight: number;
@@ -29,15 +34,6 @@ export interface RecSetData {
   reps: RepRange | undefined;
 }
 
-export type PeriodizationMode = "light" | "medium" | "heavy";
-
-export interface Periodization {
-  counter: number;
-  light: number;
-  medium: number;
-  heavy: number;
-}
-
 export interface RecommendationParams {
   prevSets: CompletedSetData[];
   currentSets: DraftSetData[];
@@ -46,5 +42,5 @@ export interface RecommendationParams {
   selfWeight?: number;
   oneRepMax?: number;
   progression?: number;
-  periodization?: Periodization;
+  periodization?: PeriodizationData;
 }

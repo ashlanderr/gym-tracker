@@ -6,3 +6,4 @@ export * from "./performances.ts";
 export * from "./records.ts";
 export * from "./sets.ts";
 export * from "./workouts.ts";
+export * from "./periodization.ts";

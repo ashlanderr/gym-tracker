@@ -24,6 +24,10 @@ import {
   DEFAULT_AUTO_WEIGHTS,
   type Measurement,
   useQueryLatestMeasurement,
+  useQueryWorkoutById,
+  type Workout,
+  type Record,
+  useQueryPreviousRecordByExercise,
 } from "../../../../db";
 import { BottomSheet, PageModal, useStore } from "../../../../components";
 import { ChooseExercise } from "../ChooseExercise";
@@ -49,6 +53,13 @@ export function Performance({ performance }: PerformanceProps) {
   const exercise = useQueryExerciseById(store, performance.exercise);
   const sets = useQuerySetsByPerformance(store, performance.id);
   const measurement = useQueryLatestMeasurement(store, performance.startedAt);
+  const workout = useQueryWorkoutById(store, performance.workout);
+  const oneRepMax = useQueryPreviousRecordByExercise(
+    store,
+    "one_rep_max",
+    performance.exercise,
+    performance.startedAt - 1,
+  );
 
   const prevPerformance = useQueryPreviousPerformance(
     store,
@@ -148,14 +159,16 @@ export function Performance({ performance }: PerformanceProps) {
           </tr>
         </thead>
         <tbody>
-          {buildSets(
+          {buildSets({
             prevPerformance,
             prevSets,
             sets,
             performance,
             exercise,
             measurement,
-          )}
+            workout,
+            oneRepMax,
+          })}
         </tbody>
       </table>
       <button className={s.addSetButton} onClick={addSetHandler}>
@@ -233,14 +246,25 @@ export function Performance({ performance }: PerformanceProps) {
   );
 }
 
-function buildSets(
-  prevPerformance: Performance | null,
-  prevSets: CompletedSet[],
-  sets: Set[],
-  performance: Performance,
-  exercise: Exercise | null,
-  measurement: Measurement | null,
-): ReactNode[] {
+function buildSets({
+  prevPerformance,
+  prevSets,
+  sets,
+  performance,
+  exercise,
+  measurement,
+  workout,
+  oneRepMax,
+}: {
+  prevPerformance: Performance | null;
+  prevSets: CompletedSet[];
+  sets: Set[];
+  performance: Performance;
+  exercise: Exercise | null;
+  measurement: Measurement | null;
+  workout: Workout | null;
+  oneRepMax: Record | null;
+}): ReactNode[] {
   const prevWarmUp = prevSets.filter(
     (s) => s.type === "warm-up" && s.completed,
   );
@@ -254,6 +278,8 @@ function buildSets(
     exerciseWeights: exercise?.weight,
     selfWeight: measurement?.weight,
     progression: prevPerformance?.progression,
+    periodization: workout?.periodization,
+    oneRepMax: oneRepMax?.current,
   });
 
   const result: ReactNode[] = [];
