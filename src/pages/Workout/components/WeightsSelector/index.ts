@@ -1,1 +1,1 @@
-export * from "./WeightsSelector";
+export * from "./WeightsSelector.tsx";
