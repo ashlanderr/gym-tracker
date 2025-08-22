@@ -32,8 +32,7 @@ import {
   ActiveTimer,
 } from "./components";
 import { PageModal, ModalDialog, useStore } from "../../components";
-import { addNextSet, duplicateSet } from "../../domain";
-import { computeNextProgression } from "./components/Performance/utils.ts";
+import { addNextSet, duplicateSet, computeNextProgression } from "../../domain";
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();

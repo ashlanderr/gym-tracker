@@ -1,5 +1,5 @@
 import type { CompletedSet, Set, Performance, Exercise } from "../../../../db";
-import type { DraftSetData } from "../Performance/types.ts";
+import type { DraftSetData } from "../../../../domain";
 
 export interface SetRowProps {
   exercise: Exercise | null;

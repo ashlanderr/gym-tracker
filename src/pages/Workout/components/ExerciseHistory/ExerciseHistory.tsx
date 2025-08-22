@@ -22,7 +22,7 @@ import {
   YAxis,
 } from "recharts";
 import { RECORDS_TRANSLATION } from "../../../constants.ts";
-import { formatRecordValue } from "../utils.ts";
+import { formatRecordValue } from "../../../../domain";
 import { PiMedalFill } from "react-icons/pi";
 
 export function ExerciseHistory({ exercise, onClose }: ExerciseHistoryProps) {

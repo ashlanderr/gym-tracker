@@ -3,7 +3,7 @@ import type {
   RecommendationParams,
   DraftSetData,
   WorkingVolume,
-} from "./types.ts";
+} from "../types.ts";
 import {
   DEFAULT_RANGE_MAX_REPS,
   DEFAULT_RANGE_MIN_REPS,
@@ -22,8 +22,8 @@ import {
   oneRepMaxToWeight as oneRepMaxToWeightInner,
   oneRepMaxToReps as oneRepMaxToRepsInner,
   volumeToOneRepMax as volumeToOneRepMaxInner,
-} from "../utils.ts";
-import { assertNever } from "../../../../utils";
+} from "../../weights";
+import { assertNever } from "../../../utils";
 
 export function volumeToOneRepMax(
   params: RecommendationParams,

@@ -1,7 +1,7 @@
-import { buildRecommendations, computeNextProgression } from "./utils.ts";
+import { buildRecommendations, computeNextProgression } from "./simple.ts";
 import { describe } from "vitest";
-import type { PerformanceWeights, ExerciseWeight } from "../../../../db";
-import type { CompletedSetData, DraftSetData } from "./types.ts";
+import type { PerformanceWeights, ExerciseWeight } from "../../../db";
+import type { CompletedSetData, DraftSetData } from "../types.ts";
 import { DEFAULT_PROGRESSION, PROGRESSION_INCREASE } from "./constants.ts";
 
 const _ = undefined;

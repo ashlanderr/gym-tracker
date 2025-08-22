@@ -12,7 +12,7 @@ import {
   BARBELL_DEFAULT_BASE,
   DEFAULT_PLATES,
 } from "../constants.ts";
-import { computeWeights, kgToUnits, switchItem } from "../utils.ts";
+import { computeWeights, kgToUnits, switchItem } from "../../../../domain";
 
 export interface WeightsVisualizerProps {
   equipment: EquipmentType;

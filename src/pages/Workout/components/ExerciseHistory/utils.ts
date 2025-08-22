@@ -1,6 +1,6 @@
 import { type Performance, type Set } from "../../../../db";
 import type { HistoryPoint } from "./types.ts";
-import { volumeToOneRepMax } from "../utils.ts";
+import { volumeToOneRepMax } from "../../../../domain";
 
 export function buildHistory(
   performances: Performance[],

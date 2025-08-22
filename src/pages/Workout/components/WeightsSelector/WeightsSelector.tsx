@@ -7,7 +7,7 @@ import {
 } from "../../../../db";
 import { clsx } from "clsx";
 import React from "react";
-import { convertToAutoWeights } from "../utils.ts";
+import { convertToAutoWeights } from "../../../../domain";
 import { BARBELL_BASES, DEFAULT_PLATES } from "../constants.ts";
 import { EQUIPMENT_TRANSLATION } from "../../../constants.ts";
 

@@ -30,7 +30,7 @@ import {
   snapWeightKg,
   unitsToKg,
   volumeToOneRepMax,
-} from "../utils.ts";
+} from "../../../../domain";
 import { WeightsVisualizer } from "../WeightsVisualizer";
 import { useActiveTimer } from "../ActiveTimer";
 

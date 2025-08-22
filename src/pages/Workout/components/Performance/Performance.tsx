@@ -27,7 +27,6 @@ import {
 } from "../../../../db";
 import { BottomSheet, PageModal, useStore } from "../../../../components";
 import { ChooseExercise } from "../ChooseExercise";
-import { buildRecommendations } from "./utils.ts";
 import { SetRow } from "../SetRow";
 import { PerformanceOrder } from "../PerformanceOrder";
 import { ExerciseHistory } from "../ExerciseHistory";
@@ -35,13 +34,14 @@ import { clsx } from "clsx";
 import { WeightsSelector } from "../WeightsSelector";
 import { UNITS_TRANSLATION } from "../../../constants.ts";
 import { AddExercise } from "../AddExercise";
-import { switchUnits } from "../utils.ts";
 import { PerformanceTimer } from "../PerformanceTimer";
 import { assertNever } from "../../../../utils";
 import {
   addNextSet,
   deletePerformance,
   replacePerformance,
+  buildRecommendations,
+  switchUnits,
 } from "../../../../domain";
 
 export function Performance({ performance }: PerformanceProps) {

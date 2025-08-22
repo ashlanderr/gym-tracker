@@ -3,9 +3,9 @@ import {
   computeWeights,
   snapWeightKg,
   unitsToKg,
-} from "./utils.ts";
-import type { PerformanceWeights } from "../../../db";
-import type { WeightsConstructor } from "./Performance/types.ts";
+} from "./weights.ts";
+import type { PerformanceWeights } from "../../db";
+import type { WeightsConstructor } from "./types.ts";
 
 function testAutoDetect({
   weights,
