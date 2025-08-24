@@ -1,6 +1,5 @@
 import s from "./styles.module.scss";
 import { MdAdd, MdArrowBack } from "react-icons/md";
-import { clsx } from "clsx";
 import {
   useQueryWorkoutById,
   addPerformance,
@@ -10,10 +9,11 @@ import {
   querySetsByPerformance,
   useQuerySetsByWorkout,
   type Exercise,
+  type PeriodizationMode,
 } from "../../db";
 import type { WorkoutParams } from "./types.ts";
 import { usePageParams } from "../hooks.ts";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { useNavigate } from "react-router";
 import { useTimer } from "../hooks.ts";
 import {
@@ -24,7 +24,12 @@ import {
   ActiveTimer,
 } from "./components";
 import { PageModal, ModalDialog, useStore } from "../../components";
-import { addNextSet, duplicateSet, completeWorkout } from "../../domain";
+import {
+  addNextSet,
+  duplicateSet,
+  completeWorkout,
+  getCurrentPeriodization,
+} from "../../domain";
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
@@ -43,6 +48,13 @@ export function Workout() {
   const [completeModal, setCompleteModal] = useState<"warning" | "form" | null>(
     null,
   );
+
+  const modeLabels: Record<PeriodizationMode | "none", ReactNode> = {
+    none: <div className={s.noneMode}>-</div>,
+    light: <div className={s.lightMode}>Легкий</div>,
+    medium: <div className={s.mediumMode}>Средний</div>,
+    heavy: <div className={s.hardMode}>Тяжелый</div>,
+  };
 
   // todo access rules
 
@@ -111,7 +123,7 @@ export function Workout() {
       <div className={s.stats}>
         <div className={s.stat}>
           <div className={s.statName}>Время</div>
-          <div className={clsx(s.statValue, s.accent)}>{timer}</div>
+          <div className={s.statValue}>{timer}</div>
         </div>
         <div className={s.stat}>
           <div className={s.statName}>Объём</div>
@@ -123,6 +135,18 @@ export function Workout() {
           <div className={s.statName}>Сеты</div>
           <div className={s.statValue}>
             {completedSets.length} / {sets.length}
+          </div>
+        </div>
+        <div className={s.stat}>
+          <div className={s.statName}>Режим</div>
+          <div className={s.statValue}>
+            {
+              modeLabels[
+                (workout?.periodization &&
+                  getCurrentPeriodization(workout.periodization)) ||
+                  "none"
+              ]
+            }
           </div>
         </div>
       </div>

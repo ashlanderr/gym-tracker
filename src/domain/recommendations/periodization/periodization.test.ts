@@ -4,7 +4,10 @@ import type {
   PeriodizationData,
 } from "../../../db";
 import type { DraftSetData, RecSetData } from "../types.ts";
-import { buildRecommendations, selectMode } from "./periodization.ts";
+import {
+  buildRecommendations,
+  getCurrentPeriodization as getMode,
+} from "./periodization.ts";
 
 const _ = undefined;
 
@@ -239,9 +242,9 @@ test("multiple sets", () => {
 });
 
 test("periodization selector", () => {
-  expect(selectMode(light)).toEqual("light");
-  expect(selectMode(medium)).toEqual("medium");
-  expect(selectMode(heavy)).toEqual("heavy");
+  expect(getMode(light)).toEqual("light");
+  expect(getMode(medium)).toEqual("medium");
+  expect(getMode(heavy)).toEqual("heavy");
 
   const periodization: PeriodizationData = {
     light: 2,
@@ -250,13 +253,13 @@ test("periodization selector", () => {
     counter: 0,
   };
 
-  expect(selectMode({ ...periodization, counter: 0 })).toEqual("light");
-  expect(selectMode({ ...periodization, counter: 1 })).toEqual("light");
-  expect(selectMode({ ...periodization, counter: 2 })).toEqual("medium");
-  expect(selectMode({ ...periodization, counter: 3 })).toEqual("medium");
-  expect(selectMode({ ...periodization, counter: 4 })).toEqual("heavy");
-  expect(selectMode({ ...periodization, counter: 5 })).toEqual("light");
-  expect(selectMode({ ...periodization, counter: 14 })).toEqual("heavy");
-  expect(selectMode({ ...periodization, counter: 15 })).toEqual("light");
-  expect(selectMode({ ...periodization, counter: 16 })).toEqual("light");
+  expect(getMode({ ...periodization, counter: 0 })).toEqual("light");
+  expect(getMode({ ...periodization, counter: 1 })).toEqual("light");
+  expect(getMode({ ...periodization, counter: 2 })).toEqual("medium");
+  expect(getMode({ ...periodization, counter: 3 })).toEqual("medium");
+  expect(getMode({ ...periodization, counter: 4 })).toEqual("heavy");
+  expect(getMode({ ...periodization, counter: 5 })).toEqual("light");
+  expect(getMode({ ...periodization, counter: 14 })).toEqual("heavy");
+  expect(getMode({ ...periodization, counter: 15 })).toEqual("light");
+  expect(getMode({ ...periodization, counter: 16 })).toEqual("light");
 });

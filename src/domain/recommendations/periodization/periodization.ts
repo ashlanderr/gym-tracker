@@ -47,7 +47,7 @@ export function buildRecommendations(
   return result;
 }
 
-export function selectMode(
+export function getCurrentPeriodization(
   periodization: PeriodizationData,
 ): PeriodizationMode {
   const { light, medium, heavy, counter } = periodization;
@@ -85,7 +85,7 @@ function computeWorkingSet(
     defaultReps,
   );
 
-  const mode = selectMode(periodization);
+  const mode = getCurrentPeriodization(periodization);
   let minReps: number;
   let maxReps: number;
   let fullWeight: number;

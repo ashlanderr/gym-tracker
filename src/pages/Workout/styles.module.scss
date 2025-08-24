@@ -55,19 +55,16 @@
   flex: 1 1 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .statName {
   font-size: 10px;
+  color: #BBB;
 }
 
 .statValue {
-  font-size: 16px;
-
-  &.accent {
-    color: #08F;
-  }
+  font-size: 12px;
 }
 
 .exercises {
@@ -91,4 +88,24 @@
   padding: 12px 12px 10px 12px;
   line-height: 1;
   margin: 0 0 64px;
+}
+
+.lightMode,
+.mediumMode,
+.hardMode {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lightMode {
+  color: #8F8;
+}
+
+.mediumMode {
+  color: #FF0;
+}
+
+.hardMode {
+  color: #F84;
 }
