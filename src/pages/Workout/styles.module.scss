@@ -90,12 +90,14 @@
   margin: 0 0 64px;
 }
 
-.lightMode,
-.mediumMode,
-.hardMode {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.statValue {
+  &.lightMode,
+  &.mediumMode,
+  &.hardMode {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
 }
 
 .lightMode {
@@ -108,4 +110,41 @@
 
 .hardMode {
   color: #F84;
+}
+
+.sheetHeader {
+  padding: 24px 16px;
+  border-bottom: 1px solid #666;
+  text-align: center;
+}
+
+.sheetActions {
+  display: flex;
+  flex-direction: column;;
+  margin: 16px 16px 64px;
+  border-radius: 16px;
+  background: #444;
+  padding: 4px 0;
+}
+
+.modeAction {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  text-align: start;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  padding: 16px;
+  gap: 2px;
+}
+
+.modeDescription {
+  color: #BBB;
+  font-size: 12px;
+}
+
+.modeAction:not(:first-child) {
+  border-top: 1px solid #666;
 }

@@ -63,6 +63,17 @@ export function getCurrentPeriodization(
   }
 }
 
+export function buildPeriodization(mode: PeriodizationMode): PeriodizationData {
+  switch (mode) {
+    case "light":
+      return { counter: 0, light: 1, medium: 0, heavy: 0 };
+    case "medium":
+      return { counter: 0, light: 0, medium: 1, heavy: 0 };
+    case "heavy":
+      return { counter: 0, light: 0, medium: 0, heavy: 1 };
+  }
+}
+
 function computeWorkingSet(
   params: RecommendationParams,
 ): RecSetData | undefined {
