@@ -7,6 +7,8 @@ import {
   type PeriodizationData,
   addPeriodization,
   deletePeriodization,
+  getBackendUrl,
+  setBackendUrl,
 } from "../../db";
 import { useState } from "react";
 import { useUser } from "../../firebase/auth.ts";
@@ -24,8 +26,13 @@ export function User() {
   const [weightInput, setWeightInput] = useState<string | null>(null);
   const [heightInput, setHeightInput] = useState<string | null>(null);
   const [periodInput, setPeriodInput] = useState<string | null>(null);
+  const [backendUrlInput, setBackendUrlInput] = useState<string | null>(null);
+
   const canSave =
-    weightInput !== null || heightInput !== null || periodInput !== null;
+    weightInput !== null ||
+    heightInput !== null ||
+    periodInput !== null ||
+    backendUrlInput !== null;
 
   const parseValue = (value: string | null, defaultValue: number): number => {
     if (!value) return defaultValue;
@@ -67,6 +74,8 @@ export function User() {
         height: parseValue(heightInput, measurement?.height ?? 0),
         createdAt: Date.now(),
       });
+      setWeightInput(null);
+      setHeightInput(null);
     }
     if (periodInput !== null) {
       const newPeriod = periodFromString(periodInput);
@@ -79,10 +88,13 @@ export function User() {
       } else if (period) {
         deletePeriodization(store, period);
       }
+      setPeriodInput(null);
     }
-    setWeightInput(null);
-    setHeightInput(null);
-    setPeriodInput(null);
+    if (backendUrlInput !== null) {
+      setBackendUrl(backendUrlInput);
+      setBackendUrlInput(null);
+      location.reload();
+    }
   };
 
   return (
@@ -108,7 +120,7 @@ export function User() {
           <label className={s.fieldLabel}>Масса тела</label>
           <input
             className={s.fieldInput}
-            value={weightInput ?? measurement?.weight?.toFixed(1)}
+            value={weightInput ?? measurement?.weight?.toFixed(1) ?? ""}
             placeholder="0.0"
             onChange={(e) => setWeightInput(e.target.value)}
             onBlur={weightBlurHandler}
@@ -119,7 +131,7 @@ export function User() {
           <label className={s.fieldLabel}>Рост</label>
           <input
             className={s.fieldInput}
-            value={heightInput ?? measurement?.height?.toFixed(0)}
+            value={heightInput ?? measurement?.height?.toFixed(0) ?? ""}
             placeholder="0"
             onChange={(e) => setHeightInput(e.target.value)}
             onBlur={heightBlurHandler}
@@ -130,12 +142,20 @@ export function User() {
           <label className={s.fieldLabel}>Периодизация</label>
           <input
             className={s.fieldInput}
-            value={periodInput ?? periodToString(period)}
+            value={periodInput ?? periodToString(period) ?? ""}
             placeholder="L, M, H"
             onChange={(e) => setPeriodInput(e.target.value)}
             onBlur={periodBlurHandler}
           />
-          <label className={s.fieldLabel}></label>
+        </div>
+        <div className={s.field}>
+          <label className={s.fieldLabel}>URL</label>
+          <input
+            className={s.fieldInput}
+            value={backendUrlInput ?? getBackendUrl() ?? ""}
+            placeholder=""
+            onChange={(e) => setBackendUrlInput(e.target.value)}
+          />
         </div>
       </div>
     </div>
