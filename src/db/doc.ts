@@ -15,13 +15,12 @@ export interface Store {
 
 const BACKEND_URL_STORAGE_KEY = "BACKEND_URL";
 
-const BACKEND_URL =
-  localStorage.getItem(BACKEND_URL_STORAGE_KEY) ||
-  import.meta.env.VITE_BACKEND_URL ||
-  "ws://localhost:1234";
-
 export function getBackendUrl() {
-  return BACKEND_URL;
+  return (
+    localStorage.getItem(BACKEND_URL_STORAGE_KEY) ||
+    import.meta.env.VITE_BACKEND_URL ||
+    "ws://localhost:1234"
+  );
 }
 
 export function setBackendUrl(url: string) {
@@ -65,7 +64,7 @@ function initDoc(
 ): Y.Doc {
   const doc = new Y.Doc();
 
-  const wsProvider = new WebsocketProvider(BACKEND_URL, name, doc);
+  const wsProvider = new WebsocketProvider(getBackendUrl(), name, doc);
 
   wsProvider.on("status", (event) => {
     console.log(`wsProvider [${name}]: ${event.status}`);
