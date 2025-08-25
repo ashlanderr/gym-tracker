@@ -1,4 +1,11 @@
-import type { CompletedSet, Set, Performance, Exercise } from "../../../../db";
+import type {
+  CompletedSet,
+  Set,
+  Performance,
+  Exercise,
+  RecordNumbers,
+  RecordType,
+} from "../../../../db";
 import type { RecSetData } from "../../../../domain";
 
 export interface SetRowProps {
@@ -8,4 +15,8 @@ export interface SetRowProps {
   set: Set;
   prevSet: CompletedSet | undefined;
   recSet: RecSetData | undefined;
+}
+
+export interface NewRecordData extends RecordNumbers {
+  type: RecordType;
 }

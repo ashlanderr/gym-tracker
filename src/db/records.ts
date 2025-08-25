@@ -20,8 +20,14 @@ export interface Record {
   set: string;
   createdAt: number;
   type: RecordType;
-  previous: number;
+  previous: number | undefined;
   current: number;
+  full: number | undefined;
+}
+
+export interface RecordNumbers {
+  current: number;
+  full: number | undefined;
 }
 
 export function queryRecordsByWorkout(store: Store, workout: string): Record[] {
@@ -76,7 +82,7 @@ export function queryPreviousRecordByExercise(
       createdAt: { le: createdAt },
     },
   );
-  return maxBy(records, (a, b) => a.current - b.current);
+  return maxBy(records, compareRecords);
 }
 
 export function useQueryPreviousRecordByExercise(
@@ -94,10 +100,7 @@ export function useQueryPreviousRecordByExercise(
     },
     deps: [type, exercise, createdAt],
   });
-  return useMemo(
-    () => maxBy(records, (a, b) => a.current - b.current),
-    [records],
-  );
+  return useMemo(() => maxBy(records, compareRecords), [records]);
 }
 
 export function addRecord(store: Store, entity: Record) {
@@ -106,4 +109,12 @@ export function addRecord(store: Store, entity: Record) {
 
 export function deleteRecord(store: Store, entity: Record) {
   deleteEntity(collection(store.personal, "records"), entity);
+}
+
+export function compareRecords(a: RecordNumbers, b: RecordNumbers): number {
+  if (a.full !== undefined && b.full !== undefined) {
+    return a.full - b.full;
+  }
+
+  return a.current - b.current;
 }

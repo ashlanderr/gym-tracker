@@ -2,6 +2,7 @@ import type {
   ExerciseWeight,
   PerformanceWeights,
   PeriodizationData,
+  RecordNumbers,
 } from "../../../db";
 import type { DraftSetData, RecSetData } from "../types.ts";
 import {
@@ -70,7 +71,7 @@ function testRecommendations({
   exercise?: ExerciseWeight;
   progression?: number;
   periodization: PeriodizationData;
-  oneRepMax: number;
+  oneRepMax: number | RecordNumbers;
 }) {
   const rec = buildRecommendations({
     prevSets: [],
@@ -80,7 +81,10 @@ function testRecommendations({
     selfWeight,
     progression,
     periodization,
-    oneRepMax,
+    oneRepMax:
+      typeof oneRepMax === "number"
+        ? { current: oneRepMax, full: undefined }
+        : oneRepMax,
   });
   expect(rec).toEqual(recs);
 }
@@ -182,7 +186,7 @@ describe("small weights", () => {
 });
 
 describe("positive weights", () => {
-  test("heavy mode", () => {
+  test("heavy mode, external weight", () => {
     testRecommendations({
       oneRepMax: 24,
       selfWeight: 80,
@@ -191,6 +195,18 @@ describe("positive weights", () => {
       weights: plates,
       curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 20, reps: { min: 5, max: 7 } }],
+    });
+  });
+
+  test("heavy mode, full weight", () => {
+    testRecommendations({
+      oneRepMax: { current: 25.333, full: 126.7 },
+      selfWeight: 80,
+      exercise: positive,
+      periodization: heavy,
+      weights: plates,
+      curr: [{ type: "working", weight: _, reps: _ }],
+      recs: [{ type: "working", weight: 27.5, reps: { min: 4, max: 6 } }],
     });
   });
 

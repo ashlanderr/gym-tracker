@@ -35,8 +35,8 @@ export function buildHistory(
     }
 
     const weight = set.weight;
-    const oneRepMax = volumeToOneRepMax(set.weight, set.reps);
-    const setVolume = set.weight * set.reps;
+    const oneRepMax = volumeToOneRepMax(weight, set.reps);
+    const setVolume = weight * set.reps;
 
     point.maxWeight = Math.max(point.maxWeight, weight);
     point.oneRepMax = Math.max(point.oneRepMax, oneRepMax);

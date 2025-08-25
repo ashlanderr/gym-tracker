@@ -3,6 +3,7 @@ import type {
   SetType,
   ExerciseWeight,
   PeriodizationData,
+  RecordNumbers,
 } from "../../db";
 
 export interface WorkingVolume {
@@ -40,7 +41,7 @@ export interface RecommendationParams {
   exerciseWeights?: ExerciseWeight;
   performanceWeights?: PerformanceWeights;
   selfWeight?: number;
-  oneRepMax?: number;
+  oneRepMax?: RecordNumbers;
   progression?: number;
   periodization?: PeriodizationData;
 }

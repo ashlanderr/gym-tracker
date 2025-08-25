@@ -279,7 +279,7 @@ function buildSets({
     selfWeight: measurement?.weight,
     progression: prevPerformance?.progression,
     periodization: workout?.periodization,
-    oneRepMax: oneRepMax?.current,
+    oneRepMax: oneRepMax ?? undefined,
   });
 
   const result: ReactNode[] = [];

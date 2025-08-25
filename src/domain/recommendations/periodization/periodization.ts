@@ -74,54 +74,62 @@ export function buildPeriodization(mode: PeriodizationMode): PeriodizationData {
   }
 }
 
-function computeWorkingSet(
+function computeFullOneRepMax(
   params: RecommendationParams,
-): RecSetData | undefined {
-  const {
-    periodization,
-    oneRepMax,
-    performanceWeights,
-    exerciseWeights,
-    selfWeight,
-  } = params;
-  if (periodization === undefined || oneRepMax === undefined) return undefined;
+): number | undefined {
+  const { oneRepMax, selfWeight, exerciseWeights } = params;
+
+  if (oneRepMax === undefined) {
+    return undefined;
+  }
+
+  if (oneRepMax.full !== undefined) {
+    return oneRepMax.full;
+  }
 
   const defaultReps = 6;
-  const fullRepMax = volumeToOneRepMax(
+  return volumeToOneRepMax(
     addSelfWeight(
       exerciseWeights,
       selfWeight,
-      oneRepMaxToWeight(oneRepMax, defaultReps),
+      oneRepMaxToWeight(oneRepMax.current, defaultReps),
     ),
     defaultReps,
   );
+}
+
+function computeWorkingSet(
+  params: RecommendationParams,
+): RecSetData | undefined {
+  const { periodization, performanceWeights, exerciseWeights, selfWeight } =
+    params;
+  const fullRepMax = computeFullOneRepMax(params);
+  if (periodization === undefined || fullRepMax === undefined) return undefined;
 
   const mode = getCurrentPeriodization(periodization);
+  const rounding: RoundingMode =
+    exerciseWeights?.type !== "negative" ? "floor" : "ceil";
   let minReps: number;
   let maxReps: number;
   let fullWeight: number;
-  let rounding: RoundingMode;
 
   switch (mode) {
     case "light":
       minReps = 10;
       maxReps = 12;
       fullWeight = fullRepMax * 0.65;
-      rounding = "floor";
       break;
 
     case "medium":
       minReps = 6;
       maxReps = 8;
       fullWeight = fullRepMax * 0.75;
-      rounding = "floor";
       break;
 
     case "heavy":
       minReps = 4;
       maxReps = 6;
       fullWeight = fullRepMax * 0.85;
-      rounding = "floor";
       break;
 
     default:

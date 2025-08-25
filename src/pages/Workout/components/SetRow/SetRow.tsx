@@ -1,4 +1,4 @@
-import type { SetRowProps } from "./types.ts";
+import type { NewRecordData, SetRowProps } from "./types.ts";
 import s from "./styles.module.scss";
 import { MdArrowUpward, MdCheck, MdDelete } from "react-icons/md";
 import { BottomSheet, useStore } from "../../../../components";
@@ -12,18 +12,20 @@ import {
   addRecord,
   deleteRecord,
   queryPreviousRecordByExercise,
-  type RecordType,
   useQueryRecordsBySet,
   generateId,
   DEFAULT_AUTO_WEIGHTS,
   type PerformanceLoadout,
   queryPreviousPerformance,
   updatePerformance,
+  queryLatestMeasurement,
+  compareRecords,
 } from "../../../../db";
 import { clsx } from "clsx";
 import { RECORDS_TRANSLATION } from "../../../constants.ts";
 import { PiMedalFill } from "react-icons/pi";
 import {
+  addSelfWeight,
   autoDetectWeights,
   formatRecordValue,
   kgToUnits,
@@ -123,13 +125,28 @@ export function SetRow({
   };
 
   const addRecords = (set: CompletedSet) => {
-    // todo support negative weights
-    if (exercise?.weight?.type === "negative") return;
+    if (!exercise) return;
 
-    const currentRecords: Array<{ type: RecordType; value: number }> = [
-      { type: "one_rep_max", value: volumeToOneRepMax(set.weight, set.reps) },
-      { type: "weight", value: set.weight },
-      { type: "volume", value: set.weight * set.reps },
+    const measurement = queryLatestMeasurement(store, performance.startedAt);
+    const selfWeight = measurement?.weight;
+    const fullWeight = addSelfWeight(exercise.weight, selfWeight, set.weight);
+
+    const currentRecords: Array<NewRecordData> = [
+      {
+        type: "one_rep_max",
+        current: volumeToOneRepMax(set.weight, set.reps),
+        full: volumeToOneRepMax(fullWeight, set.reps),
+      },
+      {
+        type: "weight",
+        current: set.weight,
+        full: fullWeight,
+      },
+      {
+        type: "volume",
+        current: set.weight * set.reps,
+        full: fullWeight * set.reps,
+      },
     ];
 
     for (const currentRecord of currentRecords) {
@@ -139,9 +156,10 @@ export function SetRow({
         set.exercise,
         performance.startedAt,
       );
-      const previousValue = previousRecord?.current ?? 0;
+      const isNewRecord =
+        !previousRecord || compareRecords(currentRecord, previousRecord) > 0;
 
-      if (currentRecord.value > previousValue) {
+      if (isNewRecord) {
         addRecord(store, {
           id: generateId(),
           user: set.user,
@@ -151,8 +169,9 @@ export function SetRow({
           set: set.id,
           createdAt: performance.startedAt,
           type: currentRecord.type,
-          previous: previousValue,
-          current: currentRecord.value,
+          previous: previousRecord?.current,
+          current: currentRecord.current,
+          full: currentRecord.full,
         });
       }
     }
@@ -343,7 +362,7 @@ export function SetRow({
               <div className={s.recordValue}>
                 {formatRecordValue(r.current)} кг
               </div>
-              {r.previous !== 0 && (
+              {r.previous !== undefined && (
                 <div className={s.recordIncrement}>
                   <MdArrowUpward /> {formatRecordValue(r.current - r.previous)}{" "}
                   кг
