@@ -28,6 +28,14 @@ const machine: PerformanceWeights = {
   base: 0,
 };
 
+const dumbbells: PerformanceWeights = {
+  units: "kg",
+  count: 2,
+  additional: 0,
+  steps: 2,
+  base: 0,
+};
+
 const positive: ExerciseWeight = {
   type: "positive",
   selfWeightPercent: 100,
@@ -128,7 +136,7 @@ describe("medium weights", () => {
       periodization: heavy,
       weights: plates,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 57.5, reps: { min: 5, max: 7 } }],
+      recs: [{ type: "working", weight: 60, reps: { min: 4, max: 6 } }],
     });
   });
 
@@ -154,13 +162,23 @@ describe("medium weights", () => {
 });
 
 describe("small weights", () => {
-  test("heavy mode", () => {
+  test("heavy mode, machine", () => {
     testRecommendations({
       oneRepMax: 12,
       periodization: heavy,
       weights: machine,
       curr: [{ type: "working", weight: _, reps: _ }],
       recs: [{ type: "working", weight: 10, reps: { min: 5, max: 7 } }],
+    });
+  });
+
+  test("heavy mode, dumbbells", () => {
+    testRecommendations({
+      oneRepMax: 27.33,
+      periodization: heavy,
+      weights: dumbbells,
+      curr: [{ type: "working", weight: _, reps: _ }],
+      recs: [{ type: "working", weight: 24, reps: { min: 3, max: 5 } }],
     });
   });
 
@@ -194,7 +212,7 @@ describe("positive weights", () => {
       periodization: heavy,
       weights: plates,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 20, reps: { min: 5, max: 7 } }],
+      recs: [{ type: "working", weight: 22.5, reps: { min: 4, max: 6 } }],
     });
   });
 

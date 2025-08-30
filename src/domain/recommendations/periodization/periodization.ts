@@ -8,9 +8,12 @@ import {
   subtractSelfWeight,
   volumeToOneRepMax,
 } from "../../weights";
-import { assertNever } from "../../../utils";
-import { WARM_UP_SETS } from "./constants.ts";
-import type { PeriodizationData, PeriodizationMode } from "../../../db";
+import { MODE_PARAMS, WARM_UP_SETS } from "./constants.ts";
+import {
+  minBy,
+  type PeriodizationData,
+  type PeriodizationMode,
+} from "../../../db";
 
 export function buildRecommendations(
   params: RecommendationParams,
@@ -107,48 +110,43 @@ function computeWorkingSet(
   if (periodization === undefined || fullRepMax === undefined) return undefined;
 
   const mode = getCurrentPeriodization(periodization);
-  const rounding: RoundingMode =
-    exerciseWeights?.type !== "negative" ? "floor" : "ceil";
-  let minReps: number;
-  let maxReps: number;
-  let fullWeight: number;
+  const { minReps, maxReps, defaultPercent, maxPercent } = MODE_PARAMS[mode];
 
-  switch (mode) {
-    case "light":
-      minReps = 10;
-      maxReps = 12;
-      fullWeight = fullRepMax * 0.65;
-      break;
+  const defaultFullWeight = fullRepMax * defaultPercent;
+  const maxFullWeight = fullRepMax * maxPercent;
+  const minRepMax = volumeToOneRepMax(defaultFullWeight, minReps);
+  const maxRepMax = volumeToOneRepMax(defaultFullWeight, maxReps);
+  const roundings: RoundingMode[] = ["floor", "ceil"];
 
-    case "medium":
-      minReps = 6;
-      maxReps = 8;
-      fullWeight = fullRepMax * 0.75;
-      break;
+  const options = roundings.map((rounding) => {
+    const weight = snapWeightKg(
+      performanceWeights,
+      subtractSelfWeight(exerciseWeights, selfWeight, defaultFullWeight),
+      rounding,
+    );
+    const fullWeight = addSelfWeight(exerciseWeights, selfWeight, weight);
+    const delta = Math.abs(defaultFullWeight - fullWeight);
+    return { weight, fullWeight, delta };
+  });
 
-    case "heavy":
-      minReps = 4;
-      maxReps = 6;
-      fullWeight = fullRepMax * 0.85;
-      break;
+  const option = minBy(
+    options.filter((w) => w.fullWeight <= maxFullWeight),
+    (a, b) => a.delta - b.delta,
+  );
+  if (!option) return undefined;
 
-    default:
-      assertNever(mode);
-  }
-
-  const minRepMax = volumeToOneRepMax(fullWeight, minReps);
-  const maxRepMax = volumeToOneRepMax(fullWeight, maxReps);
-  const weight = snapWeightKg(
-    performanceWeights,
-    subtractSelfWeight(exerciseWeights, selfWeight, fullWeight),
-    rounding,
+  const actualMinReps = Math.round(
+    oneRepMaxToReps(minRepMax, option.fullWeight),
+  );
+  const actualMaxReps = Math.round(
+    oneRepMaxToReps(maxRepMax, option.fullWeight),
   );
 
-  fullWeight = addSelfWeight(exerciseWeights, selfWeight, weight);
-  minReps = Math.round(oneRepMaxToReps(minRepMax, fullWeight));
-  maxReps = Math.round(oneRepMaxToReps(maxRepMax, fullWeight));
-
-  return { type: "working", weight, reps: { min: minReps, max: maxReps } };
+  return {
+    type: "working",
+    weight: option.weight,
+    reps: { min: actualMinReps, max: actualMaxReps },
+  };
 }
 
 function computeWarmUpSet(

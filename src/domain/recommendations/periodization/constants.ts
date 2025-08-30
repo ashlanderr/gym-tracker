@@ -22,3 +22,24 @@ export const WARM_UP_SETS = [
     { weight: 0.85, reps: 2 },
   ],
 ];
+
+export const MODE_PARAMS = {
+  light: {
+    minReps: 10,
+    maxReps: 12,
+    defaultPercent: 0.65,
+    maxPercent: 0.69,
+  },
+  medium: {
+    minReps: 6,
+    maxReps: 8,
+    defaultPercent: 0.75,
+    maxPercent: 0.79,
+  },
+  heavy: {
+    minReps: 4,
+    maxReps: 6,
+    defaultPercent: 0.85,
+    maxPercent: 0.89,
+  },
+};

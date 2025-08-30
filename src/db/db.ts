@@ -148,6 +148,23 @@ export function maxBy<E>(
   return result;
 }
 
+export function minBy<E>(
+  entities: E[],
+  comparator: (a: E, b: E) => number,
+): E | null {
+  if (entities.length === 0) return null;
+  let result = entities[0];
+
+  for (let i = 1; i < entities.length; ++i) {
+    const entity = entities[i];
+    if (comparator(entity, result) < 0) {
+      result = entity;
+    }
+  }
+
+  return result;
+}
+
 const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
 export function generateId(): string {
