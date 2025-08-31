@@ -2,11 +2,7 @@ import s from "./styles.module.scss";
 import { MdAdd, MdArrowBack } from "react-icons/md";
 import {
   useQueryWorkoutById,
-  addPerformance,
-  queryPreviousPerformance,
   useQueryPerformancesByWorkout,
-  generateId,
-  querySetsByPerformance,
   useQuerySetsByWorkout,
   type Exercise,
   updateWorkout,
@@ -30,11 +26,10 @@ import {
   BottomSheet,
 } from "../../components";
 import {
-  addNextSet,
-  duplicateSet,
   completeWorkout,
   getCurrentPeriodization,
   buildPeriodization,
+  addPerformance,
 } from "../../domain";
 import { clsx } from "clsx";
 
@@ -92,37 +87,8 @@ export function Workout() {
 
   const addPerformanceHandler = (exercise: Exercise) => {
     if (!workout) return;
-
+    addPerformance(store, workout, exercise.id);
     setAddPerformanceOpen(false);
-
-    const prevPerformance = queryPreviousPerformance(
-      store,
-      exercise.id,
-      Date.now(),
-    );
-
-    const prevSets =
-      prevPerformance && querySetsByPerformance(store, prevPerformance.id);
-
-    const performance = addPerformance(store, {
-      id: generateId(),
-      user: workout.user,
-      workout: workout.id,
-      exercise: exercise.id,
-      order: Math.max(-1, ...performances.map((p) => p.order)) + 1,
-      startedAt: workout.startedAt,
-      weights: prevPerformance?.weights,
-      loadout: prevPerformance?.loadout,
-      timer: prevPerformance?.timer,
-    });
-
-    if (prevSets) {
-      for (const oldSet of prevSets) {
-        duplicateSet(store, performance, oldSet);
-      }
-    } else {
-      addNextSet(store, performance);
-    }
   };
 
   const completeBeginHandler = () => {
