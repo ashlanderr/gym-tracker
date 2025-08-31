@@ -16,11 +16,7 @@ export interface Store {
 const BACKEND_URL_STORAGE_KEY = "BACKEND_URL";
 
 export function getBackendUrl() {
-  return (
-    localStorage.getItem(BACKEND_URL_STORAGE_KEY) ||
-    import.meta.env.VITE_BACKEND_URL ||
-    "ws://localhost:1234"
-  );
+  return localStorage.getItem(BACKEND_URL_STORAGE_KEY);
 }
 
 export function setBackendUrl(url: string) {
@@ -64,19 +60,23 @@ function initDoc(
 ): Y.Doc {
   const doc = new Y.Doc();
 
-  const wsProvider = new WebsocketProvider(getBackendUrl(), name, doc);
+  const url = getBackendUrl();
 
-  wsProvider.on("status", (event) => {
-    console.log(`wsProvider [${name}]: ${event.status}`);
-    onStatusChange(event.status, name);
-  });
+  if (url) {
+    const wsProvider = new WebsocketProvider(url, name, doc);
 
-  wsProvider.on("sync", (state) => {
-    if (state) {
-      console.log(`wsProvider [${name}]: synced`);
-      onStatusChange("synced", name);
-    }
-  });
+    wsProvider.on("status", (event) => {
+      console.log(`wsProvider [${name}]: ${event.status}`);
+      onStatusChange(event.status, name);
+    });
+
+    wsProvider.on("sync", (state) => {
+      if (state) {
+        console.log(`wsProvider [${name}]: synced`);
+        onStatusChange("synced", name);
+      }
+    });
+  }
 
   const idbProvider = new IndexeddbPersistence(name, doc);
 
