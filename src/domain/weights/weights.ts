@@ -1,5 +1,4 @@
 import {
-  DEFAULT_AUTO_WEIGHTS,
   DEFAULT_WEIGHT_UNITS,
   type PerformanceWeights,
   type WeightUnits,
@@ -183,67 +182,6 @@ export function unitsToKg(
     case "lbs":
       return weightUnits * 0.454;
   }
-}
-
-export function autoDetectWeights(
-  weights: PerformanceWeights | undefined,
-  previousKg: number | undefined,
-  currentKg: number | undefined,
-): PerformanceWeights {
-  if (
-    currentKg === undefined ||
-    previousKg === undefined ||
-    currentKg <= previousKg ||
-    (weights && !weights.auto)
-  ) {
-    return weights ?? DEFAULT_AUTO_WEIGHTS;
-  }
-
-  const units = weights?.units ?? DEFAULT_WEIGHT_UNITS;
-  const previousUnits = kgToUnits(previousKg, units);
-  const currentUnits = kgToUnits(currentKg, units);
-  const steps = currentUnits - previousUnits;
-  const base = currentUnits - Math.floor(currentUnits / steps) * steps;
-
-  return {
-    auto: true,
-    units,
-    base,
-    steps,
-  };
-}
-
-export function switchItem<T>(items: T[], current: T | undefined): T {
-  if (current === undefined) return items[0];
-  const index = items.indexOf(current);
-  if (index < 0) return items[0];
-  const nextIndex = (index + 1) % items.length;
-  return items[nextIndex];
-}
-
-export function switchUnits(units: WeightUnits): WeightUnits {
-  return switchItem<WeightUnits>(["kg", "lbs"], units);
-}
-
-export function convertToAutoWeights(
-  weights: PerformanceWeights,
-): PerformanceWeights {
-  const base = weights.base ?? DEFAULT_AUTO_WEIGHTS.base;
-  const count = weights.count ?? 1;
-  let steps = DEFAULT_AUTO_WEIGHTS.steps;
-
-  if (Array.isArray(weights.steps) && weights.steps.length > 0) {
-    steps = Math.min(...weights.steps) * count;
-  } else if (typeof weights.steps === "number") {
-    steps = weights.steps * count;
-  }
-
-  return {
-    units: weights.units,
-    auto: true,
-    base,
-    steps,
-  };
 }
 
 function round(value: number, mode: RoundingMode): number {

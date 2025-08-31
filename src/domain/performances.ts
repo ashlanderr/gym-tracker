@@ -38,7 +38,6 @@ export function addPerformance(
     order: nextOrder,
     startedAt: workout.startedAt,
     weights: prevPerformance?.weights,
-    loadout: prevPerformance?.loadout,
     timer: prevPerformance?.timer,
     progression: prevPerformance?.progression,
   });

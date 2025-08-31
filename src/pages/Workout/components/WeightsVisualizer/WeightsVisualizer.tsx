@@ -1,25 +1,14 @@
-import type {
-  EquipmentType,
-  PerformanceLoadout,
-  PerformanceWeights,
-} from "../../../../db";
+import type { EquipmentType, PerformanceWeights } from "../../../../db";
 import s from "./styles.module.scss";
 import { clsx } from "clsx";
 import { RiPlayList2Fill } from "react-icons/ri";
 import { LuCircleGauge } from "react-icons/lu";
-import {
-  BARBELL_BASES,
-  BARBELL_DEFAULT_BASE,
-  DEFAULT_PLATES,
-} from "../constants.ts";
-import { computeWeights, kgToUnits, switchItem } from "../../../../domain";
+import { computeWeights } from "../../../../domain";
 
 export interface WeightsVisualizerProps {
   equipment: EquipmentType;
   weights: PerformanceWeights | undefined;
-  loadout: PerformanceLoadout | undefined;
   weightKg: number;
-  onChange: (loadout: PerformanceLoadout) => void;
 }
 
 export function WeightsVisualizer(props: WeightsVisualizerProps) {
@@ -43,33 +32,7 @@ export function WeightsVisualizer(props: WeightsVisualizerProps) {
   }
 }
 
-function barbellWeights({
-  equipment,
-  weights,
-  loadout,
-  weightKg,
-  onChange,
-}: WeightsVisualizerProps) {
-  if (loadout?.type !== equipment) {
-    loadout = undefined;
-  }
-
-  if (weights?.auto) {
-    loadout = loadout ?? {
-      type: equipment,
-      base: BARBELL_DEFAULT_BASE[weights.units],
-      count: 1,
-    };
-    weights = {
-      auto: true,
-      units: weights.units,
-      count: 2,
-      base: loadout.base,
-      steps: DEFAULT_PLATES[weights.units],
-      additional: 0,
-    };
-  }
-
+function barbellWeights({ weights, weightKg }: WeightsVisualizerProps) {
   const ctor = computeWeights(weights, weightKg);
   const isInvalid = !isSameWeight(ctor.totalKg, weightKg);
   const steps: Array<{ weight: number; height: number }> = [];
@@ -83,19 +46,8 @@ function barbellWeights({
     }
   }
 
-  const switchBaseHandler = () => {
-    if (!weights?.auto || !loadout) return;
-    onChange({
-      ...loadout,
-      base: switchItem(BARBELL_BASES[weights.units], loadout.base),
-    });
-  };
-
   return (
-    <div
-      className={clsx(s.barbell, isInvalid && s.invalid)}
-      onClick={switchBaseHandler}
-    >
+    <div className={clsx(s.barbell, isInvalid && s.invalid)}>
       <div className={s.barSpacer} />
       {[...steps].reverse().map((step, i) => (
         <div className={s.plate} key={i} style={{ height: step.height }}>
@@ -118,33 +70,7 @@ function barbellWeights({
   );
 }
 
-function dumbbellWeights({
-  equipment,
-  weights,
-  loadout,
-  weightKg,
-  onChange,
-}: WeightsVisualizerProps) {
-  if (loadout?.type !== equipment) {
-    loadout = undefined;
-  }
-
-  if (weights?.auto) {
-    loadout = loadout ?? {
-      type: equipment,
-      base: 0,
-      count: 2,
-    };
-    weights = {
-      auto: true,
-      units: weights.units,
-      count: loadout.count,
-      base: loadout.base,
-      steps: kgToUnits(weightKg, weights.units) / loadout.count,
-      additional: 0,
-    };
-  }
-
+function dumbbellWeights({ weights, weightKg }: WeightsVisualizerProps) {
   const ctor = computeWeights(weights, weightKg);
   const isInvalid = !isSameWeight(ctor.totalKg, weightKg);
 
@@ -162,19 +88,8 @@ function dumbbellWeights({
     return null;
   }
 
-  const switchCountHandler = () => {
-    if (!weights?.auto || !loadout) return;
-    onChange({
-      ...loadout,
-      count: switchItem([1, 2], loadout.count),
-    });
-  };
-
   return (
-    <div
-      className={clsx(s.dumbbells, isInvalid && s.invalid)}
-      onClick={switchCountHandler}
-    >
+    <div className={clsx(s.dumbbells, isInvalid && s.invalid)}>
       {repeat.map((r) => (
         <div className={s.dumbbell} key={r}>
           <div className={s.barbell}>
@@ -198,8 +113,6 @@ function dumbbellWeights({
 }
 
 function machineWeights({ weights, weightKg }: WeightsVisualizerProps) {
-  if (weights?.auto) return null;
-
   const ctor = computeWeights(weights, weightKg);
   const baseWeight = ctor.base ?? 0;
   const mainStep = ctor.steps?.at(0) ?? { weight: 0, count: 0 };
@@ -221,33 +134,7 @@ function machineWeights({ weights, weightKg }: WeightsVisualizerProps) {
   );
 }
 
-function platesWeights({
-  equipment,
-  weights,
-  loadout,
-  weightKg,
-  onChange,
-}: WeightsVisualizerProps) {
-  if (loadout?.type !== equipment) {
-    loadout = undefined;
-  }
-
-  if (weights?.auto) {
-    loadout = loadout ?? {
-      type: equipment,
-      base: 0,
-      count: 2,
-    };
-    weights = {
-      auto: true,
-      units: weights.units,
-      count: loadout.count,
-      base: loadout.base,
-      steps: DEFAULT_PLATES[weights.units],
-      additional: 0,
-    };
-  }
-
+function platesWeights({ weights, weightKg }: WeightsVisualizerProps) {
   const ctor = computeWeights(weights, weightKg);
   const isInvalid = !isSameWeight(ctor.totalKg, weightKg);
   const steps: Array<{ weight: number; height: number }> = [];
@@ -270,19 +157,8 @@ function platesWeights({
     return null;
   }
 
-  const switchCountHandler = () => {
-    if (!weights?.auto || !loadout) return;
-    onChange({
-      ...loadout,
-      count: switchItem([1, 2], loadout.count),
-    });
-  };
-
   return (
-    <div
-      className={clsx(s.platesMachine, isInvalid && s.invalid)}
-      onClick={switchCountHandler}
-    >
+    <div className={clsx(s.platesMachine, isInvalid && s.invalid)}>
       {repeat.map((r) => (
         <div className={s.barbell} key={r}>
           <div className={s.barSpacer} />

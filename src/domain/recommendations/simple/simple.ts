@@ -110,6 +110,7 @@ export function buildRecommendations(
     exerciseWeights,
     selfWeight,
   } = params;
+  if (performanceWeights === undefined) return [];
 
   const progression = params.progression ?? DEFAULT_PROGRESSION;
   const currentWarmUpSets = currentSets.filter((s) => s.type === "warm-up");

@@ -107,7 +107,14 @@ function computeWorkingSet(
   const { periodization, performanceWeights, exerciseWeights, selfWeight } =
     params;
   const fullRepMax = computeFullOneRepMax(params);
-  if (periodization === undefined || fullRepMax === undefined) return undefined;
+
+  if (
+    periodization === undefined ||
+    fullRepMax === undefined ||
+    performanceWeights === undefined
+  ) {
+    return undefined;
+  }
 
   const mode = getCurrentPeriodization(periodization);
   const { minReps, maxReps, defaultPercent, maxPercent } = MODE_PARAMS[mode];

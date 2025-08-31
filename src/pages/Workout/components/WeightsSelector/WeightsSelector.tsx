@@ -277,7 +277,6 @@ function validateWeights(
   weights: PerformanceWeights | undefined,
 ): boolean {
   if (!weights) return true;
-  if (weights.auto) return false;
 
   switch (equipment) {
     case "none":

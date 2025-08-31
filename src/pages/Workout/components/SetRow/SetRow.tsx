@@ -14,10 +14,6 @@ import {
   queryPreviousRecordByExercise,
   useQueryRecordsBySet,
   generateId,
-  DEFAULT_AUTO_WEIGHTS,
-  type PerformanceLoadout,
-  queryPreviousPerformance,
-  updatePerformance,
   queryLatestMeasurement,
   compareRecords,
 } from "../../../../db";
@@ -26,7 +22,6 @@ import { RECORDS_TRANSLATION } from "../../../constants.ts";
 import { PiMedalFill } from "react-icons/pi";
 import {
   addSelfWeight,
-  autoDetectWeights,
   formatRecordValue,
   kgToUnits,
   snapWeightKg,
@@ -101,7 +96,7 @@ export function SetRow({
       ? unitsToKg(newWeight, performance.weights?.units)
       : undefined;
 
-    if (newWeightKg !== undefined && !performance.weights?.auto) {
+    if (newWeightKg !== undefined) {
       newWeightKg = snapWeightKg(performance.weights, newWeightKg);
     }
 
@@ -177,25 +172,6 @@ export function SetRow({
     }
   };
 
-  const updateWeights = (set: Set) => {
-    const prevPerformance = queryPreviousPerformance(
-      store,
-      set.exercise,
-      performance.startedAt,
-    );
-    if (prevPerformance?.weights?.units === performance.weights?.units) {
-      const weights = autoDetectWeights(
-        performance.weights,
-        prevSet?.weight,
-        set.weight,
-      );
-      updatePerformance(store, {
-        ...performance,
-        weights,
-      });
-    }
-  };
-
   const completeHandler = async () => {
     if (!set.completed) {
       const set = updateSetInner((set) => {
@@ -210,7 +186,6 @@ export function SetRow({
       if (set.completed) {
         updateSet(store, set);
         addRecords(set);
-        updateWeights(set);
         startTimer(performance.timer);
       }
     } else {
@@ -226,13 +201,6 @@ export function SetRow({
     } else if (records.length !== 0) {
       setRecordsOpen(true);
     }
-  };
-
-  const visualizerChangeHandler = (loadout: PerformanceLoadout) => {
-    updatePerformance(store, {
-      ...performance,
-      loadout,
-    });
   };
 
   const copyPreviousHandler = () => {
@@ -308,10 +276,8 @@ export function SetRow({
           {expectedWeight !== undefined && (
             <WeightsVisualizer
               equipment={exercise?.equipment ?? "none"}
-              weights={performance.weights ?? DEFAULT_AUTO_WEIGHTS}
-              loadout={performance.loadout}
+              weights={performance.weights}
               weightKg={expectedWeight}
-              onChange={visualizerChangeHandler}
             />
           )}
         </div>

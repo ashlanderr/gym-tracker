@@ -21,13 +21,13 @@ import {
   useQueryPreviousPerformance,
   type Performance,
   type PerformanceWeights,
-  DEFAULT_AUTO_WEIGHTS,
   type Measurement,
   useQueryLatestMeasurement,
   useQueryWorkoutById,
   type Workout,
   type Record,
   useQueryPreviousRecordByExercise,
+  DEFAULT_WEIGHT_UNITS,
 } from "../../../../db";
 import { BottomSheet, PageModal, useStore } from "../../../../components";
 import { ChooseExercise } from "../ChooseExercise";
@@ -44,7 +44,6 @@ import {
   deletePerformance,
   replacePerformance,
   buildRecommendations,
-  switchUnits,
 } from "../../../../domain";
 import { WeightsSelector } from "../WeightsSelector";
 import { TbWeight } from "react-icons/tb";
@@ -79,8 +78,8 @@ export function Performance({ performance }: PerformanceProps) {
   const [orderState, setOrderState] = useState<Performance[]>([]);
   const [editState, setEditState] = useState<Exercise | null>(null);
 
-  const weights = performance.weights ?? DEFAULT_AUTO_WEIGHTS;
-  const unitsText = UNITS_TRANSLATION[weights.units];
+  const units = performance?.weights?.units ?? DEFAULT_WEIGHT_UNITS;
+  const unitsText = UNITS_TRANSLATION[units];
 
   const addSetHandler = () => {
     addNextSet(store, performance);
@@ -132,18 +131,6 @@ export function Performance({ performance }: PerformanceProps) {
     setWeightsOpen(false);
   };
 
-  const switchUnitsHandler = () => {
-    if (weights.auto) {
-      updatePerformance(store, {
-        ...performance,
-        weights: {
-          ...DEFAULT_AUTO_WEIGHTS,
-          units: switchUnits(weights.units),
-        },
-      });
-    }
-  };
-
   return (
     <div className={s.exercise}>
       <div className={s.exerciseName} onClick={() => setActionsOpen(true)}>
@@ -157,9 +144,7 @@ export function Performance({ performance }: PerformanceProps) {
           <tr>
             <th className={s.setNumHeader}>Подх.</th>
             <th className={s.prevVolumeHeader}>Пред.</th>
-            <th className={s.currentWeightHeader} onClick={switchUnitsHandler}>
-              {unitsText}
-            </th>
+            <th className={s.currentWeightHeader}>{unitsText}</th>
             <th className={s.currentRepsHeader}>Повт.</th>
             <th className={s.setCompletedHeader}>
               <MdCheck />
