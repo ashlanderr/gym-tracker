@@ -9,7 +9,6 @@ export type ConnectionStatus =
   | "disconnected";
 
 export interface Store {
-  shared: Y.Doc;
   personal: Y.Doc;
 }
 
@@ -49,7 +48,6 @@ export function initStore(
   };
 
   return {
-    shared: initDoc("shared", statusHandler),
     personal: initDoc(`user/${uid}`, statusHandler),
   };
 }
@@ -88,7 +86,6 @@ function initDoc(
 }
 
 export function destroyStore(store: Store) {
-  store.shared.destroy();
   store.personal.destroy();
   console.log("store destroyed");
 }

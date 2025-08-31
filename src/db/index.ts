@@ -1,6 +1,6 @@
 export * from "./doc.ts";
 export * from "./db.ts";
-export * from "./exercises.ts";
+export * from "./exercises";
 export * from "./measurements.ts";
 export * from "./performances.ts";
 export * from "./records.ts";
