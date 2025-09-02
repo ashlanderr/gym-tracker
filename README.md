@@ -10,6 +10,7 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
 - **Workout completion** with summary statistics
 - **Duplicate workouts** to quickly recreate previous training sessions
 - **Cancel workouts** with automatic cleanup of all associated data
+- **Workout periodization modes** (Light, Medium, Heavy) for systematic training progression
 
 ### Exercise Tracking
 - **Comprehensive exercise database** with 17 muscle groups:
@@ -19,13 +20,17 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
 - **Equipment types**: None, Barbell, Dumbbell, Machine, Plates
 - **Exercise history** with detailed performance analytics
 - **Exercise replacement** during workouts
+- **Custom exercise creation** with muscle group targeting and equipment specifications
+- **Exercise weight types**: Full weight, Self-weight percentages, and bodyweight exercises
 
 ### Performance Tracking
 - **Set management** with warm-up and working set types
 - **Weight and rep tracking** for each set
 - **Automatic weight suggestions** based on previous performances
-- **Performance reordering** within workouts
+- **Performance reordering** within workouts using drag & drop
 - **Set completion status** tracking
+- **Rest timer management** with customizable intervals
+- **Active rest timer** with countdown display and manual adjustment
 
 ### Progress Analytics
 - **Personal records tracking**:
@@ -39,6 +44,26 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
 - **Visual progress tracking** with line charts
 - **Historical performance comparison**
 
+### Advanced Training Features
+- **Periodization system** with automatic mode cycling (Light → Medium → Heavy)
+- **Intelligent weight recommendations** based on periodization mode:
+  - Light: 10-12 reps at 65% 1RM
+  - Medium: 6-8 reps at 75% 1RM  
+  - Heavy: 4-6 reps at 85% 1RM
+- **Warm-up set calculations** with progressive weight increases
+- **Weight progression algorithms** for consistent strength gains
+
+### Weights Management
+- **Equipment-specific weight configurations**:
+  - **Barbell**: Customizable bar weight and available plates
+  - **Dumbbell**: Step-based weight increments
+  - **Machine**: Stack-based weight systems with multiple blocks
+  - **Plates**: Custom plate selection for plate-loaded equipment
+- **Automatic weight snapping** to available increments
+- **Visual weight representation** showing exact plate/weight combinations
+- **Unit conversion** between kg and lbs
+- **Self-weight calculations** for bodyweight exercises
+
 ### Real-time Collaboration
 - **Multi-device synchronization** using Yjs and WebSocket
 - **Offline support** with IndexedDB persistence
@@ -51,12 +76,15 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
 - **Google authentication** for secure user accounts
 - **Anonymous sign-in** option for quick access
 - **Modern UI** with intuitive navigation and interactions
+- **Bottom sheet modals** for mobile-optimized interactions
+- **Drag & drop interface** for workout organization
+- **Connection status indicators** for real-time sync feedback
 
 ## 🛠️ Technology Stack
 
 - **Frontend**: React 19, TypeScript, Vite
 - **Styling**: SCSS modules
-- **State Management**: Yjs for real-time collaboration
+- **State Management**: Yjs for real-time collaboration, Jotai for local state
 - **Authentication**: Firebase Authentication
 - **Database**: Yjs with IndexedDB persistence
 - **Real-time Sync**: WebSocket server (y-websocket)
@@ -64,6 +92,9 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
 - **Icons**: React Icons
 - **Drag & Drop**: @dnd-kit for performance reordering
 - **PWA**: Vite PWA plugin
+- **Testing**: Vitest for unit testing
+- **Code Quality**: ESLint, Prettier
+- **Build Tools**: Vite with PWA assets generation
 
 ## 🚀 Getting Started
 
@@ -84,24 +115,19 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
    npm install
    ```
 
-3. **Set up environment variables**
-   Create a `.env` file in the root directory:
-   ```env
-   VITE_BACKEND_URL=ws://localhost:1234
-   ```
-
-4. **Start the development server**
+3. **Start the development server**
    ```bash
-   # For local development
-   npm run dev:local
-   
-   # For production backend
-   npm run dev:prod
+   npm run dev
    ```
 
-5. **Start the WebSocket server** (in a separate terminal)
+4. **Start the WebSocket server** (in a separate terminal)
    ```bash
    npm run y-websocket
+   ```
+
+5. **Set WebSocket URL in user settings**
+   ```
+   ws://localhost:1234
    ```
 
 ### Building for Production
