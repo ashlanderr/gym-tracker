@@ -34,7 +34,6 @@ import { BottomSheet, PageModal, useStore } from "../../../../components";
 import { ChooseExercise } from "../ChooseExercise";
 import { SetRow } from "../SetRow";
 import { PerformanceOrder } from "../PerformanceOrder";
-import { ExerciseHistory } from "../ExerciseHistory";
 import { clsx } from "clsx";
 import { UNITS_TRANSLATION } from "../../../constants.ts";
 import { AddExercise } from "../AddExercise";
@@ -49,9 +48,11 @@ import {
 } from "../../../../domain";
 import { WeightsSelector } from "../WeightsSelector";
 import { TbWeight } from "react-icons/tb";
+import { useNavigate } from "react-router";
 
 export function Performance({ performance }: PerformanceProps) {
   const store = useStore();
+  const navigate = useNavigate();
   const exercise = useQueryExerciseById(store, performance.exercise);
   const sets = useQuerySetsByPerformance(store, performance.id);
   const measurement = useQueryLatestMeasurement(store, performance.startedAt);
@@ -88,7 +89,6 @@ export function Performance({ performance }: PerformanceProps) {
 
   const [isActionsOpen, setActionsOpen] = useState(false);
   const [isReplaceOpen, setReplaceOpen] = useState(false);
-  const [isHistoryOpen, setHistoryOpen] = useState(false);
   const [isWeightsOpen, setWeightsOpen] = useState(false);
   const [orderState, setOrderState] = useState<Performance[]>([]);
   const [editState, setEditState] = useState<Exercise | null>(null);
@@ -102,7 +102,9 @@ export function Performance({ performance }: PerformanceProps) {
 
   const historyHandler = () => {
     setActionsOpen(false);
-    setHistoryOpen(true);
+    if (exercise) {
+      navigate(`/exercises/${exercise.id}/history`);
+    }
   };
 
   const orderBeginHandler = () => {
@@ -222,14 +224,6 @@ export function Performance({ performance }: PerformanceProps) {
           onSubmit={replaceCompleteHandler}
         />
       </PageModal>
-      {exercise && (
-        <PageModal isOpen={isHistoryOpen}>
-          <ExerciseHistory
-            exercise={exercise}
-            onClose={() => setHistoryOpen(false)}
-          />
-        </PageModal>
-      )}
       <PageModal isOpen={orderState.length !== 0}>
         <PerformanceOrder
           performances={orderState}

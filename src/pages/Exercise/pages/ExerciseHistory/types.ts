@@ -1,8 +1,5 @@
-import type { Exercise } from "../../../../db";
-
-export interface ExerciseHistoryProps {
-  exercise: Exercise;
-  onClose: () => void;
+export interface ExerciseHistoryParams {
+  exerciseId: string;
 }
 
 export interface HistoryPoint {

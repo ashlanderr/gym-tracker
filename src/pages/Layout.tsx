@@ -4,6 +4,7 @@ import { Home } from "./Home";
 import { ModalStack, ProtectedRoute } from "../components";
 import { SignIn } from "./SignIn";
 import { User } from "./User";
+import { ExerciseHistory } from "./Exercise";
 
 export function Layout() {
   return (
@@ -23,6 +24,14 @@ export function Layout() {
             element={
               <ProtectedRoute>
                 <Workout />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/exercises/:exerciseId/history"
+            element={
+              <ProtectedRoute>
+                <ExerciseHistory />
               </ProtectedRoute>
             }
           />

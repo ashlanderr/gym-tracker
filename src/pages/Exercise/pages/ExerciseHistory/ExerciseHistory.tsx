@@ -1,6 +1,6 @@
 import s from "./styles.module.scss";
 import { MdArrowBack } from "react-icons/md";
-import type { ChartParameterType, ExerciseHistoryProps } from "./types.ts";
+import type { ChartParameterType, ExerciseHistoryParams } from "./types.ts";
 import { MUSCLES_TRANSLATION } from "../../../constants.ts";
 import {
   useQuerySetsByExercise,
@@ -8,6 +8,7 @@ import {
   useQueryRecordsByExercise,
   maxBy,
   compareRecordsByDate,
+  useQueryExerciseById,
 } from "../../../../db";
 import { useStore } from "../../../../components";
 import { useMemo, useState } from "react";
@@ -25,12 +26,17 @@ import {
 import { RECORDS_TRANSLATION } from "../../../constants.ts";
 import { formatRecordValue } from "../../../../domain";
 import { PiMedalFill } from "react-icons/pi";
+import { usePageParams } from "../../../hooks.ts";
+import { useNavigate } from "react-router";
 
-export function ExerciseHistory({ exercise, onClose }: ExerciseHistoryProps) {
+export function ExerciseHistory() {
   const store = useStore();
-  const performances = useQueryPerformancesByExercise(store, exercise.id);
-  const sets = useQuerySetsByExercise(store, exercise.id);
-  const records = useQueryRecordsByExercise(store, exercise.id);
+  const navigate = useNavigate();
+  const { exerciseId } = usePageParams<ExerciseHistoryParams>();
+  const exercise = useQueryExerciseById(store, exerciseId);
+  const performances = useQueryPerformancesByExercise(store, exerciseId);
+  const sets = useQuerySetsByExercise(store, exerciseId);
+  const records = useQueryRecordsByExercise(store, exerciseId);
   const history = useMemo(
     () => buildHistory(performances, sets),
     [performances, sets],
@@ -48,10 +54,12 @@ export function ExerciseHistory({ exercise, onClose }: ExerciseHistoryProps) {
   }, [records]);
   const [parameter, setParameter] = useState<ChartParameterType>("oneRepMax");
 
+  if (!exercise) return null;
+
   return (
     <div className={s.root}>
       <div className={s.toolbar}>
-        <button className={s.toolbarButton} onClick={onClose}>
+        <button className={s.toolbarButton} onClick={() => navigate(-1)}>
           <MdArrowBack />
         </button>
         <div className={s.pageTitle}>История упражнения</div>
