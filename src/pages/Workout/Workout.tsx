@@ -16,14 +16,13 @@ import {
   Performance,
   ChooseExercise,
   CompleteWorkoutModal,
-  type CompleteWorkoutData,
   ActiveTimer,
 } from "./components";
 import {
   PageModal,
-  ModalDialog,
   useStore,
   BottomSheet,
+  useModalStack,
 } from "../../components";
 import {
   completeWorkout,
@@ -37,6 +36,7 @@ export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
   const store = useStore();
   const navigate = useNavigate();
+  const { pushModal } = useModalStack();
   const workout = useQueryWorkoutById(store, workoutId);
   const timer = useTimer(
     workout?.startedAt ?? null,
@@ -47,9 +47,6 @@ export function Workout() {
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
   const [isAddPerformanceOpen, setAddPerformanceOpen] = useState(false);
-  const [completeModal, setCompleteModal] = useState<"warning" | "form" | null>(
-    null,
-  );
   const [isPeriodizationOpen, setPeriodizationOpen] = useState(false);
 
   const modeOptions = {
@@ -91,16 +88,14 @@ export function Workout() {
     setAddPerformanceOpen(false);
   };
 
-  const completeBeginHandler = () => {
-    const completed = sets.every((s) => s.completed);
-    setCompleteModal(completed ? "form" : "warning");
-  };
-
-  const completeEndHandler = (data: CompleteWorkoutData) => {
+  const completeHandler = async () => {
     if (!workout) return;
-    completeWorkout(store, workout, data.name);
-    setCompleteModal(null);
-    navigate("/", { replace: true });
+    const partial = sets.some((s) => !s.completed);
+    const result = await pushModal(CompleteWorkoutModal, { workout, partial });
+    if (result) {
+      completeWorkout(store, workout, result.name);
+      navigate("/", { replace: true });
+    }
   };
 
   const setModeHandler = (mode: PeriodizationOrNone) => {
@@ -130,7 +125,7 @@ export function Workout() {
           <MdArrowBack />
         </button>
         <div className={s.pageTitle}>Тренировка</div>
-        <button className={s.finishButton} onClick={completeBeginHandler}>
+        <button className={s.finishButton} onClick={completeHandler}>
           {workout?.completedAt ? "Обновить" : "Закончить"}
         </button>
       </div>
@@ -178,25 +173,6 @@ export function Workout() {
           onSubmit={addPerformanceHandler}
         />
       </PageModal>
-      <ModalDialog
-        title="Подтверждение"
-        width="300px"
-        cancelText="Отмена"
-        submitText="Завершить"
-        isOpen={completeModal === "warning"}
-        onClose={() => setCompleteModal(null)}
-        onSubmit={() => setCompleteModal("form")}
-      >
-        Не все сеты выполнены. Вы точно ходите завершить тренировку?
-      </ModalDialog>
-      {workout && (
-        <CompleteWorkoutModal
-          workout={workout}
-          isOpen={completeModal === "form"}
-          onClose={() => setCompleteModal(null)}
-          onSubmit={completeEndHandler}
-        />
-      )}
       <BottomSheet
         isOpen={isPeriodizationOpen}
         onClose={() => setPeriodizationOpen(false)}

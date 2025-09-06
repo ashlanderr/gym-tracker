@@ -9,7 +9,6 @@ export interface ModalDialogProps {
   submitText?: string;
   submitDisabled?: boolean;
   submitColor?: string;
-  isOpen: boolean;
   children?: ReactNode;
   onClose?: () => void;
   onSubmit?: () => void;
