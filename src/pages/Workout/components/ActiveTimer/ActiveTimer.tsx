@@ -1,18 +1,17 @@
 import { BottomSheet } from "../../../../components";
 import { buildTimeParts } from "../../../hooks.ts";
-import { useAtom } from "jotai";
-import { TIMER_DEADLINE_ATOM } from "./constants.ts";
 import s from "./styles.module.scss";
 import { clsx } from "clsx";
 import { useEffect, useState } from "react";
+import { useActiveTimer } from "./hooks.ts";
 
 export function ActiveTimer() {
-  const [deadline, setDeadline] = useAtom(TIMER_DEADLINE_ATOM);
+  const { deadline, startTimer } = useActiveTimer();
   const [time, setTime] = useState(0);
 
   const changeHandler = (delta: number) => {
     if (!deadline) return;
-    setDeadline(deadline + delta * 1000);
+    startTimer((deadline - Date.now()) / 1000 + delta);
   };
 
   useEffect(() => {
@@ -50,7 +49,7 @@ export function ActiveTimer() {
         </button>
         <button
           className={clsx(s.button, s.skipButton)}
-          onClick={() => setDeadline(null)}
+          onClick={() => startTimer(undefined)}
         >
           Пропустить
         </button>

@@ -3,12 +3,13 @@ import { AUDIO_ELEMENT, TIMER_DEADLINE_ATOM } from "./constants.ts";
 import { default as SoundUrl } from "./sound.mp3";
 
 export function useActiveTimer() {
-  const [, setDeadline] = useAtom(TIMER_DEADLINE_ATOM);
+  const [deadline, setDeadline] = useAtom(TIMER_DEADLINE_ATOM);
   return {
+    deadline,
     startTimer: (timeSeconds: number | undefined) => {
-      if (timeSeconds) {
+      if (timeSeconds && timeSeconds > 0) {
         setDeadline(Date.now() + timeSeconds * 1000);
-        startAudio(AUDIO_ELEMENT, SoundUrl, timeSeconds);
+        startAudio(timeSeconds);
       } else {
         setDeadline(null);
         AUDIO_ELEMENT.pause();
@@ -17,15 +18,11 @@ export function useActiveTimer() {
   };
 }
 
-async function startAudio(
-  audioEl: HTMLAudioElement,
-  url: string,
-  delaySec: number,
-) {
+async function startAudio(delaySec: number) {
   const ctx = new AudioContext();
   await ctx.resume();
 
-  const arr = await fetch(url).then((r) => r.arrayBuffer());
+  const arr = await fetch(SoundUrl).then((r) => r.arrayBuffer());
   const buffer = await ctx.decodeAudioData(arr);
 
   const src = ctx.createBufferSource();
@@ -38,20 +35,20 @@ async function startAudio(
   const dest = ctx.createMediaStreamDestination();
   src.connect(gain).connect(dest);
 
-  audioEl.srcObject = dest.stream;
+  AUDIO_ELEMENT.srcObject = dest.stream;
 
   const startAt = ctx.currentTime + delaySec;
   src.start(startAt);
 
   try {
-    await audioEl.play();
+    await AUDIO_ELEMENT.play();
   } catch (e) {
     console.warn("Failed to start audio", e);
   }
 
   src.addEventListener("ended", () => {
-    if (audioEl.srcObject === dest.stream) {
-      audioEl.srcObject = null;
+    if (AUDIO_ELEMENT.srcObject === dest.stream) {
+      AUDIO_ELEMENT.srcObject = null;
     }
     ctx.close();
   });

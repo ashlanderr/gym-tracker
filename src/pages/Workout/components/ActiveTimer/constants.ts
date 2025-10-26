@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { default as SoundUrl } from "./sound_with_silence.mp3";
+import { default as SoundUrl } from "./sound.mp3";
 
 export const TIMER_DEADLINE_ATOM = atom<number | null>(null);
 
