@@ -29,7 +29,7 @@ import {
   volumeToOneRepMax,
 } from "../../../../domain";
 import { WeightsVisualizer } from "../WeightsVisualizer";
-import { useActiveTimer } from "../ActiveTimer";
+import { useActiveTimer, useTimerAudio } from "../ActiveTimer";
 import { formatRepRange } from "./utils.ts";
 
 export function SetRow({
@@ -46,6 +46,7 @@ export function SetRow({
   const [weightInput, setWeightInput] = useState<string | null>(null);
   const [repsInput, setRepsInput] = useState<string | null>(null);
   const records = useQueryRecordsBySet(store, set.id);
+  const timerAudio = useTimerAudio(performance.timer);
   const { startTimer } = useActiveTimer();
 
   const updatedSet = useRef(set);
@@ -186,7 +187,7 @@ export function SetRow({
       if (set.completed) {
         updateSet(store, set);
         addRecords(set);
-        startTimer(performance.timer);
+        startTimer(performance.timer, timerAudio);
       }
     } else {
       const set = updateSetInner((set) => ({ ...set, completed: false }));
