@@ -50,7 +50,9 @@ async function startAudio(
   }
 
   src.addEventListener("ended", () => {
-    audioEl.srcObject = null;
+    if (audioEl.srcObject === dest.stream) {
+      audioEl.srcObject = null;
+    }
     ctx.close();
   });
 }
