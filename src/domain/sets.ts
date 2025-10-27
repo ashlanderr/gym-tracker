@@ -7,6 +7,7 @@ import {
   type SetType,
   querySetsByPerformance,
 } from "../db";
+import { updateRecords } from "./records.ts";
 
 const DUPLICATE_SET_TYPE_MAPPING: Record<SetType, SetType> = {
   ["warm-up"]: "warm-up",
@@ -38,7 +39,7 @@ export function addNextSet(store: Store, performance: Performance): Set {
   const sets = querySetsByPerformance(store, performance.id);
   const nextOrder = Math.max(-1, ...sets.map((s) => s.order)) + 1;
 
-  return addSet(store, {
+  const nextSet = addSet(store, {
     id: generateId(),
     user: performance.user,
     workout: performance.workout,
@@ -50,4 +51,8 @@ export function addNextSet(store: Store, performance: Performance): Set {
     reps: undefined,
     completed: false,
   });
+
+  updateRecords(store, nextSet);
+
+  return nextSet;
 }

@@ -1,6 +1,7 @@
 import {
   collection,
   deleteEntity,
+  getEntity,
   insertEntity,
   maxBy,
   queryCollection,
@@ -30,6 +31,13 @@ export interface PerformanceWeights {
   steps?: number | number[];
   additional?: number;
   count?: number;
+}
+
+export function queryPerformanceById(
+  store: Store,
+  id: string,
+): Performance | null {
+  return getEntity(collection(store.personal, "performances"), id);
 }
 
 export function queryPerformancesByWorkout(

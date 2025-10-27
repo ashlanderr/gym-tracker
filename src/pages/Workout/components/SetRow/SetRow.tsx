@@ -1,4 +1,4 @@
-import type { NewRecordData, SetRowProps } from "./types.ts";
+import type { SetRowProps } from "./types.ts";
 import s from "./styles.module.scss";
 import { MdArrowUpward, MdCheck, MdDelete } from "react-icons/md";
 import { BottomSheet, useStore } from "../../../../components";
@@ -8,25 +8,17 @@ import {
   type SetType,
   updateSet,
   type Set,
-  type CompletedSet,
-  addRecord,
-  deleteRecord,
-  queryPreviousRecordByExercise,
   useQueryRecordsBySet,
-  generateId,
-  queryLatestMeasurement,
-  compareRecords,
 } from "../../../../db";
 import { clsx } from "clsx";
 import { RECORDS_TRANSLATION } from "../../../constants.ts";
 import { PiMedalFill } from "react-icons/pi";
 import {
-  addSelfWeight,
   formatRecordValue,
   kgToUnits,
   snapWeightKg,
   unitsToKg,
-  volumeToOneRepMax,
+  updateRecords,
 } from "../../../../domain";
 import { WeightsVisualizer } from "../WeightsVisualizer";
 import { useActiveTimer } from "../ActiveTimer";
@@ -82,8 +74,8 @@ export function SetRow({
   };
 
   const removeHandler = async () => {
-    records.forEach((r) => deleteRecord(store, r));
     deleteSet(store, set);
+    updateRecords(store, set);
     setActionsOpen(false);
   };
 
@@ -119,59 +111,6 @@ export function SetRow({
     updateSet(store, set);
   };
 
-  const addRecords = (set: CompletedSet) => {
-    if (!exercise) return;
-
-    const measurement = queryLatestMeasurement(store, performance.startedAt);
-    const selfWeight = measurement?.weight;
-    const fullWeight = addSelfWeight(exercise.weight, selfWeight, set.weight);
-
-    const currentRecords: Array<NewRecordData> = [
-      {
-        type: "one_rep_max",
-        current: volumeToOneRepMax(set.weight, set.reps),
-        full: volumeToOneRepMax(fullWeight, set.reps),
-      },
-      {
-        type: "weight",
-        current: set.weight,
-        full: fullWeight,
-      },
-      {
-        type: "volume",
-        current: set.weight * set.reps,
-        full: fullWeight * set.reps,
-      },
-    ];
-
-    for (const currentRecord of currentRecords) {
-      const previousRecord = queryPreviousRecordByExercise(
-        store,
-        currentRecord.type,
-        set.exercise,
-        performance.startedAt,
-      );
-      const isNewRecord =
-        !previousRecord || compareRecords(currentRecord, previousRecord) > 0;
-
-      if (isNewRecord) {
-        addRecord(store, {
-          id: generateId(),
-          user: set.user,
-          workout: set.workout,
-          exercise: set.exercise,
-          performance: set.performance,
-          set: set.id,
-          createdAt: performance.startedAt,
-          type: currentRecord.type,
-          previous: previousRecord?.current,
-          current: currentRecord.current,
-          full: currentRecord.full,
-        });
-      }
-    }
-  };
-
   const completeHandler = async () => {
     if (!set.completed) {
       const set = updateSetInner((set) => {
@@ -185,13 +124,13 @@ export function SetRow({
       });
       if (set.completed) {
         updateSet(store, set);
-        addRecords(set);
+        updateRecords(store, set);
         startTimer(performance.timer);
       }
     } else {
       const set = updateSetInner((set) => ({ ...set, completed: false }));
       updateSet(store, set);
-      records.map((r) => deleteRecord(store, r));
+      updateRecords(store, set);
     }
   };
 
