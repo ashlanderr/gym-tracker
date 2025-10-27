@@ -73,7 +73,9 @@ function updateRecord(
     .filter((r) => r.type === type)
     .forEach((r) => deleteRecord(store, r));
 
-  const sets = querySetsByPerformance(store, performance.id).reverse();
+  const sets = querySetsByPerformance(store, performance.id)
+    .filter((s) => s.type !== "warm-up")
+    .reverse();
 
   const values: Array<RecordData | undefined> = sets.map((s) =>
     s.completed
