@@ -14,6 +14,7 @@ import {
   type RecordType,
   queryRecordsByPerformance,
   deleteRecord,
+  maxBy,
 } from "../db";
 import { addSelfWeight, volumeToOneRepMax } from "./weights";
 
@@ -73,22 +74,18 @@ function updateRecord(
     .filter((r) => r.type === type)
     .forEach((r) => deleteRecord(store, r));
 
-  const sets = querySetsByPerformance(store, performance.id)
-    .filter((s) => s.type !== "warm-up")
-    .reverse();
+  const sets = querySetsByPerformance(store, performance.id);
 
-  const values: Array<RecordData | undefined> = sets.map((s) =>
-    s.completed
-      ? {
-          set: s,
-          current: currentSelector(s),
-          full: fullSelector(s),
-        }
-      : undefined,
-  );
+  const values: Array<RecordData> = sets
+    .filter((s) => s.completed)
+    .map((s) => ({
+      set: s,
+      current: currentSelector(s),
+      full: fullSelector(s),
+    }));
 
-  const majorityValue = getMajorityValue(values, compareRecords);
-  if (!majorityValue) return;
+  const maxValue = maxBy(values, (a, b) => a.full - b.full);
+  if (!maxValue) return;
 
   const previousRecord = queryPreviousRecordByExercise(
     store,
@@ -97,8 +94,7 @@ function updateRecord(
     performance.startedAt,
   );
 
-  if (previousRecord && compareRecords(majorityValue, previousRecord) <= 0)
-    return;
+  if (previousRecord && compareRecords(maxValue, previousRecord) <= 0) return;
 
   addRecord(store, {
     id: generateId(),
@@ -106,33 +102,11 @@ function updateRecord(
     workout: performance.workout,
     exercise: performance.exercise,
     performance: performance.id,
-    set: majorityValue.set.id,
+    set: maxValue.set.id,
     createdAt: performance.startedAt,
     type: type,
     previous: previousRecord?.current,
-    current: majorityValue.current,
-    full: majorityValue.full,
+    current: maxValue.current,
+    full: maxValue.full,
   });
-}
-
-export function getMajorityValue<T>(
-  values: Array<T | undefined>,
-  compare: (a: T, b: T) => number,
-): T | undefined {
-  const sortedValues: T[] = values
-    .filter((v) => v !== undefined)
-    .sort((a, b) => compare(b, a));
-
-  const majority = Math.ceil(values.length / 2);
-  let majorityValue: T | undefined = undefined;
-
-  for (const value of sortedValues) {
-    const count = sortedValues.filter((v) => compare(v, value) >= 0).length;
-    if (count >= majority) {
-      majorityValue = value;
-      break;
-    }
-  }
-
-  return majorityValue;
 }
