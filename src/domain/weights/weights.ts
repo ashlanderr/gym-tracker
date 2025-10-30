@@ -66,7 +66,7 @@ export function oneRepMaxToReps(oneRepMax: number, weight: number): number {
 }
 
 export function formatRecordValue(value: number) {
-  return (Math.round(value * 100) / 100).toLocaleString();
+  return (Math.round(value * 100) / 100).toLocaleString() + " кг";
 }
 
 export function snapWeightKg(

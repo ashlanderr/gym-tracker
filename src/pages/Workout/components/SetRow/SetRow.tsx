@@ -1,6 +1,11 @@
 import type { SetRowProps } from "./types.ts";
 import s from "./styles.module.scss";
-import { MdArrowUpward, MdCheck, MdDelete } from "react-icons/md";
+import {
+  MdArrowDownward,
+  MdArrowUpward,
+  MdCheck,
+  MdDelete,
+} from "react-icons/md";
 import { BottomSheet, useStore } from "../../../../components";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -265,12 +270,22 @@ export function SetRow({
             <div className={s.sheetRecord} key={r.type}>
               <div className={s.recordType}>{RECORDS_TRANSLATION[r.type]}</div>
               <div className={s.recordValue}>
-                {formatRecordValue(r.current)} кг
+                {formatRecordValue(r.current)}
               </div>
               {r.previous !== undefined && (
-                <div className={s.recordIncrement}>
-                  <MdArrowUpward /> {formatRecordValue(r.current - r.previous)}{" "}
-                  кг
+                <div
+                  className={clsx({
+                    [s.recordDelta]: true,
+                    [s.increment]: r.current > r.previous,
+                    [s.decrement]: r.current < r.previous,
+                  })}
+                >
+                  {r.current > r.previous ? (
+                    <MdArrowUpward />
+                  ) : (
+                    <MdArrowDownward />
+                  )}
+                  {formatRecordValue(Math.abs(r.current - r.previous))}
                 </div>
               )}
             </div>

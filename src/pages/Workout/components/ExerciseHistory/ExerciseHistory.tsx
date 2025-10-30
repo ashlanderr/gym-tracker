@@ -117,9 +117,7 @@ export function ExerciseHistory({ exercise, onClose }: ExerciseHistoryProps) {
           {latestRecords.map((r) => (
             <div className={s.record} key={r.name}>
               <div className={s.recordName}>{r.name}</div>
-              <div className={s.recordValue}>
-                {formatRecordValue(r.value)} кг
-              </div>
+              <div className={s.recordValue}>{formatRecordValue(r.value)}</div>
             </div>
           ))}
         </div>

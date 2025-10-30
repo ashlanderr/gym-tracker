@@ -39,7 +39,7 @@ td.setCompletedValue {
 
 .sheetRecord {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   padding: 16px;
   background: transparent;
@@ -55,16 +55,23 @@ td.setCompletedValue {
 .recordValue {
   margin-left: auto;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   white-space: nowrap;
   color: #BBB;
 }
 
-.recordIncrement {
+.recordDelta {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   white-space: nowrap;
-  color: #0F0;
+
+  &.increment {
+    color: #0F0;
+  }
+
+  &.decrement {
+    color: #F84;
+  }
 
   svg {
     margin-bottom: 4px;
