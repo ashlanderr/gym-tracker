@@ -7,7 +7,7 @@ import {
   type Exercise,
   updateWorkout,
 } from "../../db";
-import type { PeriodizationOrNone, WorkoutParams } from "./types.ts";
+import type { WorkoutParams } from "./types.ts";
 import { usePageParams } from "../hooks.ts";
 import { useState } from "react";
 import { useNavigate } from "react-router";
@@ -17,13 +17,11 @@ import {
   ChooseExercise,
   CompleteWorkoutModal,
   ActiveTimer,
+  PeriodizationSelector,
+  type PeriodizationOrNone,
+  MODE_OPTIONS,
 } from "./components";
-import {
-  PageModal,
-  useStore,
-  BottomSheet,
-  useModalStack,
-} from "../../components";
+import { PageModal, useStore, useModalStack } from "../../components";
 import {
   completeWorkout,
   getCurrentPeriodization,
@@ -47,40 +45,10 @@ export function Workout() {
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
   const [isAddPerformanceOpen, setAddPerformanceOpen] = useState(false);
-  const [isPeriodizationOpen, setPeriodizationOpen] = useState(false);
-
-  const modeOptions = {
-    none: {
-      label: "-",
-      action: "Отключить",
-      description: "Тренировка без периодизации.",
-      className: s.noneMode,
-    },
-    light: {
-      label: "Легкий",
-      action: "Легкий",
-      description: "Сниженная нагрузка для восстановления и техники.",
-      className: s.lightMode,
-    },
-    medium: {
-      label: "Средний",
-      action: "Средний",
-      description: "Умеренная нагрузка для поддержания прогресса.",
-      className: s.mediumMode,
-    },
-    heavy: {
-      label: "Тяжелый",
-      action: "Тяжелый",
-      description: "Максимальная нагрузка для новых рекордов.",
-      className: s.hardMode,
-    },
-  };
 
   const currentMode: PeriodizationOrNone = workout?.periodization
     ? getCurrentPeriodization(workout.periodization)
     : "none";
-
-  // todo access rules
 
   const addPerformanceHandler = (exercise: Exercise) => {
     if (!workout) return;
@@ -98,20 +66,16 @@ export function Workout() {
     }
   };
 
-  const setModeHandler = (mode: PeriodizationOrNone) => {
+  const handleSelectPeriodization = async () => {
     if (!workout) return;
-    if (mode === "none") {
-      updateWorkout(store, {
-        ...workout,
-        periodization: undefined,
-      });
-    } else {
-      updateWorkout(store, {
-        ...workout,
-        periodization: buildPeriodization(mode),
-      });
-    }
-    setPeriodizationOpen(false);
+
+    const result = await pushModal(PeriodizationSelector, null);
+    if (!result) return;
+
+    updateWorkout(store, {
+      ...workout,
+      periodization: result !== "none" ? buildPeriodization(result) : undefined,
+    });
   };
 
   return (
@@ -146,12 +110,12 @@ export function Workout() {
             {completedSets.length} / {sets.length}
           </div>
         </div>
-        <div className={s.stat} onClick={() => setPeriodizationOpen(true)}>
+        <div className={s.stat} onClick={handleSelectPeriodization}>
           <div className={s.statName}>Режим</div>
           <div
-            className={clsx(s.statValue, modeOptions[currentMode].className)}
+            className={clsx(s.statValue, MODE_OPTIONS[currentMode].className)}
           >
-            {modeOptions[currentMode].label}
+            {MODE_OPTIONS[currentMode].label}
           </div>
         </div>
       </div>
@@ -173,26 +137,6 @@ export function Workout() {
           onSubmit={addPerformanceHandler}
         />
       </PageModal>
-      <BottomSheet
-        isOpen={isPeriodizationOpen}
-        onClose={() => setPeriodizationOpen(false)}
-      >
-        <div className={s.sheetHeader}>Режим тренировки</div>
-        <div className={s.sheetActions}>
-          {Object.entries(modeOptions).map(([mode, option]) => (
-            <button
-              key={mode}
-              className={clsx(s.modeAction, option.className)}
-              onClick={() => setModeHandler(mode as PeriodizationOrNone)}
-            >
-              <span className={clsx(s.modeLabel, option.className)}>
-                {option.action}
-              </span>
-              <span className={s.modeDescription}>{option.description}</span>
-            </button>
-          ))}
-        </div>
-      </BottomSheet>
     </div>
   );
 }
