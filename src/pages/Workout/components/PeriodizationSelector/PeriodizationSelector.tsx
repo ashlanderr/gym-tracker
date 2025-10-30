@@ -9,7 +9,7 @@ export function PeriodizationSelector({
   onSubmit,
 }: ModalProps<null, PeriodizationOrNone>) {
   return (
-    <BottomSheet isOpen={true} onClose={onCancel}>
+    <BottomSheet onClose={onCancel}>
       <div className={s.sheetHeader}>Режим тренировки</div>
       <div className={s.sheetActions}>
         {Object.entries(MODE_OPTIONS).map(([mode, option]) => (
