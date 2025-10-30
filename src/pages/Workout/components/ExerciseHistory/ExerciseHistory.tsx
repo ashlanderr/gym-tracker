@@ -7,7 +7,7 @@ import {
   useQueryPerformancesByExercise,
   useQueryRecordsByExercise,
   maxBy,
-  compareRecords,
+  compareRecordsByDate,
 } from "../../../../db";
 import { useStore } from "../../../../components";
 import { useMemo, useState } from "react";
@@ -40,7 +40,7 @@ export function ExerciseHistory({ exercise, onClose }: ExerciseHistoryProps) {
       .map(([recordType, recordName]) => {
         const record = maxBy(
           records.filter((r) => r.type === recordType),
-          compareRecords,
+          compareRecordsByDate,
         );
         return { name: recordName, value: record?.current ?? 0 };
       })

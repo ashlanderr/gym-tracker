@@ -54,6 +54,12 @@ export function Performance({ performance }: PerformanceProps) {
   const sets = useQuerySetsByPerformance(store, performance.id);
   const measurement = useQueryLatestMeasurement(store, performance.startedAt);
   const workout = useQueryWorkoutById(store, performance.workout);
+  const trainingMax = useQueryPreviousRecordByExercise(
+    store,
+    "training_max",
+    performance.exercise,
+    performance.startedAt - 1,
+  );
   const oneRepMax = useQueryPreviousRecordByExercise(
     store,
     "one_rep_max",
@@ -160,7 +166,7 @@ export function Performance({ performance }: PerformanceProps) {
             exercise,
             measurement,
             workout,
-            oneRepMax,
+            oneRepMax: trainingMax ?? oneRepMax,
           })}
         </tbody>
       </table>

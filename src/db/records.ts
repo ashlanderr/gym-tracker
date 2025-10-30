@@ -9,7 +9,7 @@ import {
 import type { Store } from "./doc.ts";
 import { useMemo } from "react";
 
-export type RecordType = "one_rep_max" | "weight" | "volume";
+export type RecordType = "one_rep_max" | "weight" | "volume" | "training_max";
 
 export interface Record {
   id: string;
@@ -28,6 +28,7 @@ export interface Record {
 export interface RecordNumbers {
   current: number;
   full: number | undefined;
+  createdAt: number;
 }
 
 export function queryRecordsByWorkout(store: Store, workout: string): Record[] {
@@ -82,7 +83,7 @@ export function queryPreviousRecordByExercise(
       createdAt: { le: createdAt },
     },
   );
-  return maxBy(records, compareRecords);
+  return maxBy(records, compareRecordsByDate);
 }
 
 export function useQueryPreviousRecordByExercise(
@@ -100,7 +101,7 @@ export function useQueryPreviousRecordByExercise(
     },
     deps: [type, exercise, createdAt],
   });
-  return useMemo(() => maxBy(records, compareRecords), [records]);
+  return useMemo(() => maxBy(records, compareRecordsByDate), [records]);
 }
 
 export function addRecord(store: Store, entity: Record) {
@@ -111,10 +112,22 @@ export function deleteRecord(store: Store, entity: Record) {
   deleteEntity(collection(store.personal, "records"), entity);
 }
 
-export function compareRecords(a: RecordNumbers, b: RecordNumbers): number {
+export function compareRecordsByValue(
+  a: RecordNumbers,
+  b: RecordNumbers,
+): number {
   if (a.full !== undefined && b.full !== undefined) {
     return a.full - b.full;
   }
 
   return a.current - b.current;
+}
+
+export function compareRecordsByDate(
+  a: RecordNumbers,
+  b: RecordNumbers,
+): number {
+  return a.createdAt !== b.createdAt
+    ? a.createdAt - b.createdAt
+    : compareRecordsByValue(a, b);
 }
