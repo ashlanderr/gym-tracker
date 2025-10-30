@@ -10,12 +10,12 @@ import { ConnectionContext, StoreContext } from "./constants.ts";
 
 export function StoreProvider({ children }: PropsWithChildren) {
   const { user } = useAuth();
-  const uid = useRef<string | null>(null);
+  const uid = useRef<string | undefined>(undefined);
   const store = useRef<Store | null>(null);
   const [status, setStatus] = useState<ConnectionStatus>("disconnected");
 
   if (uid.current !== user?.uid) {
-    uid.current = user?.uid ?? null;
+    uid.current = user?.uid;
     if (store.current) {
       destroyStore(store.current);
       store.current = null;
