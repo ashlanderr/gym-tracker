@@ -44,6 +44,7 @@ import {
   deletePerformance,
   replacePerformance,
   buildRecommendations,
+  getCurrentPeriodization,
 } from "../../../../domain";
 import { WeightsSelector } from "../WeightsSelector";
 import { TbWeight } from "react-icons/tb";
@@ -54,12 +55,17 @@ export function Performance({ performance }: PerformanceProps) {
   const sets = useQuerySetsByPerformance(store, performance.id);
   const measurement = useQueryLatestMeasurement(store, performance.startedAt);
   const workout = useQueryWorkoutById(store, performance.workout);
+
+  const periodization =
+    workout?.periodization && getCurrentPeriodization(workout.periodization);
+
   const trainingMax = useQueryPreviousRecordByExercise(
     store,
     "training_max",
     performance.exercise,
     performance.startedAt - 1,
   );
+
   const oneRepMax = useQueryPreviousRecordByExercise(
     store,
     "one_rep_max",
@@ -71,7 +77,9 @@ export function Performance({ performance }: PerformanceProps) {
     store,
     performance.exercise,
     performance.startedAt,
+    periodization,
   );
+
   const prevSets = useQuerySetsByPerformance(
     store,
     prevPerformance?.id ?? "",

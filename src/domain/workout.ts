@@ -13,9 +13,13 @@ import {
   updatePeriodization,
   deleteRecord,
   deleteWorkout,
+  updatePerformance,
 } from "../db";
 import { addPerformance } from "./performances.ts";
-import { computeNextPeriodization } from "./recommendations";
+import {
+  computeNextPeriodization,
+  getCurrentPeriodization,
+} from "./recommendations";
 
 export function addWorkout(store: Store, user: string): Workout {
   const periodization = queryPeriodizationByUser(store, user);
@@ -68,6 +72,9 @@ export function completeWorkout(
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((a, b) => a + b.weight * b.reps, 0);
 
+  const currentPeriodization =
+    workout.periodization && getCurrentPeriodization(workout.periodization);
+
   for (const performance of performances) {
     const performanceSets = sets.filter(
       (s) => s.performance === performance.id,
@@ -84,7 +91,13 @@ export function completeWorkout(
 
     if (emptyPerformance) {
       deletePerformance(store, performance);
+      continue;
     }
+
+    updatePerformance(store, {
+      ...performance,
+      periodization: currentPeriodization,
+    });
   }
 
   if (periodization && workout.completedAt === null) {
