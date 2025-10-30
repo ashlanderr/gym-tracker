@@ -27,19 +27,19 @@ export const MODE_PARAMS = {
   light: {
     minReps: 10,
     maxReps: 12,
-    defaultPercent: 0.65,
-    maxPercent: 0.69,
+    defaultPercent: 0.652,
+    maxPercent: 0.659,
   },
   medium: {
     minReps: 6,
     maxReps: 8,
     defaultPercent: 0.75,
-    maxPercent: 0.79,
+    maxPercent: 0.759,
   },
   heavy: {
     minReps: 4,
     maxReps: 6,
-    defaultPercent: 0.85,
-    maxPercent: 0.89,
+    defaultPercent: 0.857,
+    maxPercent: 0.895,
   },
 };

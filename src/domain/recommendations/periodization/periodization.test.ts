@@ -152,7 +152,7 @@ describe("medium weights", () => {
       periodization: light,
       weights: plates,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 45, reps: { min: 10, max: 12 } }],
+      recs: [{ type: "working", weight: 45, reps: { min: 11, max: 13 } }],
     });
   });
 });
@@ -194,7 +194,7 @@ describe("small weights", () => {
       periodization: light,
       weights: machine,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 5, reps: { min: 32, max: 36 } }],
+      recs: [{ type: "working", weight: 5, reps: { min: 33, max: 36 } }],
     });
   });
 });
@@ -238,13 +238,25 @@ describe("positive weights", () => {
 
   test("light mode", () => {
     testRecommendations({
+      oneRepMax: 28,
+      selfWeight: 80,
+      exercise: positive,
+      periodization: light,
+      weights: plates,
+      curr: [{ type: "working", weight: _, reps: _ }],
+      recs: [{ type: "working", weight: 0, reps: { min: 10, max: 12 } }],
+    });
+  });
+
+  test("light mode, no available weights", () => {
+    testRecommendations({
       oneRepMax: 24,
       selfWeight: 80,
       exercise: positive,
       periodization: light,
       weights: plates,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 0, reps: { min: 9, max: 11 } }],
+      recs: [],
     });
   });
 });
