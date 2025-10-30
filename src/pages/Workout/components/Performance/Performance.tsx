@@ -159,7 +159,6 @@ export function Performance({ performance }: PerformanceProps) {
         </thead>
         <tbody>
           {buildSets({
-            prevPerformance,
             prevSets,
             sets,
             performance,
@@ -251,7 +250,6 @@ export function Performance({ performance }: PerformanceProps) {
 }
 
 function buildSets({
-  prevPerformance,
   prevSets,
   sets,
   performance,
@@ -260,7 +258,6 @@ function buildSets({
   workout,
   oneRepMax,
 }: {
-  prevPerformance: Performance | null;
   prevSets: CompletedSet[];
   sets: Set[];
   performance: Performance;
@@ -276,12 +273,10 @@ function buildSets({
     (s) => s.type !== "warm-up" && s.completed,
   );
   const recommendations = buildRecommendations({
-    prevSets,
     currentSets: sets,
     performanceWeights: performance.weights,
     exerciseWeights: exercise?.weight,
     selfWeight: measurement?.weight,
-    progression: prevPerformance?.progression,
     periodization: workout?.periodization,
     oneRepMax: oneRepMax ?? undefined,
   });

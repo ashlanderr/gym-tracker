@@ -39,7 +39,6 @@ export function addPerformance(
     startedAt: workout.startedAt,
     weights: prevPerformance?.weights,
     timer: prevPerformance?.timer,
-    progression: prevPerformance?.progression,
   });
 
   if (prevSets) {

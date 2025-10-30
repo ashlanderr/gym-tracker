@@ -68,7 +68,6 @@ function testRecommendations({
   recs,
   selfWeight,
   exercise,
-  progression,
   periodization,
   oneRepMax,
 }: {
@@ -77,21 +76,18 @@ function testRecommendations({
   recs: RecSetData[];
   selfWeight?: number;
   exercise?: ExerciseWeight;
-  progression?: number;
   periodization: PeriodizationData;
   oneRepMax: number | RecordNumbers;
 }) {
   const rec = buildRecommendations({
-    prevSets: [],
     currentSets: curr,
     performanceWeights: weights,
     exerciseWeights: exercise,
     selfWeight,
-    progression,
     periodization,
     oneRepMax:
       typeof oneRepMax === "number"
-        ? { current: oneRepMax, full: undefined }
+        ? { current: oneRepMax, full: undefined, createdAt: 0 }
         : oneRepMax,
   });
   expect(rec).toEqual(recs);
@@ -218,7 +214,7 @@ describe("positive weights", () => {
 
   test("heavy mode, full weight", () => {
     testRecommendations({
-      oneRepMax: { current: 25.333, full: 126.7 },
+      oneRepMax: { current: 25.333, full: 126.7, createdAt: 0 },
       selfWeight: 80,
       exercise: positive,
       periodization: heavy,

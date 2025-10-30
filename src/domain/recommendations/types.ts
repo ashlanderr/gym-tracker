@@ -6,12 +6,6 @@ import type {
   RecordNumbers,
 } from "../../db";
 
-export interface WorkingVolume {
-  weight: number;
-  reps: number;
-  oneRepMax: number;
-}
-
 export interface CompletedSetData {
   type: SetType;
   weight: number;
@@ -36,12 +30,10 @@ export interface RecSetData {
 }
 
 export interface RecommendationParams {
-  prevSets: CompletedSetData[];
   currentSets: DraftSetData[];
   exerciseWeights?: ExerciseWeight;
   performanceWeights?: PerformanceWeights;
   selfWeight?: number;
   oneRepMax?: RecordNumbers;
-  progression?: number;
   periodization?: PeriodizationData;
 }

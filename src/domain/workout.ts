@@ -10,21 +10,12 @@ import {
   queryRecordsByWorkout,
   deleteSet,
   querySetsByWorkout,
-  type Performance as PerformanceEntity,
-  queryLatestMeasurement,
-  queryExerciseById,
-  querySetsByPerformance,
-  queryPreviousPerformance,
-  updatePerformance,
   updatePeriodization,
   deleteRecord,
   deleteWorkout,
 } from "../db";
 import { addPerformance } from "./performances.ts";
-import {
-  computeNextPeriodization,
-  computeNextProgression,
-} from "./recommendations";
+import { computeNextPeriodization } from "./recommendations";
 
 export function addWorkout(store: Store, user: string): Workout {
   const periodization = queryPeriodizationByUser(store, user);
@@ -93,10 +84,7 @@ export function completeWorkout(
 
     if (emptyPerformance) {
       deletePerformance(store, performance);
-      continue;
     }
-
-    updateProgression(store, performance);
   }
 
   if (periodization && workout.completedAt === null) {
@@ -116,40 +104,6 @@ export function completeWorkout(
   });
 
   return workout;
-}
-
-function updateProgression(store: Store, performance: PerformanceEntity) {
-  const measurement = queryLatestMeasurement(store, performance.startedAt);
-  const exercise = queryExerciseById(store, performance.exercise);
-
-  const currentSets = querySetsByPerformance(store, performance.id).filter(
-    (s) => s.completed,
-  );
-
-  const prevPerformance = queryPreviousPerformance(
-    store,
-    performance.exercise,
-    performance.startedAt,
-  );
-
-  const prevSets = querySetsByPerformance(
-    store,
-    prevPerformance?.id ?? "",
-  ).filter((s) => s.completed);
-
-  const progression = computeNextProgression({
-    performanceWeights: performance.weights,
-    selfWeight: measurement?.weight,
-    exerciseWeights: exercise?.weight,
-    progression: prevPerformance?.progression,
-    prevSets,
-    currentSets,
-  });
-
-  updatePerformance(store, {
-    ...performance,
-    progression,
-  });
 }
 
 export function cancelWorkout(store: Store, workout: Workout) {
