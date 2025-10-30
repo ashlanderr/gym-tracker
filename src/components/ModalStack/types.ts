@@ -6,8 +6,8 @@ export interface ModalStackProps {
 
 export interface ModalProps<D, R> {
   data: D;
-  onCancel: () => void;
-  onSubmit: (result: R) => void;
+  onCancel: () => Promise<void> | void;
+  onSubmit: (result: R) => Promise<void> | void;
 }
 
 export interface ModalStackMethods {

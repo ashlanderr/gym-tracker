@@ -1,5 +1,15 @@
-import type { ModalStackMethods, ModalStackProps } from "./types.ts";
-import { type ReactNode, useMemo, useRef, useState } from "react";
+import type {
+  ModalProps,
+  ModalStackMethods,
+  ModalStackProps,
+} from "./types.ts";
+import {
+  type FunctionComponent,
+  type ReactNode,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useLocation, useNavigate } from "react-router";
 import { generateId } from "../../db";
 import { ModalStackContext } from "./constants.ts";
@@ -7,7 +17,7 @@ import { createPortal } from "react-dom";
 
 export function ModalStack({ children }: ModalStackProps) {
   const [stack, setStack] = useState<ReactNode[]>([]);
-  const navigate = useNavigate();
+  const doNavigate = useNavigate();
   const location = useLocation();
 
   const locationRef = useRef(location);
@@ -15,15 +25,20 @@ export function ModalStack({ children }: ModalStackProps) {
 
   const methods = useMemo<ModalStackMethods>(
     () => ({
-      pushModal: (Modal, data) => {
+      pushModal: <D, R>(
+        Modal: FunctionComponent<ModalProps<D, R>>,
+        data: D,
+      ) => {
         const id = generateId();
-        navigate(locationRef.current, { state: id });
+        let result: R | undefined = undefined;
 
-        return new Promise((resolve) => {
+        doNavigate(locationRef.current, { state: id });
+
+        const promise = new Promise<R | undefined>((resolve) => {
           const listener = () => {
             window.removeEventListener("popstate", listener);
             setStack((stack) => stack.slice(0, stack.length - 1));
-            resolve(undefined);
+            resolve(result);
           };
 
           window.addEventListener("popstate", listener);
@@ -33,24 +48,23 @@ export function ModalStack({ children }: ModalStackProps) {
             <Modal
               key={id}
               data={data}
-              onCancel={() => {
-                window.removeEventListener("popstate", listener);
-                setStack((stack) => stack.slice(0, stack.length - 1));
-                navigate(-1);
-                resolve(undefined);
+              onCancel={async () => {
+                doNavigate(-1);
+                await promise;
               }}
-              onSubmit={(result) => {
-                window.removeEventListener("popstate", listener);
-                setStack((stack) => stack.slice(0, stack.length - 1));
-                navigate(-1);
-                resolve(result);
+              onSubmit={async (r) => {
+                doNavigate(-1);
+                result = r;
+                await promise;
               }}
             />,
           ]);
         });
+
+        return promise;
       },
     }),
-    [navigate],
+    [doNavigate],
   );
 
   return (
