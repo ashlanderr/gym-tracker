@@ -4,13 +4,8 @@ import type {
   ExerciseWeight,
   PeriodizationData,
   RecordNumbers,
+  ExerciseRepRange,
 } from "../../db";
-
-export interface CompletedSetData {
-  type: SetType;
-  weight: number;
-  reps: number;
-}
 
 export interface DraftSetData {
   type: SetType;
@@ -32,6 +27,7 @@ export interface RecSetData {
 export interface RecommendationParams {
   currentSets: DraftSetData[];
   exerciseWeights?: ExerciseWeight;
+  exerciseReps?: ExerciseRepRange;
   performanceWeights?: PerformanceWeights;
   selfWeight?: number;
   oneRepMax?: RecordNumbers;

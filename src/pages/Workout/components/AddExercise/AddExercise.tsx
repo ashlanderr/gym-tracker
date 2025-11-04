@@ -10,10 +10,13 @@ import {
   type MuscleType,
   updateExercise,
   generateId,
+  DEFAULT_EXERCISE_REPS,
+  type ExerciseRepRange,
 } from "../../../../db";
 import {
   EQUIPMENT_TRANSLATION,
   EXERCISE_WEIGHT_TRANSLATION,
+  EXERCISES_REPS_TRANSLATION,
   MUSCLES_TRANSLATION,
 } from "../../../constants.ts";
 import { clsx } from "clsx";
@@ -32,6 +35,9 @@ export function AddExercise({
   );
   const [weight, setWeight] = useState(
     () => exercise?.weight ?? DEFAULT_EXERCISE_WEIGHT,
+  );
+  const [reps, setReps] = useState(
+    () => exercise?.reps ?? DEFAULT_EXERCISE_REPS,
   );
   const [mainMuscle, setMainMuscle] = useState(
     () => exercise?.muscles?.[0] ?? null,
@@ -55,6 +61,13 @@ export function AddExercise({
   const weights = Object.entries(EXERCISE_WEIGHT_TRANSLATION).map(
     ([key, label]) => ({
       key: key as ExerciseWeight["type"],
+      label,
+    }),
+  );
+
+  const repsOptions = Object.entries(EXERCISES_REPS_TRANSLATION).map(
+    ([key, label]) => ({
+      key: key as ExerciseRepRange,
       label,
     }),
   );
@@ -103,6 +116,7 @@ export function AddExercise({
         muscles: [mainMuscle, ...secondaryMuscles],
         equipment,
         weight,
+        reps,
       };
       updateExercise(store, newExercise);
       onSubmit(newExercise);
@@ -113,6 +127,7 @@ export function AddExercise({
         muscles: [mainMuscle, ...secondaryMuscles],
         equipment,
         weight,
+        reps,
       });
       onSubmit(newExercise);
     }
@@ -183,6 +198,18 @@ export function AddExercise({
             </div>
           </>
         )}
+        <label className={s.label}>Диапазон повторений</label>
+        <div className={s.chips}>
+          {repsOptions.map((w) => (
+            <button
+              className={clsx(s.chip, reps === w.key && s.selected)}
+              key={w.key}
+              onClick={() => setReps(w.key)}
+            >
+              {w.label}
+            </button>
+          ))}
+        </div>
         <label className={s.label}>Основная группа мышц</label>
         <div className={s.chips}>
           {muscles.map((muscle) => (

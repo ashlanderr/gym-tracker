@@ -104,20 +104,27 @@ function computeFullOneRepMax(
 function computeWorkingSet(
   params: RecommendationParams,
 ): RecSetData | undefined {
-  const { periodization, performanceWeights, exerciseWeights, selfWeight } =
-    params;
+  const {
+    periodization,
+    performanceWeights,
+    exerciseWeights,
+    selfWeight,
+    exerciseReps,
+  } = params;
   const fullRepMax = computeFullOneRepMax(params);
 
   if (
     periodization === undefined ||
     fullRepMax === undefined ||
-    performanceWeights === undefined
+    performanceWeights === undefined ||
+    exerciseReps === undefined
   ) {
     return undefined;
   }
 
   const mode = getCurrentPeriodization(periodization);
-  const { minReps, maxReps, defaultPercent, maxPercent } = MODE_PARAMS[mode];
+  const { minReps, maxReps, defaultPercent, maxPercent } =
+    MODE_PARAMS[exerciseReps][mode];
 
   const defaultFullWeight = fullRepMax * defaultPercent;
   const maxFullWeight = fullRepMax * maxPercent;

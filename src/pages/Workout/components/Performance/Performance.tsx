@@ -28,6 +28,7 @@ import {
   type Record,
   useQueryPreviousRecordByExercise,
   DEFAULT_WEIGHT_UNITS,
+  DEFAULT_EXERCISE_REPS,
 } from "../../../../db";
 import { BottomSheet, PageModal, useStore } from "../../../../components";
 import { ChooseExercise } from "../ChooseExercise";
@@ -284,6 +285,7 @@ function buildSets({
     currentSets: sets,
     performanceWeights: performance.weights,
     exerciseWeights: exercise?.weight,
+    exerciseReps: exercise?.reps ?? DEFAULT_EXERCISE_REPS,
     selfWeight: measurement?.weight,
     periodization: workout?.periodization,
     oneRepMax: oneRepMax ?? undefined,

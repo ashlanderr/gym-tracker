@@ -83,6 +83,7 @@ function testRecommendations({
     currentSets: curr,
     performanceWeights: weights,
     exerciseWeights: exercise,
+    exerciseReps: "low",
     selfWeight,
     periodization,
     oneRepMax:

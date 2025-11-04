@@ -24,12 +24,15 @@ export type EquipmentType =
   | "machine"
   | "plates";
 
+export type ExerciseRepRange = "low" | "medium" | "high";
+
 export interface Exercise {
   id: string;
   name: string;
   muscles: MuscleType[];
   equipment?: EquipmentType;
   weight?: ExerciseWeight;
+  reps?: ExerciseRepRange;
 }
 
 export type ExerciseWeight =
