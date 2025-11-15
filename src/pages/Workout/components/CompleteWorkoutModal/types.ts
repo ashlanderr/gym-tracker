@@ -1,12 +1,10 @@
 import type { Workout } from "../../../../db";
 
-export interface CompleteWorkoutData {
+export interface CompleteWorkoutResult {
   name: string;
 }
 
-export interface CompleteWorkoutModalProps {
+export interface CompleteWorkoutData {
   workout: Workout;
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (data: CompleteWorkoutData) => void;
+  partial: boolean;
 }

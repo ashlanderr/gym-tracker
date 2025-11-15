@@ -23,9 +23,9 @@ import { clsx } from "clsx";
 import { signOut, useUser } from "../../firebase/auth.ts";
 import {
   BottomSheet,
-  ModalDialog,
-  useStore,
   useConnectionStatus,
+  useModalStack,
+  useStore,
 } from "../../components";
 import { PiMedalFill } from "react-icons/pi";
 import {
@@ -34,19 +34,18 @@ import {
   duplicateWorkout,
   getCurrentPeriodization,
 } from "../../domain";
+import { CancelWorkoutModal } from "./components";
 
 export function Home() {
   const user = useUser();
   const store = useStore();
   const connection = useConnectionStatus();
   const navigate = useNavigate();
+  const { pushModal } = useModalStack();
   const workouts = useQueryCompletedWorkouts(store);
   const [activeWorkout] = useQueryActiveWorkouts(store);
   const [workoutActions, setWorkoutActions] = useState<Workout | null>(null);
   const activeTimer = useTimer(activeWorkout?.startedAt ?? null, null);
-  const [cancellingWorkout, setCancellingWorkout] = useState<Workout | null>(
-    null,
-  );
 
   const modeLabels: Record<PeriodizationMode, ReactNode> = {
     light: <span className={s.lightMode} />,
@@ -64,14 +63,11 @@ export function Home() {
     openWorkoutHandler(newWorkout);
   };
 
-  const cancelWorkoutBeginHandler = (workout: Workout) => {
-    setCancellingWorkout(workout);
-  };
-
-  const cancelWorkoutCompleteHandler = () => {
-    if (!cancellingWorkout) return;
-    cancelWorkout(store, cancellingWorkout);
-    setCancellingWorkout(null);
+  const cancelWorkoutHandler = async (workout: Workout) => {
+    const confirm = await pushModal(CancelWorkoutModal, null);
+    if (confirm) {
+      cancelWorkout(store, workout);
+    }
   };
 
   const duplicateWorkoutHandler = () => {
@@ -123,7 +119,7 @@ export function Home() {
               </button>
               <button
                 className={clsx(s.workoutButton, s.cancelWorkout)}
-                onClick={() => cancelWorkoutBeginHandler(activeWorkout)}
+                onClick={() => cancelWorkoutHandler(activeWorkout)}
               >
                 <MdClose />
                 Отменить
@@ -218,19 +214,6 @@ export function Home() {
           </button>
         </div>
       </BottomSheet>
-      {cancellingWorkout && (
-        <ModalDialog
-          title={"Подтверждение"}
-          isOpen={true}
-          cancelText="НЕТ"
-          submitText="ДА"
-          submitColor="#a00"
-          onClose={() => setCancellingWorkout(null)}
-          onSubmit={cancelWorkoutCompleteHandler}
-        >
-          Вы уверены, что хотите отменить тренировку?
-        </ModalDialog>
-      )}
     </div>
   );
 }

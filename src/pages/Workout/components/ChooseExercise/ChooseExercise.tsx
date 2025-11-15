@@ -11,19 +11,20 @@ import { useState } from "react";
 import {
   PageModal,
   BottomSheet,
-  ModalDialog,
   useStore,
+  useModalStack,
 } from "../../../../components";
 import { AddExercise } from "../AddExercise";
 import { type MouseEvent } from "react";
 import { clsx } from "clsx";
+import { DeleteExerciseModal } from "../DeleteExerciseModal";
 
 export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
   const store = useStore();
+  const { pushModal } = useModalStack();
   const exercises = useQueryAllExercises(store);
   const [isAddExerciseOpen, setAddExerciseOpen] = useState(false);
   const [actionsState, setActionsState] = useState<Exercise | null>(null);
-  const [deleteState, setDeleteState] = useState<Exercise | null>(null);
   const [editState, setEditState] = useState<Exercise | null>(null);
   const [search, setSearch] = useState("");
   const searchLower = search.toLowerCase();
@@ -62,16 +63,14 @@ export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
     setActionsState(null);
   };
 
-  const deleteBeginHandler = () => {
+  const deleteHandler = async () => {
     if (!actionsState) return;
-    setDeleteState(actionsState);
     setActionsState(null);
-  };
 
-  const deleteCompleteHandler = () => {
-    if (!deleteState) return;
-    deleteExercise(store, deleteState);
-    setDeleteState(null);
+    const result = await pushModal(DeleteExerciseModal, null);
+    if (result) {
+      deleteExercise(store, actionsState);
+    }
   };
 
   return (
@@ -130,26 +129,13 @@ export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
             </button>
             <button
               className={clsx(s.sheetAction, s.danger)}
-              onClick={deleteBeginHandler}
+              onClick={deleteHandler}
             >
               <MdDelete />
               <span>Удалить упражнение</span>
             </button>
           </div>
         </BottomSheet>
-      )}
-      {deleteState && (
-        <ModalDialog
-          title={"Подтверждение"}
-          isOpen={true}
-          cancelText="Отмена"
-          submitText="Удалить"
-          submitColor="#a00"
-          onClose={() => setDeleteState(null)}
-          onSubmit={deleteCompleteHandler}
-        >
-          Вы уверены, что хотите удалить упражнение?
-        </ModalDialog>
       )}
     </div>
   );

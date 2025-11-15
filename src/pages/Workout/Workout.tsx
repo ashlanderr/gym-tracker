@@ -7,7 +7,7 @@ import {
   type Exercise,
   updateWorkout,
 } from "../../db";
-import type { PeriodizationOrNone, WorkoutParams } from "./types.ts";
+import type { WorkoutParams } from "./types.ts";
 import { usePageParams } from "../hooks.ts";
 import { useState } from "react";
 import { useNavigate } from "react-router";
@@ -16,15 +16,12 @@ import {
   Performance,
   ChooseExercise,
   CompleteWorkoutModal,
-  type CompleteWorkoutData,
   ActiveTimer,
+  PeriodizationSelector,
+  type PeriodizationOrNone,
+  MODE_OPTIONS,
 } from "./components";
-import {
-  PageModal,
-  ModalDialog,
-  useStore,
-  BottomSheet,
-} from "../../components";
+import { PageModal, useStore, useModalStack } from "../../components";
 import {
   completeWorkout,
   getCurrentPeriodization,
@@ -37,6 +34,7 @@ export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
   const store = useStore();
   const navigate = useNavigate();
+  const { pushModal } = useModalStack();
   const workout = useQueryWorkoutById(store, workoutId);
   const timer = useTimer(
     workout?.startedAt ?? null,
@@ -47,43 +45,10 @@ export function Workout() {
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
   const [isAddPerformanceOpen, setAddPerformanceOpen] = useState(false);
-  const [completeModal, setCompleteModal] = useState<"warning" | "form" | null>(
-    null,
-  );
-  const [isPeriodizationOpen, setPeriodizationOpen] = useState(false);
-
-  const modeOptions = {
-    none: {
-      label: "-",
-      action: "Отключить",
-      description: "Тренировка без периодизации.",
-      className: s.noneMode,
-    },
-    light: {
-      label: "Легкий",
-      action: "Легкий",
-      description: "Сниженная нагрузка для восстановления и техники.",
-      className: s.lightMode,
-    },
-    medium: {
-      label: "Средний",
-      action: "Средний",
-      description: "Умеренная нагрузка для поддержания прогресса.",
-      className: s.mediumMode,
-    },
-    heavy: {
-      label: "Тяжелый",
-      action: "Тяжелый",
-      description: "Максимальная нагрузка для новых рекордов.",
-      className: s.hardMode,
-    },
-  };
 
   const currentMode: PeriodizationOrNone = workout?.periodization
     ? getCurrentPeriodization(workout.periodization)
     : "none";
-
-  // todo access rules
 
   const addPerformanceHandler = (exercise: Exercise) => {
     if (!workout) return;
@@ -91,32 +56,26 @@ export function Workout() {
     setAddPerformanceOpen(false);
   };
 
-  const completeBeginHandler = () => {
-    const completed = sets.every((s) => s.completed);
-    setCompleteModal(completed ? "form" : "warning");
-  };
-
-  const completeEndHandler = (data: CompleteWorkoutData) => {
+  const completeHandler = async () => {
     if (!workout) return;
-    completeWorkout(store, workout, data.name);
-    setCompleteModal(null);
-    navigate("/", { replace: true });
-  };
-
-  const setModeHandler = (mode: PeriodizationOrNone) => {
-    if (!workout) return;
-    if (mode === "none") {
-      updateWorkout(store, {
-        ...workout,
-        periodization: undefined,
-      });
-    } else {
-      updateWorkout(store, {
-        ...workout,
-        periodization: buildPeriodization(mode),
-      });
+    const partial = sets.some((s) => !s.completed);
+    const result = await pushModal(CompleteWorkoutModal, { workout, partial });
+    if (result) {
+      completeWorkout(store, workout, result.name);
+      navigate("/", { replace: true });
     }
-    setPeriodizationOpen(false);
+  };
+
+  const handleSelectPeriodization = async () => {
+    if (!workout) return;
+
+    const result = await pushModal(PeriodizationSelector, null);
+    if (!result) return;
+
+    updateWorkout(store, {
+      ...workout,
+      periodization: result !== "none" ? buildPeriodization(result) : undefined,
+    });
   };
 
   return (
@@ -130,7 +89,7 @@ export function Workout() {
           <MdArrowBack />
         </button>
         <div className={s.pageTitle}>Тренировка</div>
-        <button className={s.finishButton} onClick={completeBeginHandler}>
+        <button className={s.finishButton} onClick={completeHandler}>
           {workout?.completedAt ? "Обновить" : "Закончить"}
         </button>
       </div>
@@ -151,12 +110,12 @@ export function Workout() {
             {completedSets.length} / {sets.length}
           </div>
         </div>
-        <div className={s.stat} onClick={() => setPeriodizationOpen(true)}>
+        <div className={s.stat} onClick={handleSelectPeriodization}>
           <div className={s.statName}>Режим</div>
           <div
-            className={clsx(s.statValue, modeOptions[currentMode].className)}
+            className={clsx(s.statValue, MODE_OPTIONS[currentMode].className)}
           >
-            {modeOptions[currentMode].label}
+            {MODE_OPTIONS[currentMode].label}
           </div>
         </div>
       </div>
@@ -178,45 +137,6 @@ export function Workout() {
           onSubmit={addPerformanceHandler}
         />
       </PageModal>
-      <ModalDialog
-        title="Подтверждение"
-        width="300px"
-        cancelText="Отмена"
-        submitText="Завершить"
-        isOpen={completeModal === "warning"}
-        onClose={() => setCompleteModal(null)}
-        onSubmit={() => setCompleteModal("form")}
-      >
-        Не все сеты выполнены. Вы точно ходите завершить тренировку?
-      </ModalDialog>
-      {workout && (
-        <CompleteWorkoutModal
-          workout={workout}
-          isOpen={completeModal === "form"}
-          onClose={() => setCompleteModal(null)}
-          onSubmit={completeEndHandler}
-        />
-      )}
-      <BottomSheet
-        isOpen={isPeriodizationOpen}
-        onClose={() => setPeriodizationOpen(false)}
-      >
-        <div className={s.sheetHeader}>Режим тренировки</div>
-        <div className={s.sheetActions}>
-          {Object.entries(modeOptions).map(([mode, option]) => (
-            <button
-              key={mode}
-              className={clsx(s.modeAction, option.className)}
-              onClick={() => setModeHandler(mode as PeriodizationOrNone)}
-            >
-              <span className={clsx(s.modeLabel, option.className)}>
-                {option.action}
-              </span>
-              <span className={s.modeDescription}>{option.description}</span>
-            </button>
-          ))}
-        </div>
-      </BottomSheet>
     </div>
   );
 }

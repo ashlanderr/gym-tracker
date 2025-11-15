@@ -9,7 +9,7 @@ export function BottomSheet({
   children,
   onClose,
 }: BottomSheetProps) {
-  if (!isOpen) return null;
+  if (isOpen === false) return null;
 
   return createPortal(
     <div
