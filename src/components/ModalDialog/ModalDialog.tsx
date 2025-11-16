@@ -11,12 +11,10 @@ export function ModalDialog({
   submitText,
   submitDisabled,
   submitColor,
-  isOpen,
   children,
   onClose,
   onSubmit,
 }: ModalDialogProps) {
-  if (!isOpen) return null;
   return (
     <div className={s.backdrop} onClick={onClose}>
       <div
