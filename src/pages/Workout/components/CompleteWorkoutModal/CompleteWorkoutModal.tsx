@@ -8,7 +8,7 @@ export function CompleteWorkoutModal({
   onCancel,
   onSubmit,
 }: ModalProps<CompleteWorkoutData, CompleteWorkoutResult>) {
-  const [confirmed, setConfirmed] = useState(data.partial);
+  const [confirmed, setConfirmed] = useState(!data.partial);
   const [name, setName] = useState(data.workout.name);
 
   const trimmedName = name.trim();
