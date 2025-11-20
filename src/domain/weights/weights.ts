@@ -54,15 +54,15 @@ export function subtractSelfWeight(
 }
 
 export function volumeToOneRepMax(weight: number, reps: number): number {
-  return weight * (1 + reps / 30);
+  return weight * (36 / (37 - reps));
 }
 
 export function oneRepMaxToWeight(oneRepMax: number, reps: number): number {
-  return oneRepMax / (1 + reps / 30);
+  return oneRepMax / (36 / (37 - reps));
 }
 
 export function oneRepMaxToReps(oneRepMax: number, weight: number): number {
-  return (oneRepMax / weight - 1) * 30;
+  return 37 - 36 / (oneRepMax / weight);
 }
 
 export function formatRecordValue(value: number) {

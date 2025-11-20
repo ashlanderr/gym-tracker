@@ -101,7 +101,7 @@ describe("heavy weights", () => {
       periodization: heavy,
       weights: plates,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 127.5, reps: { min: 4, max: 6 } }],
+      recs: [{ type: "working", weight: 132.5, reps: { min: 4, max: 6 } }],
     });
   });
 
@@ -111,7 +111,7 @@ describe("heavy weights", () => {
       periodization: medium,
       weights: plates,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 112.5, reps: { min: 6, max: 8 } }],
+      recs: [{ type: "working", weight: 107.5, reps: { min: 7, max: 9 } }],
     });
   });
 
@@ -121,7 +121,7 @@ describe("heavy weights", () => {
       periodization: light,
       weights: plates,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 97.5, reps: { min: 10, max: 12 } }],
+      recs: [{ type: "working", weight: 87.5, reps: { min: 10, max: 12 } }],
     });
   });
 });
@@ -133,7 +133,7 @@ describe("medium weights", () => {
       periodization: heavy,
       weights: plates,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 60, reps: { min: 4, max: 6 } }],
+      recs: [{ type: "working", weight: 62.5, reps: { min: 3, max: 6 } }],
     });
   });
 
@@ -143,7 +143,7 @@ describe("medium weights", () => {
       periodization: medium,
       weights: plates,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 52.5, reps: { min: 6, max: 8 } }],
+      recs: [{ type: "working", weight: 50, reps: { min: 7, max: 9 } }],
     });
   });
 
@@ -153,7 +153,7 @@ describe("medium weights", () => {
       periodization: light,
       weights: plates,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 45, reps: { min: 11, max: 13 } }],
+      recs: [{ type: "working", weight: 40, reps: { min: 10, max: 13 } }],
     });
   });
 });
@@ -161,21 +161,21 @@ describe("medium weights", () => {
 describe("small weights", () => {
   test("heavy mode, machine", () => {
     testRecommendations({
-      oneRepMax: 12,
+      oneRepMax: 11.5,
       periodization: heavy,
       weights: machine,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 10, reps: { min: 5, max: 7 } }],
+      recs: [{ type: "working", weight: 10, reps: { min: 4, max: 7 } }],
     });
   });
 
   test("heavy mode, dumbbells", () => {
     testRecommendations({
-      oneRepMax: 27.33,
+      oneRepMax: 28,
       periodization: heavy,
       weights: dumbbells,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 24, reps: { min: 3, max: 5 } }],
+      recs: [{ type: "working", weight: 24, reps: { min: 5, max: 7 } }],
     });
   });
 
@@ -185,7 +185,7 @@ describe("small weights", () => {
       periodization: medium,
       weights: machine,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 5, reps: { min: 35, max: 38 } }],
+      recs: [{ type: "working", weight: 5, reps: { min: 19, max: 21 } }],
     });
   });
 
@@ -195,7 +195,7 @@ describe("small weights", () => {
       periodization: light,
       weights: machine,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 5, reps: { min: 33, max: 36 } }],
+      recs: [{ type: "working", weight: 5, reps: { min: 17, max: 19 } }],
     });
   });
 });
@@ -209,7 +209,7 @@ describe("positive weights", () => {
       periodization: heavy,
       weights: plates,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 22.5, reps: { min: 4, max: 6 } }],
+      recs: [{ type: "working", weight: 25, reps: { min: 3, max: 6 } }],
     });
   });
 
@@ -221,7 +221,7 @@ describe("positive weights", () => {
       periodization: heavy,
       weights: plates,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 27.5, reps: { min: 4, max: 6 } }],
+      recs: [{ type: "working", weight: 32.5, reps: { min: 4, max: 6 } }],
     });
   });
 
@@ -233,19 +233,19 @@ describe("positive weights", () => {
       periodization: medium,
       weights: plates,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 10, reps: { min: 6, max: 8 } }],
+      recs: [{ type: "working", weight: 5, reps: { min: 6, max: 9 } }],
     });
   });
 
   test("light mode", () => {
     testRecommendations({
-      oneRepMax: 28,
+      oneRepMax: 42.5,
       selfWeight: 80,
       exercise: positive,
       periodization: light,
       weights: plates,
       curr: [{ type: "working", weight: _, reps: _ }],
-      recs: [{ type: "working", weight: 0, reps: { min: 10, max: 12 } }],
+      recs: [{ type: "working", weight: 0, reps: { min: 9, max: 12 } }],
     });
   });
 
@@ -275,11 +275,11 @@ test("multiple sets", () => {
       { type: "working", weight: _, reps: _ },
     ],
     recs: [
-      { type: "warm-up", weight: 65, reps: { min: 12, max: 12 } },
-      { type: "warm-up", weight: 95, reps: { min: 6, max: 6 } },
-      { type: "working", weight: 127.5, reps: { min: 4, max: 6 } },
-      { type: "working", weight: 127.5, reps: { min: 4, max: 6 } },
-      { type: "working", weight: 127.5, reps: { min: 4, max: 6 } },
+      { type: "warm-up", weight: 67.5, reps: { min: 12, max: 12 } },
+      { type: "warm-up", weight: 100, reps: { min: 6, max: 6 } },
+      { type: "working", weight: 132.5, reps: { min: 4, max: 6 } },
+      { type: "working", weight: 132.5, reps: { min: 4, max: 6 } },
+      { type: "working", weight: 132.5, reps: { min: 4, max: 6 } },
     ],
   });
 });

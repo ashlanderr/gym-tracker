@@ -123,11 +123,11 @@ function computeWorkingSet(
   }
 
   const mode = getCurrentPeriodization(periodization);
-  const { minReps, maxReps, defaultPercent, maxPercent } =
-    MODE_PARAMS[exerciseReps][mode];
+  const { minReps, maxReps, reserve } = MODE_PARAMS[exerciseReps][mode];
 
-  const defaultFullWeight = fullRepMax * defaultPercent;
-  const maxFullWeight = fullRepMax * maxPercent;
+  const virtualMaxReps = maxReps + reserve;
+  const defaultFullWeight = oneRepMaxToWeight(fullRepMax, virtualMaxReps);
+  const maxFullWeight = oneRepMaxToWeight(fullRepMax, virtualMaxReps - 0.5);
   const minRepMax = volumeToOneRepMax(defaultFullWeight, minReps);
   const maxRepMax = volumeToOneRepMax(defaultFullWeight, maxReps);
   const roundings: RoundingMode[] = ["floor", "ceil"];
@@ -149,7 +149,7 @@ function computeWorkingSet(
   );
   if (!option) return undefined;
 
-  const actualMinReps = Math.round(
+  const actualMinReps = Math.floor(
     oneRepMaxToReps(minRepMax, option.fullWeight),
   );
   const actualMaxReps = Math.round(
