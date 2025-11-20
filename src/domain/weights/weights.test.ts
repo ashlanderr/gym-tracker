@@ -1,4 +1,11 @@
-import { computeWeights, snapWeightKg, unitsToKg } from "./weights.ts";
+import {
+  computeWeights,
+  oneRepMaxToReps,
+  oneRepMaxToWeight,
+  snapWeightKg,
+  unitsToKg,
+  volumeToOneRepMax,
+} from "./weights.ts";
 import type { PerformanceWeights } from "../../db";
 import type { WeightsConstructor } from "./types.ts";
 
@@ -124,4 +131,16 @@ test("round machine weights with additional weight 2", () => {
   };
 
   expect(actual).toEqual(expected);
+});
+
+test("one rep max equivalents", () => {
+  expect(oneRepMaxToWeight(volumeToOneRepMax(60, 6), 6)).closeTo(60, 0.1);
+  expect(oneRepMaxToWeight(volumeToOneRepMax(60, 3), 3)).closeTo(60, 0.1);
+  expect(oneRepMaxToWeight(volumeToOneRepMax(60, 12), 12)).closeTo(60, 0.1);
+  expect(oneRepMaxToWeight(volumeToOneRepMax(60, 30), 30)).closeTo(60, 0.1);
+
+  expect(oneRepMaxToReps(volumeToOneRepMax(60, 6), 60)).closeTo(6, 0.1);
+  expect(oneRepMaxToReps(volumeToOneRepMax(60, 3), 60)).closeTo(3, 0.1);
+  expect(oneRepMaxToReps(volumeToOneRepMax(60, 12), 60)).closeTo(12, 0.1);
+  expect(oneRepMaxToReps(volumeToOneRepMax(60, 30), 60)).closeTo(30, 0.1);
 });

@@ -54,15 +54,22 @@ export function subtractSelfWeight(
 }
 
 export function volumeToOneRepMax(weight: number, reps: number): number {
-  return weight * (36 / (37 - reps));
+  return reps <= 10 //
+    ? weight * (36 / (37 - reps))
+    : weight * (1 + reps / 30);
 }
 
 export function oneRepMaxToWeight(oneRepMax: number, reps: number): number {
-  return oneRepMax / (36 / (37 - reps));
+  return reps <= 10 //
+    ? oneRepMax / (36 / (37 - reps))
+    : oneRepMax / (1 + reps / 30);
 }
 
 export function oneRepMaxToReps(oneRepMax: number, weight: number): number {
-  return 37 - 36 / (oneRepMax / weight);
+  const w = oneRepMax / weight;
+  return w <= 1.333 //
+    ? 37 - 36 / w
+    : (w - 1) * 30;
 }
 
 export function formatRecordValue(value: number) {
