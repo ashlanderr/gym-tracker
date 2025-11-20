@@ -1,7 +1,6 @@
 import type { RecommendationParams, RecSetData } from "../types.ts";
 import {
   addSelfWeight,
-  oneRepMaxToReps,
   oneRepMaxToWeight,
   type RoundingMode,
   snapWeightKg,
@@ -123,13 +122,10 @@ function computeWorkingSet(
   }
 
   const mode = getCurrentPeriodization(periodization);
-  const { minReps, maxReps, defaultPercent, maxPercent } =
-    MODE_PARAMS[exerciseReps][mode];
+  const { defaultPercent, maxPercent } = MODE_PARAMS[exerciseReps][mode];
 
   const defaultFullWeight = fullRepMax * defaultPercent;
   const maxFullWeight = fullRepMax * maxPercent;
-  const minRepMax = volumeToOneRepMax(defaultFullWeight, minReps);
-  const maxRepMax = volumeToOneRepMax(defaultFullWeight, maxReps);
   const roundings: RoundingMode[] = ["floor", "ceil"];
 
   const options = roundings.map((rounding) => {
@@ -149,17 +145,10 @@ function computeWorkingSet(
   );
   if (!option) return undefined;
 
-  const actualMinReps = Math.round(
-    oneRepMaxToReps(minRepMax, option.fullWeight),
-  );
-  const actualMaxReps = Math.round(
-    oneRepMaxToReps(maxRepMax, option.fullWeight),
-  );
-
   return {
     type: "working",
     weight: option.weight,
-    reps: { min: actualMinReps, max: actualMaxReps },
+    reps: undefined,
   };
 }
 
