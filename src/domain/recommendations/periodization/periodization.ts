@@ -112,7 +112,7 @@ function computeWorkingSet(
     (s) => s.weight >= maxWeight && s.reps >= maxReps,
   );
   const failedSets = workingSets.filter(
-    (s) => s.weight <= maxWeight && s.reps < minReps,
+    (s) => s.weight < maxWeight || s.reps < minReps,
   );
 
   let update: WeightUpdateParams = { direction: 0, rounding: "round" };
