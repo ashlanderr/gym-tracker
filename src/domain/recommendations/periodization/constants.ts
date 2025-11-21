@@ -1,5 +1,9 @@
-import type { ExerciseRepRange, PeriodizationMode } from "../../../db";
-import type { ModeParams } from "./types.ts";
+import type {
+  ExerciseRepRange,
+  ExerciseWeight,
+  PeriodizationMode,
+} from "../../../db";
+import type { ModeParams, WeightUpdateParams } from "./types.ts";
 
 export const WARM_UP_SETS = [
   [
@@ -37,14 +41,14 @@ export const MODE_PARAMS: Record<
       reserve: 4,
     },
     medium: {
-      minReps: 7,
-      maxReps: 9,
+      minReps: 6,
+      maxReps: 8,
       reserve: 2,
     },
     heavy: {
       minReps: 4,
       maxReps: 6,
-      reserve: -1,
+      reserve: 1,
     },
   },
   medium: {
@@ -61,7 +65,7 @@ export const MODE_PARAMS: Record<
     heavy: {
       minReps: 6,
       maxReps: 8,
-      reserve: -1,
+      reserve: 1,
     },
   },
   high: {
@@ -78,7 +82,27 @@ export const MODE_PARAMS: Record<
     heavy: {
       minReps: 10,
       maxReps: 12,
-      reserve: -1,
+      reserve: 1,
     },
   },
+};
+
+export const EPSILON_WEIGHT = 0.1;
+
+export const NEXT_WEIGHT_PARAMS: Record<
+  ExerciseWeight["type"],
+  WeightUpdateParams
+> = {
+  full: { direction: 1, rounding: "ceil" },
+  positive: { direction: 1, rounding: "ceil" },
+  negative: { direction: -1, rounding: "floor" },
+};
+
+export const PREV_WEIGHT_PARAMS: Record<
+  ExerciseWeight["type"],
+  WeightUpdateParams
+> = {
+  full: { direction: -1, rounding: "floor" },
+  positive: { direction: -1, rounding: "floor" },
+  negative: { direction: 1, rounding: "ceil" },
 };

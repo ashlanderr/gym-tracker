@@ -1,19 +1,14 @@
 import type { RecommendationParams, RecSetData } from "../types.ts";
+import { addSelfWeight, snapWeightKg, subtractSelfWeight } from "../../weights";
 import {
-  addSelfWeight,
-  oneRepMaxToReps,
-  oneRepMaxToWeight,
-  type RoundingMode,
-  snapWeightKg,
-  subtractSelfWeight,
-  volumeToOneRepMax,
-} from "../../weights";
-import { MODE_PARAMS, WARM_UP_SETS } from "./constants.ts";
-import {
-  minBy,
-  type PeriodizationData,
-  type PeriodizationMode,
-} from "../../../db";
+  EPSILON_WEIGHT,
+  MODE_PARAMS,
+  NEXT_WEIGHT_PARAMS,
+  PREV_WEIGHT_PARAMS,
+  WARM_UP_SETS,
+} from "./constants.ts";
+import { type PeriodizationData, type PeriodizationMode } from "../../../db";
+import type { WeightUpdateParams } from "./types.ts";
 
 export function buildRecommendations(
   params: RecommendationParams,
@@ -77,89 +72,69 @@ export function buildPeriodization(mode: PeriodizationMode): PeriodizationData {
   }
 }
 
-function computeFullOneRepMax(
-  params: RecommendationParams,
-): number | undefined {
-  const { oneRepMax, selfWeight, exerciseWeights } = params;
-
-  if (oneRepMax === undefined) {
-    return undefined;
-  }
-
-  if (oneRepMax.full !== undefined) {
-    return oneRepMax.full;
-  }
-
-  const defaultReps = 6;
-  return volumeToOneRepMax(
-    addSelfWeight(
-      exerciseWeights,
-      selfWeight,
-      oneRepMaxToWeight(oneRepMax.current, defaultReps),
-    ),
-    defaultReps,
-  );
-}
-
 function computeWorkingSet(
   params: RecommendationParams,
 ): RecSetData | undefined {
   const {
+    previousSets,
+    exerciseReps,
     periodization,
     performanceWeights,
     exerciseWeights,
-    selfWeight,
-    exerciseReps,
   } = params;
-  const fullRepMax = computeFullOneRepMax(params);
 
   if (
+    exerciseReps === undefined ||
     periodization === undefined ||
-    fullRepMax === undefined ||
-    performanceWeights === undefined ||
-    exerciseReps === undefined
+    performanceWeights === undefined
   ) {
     return undefined;
   }
 
-  const mode = getCurrentPeriodization(periodization);
-  const { minReps, maxReps, reserve } = MODE_PARAMS[exerciseReps][mode];
+  const periodizationMode = getCurrentPeriodization(periodization);
+  const { minReps, maxReps, reserve } =
+    MODE_PARAMS[exerciseReps][periodizationMode];
 
-  const virtualMaxReps = maxReps + reserve;
-  const defaultFullWeight = oneRepMaxToWeight(fullRepMax, virtualMaxReps);
-  const maxFullWeight = oneRepMaxToWeight(fullRepMax, virtualMaxReps - 0.5);
-  const minRepMax = volumeToOneRepMax(defaultFullWeight, minReps);
-  const maxRepMax = volumeToOneRepMax(defaultFullWeight, maxReps);
-  const roundings: RoundingMode[] = ["floor", "ceil"];
+  const workingSets = previousSets.filter((s) => s.type !== "warm-up");
+  const availableReserve = Math.min(reserve, workingSets.length);
+  const maxFails = workingSets.length - availableReserve;
 
-  const options = roundings.map((rounding) => {
-    const weight = snapWeightKg(
-      performanceWeights,
-      subtractSelfWeight(exerciseWeights, selfWeight, defaultFullWeight),
-      rounding,
-    );
-    const fullWeight = addSelfWeight(exerciseWeights, selfWeight, weight);
-    const delta = Math.abs(defaultFullWeight - fullWeight);
-    return { weight, fullWeight, delta };
-  });
+  if (workingSets.length === 0) {
+    return {
+      type: "working",
+      weight: undefined,
+      reps: { min: minReps, max: maxReps },
+    };
+  }
 
-  const option = minBy(
-    options.filter((w) => w.fullWeight <= maxFullWeight),
-    (a, b) => a.delta - b.delta,
+  const maxWeight = Math.max(...workingSets.map((s) => s.weight));
+  const maxedOutSets = workingSets.filter(
+    (s) => s.weight >= maxWeight && s.reps >= maxReps,
   );
-  if (!option) return undefined;
-
-  const actualMinReps = Math.floor(
-    oneRepMaxToReps(minRepMax, option.fullWeight),
+  const failedSets = workingSets.filter(
+    (s) => s.weight <= maxWeight && s.reps < minReps,
   );
-  const actualMaxReps = Math.round(
-    oneRepMaxToReps(maxRepMax, option.fullWeight),
+
+  let update: WeightUpdateParams = { direction: 0, rounding: "round" };
+
+  if (maxedOutSets.length >= availableReserve) {
+    update = NEXT_WEIGHT_PARAMS[exerciseWeights?.type ?? "full"];
+  } else if (failedSets.length > maxFails) {
+    update = PREV_WEIGHT_PARAMS[exerciseWeights?.type ?? "full"];
+  }
+
+  const { direction, rounding } = update;
+
+  const newWeight = snapWeightKg(
+    performanceWeights,
+    maxWeight + EPSILON_WEIGHT * direction,
+    rounding,
   );
 
   return {
     type: "working",
-    weight: option.weight,
-    reps: { min: actualMinReps, max: actualMaxReps },
+    reps: { min: minReps, max: maxReps },
+    weight: newWeight,
   };
 }
 

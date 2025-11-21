@@ -103,6 +103,7 @@ function updateRecord(
 
   const values: Array<RecordData> = sets
     .filter((s) => s.completed)
+    .filter((s) => s.type !== "warm-up")
     .map((s) => ({
       set: s,
       current: currentSelector(s),

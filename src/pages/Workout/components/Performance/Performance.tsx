@@ -136,14 +136,11 @@ function buildSets({
   workout: Workout | null;
   oneRepMax: Record | null;
 }): ReactNode[] {
-  const prevWarmUp = prevSets.filter(
-    (s) => s.type === "warm-up" && s.completed,
-  );
-  const prevWorking = prevSets.filter(
-    (s) => s.type !== "warm-up" && s.completed,
-  );
+  const prevWarmUp = prevSets.filter((s) => s.type === "warm-up");
+  const prevWorking = prevSets.filter((s) => s.type !== "warm-up");
   const recommendations = buildRecommendations({
     currentSets: sets,
+    previousSets: prevSets,
     performanceWeights: performance.weights,
     exerciseWeights: exercise?.weight,
     exerciseReps: exercise?.reps ?? DEFAULT_EXERCISE_REPS,
