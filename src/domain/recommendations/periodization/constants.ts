@@ -46,8 +46,8 @@ export const MODE_PARAMS: Record<
       reserve: 2,
     },
     heavy: {
-      minReps: 4,
-      maxReps: 6,
+      minReps: 3,
+      maxReps: 5,
       reserve: 1,
     },
   },
