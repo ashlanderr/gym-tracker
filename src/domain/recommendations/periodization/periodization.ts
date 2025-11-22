@@ -1,5 +1,11 @@
 import type { RecommendationParams, RecSetData } from "../types.ts";
-import { addSelfWeight, snapWeightKg, subtractSelfWeight } from "../../weights";
+import {
+  addSelfWeight,
+  oneRepMaxToWeight,
+  snapWeightKg,
+  subtractSelfWeight,
+  volumeToOneRepMax,
+} from "../../weights";
 import {
   EPSILON_WEIGHT,
   MODE_PARAMS,
@@ -72,6 +78,30 @@ export function buildPeriodization(mode: PeriodizationMode): PeriodizationData {
   }
 }
 
+function computeFullOneRepMax(
+  params: RecommendationParams,
+): number | undefined {
+  const { oneRepMax, selfWeight, exerciseWeights } = params;
+
+  if (oneRepMax === undefined) {
+    return undefined;
+  }
+
+  if (oneRepMax.full !== undefined) {
+    return oneRepMax.full;
+  }
+
+  const defaultReps = 6;
+  return volumeToOneRepMax(
+    addSelfWeight(
+      exerciseWeights,
+      selfWeight,
+      oneRepMaxToWeight(oneRepMax.current, defaultReps),
+    ),
+    defaultReps,
+  );
+}
+
 function computeWorkingSet(
   params: RecommendationParams,
 ): RecSetData | undefined {
@@ -81,7 +111,10 @@ function computeWorkingSet(
     periodization,
     performanceWeights,
     exerciseWeights,
+    selfWeight,
   } = params;
+
+  const fullRepMax = computeFullOneRepMax(params);
 
   if (
     exerciseReps === undefined ||
@@ -100,9 +133,19 @@ function computeWorkingSet(
   const maxFails = workingSets.length - availableReserve;
 
   if (workingSets.length === 0) {
+    const fullWeight =
+      fullRepMax && oneRepMaxToWeight(fullRepMax, maxReps + reserve);
+    const { rounding } = PREV_WEIGHT_PARAMS[exerciseWeights?.type ?? "full"];
+    const weight =
+      fullWeight &&
+      snapWeightKg(
+        performanceWeights,
+        subtractSelfWeight(exerciseWeights, selfWeight, fullWeight),
+        rounding,
+      );
     return {
       type: "working",
-      weight: undefined,
+      weight: weight || undefined,
       reps: { min: minReps, max: maxReps },
     };
   }
