@@ -217,5 +217,16 @@ function computeWarmUpSet(
 export function computeNextPeriodization(
   periodization: PeriodizationData,
 ): PeriodizationData {
-  return { ...periodization, counter: periodization.counter + 1 };
+  const current = getCurrentPeriodization(periodization);
+
+  switch (current) {
+    case "light":
+      return buildPeriodization("medium");
+
+    case "medium":
+      return buildPeriodization("heavy");
+
+    case "heavy":
+      return buildPeriodization("light");
+  }
 }

@@ -5,12 +5,10 @@ import {
   type Workout,
   updateWorkout,
   queryPerformancesByWorkout,
-  queryPeriodizationByUser,
   deletePerformance,
   queryRecordsByWorkout,
   deleteSet,
   querySetsByWorkout,
-  updatePeriodization,
   deleteRecord,
   deleteWorkout,
   updatePerformance,
@@ -22,8 +20,6 @@ import {
 } from "./recommendations";
 
 export function addWorkout(store: Store, user: string): Workout {
-  const periodization = queryPeriodizationByUser(store, user);
-
   return addWorkoutInner(store, {
     id: generateId(),
     user,
@@ -32,14 +28,6 @@ export function addWorkout(store: Store, user: string): Workout {
     completedAt: null,
     volume: 0,
     sets: 0,
-    periodization: periodization
-      ? {
-          counter: periodization.counter,
-          light: periodization.light,
-          medium: periodization.medium,
-          heavy: periodization.heavy,
-        }
-      : undefined,
   });
 }
 
@@ -49,6 +37,9 @@ export function duplicateWorkout(store: Store, oldWorkout: Workout): Workout {
   updateWorkout(store, {
     ...newWorkout,
     name: oldWorkout.name,
+    periodization: oldWorkout.periodization
+      ? computeNextPeriodization(oldWorkout.periodization)
+      : undefined,
   });
 
   const performances = queryPerformancesByWorkout(store, oldWorkout.id);
@@ -65,7 +56,6 @@ export function completeWorkout(
   workout: Workout,
   newName: string,
 ): Workout {
-  const periodization = queryPeriodizationByUser(store, workout.user);
   const performances = queryPerformancesByWorkout(store, workout.id);
   const records = queryRecordsByWorkout(store, workout.id);
   const sets = querySetsByWorkout(store, workout.id);
@@ -97,13 +87,6 @@ export function completeWorkout(
     updatePerformance(store, {
       ...performance,
       periodization: currentPeriodization,
-    });
-  }
-
-  if (periodization && workout.completedAt === null) {
-    updatePeriodization(store, {
-      ...periodization,
-      ...computeNextPeriodization(periodization),
     });
   }
 
