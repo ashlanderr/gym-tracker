@@ -124,9 +124,8 @@ function computeWorkingSet(
     return undefined;
   }
 
-  const periodizationMode = getCurrentPeriodization(periodization);
   const { minReps, maxReps, reserve } =
-    MODE_PARAMS[exerciseReps][periodizationMode];
+    MODE_PARAMS[exerciseReps][periodization];
 
   const workingSets = previousSets.filter((s) => s.type !== "warm-up");
   const availableReserve = Math.min(reserve, workingSets.length);
@@ -215,18 +214,19 @@ function computeWarmUpSet(
 }
 
 export function computeNextPeriodization(
-  periodization: PeriodizationData,
-): PeriodizationData {
-  const current = getCurrentPeriodization(periodization);
+  periodization: PeriodizationMode | undefined,
+): PeriodizationMode | undefined {
+  switch (periodization) {
+    case undefined:
+      return undefined;
 
-  switch (current) {
     case "light":
-      return buildPeriodization("medium");
+      return "medium";
 
     case "medium":
-      return buildPeriodization("heavy");
+      return "heavy";
 
     case "heavy":
-      return buildPeriodization("light");
+      return "light";
   }
 }

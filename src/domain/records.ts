@@ -16,11 +16,9 @@ import {
   deleteRecord,
   maxBy,
   type RecordNumbers,
-  type Workout,
   queryWorkoutById,
 } from "../db";
 import { addSelfWeight, volumeToOneRepMax } from "./weights";
-import { getCurrentPeriodization } from "./recommendations";
 
 interface RecordData {
   set: CompletedSet;
@@ -65,7 +63,7 @@ export function updateRecords(store: Store, set: Set) {
         addSelfWeight(exercise.weight, selfWeight, s.weight),
         s.reps,
       ),
-    addOnHeavyWorkout(workout),
+    addOnHeavyPerformance(performance),
   );
 
   updateRecord(
@@ -145,10 +143,7 @@ function addIfGreater(
   return compareRecordsByValue(current, previous) > 0;
 }
 
-function addOnHeavyWorkout(workout: Workout) {
-  const periodization = workout?.periodization
-    ? getCurrentPeriodization(workout.periodization)
-    : undefined;
-  const isHeavy = periodization === "heavy";
+function addOnHeavyPerformance(performance: Performance) {
+  const isHeavy = performance?.periodization === "heavy";
   return () => isHeavy;
 }

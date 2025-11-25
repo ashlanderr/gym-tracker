@@ -10,7 +10,7 @@ export function PeriodizationSelector({
 }: ModalProps<null, PeriodizationOrNone>) {
   return (
     <BottomSheet onClose={onCancel}>
-      <div className={s.sheetHeader}>Режим тренировки</div>
+      <div className={s.sheetHeader}>Режим периодизации</div>
       <div className={s.sheetActions}>
         {Object.entries(MODE_OPTIONS).map(([mode, option]) => (
           <button

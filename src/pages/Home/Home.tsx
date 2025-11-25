@@ -1,5 +1,4 @@
 import {
-  type PeriodizationMode,
   useQueryActiveWorkouts,
   useQueryCompletedWorkouts,
   type Workout,
@@ -18,7 +17,7 @@ import {
   MdSettings,
 } from "react-icons/md";
 import { useNavigate } from "react-router";
-import { type ReactNode, useState } from "react";
+import { useState } from "react";
 import { clsx } from "clsx";
 import { signOut, useUser } from "../../firebase/auth.ts";
 import {
@@ -28,12 +27,7 @@ import {
   useStore,
 } from "../../components";
 import { PiMedalFill } from "react-icons/pi";
-import {
-  addWorkout,
-  cancelWorkout,
-  duplicateWorkout,
-  getCurrentPeriodization,
-} from "../../domain";
+import { addWorkout, cancelWorkout, duplicateWorkout } from "../../domain";
 import { CancelWorkoutModal } from "./components";
 
 export function Home() {
@@ -46,12 +40,6 @@ export function Home() {
   const [activeWorkout] = useQueryActiveWorkouts(store);
   const [workoutActions, setWorkoutActions] = useState<Workout | null>(null);
   const activeTimer = useTimer(activeWorkout?.startedAt ?? null, null);
-
-  const modeLabels: Record<PeriodizationMode, ReactNode> = {
-    light: <span className={s.lightMode} />,
-    medium: <span className={s.mediumMode} />,
-    heavy: <span className={s.hardMode} />,
-  };
 
   const openWorkoutHandler = (workout: Workout | null) => {
     if (!workout) return;
@@ -76,9 +64,13 @@ export function Home() {
     openWorkoutHandler(newWorkout);
   };
 
-  const deleteWorkoutHandler = () => {
-    // todo
-    alert("TBD");
+  const deleteWorkoutHandler = async () => {
+    if (!workoutActions) return;
+    const confirm = await pushModal(CancelWorkoutModal, null);
+    if (confirm) {
+      cancelWorkout(store, workoutActions);
+      setWorkoutActions(null);
+    }
   };
 
   return (
@@ -146,8 +138,6 @@ export function Home() {
             className={s.workout}
             onClick={() => setWorkoutActions(workout)}
           >
-            {workout.periodization &&
-              modeLabels[getCurrentPeriodization(workout.periodization)]}
             <div className={s.workoutName}>{workout.name}</div>
             <div className={s.workoutDate}>
               {DATE_FORMATTER.format(workout.startedAt)}

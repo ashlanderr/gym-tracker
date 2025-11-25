@@ -12,8 +12,6 @@ import {
   type Performance,
   type Measurement,
   useQueryLatestMeasurement,
-  useQueryWorkoutById,
-  type Workout,
   type Record,
   useQueryPreviousRecordByExercise,
   DEFAULT_WEIGHT_UNITS,
@@ -24,12 +22,9 @@ import { SetRow } from "../SetRow";
 import { UNITS_TRANSLATION } from "../../../constants.ts";
 import { PerformanceTimer } from "../PerformanceTimer";
 import { assertNever } from "../../../../utils";
-import {
-  addNextSet,
-  buildRecommendations,
-  getCurrentPeriodization,
-} from "../../../../domain";
+import { addNextSet, buildRecommendations } from "../../../../domain";
 import { PerformanceActions } from "../PerformanceActions";
+import { clsx } from "clsx";
 
 export function Performance({ performance }: PerformanceProps) {
   const store = useStore();
@@ -37,10 +32,6 @@ export function Performance({ performance }: PerformanceProps) {
   const exercise = useQueryExerciseById(store, performance.exercise);
   const sets = useQuerySetsByPerformance(store, performance.id);
   const measurement = useQueryLatestMeasurement(store, performance.startedAt);
-  const workout = useQueryWorkoutById(store, performance.workout);
-
-  const periodization =
-    workout?.periodization && getCurrentPeriodization(workout.periodization);
 
   const trainingMax = useQueryPreviousRecordByExercise(
     store,
@@ -60,7 +51,7 @@ export function Performance({ performance }: PerformanceProps) {
     store,
     performance.exercise,
     performance.startedAt,
-    periodization,
+    performance.periodization,
   );
 
   const prevSets = useQuerySetsByPerformance(
@@ -81,7 +72,15 @@ export function Performance({ performance }: PerformanceProps) {
 
   return (
     <div className={s.exercise}>
-      <div className={s.exerciseName} onClick={actionsHandler}>
+      <div
+        className={clsx({
+          [s.exerciseName]: true,
+          [s.lightMode]: performance.periodization === "light",
+          [s.mediumMode]: performance.periodization === "medium",
+          [s.heavyMode]: performance.periodization === "heavy",
+        })}
+        onClick={actionsHandler}
+      >
         {exercise?.name ?? "-"}
       </div>
       <div className={s.timer}>
@@ -106,7 +105,6 @@ export function Performance({ performance }: PerformanceProps) {
             performance,
             exercise,
             measurement,
-            workout,
             oneRepMax: trainingMax ?? oneRepMax,
           })}
         </tbody>
@@ -125,7 +123,6 @@ function buildSets({
   performance,
   exercise,
   measurement,
-  workout,
   oneRepMax,
 }: {
   prevSets: CompletedSet[];
@@ -133,7 +130,6 @@ function buildSets({
   performance: Performance;
   exercise: Exercise | null;
   measurement: Measurement | null;
-  workout: Workout | null;
   oneRepMax: Record | null;
 }): ReactNode[] {
   const prevWarmUp = prevSets.filter((s) => s.type === "warm-up");
@@ -145,7 +141,7 @@ function buildSets({
     exerciseWeights: exercise?.weight,
     exerciseReps: exercise?.reps ?? DEFAULT_EXERCISE_REPS,
     selfWeight: measurement?.weight,
-    periodization: workout?.periodization,
+    periodization: performance?.periodization,
     oneRepMax: oneRepMax ?? undefined,
   });
 

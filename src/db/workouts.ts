@@ -7,7 +7,6 @@ import {
   useQueryCollection,
 } from "./db.ts";
 import type { Store } from "./doc.ts";
-import type { PeriodizationData } from "./periodization.ts";
 
 export interface Workout {
   id: string;
@@ -18,7 +17,6 @@ export interface Workout {
   volume?: number;
   sets?: number;
   records?: number;
-  periodization?: PeriodizationData;
 }
 
 export function queryWorkoutById(store: Store, id: string): Workout | null {

@@ -5,7 +5,6 @@ import {
   useQueryPerformancesByWorkout,
   useQuerySetsByWorkout,
   type Exercise,
-  updateWorkout,
 } from "../../db";
 import type { WorkoutParams } from "./types.ts";
 import { usePageParams } from "../hooks.ts";
@@ -17,18 +16,9 @@ import {
   ChooseExercise,
   CompleteWorkoutModal,
   ActiveTimer,
-  PeriodizationSelector,
-  type PeriodizationOrNone,
-  MODE_OPTIONS,
 } from "./components";
 import { PageModal, useStore, useModalStack } from "../../components";
-import {
-  completeWorkout,
-  getCurrentPeriodization,
-  buildPeriodization,
-  addPerformance,
-} from "../../domain";
-import { clsx } from "clsx";
+import { completeWorkout, addPerformance } from "../../domain";
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
@@ -46,10 +36,6 @@ export function Workout() {
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
   const [isAddPerformanceOpen, setAddPerformanceOpen] = useState(false);
 
-  const currentMode: PeriodizationOrNone = workout?.periodization
-    ? getCurrentPeriodization(workout.periodization)
-    : "none";
-
   const addPerformanceHandler = (exercise: Exercise) => {
     if (!workout) return;
     addPerformance(store, workout, exercise.id);
@@ -64,18 +50,6 @@ export function Workout() {
       completeWorkout(store, workout, result.name);
       navigate("/", { replace: true });
     }
-  };
-
-  const handleSelectPeriodization = async () => {
-    if (!workout) return;
-
-    const result = await pushModal(PeriodizationSelector, null);
-    if (!result) return;
-
-    updateWorkout(store, {
-      ...workout,
-      periodization: result !== "none" ? buildPeriodization(result) : undefined,
-    });
   };
 
   return (
@@ -108,14 +82,6 @@ export function Workout() {
           <div className={s.statName}>Сеты</div>
           <div className={s.statValue}>
             {completedSets.length} / {sets.length}
-          </div>
-        </div>
-        <div className={s.stat} onClick={handleSelectPeriodization}>
-          <div className={s.statName}>Режим</div>
-          <div
-            className={clsx(s.statValue, MODE_OPTIONS[currentMode].className)}
-          >
-            {MODE_OPTIONS[currentMode].label}
           </div>
         </div>
       </div>

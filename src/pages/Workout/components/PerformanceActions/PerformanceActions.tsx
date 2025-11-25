@@ -12,6 +12,7 @@ import {
   BottomSheet,
   type ModalProps,
   PageModal,
+  useModalStack,
   useStore,
 } from "../../../../components";
 import type { PerformanceActionsData } from "./types.ts";
@@ -29,6 +30,8 @@ import { PerformanceOrder } from "../PerformanceOrder";
 import { ChooseExercise } from "../ChooseExercise";
 import { AddExercise } from "../AddExercise";
 import { WeightsSelector } from "../WeightsSelector";
+import { LuTrendingUp } from "react-icons/lu";
+import { PeriodizationSelector } from "../PeriodizationSelector";
 
 export function PerformanceActions({
   data,
@@ -37,6 +40,7 @@ export function PerformanceActions({
   const { performance, exercise } = data;
   const store = useStore();
   const navigate = useNavigate();
+  const { pushModal } = useModalStack();
   const [orderState, setOrderState] = useState<Performance[]>([]);
   const [isReplaceOpen, setReplaceOpen] = useState(false);
   const [isWeightsOpen, setWeightsOpen] = useState(false);
@@ -87,6 +91,17 @@ export function PerformanceActions({
     onCancel();
   };
 
+  const periodizationHandler = async () => {
+    await onCancel();
+    const periodization = await pushModal(PeriodizationSelector, null);
+    if (periodization) {
+      updatePerformance(store, {
+        ...performance,
+        periodization: periodization !== "none" ? periodization : undefined,
+      });
+    }
+  };
+
   return (
     <>
       <BottomSheet onClose={onCancel}>
@@ -110,6 +125,10 @@ export function PerformanceActions({
               <span>Настройка весов</span>
             </button>
           )}
+          <button className={s.sheetAction} onClick={periodizationHandler}>
+            <LuTrendingUp />
+            <span>Выбор периодизации</span>
+          </button>
           <button className={s.sheetAction} onClick={editBeginHandler}>
             <MdEdit />
             <span>Изменить упражнение</span>

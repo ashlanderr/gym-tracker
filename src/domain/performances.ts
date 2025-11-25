@@ -15,6 +15,7 @@ import {
   updatePerformance,
 } from "../db";
 import { addNextSet, duplicateSet } from "./sets.ts";
+import { computeNextPeriodization } from "./recommendations";
 
 export function addPerformance(
   store: Store,
@@ -39,6 +40,7 @@ export function addPerformance(
     startedAt: workout.startedAt,
     weights: prevPerformance?.weights,
     timer: prevPerformance?.timer,
+    periodization: computeNextPeriodization(prevPerformance?.periodization),
   });
 
   if (prevSets) {

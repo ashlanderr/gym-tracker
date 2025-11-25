@@ -111,3 +111,34 @@ th.setCompletedHeader {
 .sheetAction:not(:first-child) {
   border-top: 1px solid #666;
 }
+
+.lightMode,
+.mediumMode,
+.heavyMode {
+  &::before {
+    display: inline-block;
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 8px;
+    margin: 0 6px 2px 2px;
+  }
+}
+
+.lightMode {
+  &::before {
+    background: #8F8;
+  }
+}
+
+.mediumMode {
+  &::before {
+    background: #FF0;
+  }
+}
+
+.heavyMode {
+  &::before {
+    background: #F84;
+  }
+}

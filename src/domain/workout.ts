@@ -11,13 +11,12 @@ import {
   querySetsByWorkout,
   deleteRecord,
   deleteWorkout,
+  queryExerciseById,
   updatePerformance,
+  type Performance,
+  type Exercise,
 } from "../db";
 import { addPerformance } from "./performances.ts";
-import {
-  computeNextPeriodization,
-  getCurrentPeriodization,
-} from "./recommendations";
 
 export function addWorkout(store: Store, user: string): Workout {
   return addWorkoutInner(store, {
@@ -37,15 +36,25 @@ export function duplicateWorkout(store: Store, oldWorkout: Workout): Workout {
   updateWorkout(store, {
     ...newWorkout,
     name: oldWorkout.name,
-    periodization: oldWorkout.periodization
-      ? computeNextPeriodization(oldWorkout.periodization)
-      : undefined,
   });
 
-  const performances = queryPerformancesByWorkout(store, oldWorkout.id);
+  const oldPerformances = queryPerformancesByWorkout(store, oldWorkout.id);
+  const hasPeriodization = oldPerformances.some((p) => p.periodization);
 
-  for (const oldPerformance of performances) {
+  for (const oldPerformance of oldPerformances) {
     addPerformance(store, newWorkout, oldPerformance.exercise);
+  }
+
+  if (hasPeriodization) {
+    queryPerformancesByWorkout(store, newWorkout.id)
+      .map((performance) => ({
+        performance,
+        exercise: queryExerciseById(store, performance.exercise),
+      }))
+      .sort(comparePerformances)
+      .forEach(({ performance }, index) =>
+        updatePerformance(store, { ...performance, order: index }),
+      );
   }
 
   return newWorkout;
@@ -61,9 +70,6 @@ export function completeWorkout(
   const sets = querySetsByWorkout(store, workout.id);
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((a, b) => a + b.weight * b.reps, 0);
-
-  const currentPeriodization =
-    workout.periodization && getCurrentPeriodization(workout.periodization);
 
   for (const performance of performances) {
     const performanceSets = sets.filter(
@@ -81,13 +87,7 @@ export function completeWorkout(
 
     if (emptyPerformance) {
       deletePerformance(store, performance);
-      continue;
     }
-
-    updatePerformance(store, {
-      ...performance,
-      periodization: currentPeriodization,
-    });
   }
 
   workout = updateWorkout(store, {
@@ -111,4 +111,45 @@ export function cancelWorkout(store: Store, workout: Workout) {
   sets.forEach((s) => deleteSet(store, s));
   performances.forEach((p) => deletePerformance(store, p));
   deleteWorkout(store, workout);
+}
+
+interface PerformanceWithExercise {
+  performance: Performance;
+  exercise: Exercise | null;
+}
+
+function comparePerformances(
+  a: PerformanceWithExercise,
+  b: PerformanceWithExercise,
+): number {
+  const aCompound = compoundIndex(a);
+  const bCompound = compoundIndex(b);
+  if (aCompound !== bCompound) return bCompound - aCompound;
+
+  const aPeriod = periodIndex(a);
+  const bPeriod = periodIndex(b);
+  if (aPeriod !== bPeriod) return bPeriod - aPeriod;
+
+  return a.performance.order - b.performance.order;
+}
+
+function compoundIndex({ exercise }: PerformanceWithExercise): number {
+  const muscles = exercise?.muscles ?? [];
+  return muscles.length > 1 ? 1 : 0;
+}
+
+function periodIndex({ performance }: PerformanceWithExercise): number {
+  switch (performance.periodization) {
+    case undefined:
+      return 0;
+
+    case "light":
+      return 1;
+
+    case "medium":
+      return 2;
+
+    case "heavy":
+      return 3;
+  }
 }
