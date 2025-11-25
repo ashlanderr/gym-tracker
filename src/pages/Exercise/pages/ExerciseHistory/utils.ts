@@ -10,7 +10,7 @@ export function buildHistory(
 
   const toDate = new Date();
   const fromDate = new Date(toDate);
-  fromDate.setMonth(toDate.getMonth() - 3);
+  fromDate.setMonth(toDate.getMonth() - 12);
 
   for (const set of sets) {
     if (!set.completed) continue;
