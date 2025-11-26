@@ -5,6 +5,7 @@
 }
 
 .exerciseName {
+  display: flex;
   color: #08F;
   font-weight: bold;
   font-size: 20px;
@@ -118,27 +119,30 @@ th.setCompletedHeader {
   &::before {
     display: inline-block;
     content: '';
-    width: 8px;
-    height: 8px;
-    border-radius: 8px;
-    margin: 0 6px 2px 2px;
+    width: 2px;
+    height: 100%;
+    padding: 3px 0 2px 0;
+    margin: -3px 8px 0 -10px;
   }
 }
 
 .lightMode {
   &::before {
+    content: '';
     background: #8F8;
   }
 }
 
 .mediumMode {
   &::before {
+    content: '';
     background: #FF0;
   }
 }
 
 .heavyMode {
   &::before {
+    content: '';
     background: #F84;
   }
 }
