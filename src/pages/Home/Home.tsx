@@ -24,6 +24,7 @@ import {
   BottomSheet,
   useConnectionStatus,
   useModalStack,
+  useScrollRestoration,
   useStore,
 } from "../../components";
 import { PiMedalFill } from "react-icons/pi";
@@ -40,6 +41,7 @@ export function Home() {
   const [activeWorkout] = useQueryActiveWorkouts(store);
   const [workoutActions, setWorkoutActions] = useState<Workout | null>(null);
   const activeTimer = useTimer(activeWorkout?.startedAt ?? null, null);
+  const { scrollRef } = useScrollRestoration();
 
   const openWorkoutHandler = (workout: Workout | null) => {
     if (!workout) return;
@@ -74,7 +76,7 @@ export function Home() {
   };
 
   return (
-    <div className={s.body}>
+    <div className={s.body} ref={scrollRef}>
       <div className={s.user}>
         {user.photoURL ? (
           <img className={s.userImage} src={user.photoURL} alt="User Photo" />

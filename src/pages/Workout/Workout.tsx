@@ -17,7 +17,12 @@ import {
   CompleteWorkoutModal,
   ActiveTimer,
 } from "./components";
-import { PageModal, useStore, useModalStack } from "../../components";
+import {
+  PageModal,
+  useStore,
+  useModalStack,
+  useScrollRestoration,
+} from "../../components";
 import { completeWorkout, addPerformance } from "../../domain";
 
 export function Workout() {
@@ -35,6 +40,7 @@ export function Workout() {
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
   const [isAddPerformanceOpen, setAddPerformanceOpen] = useState(false);
+  const { scrollRef } = useScrollRestoration();
 
   const addPerformanceHandler = (exercise: Exercise) => {
     if (!workout) return;
@@ -53,13 +59,10 @@ export function Workout() {
   };
 
   return (
-    <div className={s.root}>
+    <div className={s.root} ref={scrollRef}>
       <ActiveTimer />
       <div className={s.toolbar}>
-        <button
-          className={s.backButton}
-          onClick={() => navigate("/", { replace: true })}
-        >
+        <button className={s.backButton} onClick={() => navigate(-1)}>
           <MdArrowBack />
         </button>
         <div className={s.pageTitle}>Тренировка</div>
