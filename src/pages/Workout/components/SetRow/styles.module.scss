@@ -5,6 +5,14 @@
 td.setNumValue {
   text-align: center;
   padding-left: 16px;
+
+  & .increment {
+    color: #8eff8e;
+  }
+
+  & .decrement {
+    color: #ffa877;
+  }
 }
 
 td.setCompletedValue {

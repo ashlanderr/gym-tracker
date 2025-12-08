@@ -14,16 +14,20 @@ import {
   updateSet,
   type Set,
   useQueryRecordsBySet,
+  type Record,
+  type Performance,
 } from "../../../../db";
 import { clsx } from "clsx";
 import { RECORDS_TRANSLATION } from "../../../constants.ts";
-import { PiMedalFill } from "react-icons/pi";
+import { PiArrowDownBold, PiArrowUpBold, PiMedalFill } from "react-icons/pi";
 import {
+  addSelfWeight,
   formatRecordValue,
   kgToUnits,
   snapWeightKg,
   unitsToKg,
   updateRecords,
+  volumeToOneRepMax,
 } from "../../../../domain";
 import { WeightsVisualizer } from "../WeightsVisualizer";
 import { useActiveTimer } from "../ActiveTimer";
@@ -44,6 +48,23 @@ export function SetRow({
   const [repsInput, setRepsInput] = useState<string | null>(null);
   const records = useQueryRecordsBySet(store, set.id);
   const { startTimer } = useActiveTimer();
+
+  const prevOneRepMax = prevSet
+    ? volumeToOneRepMax(
+        addSelfWeight(exercise?.weight, undefined, prevSet.weight),
+        prevSet.reps,
+      )
+    : undefined;
+  const currOneRepMax = set.completed
+    ? volumeToOneRepMax(
+        addSelfWeight(exercise?.weight, undefined, set.weight),
+        set.reps,
+      )
+    : undefined;
+  const localChange =
+    prevOneRepMax !== undefined && currOneRepMax !== undefined
+      ? currOneRepMax - prevOneRepMax
+      : undefined;
 
   const updatedSet = useRef(set);
   useEffect(() => {
@@ -162,20 +183,7 @@ export function SetRow({
     <>
       <tr className={clsx(set.completed && s.completed)}>
         <td className={s.setNumValue} onClick={setInfoHandler}>
-          {records.length === 0 ? (
-            <span
-              className={clsx({
-                [s.warmUpSet]: set.type === "warm-up",
-                [s.workingSet]: set.type === "working",
-                [s.lightSet]: set.type === "light",
-                [s.failureSet]: set.type === "failure",
-              })}
-            >
-              {number}
-            </span>
-          ) : (
-            <PiMedalFill className={s.recordMedal} />
-          )}
+          {renderSetBadge(performance, set, number, records, localChange)}
         </td>
         <td className={s.prevVolumeValue} onClick={copyPreviousHandler}>
           {prev}
@@ -293,5 +301,39 @@ export function SetRow({
         </div>
       </BottomSheet>
     </>
+  );
+}
+
+function renderSetBadge(
+  performance: Performance,
+  set: Set,
+  number: string,
+  records: Record[],
+  localChange: number | undefined,
+) {
+  if (records.length !== 0) {
+    return <PiMedalFill className={s.recordMedal} />;
+  }
+
+  if (!performance.periodization && set.type !== "warm-up" && localChange) {
+    if (localChange > 0) {
+      return <PiArrowUpBold className={s.increment} />;
+    }
+    if (localChange < 0) {
+      return <PiArrowDownBold className={s.decrement} />;
+    }
+  }
+
+  return (
+    <span
+      className={clsx({
+        [s.warmUpSet]: set.type === "warm-up",
+        [s.workingSet]: set.type === "working",
+        [s.lightSet]: set.type === "light",
+        [s.failureSet]: set.type === "failure",
+      })}
+    >
+      {number}
+    </span>
   );
 }
