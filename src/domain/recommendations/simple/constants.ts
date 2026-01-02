@@ -1,3 +1,6 @@
+import type { ExerciseRepRange, ExerciseWeight } from "../../../db";
+import type { RoundingMode } from "../../weights";
+
 export const WARM_UP_SETS = [
   [
     //
@@ -22,3 +25,17 @@ export const WARM_UP_SETS = [
     { weight: 0.85, reps: 2 },
   ],
 ];
+
+export const MIN_REPS: Record<ExerciseRepRange, number> = {
+  low: 6,
+  medium: 8,
+  high: 12,
+};
+
+export const WEIGHT_ROUNDING: Record<ExerciseWeight["type"], RoundingMode> = {
+  full: "floor",
+  positive: "floor",
+  negative: "ceil",
+};
+
+export const DEFAULT_WEIGHT_DROP = 0.95;

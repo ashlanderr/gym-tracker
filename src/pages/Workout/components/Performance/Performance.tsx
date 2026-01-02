@@ -47,6 +47,8 @@ export function Performance({ performance }: PerformanceProps) {
     performance.startedAt - 1,
   );
 
+  const latestRepMax = selectLatestRepMax(trainingMax, oneRepMax);
+
   const prevPerformance = useQueryPreviousPerformance(
     store,
     performance.exercise,
@@ -105,7 +107,7 @@ export function Performance({ performance }: PerformanceProps) {
             performance,
             exercise,
             measurement,
-            oneRepMax: trainingMax ?? oneRepMax,
+            oneRepMax: latestRepMax,
           })}
         </tbody>
       </table>
@@ -188,4 +190,10 @@ function buildSets({
   });
 
   return result;
+}
+
+function selectLatestRepMax(a: Record | null, b: Record | null): Record | null {
+  if (!a) return b;
+  if (!b) return a;
+  return a.createdAt > b.createdAt ? a : b;
 }
