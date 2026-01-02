@@ -1,0 +1,60 @@
+.sheetHeader {
+  padding: 24px 16px;
+  border-bottom: 1px solid #666;
+  text-align: center;
+}
+
+.sheetWeights:not(:empty) {
+  padding: 16px 16px 0;
+}
+
+.sheetActions {
+  display: flex;
+  flex-direction: column;
+  margin: 16px 16px 64px;
+  border-radius: 16px;
+  background: #444;
+  padding: 4px 0;
+}
+
+.sheetAction {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+
+  :first-child {
+    width: 32px;
+  }
+
+  &.danger {
+    color: #faa;
+  }
+}
+
+.sheetAction:not(:first-child) {
+  border-top: 1px solid #666;
+}
+
+.recordMedal {
+  color: #FF0;
+}
+
+.warmUpSet {
+  color: #FF0;
+}
+
+.workingSet {
+  color: #FFF;
+}
+
+.lightSet {
+  color: #8F8;
+}
+
+.failureSet {
+  color: #F84;
+}

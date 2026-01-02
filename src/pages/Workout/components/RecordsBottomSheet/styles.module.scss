@@ -1,0 +1,63 @@
+.sheetHeader {
+  padding: 24px 16px;
+  border-bottom: 1px solid #666;
+  text-align: center;
+}
+
+.sheetRecords {
+  display: flex;
+  flex-direction: column;
+  margin: 16px 16px 64px;
+  border-radius: 16px;
+  background: #444;
+  padding: 4px 0;
+}
+
+.sheetRecord {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+}
+
+.recordType {
+  color: #fff;
+}
+
+.recordValue {
+  margin-left: auto;
+  display: flex;
+  align-items: flex-start;
+  white-space: nowrap;
+  color: #BBB;
+}
+
+.recordDelta {
+  display: flex;
+  align-items: flex-start;
+  white-space: nowrap;
+
+  &.increment {
+    color: #0F0;
+  }
+
+  &.decrement {
+    color: #F84;
+  }
+
+  svg {
+    margin-bottom: 4px;
+  }
+}
+
+.sheetRecord:not(:first-child) {
+  border-top: 1px solid #666;
+}
+
+.recordMedal {
+  color: #FF0;
+}

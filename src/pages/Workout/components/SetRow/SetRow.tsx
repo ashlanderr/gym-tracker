@@ -1,16 +1,9 @@
 import type { SetRowProps } from "./types.ts";
 import s from "./styles.module.scss";
-import {
-  MdArrowDownward,
-  MdArrowUpward,
-  MdCheck,
-  MdDelete,
-} from "react-icons/md";
-import { BottomSheet, useStore } from "../../../../components";
+import { MdCheck } from "react-icons/md";
+import { useModalStack, useStore } from "../../../../components";
 import { useEffect, useRef, useState } from "react";
 import {
-  deleteSet,
-  type SetType,
   updateSet,
   type Set,
   useQueryRecordsBySet,
@@ -18,11 +11,9 @@ import {
   type Performance,
 } from "../../../../db";
 import { clsx } from "clsx";
-import { RECORDS_TRANSLATION } from "../../../constants.ts";
 import { PiArrowDownBold, PiArrowUpBold, PiMedalFill } from "react-icons/pi";
 import {
   addSelfWeight,
-  formatRecordValue,
   kgToUnits,
   MEDAL_RECORDS,
   snapWeightKg,
@@ -30,9 +21,10 @@ import {
   updateRecords,
   volumeToOneRepMax,
 } from "../../../../domain";
-import { WeightsVisualizer } from "../WeightsVisualizer";
 import { useActiveTimer } from "../ActiveTimer";
 import { formatRepRange } from "./utils.ts";
+import { RecordsBottomSheet } from "../RecordsBottomSheet";
+import { SetActionsBottomSheet } from "../SetActionsBottomSheet";
 
 export function SetRow({
   exercise,
@@ -43,8 +35,7 @@ export function SetRow({
   recSet,
 }: SetRowProps) {
   const store = useStore();
-  const [isActionsOpen, setActionsOpen] = useState(false);
-  const [isRecordsOpen, setRecordsOpen] = useState(false);
+  const { pushModal } = useModalStack();
   const [weightInput, setWeightInput] = useState<string | null>(null);
   const [repsInput, setRepsInput] = useState<string | null>(null);
   const records = useQueryRecordsBySet(store, set.id).filter((r) =>
@@ -86,7 +77,6 @@ export function SetRow({
 
   const weight = (convertWeight(set.weight) ?? "").toString();
   const weightPlaceholder = (convertWeight(recSet?.weight) ?? "-").toString();
-  const expectedWeight = set.weight ?? recSet?.weight;
 
   const reps = set.reps?.toString() ?? "";
   const repsPlaceholder = recSet?.reps ? formatRepRange(recSet.reps) : "-";
@@ -94,18 +84,6 @@ export function SetRow({
   const updateSetInner = (updater: (set: Set) => Set): Set => {
     updatedSet.current = updater(updatedSet.current);
     return updatedSet.current;
-  };
-
-  const setTypeHandler = (type: SetType) => {
-    const set = updateSetInner((set) => ({ ...set, type }));
-    updateSet(store, set);
-    setActionsOpen(false);
-  };
-
-  const removeHandler = async () => {
-    deleteSet(store, set);
-    updateRecords(store, set);
-    setActionsOpen(false);
   };
 
   const weightBlurHandler = () => {
@@ -163,11 +141,16 @@ export function SetRow({
     }
   };
 
-  const setInfoHandler = () => {
+  const setInfoHandler = async () => {
     if (!set.completed) {
-      setActionsOpen(true);
+      await pushModal(SetActionsBottomSheet, {
+        exercise,
+        performance,
+        set,
+        recSet,
+      });
     } else if (records.length !== 0) {
-      setRecordsOpen(true);
+      await pushModal(RecordsBottomSheet, records);
     }
   };
 
@@ -183,127 +166,47 @@ export function SetRow({
   };
 
   return (
-    <>
-      <tr className={clsx(set.completed && s.completed)}>
-        <td className={s.setNumValue} onClick={setInfoHandler}>
-          {renderSetBadge(performance, set, number, records, localChange)}
-        </td>
-        <td className={s.prevVolumeValue} onClick={copyPreviousHandler}>
-          {prev}
-        </td>
-        <td className={s.currentWeightValue}>
-          <input
-            className={s.input}
-            value={weightInput ?? weight}
-            placeholder={weightPlaceholder}
-            disabled={set.completed}
-            type="text"
-            inputMode="numeric"
-            onContextMenu={(e) => e.preventDefault()}
-            onChange={(e) => setWeightInput(e.target.value)}
-            onFocus={(e) => e.target.select()}
-            onBlur={weightBlurHandler}
-          />
-        </td>
-        <td className={s.currentRepsValue}>
-          <input
-            className={s.input}
-            value={repsInput ?? reps}
-            placeholder={repsPlaceholder}
-            disabled={set.completed}
-            type="text"
-            inputMode="numeric"
-            onContextMenu={(e) => e.preventDefault()}
-            onChange={(e) => setRepsInput(e.target.value)}
-            onFocus={(e) => e.target.select()}
-            onBlur={repsBlurHandler}
-          />
-        </td>
-        <td className={s.setCompletedValue}>
-          <button className={s.setCompletedButton} onClick={completeHandler}>
-            <MdCheck />
-          </button>
-        </td>
-      </tr>
-      <BottomSheet isOpen={isActionsOpen} onClose={() => setActionsOpen(false)}>
-        <div className={s.sheetHeader}>Подход</div>
-        <div className={s.sheetWeights}>
-          {expectedWeight !== undefined && (
-            <WeightsVisualizer
-              equipment={exercise?.equipment ?? "none"}
-              weights={performance.weights}
-              weightKg={expectedWeight}
-            />
-          )}
-        </div>
-        <div className={s.sheetActions}>
-          <button
-            className={s.sheetAction}
-            onClick={() => setTypeHandler("warm-up")}
-          >
-            <span className={s.warmUpSet}>W</span>
-            <span>Разминочный подход</span>
-          </button>
-          <button
-            className={s.sheetAction}
-            onClick={() => setTypeHandler("working")}
-          >
-            <span className={s.workingSet}>1</span>
-            <span>Обычный подход</span>
-          </button>
-          <button
-            className={s.sheetAction}
-            onClick={() => setTypeHandler("light")}
-          >
-            <span className={s.lightSet}>L</span>
-            <span>Легкий подход</span>
-          </button>
-          <button
-            className={s.sheetAction}
-            onClick={() => setTypeHandler("failure")}
-          >
-            <span className={s.failureSet}>F</span>
-            <span>Подход в отказ</span>
-          </button>
-          <button
-            className={clsx(s.sheetAction, s.danger)}
-            onClick={removeHandler}
-          >
-            <MdDelete />
-            <span>Удалить подход</span>
-          </button>
-        </div>
-      </BottomSheet>
-      <BottomSheet isOpen={isRecordsOpen} onClose={() => setRecordsOpen(false)}>
-        <div className={s.sheetHeader}>Новый рекорд</div>
-        <div className={s.sheetRecords}>
-          {records.map((r) => (
-            <div className={s.sheetRecord} key={r.type}>
-              <div className={s.recordType}>{RECORDS_TRANSLATION[r.type]}</div>
-              <div className={s.recordValue}>
-                {formatRecordValue(r.current)}
-              </div>
-              {r.previous !== undefined && (
-                <div
-                  className={clsx({
-                    [s.recordDelta]: true,
-                    [s.increment]: r.current > r.previous,
-                    [s.decrement]: r.current < r.previous,
-                  })}
-                >
-                  {r.current > r.previous ? (
-                    <MdArrowUpward />
-                  ) : (
-                    <MdArrowDownward />
-                  )}
-                  {formatRecordValue(Math.abs(r.current - r.previous))}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </BottomSheet>
-    </>
+    <tr className={clsx(set.completed && s.completed)}>
+      <td className={s.setNumValue} onClick={setInfoHandler}>
+        {renderSetBadge(performance, set, number, records, localChange)}
+      </td>
+      <td className={s.prevVolumeValue} onClick={copyPreviousHandler}>
+        {prev}
+      </td>
+      <td className={s.currentWeightValue}>
+        <input
+          className={s.input}
+          value={weightInput ?? weight}
+          placeholder={weightPlaceholder}
+          disabled={set.completed}
+          type="text"
+          inputMode="numeric"
+          onContextMenu={(e) => e.preventDefault()}
+          onChange={(e) => setWeightInput(e.target.value)}
+          onFocus={(e) => e.target.select()}
+          onBlur={weightBlurHandler}
+        />
+      </td>
+      <td className={s.currentRepsValue}>
+        <input
+          className={s.input}
+          value={repsInput ?? reps}
+          placeholder={repsPlaceholder}
+          disabled={set.completed}
+          type="text"
+          inputMode="numeric"
+          onContextMenu={(e) => e.preventDefault()}
+          onChange={(e) => setRepsInput(e.target.value)}
+          onFocus={(e) => e.target.select()}
+          onBlur={repsBlurHandler}
+        />
+      </td>
+      <td className={s.setCompletedValue}>
+        <button className={s.setCompletedButton} onClick={completeHandler}>
+          <MdCheck />
+        </button>
+      </td>
+    </tr>
   );
 }
 
