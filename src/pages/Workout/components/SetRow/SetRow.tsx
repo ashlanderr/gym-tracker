@@ -24,6 +24,7 @@ import {
   addSelfWeight,
   formatRecordValue,
   kgToUnits,
+  MEDAL_RECORDS,
   snapWeightKg,
   unitsToKg,
   updateRecords,
@@ -46,7 +47,9 @@ export function SetRow({
   const [isRecordsOpen, setRecordsOpen] = useState(false);
   const [weightInput, setWeightInput] = useState<string | null>(null);
   const [repsInput, setRepsInput] = useState<string | null>(null);
-  const records = useQueryRecordsBySet(store, set.id);
+  const records = useQueryRecordsBySet(store, set.id).filter((r) =>
+    MEDAL_RECORDS.includes(r.type),
+  );
   const { startTimer } = useActiveTimer();
 
   const prevOneRepMax = prevSet

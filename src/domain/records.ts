@@ -27,6 +27,8 @@ interface RecordData {
   createdAt: number;
 }
 
+export const MEDAL_RECORDS: RecordType[] = ["one_rep_max", "weight", "volume"];
+
 export function updateRecords(store: Store, set: Set) {
   const workout = queryWorkoutById(store, set.workout);
   if (!workout) return;

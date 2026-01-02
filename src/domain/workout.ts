@@ -17,6 +17,7 @@ import {
   type Exercise,
 } from "../db";
 import { addPerformance } from "./performances.ts";
+import { MEDAL_RECORDS } from "./records.ts";
 
 export function addWorkout(store: Store, user: string): Workout {
   return addWorkoutInner(store, {
@@ -66,7 +67,9 @@ export function completeWorkout(
   newName: string,
 ): Workout {
   const performances = queryPerformancesByWorkout(store, workout.id);
-  const records = queryRecordsByWorkout(store, workout.id);
+  const records = queryRecordsByWorkout(store, workout.id).filter((r) =>
+    MEDAL_RECORDS.includes(r.type),
+  );
   const sets = querySetsByWorkout(store, workout.id);
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((a, b) => a + b.weight * b.reps, 0);
