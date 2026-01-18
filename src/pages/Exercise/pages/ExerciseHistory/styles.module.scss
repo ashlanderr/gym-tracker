@@ -62,17 +62,20 @@
 .chartRoot {
   display: flex;
   flex-direction: column;
+  margin-top: 24px;
 }
 
-.parameters {
+.parameters,
+.periods {
   display: flex;
-  margin: 32px 16px 0;
+  margin: 8px 16px 0;
   gap: 8px;
   font-size: 12px;
   flex-wrap: wrap;
 }
 
-.parameter {
+.parameter,
+.period {
   flex: 1 1 0;
   display: flex;
   align-items: center;
@@ -83,13 +86,18 @@
   border: none;
   color: inherit;
   font: inherit;
-  padding: 4px;
+  padding: 8px 4px;
   border-radius: 4px;
+}
 
-  &.active {
-    background: #06F;
-    color: #FFF;
-  }
+.parameter.active {
+  background: #06F;
+  color: #FFF;
+}
+
+.period.active {
+  background: #CCC;
+  color: #000;
 }
 
 .records {

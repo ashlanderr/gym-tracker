@@ -20,3 +20,10 @@ export interface ChartParameter {
   key: ChartParameterType;
   label: string;
 }
+
+export type ChartPeriodType = "three_months" | "one_year" | "all";
+
+export interface ChartPeriod {
+  key: ChartPeriodType;
+  label: string;
+}

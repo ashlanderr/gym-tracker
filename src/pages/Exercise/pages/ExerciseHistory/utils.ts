@@ -1,16 +1,34 @@
 import { type Performance, type Set } from "../../../../db";
-import type { HistoryPoint } from "./types.ts";
+import type { ChartPeriodType, HistoryPoint } from "./types.ts";
 import { volumeToOneRepMax } from "../../../../domain";
+import { assertNever } from "../../../../utils";
 
 export function buildHistory(
   performances: Performance[],
   sets: Set[],
+  period: ChartPeriodType,
 ): HistoryPoint[] {
   const points = new Map<string, HistoryPoint>();
 
   const toDate = new Date();
   const fromDate = new Date(toDate);
-  fromDate.setMonth(toDate.getMonth() - 12);
+
+  switch (period) {
+    case "three_months":
+      fromDate.setMonth(toDate.getMonth() - 3);
+      break;
+
+    case "one_year":
+      fromDate.setMonth(toDate.getMonth() - 12);
+      break;
+
+    case "all":
+      fromDate.setTime(0);
+      break;
+
+    default:
+      assertNever(period);
+  }
 
   for (const set of sets) {
     if (!set.completed) continue;

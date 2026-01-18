@@ -1,6 +1,10 @@
 import s from "./styles.module.scss";
 import { MdArrowBack } from "react-icons/md";
-import type { ChartParameterType, ExerciseHistoryParams } from "./types.ts";
+import type {
+  ChartParameterType,
+  ChartPeriodType,
+  ExerciseHistoryParams,
+} from "./types.ts";
 import { MUSCLES_TRANSLATION } from "../../../constants.ts";
 import {
   useQuerySetsByExercise,
@@ -13,7 +17,11 @@ import {
 import { useStore } from "../../../../components";
 import { useMemo, useState } from "react";
 import { buildHistory } from "./utils.ts";
-import { CHART_PARAMETERS, DATE_FORMATTER } from "./constants.ts";
+import {
+  CHART_PARAMETERS,
+  CHART_PERIODS,
+  DATE_FORMATTER,
+} from "./constants.ts";
 import { clsx } from "clsx";
 import {
   CartesianGrid,
@@ -37,10 +45,6 @@ export function ExerciseHistory() {
   const performances = useQueryPerformancesByExercise(store, exerciseId);
   const sets = useQuerySetsByExercise(store, exerciseId);
   const records = useQueryRecordsByExercise(store, exerciseId);
-  const history = useMemo(
-    () => buildHistory(performances, sets),
-    [performances, sets],
-  );
   const latestRecords = useMemo(() => {
     return Object.entries(RECORDS_TRANSLATION)
       .map(([recordType, recordName]) => {
@@ -53,6 +57,11 @@ export function ExerciseHistory() {
       .filter((r) => r.value);
   }, [records]);
   const [parameter, setParameter] = useState<ChartParameterType>("oneRepMax");
+  const [period, setPeriod] = useState<ChartPeriodType>("three_months");
+  const history = useMemo(
+    () => buildHistory(performances, sets, period),
+    [performances, sets, period],
+  );
 
   if (!exercise) return null;
 
@@ -81,6 +90,17 @@ export function ExerciseHistory() {
               onClick={() => setParameter(param.key)}
             >
               {param.label}
+            </button>
+          ))}
+        </div>
+        <div className={s.periods}>
+          {CHART_PERIODS.map((p) => (
+            <button
+              className={clsx(s.period, p.key === period && s.active)}
+              key={p.key}
+              onClick={() => setPeriod(p.key)}
+            >
+              {p.label}
             </button>
           ))}
         </div>
