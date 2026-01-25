@@ -5,6 +5,8 @@ import type {
 } from "../../../db";
 import type { ModeParams, WeightUpdateParams } from "./types.ts";
 
+export const DEFAULT_RIR = 2;
+
 export const WARM_UP_SETS = [
   [
     //
@@ -38,51 +40,42 @@ export const MODE_PARAMS: Record<
     light: {
       minReps: 10,
       maxReps: 12,
-      reserve: 4,
     },
     medium: {
       minReps: 6,
       maxReps: 8,
-      reserve: 2,
     },
     heavy: {
       minReps: 3,
       maxReps: 5,
-      reserve: 1,
     },
   },
   medium: {
     light: {
       minReps: 12,
       maxReps: 15,
-      reserve: 4,
     },
     medium: {
       minReps: 10,
       maxReps: 12,
-      reserve: 2,
     },
     heavy: {
       minReps: 6,
       maxReps: 8,
-      reserve: 1,
     },
   },
   high: {
     light: {
       minReps: 15,
       maxReps: 20,
-      reserve: 4,
     },
     medium: {
       minReps: 12,
       maxReps: 15,
-      reserve: 2,
     },
     heavy: {
       minReps: 10,
       maxReps: 12,
-      reserve: 1,
     },
   },
 };

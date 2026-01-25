@@ -7,6 +7,7 @@ import {
   volumeToOneRepMax,
 } from "../../weights";
 import {
+  DEFAULT_RIR,
   EPSILON_WEIGHT,
   MODE_PARAMS,
   NEXT_WEIGHT_PARAMS,
@@ -124,16 +125,13 @@ function computeWorkingSet(
     return undefined;
   }
 
-  const { minReps, maxReps, reserve } =
-    MODE_PARAMS[exerciseReps][periodization];
+  const { minReps, maxReps } = MODE_PARAMS[exerciseReps][periodization];
 
   const workingSets = previousSets.filter((s) => s.type !== "warm-up");
-  const availableReserve = Math.min(reserve, workingSets.length);
-  const maxFails = workingSets.length - availableReserve;
 
   if (workingSets.length === 0) {
     const fullWeight =
-      fullRepMax && oneRepMaxToWeight(fullRepMax, maxReps + reserve);
+      fullRepMax && oneRepMaxToWeight(fullRepMax, maxReps + DEFAULT_RIR);
     const { rounding } = PREV_WEIGHT_PARAMS[exerciseWeights?.type ?? "full"];
     const weight =
       fullWeight &&
@@ -159,9 +157,9 @@ function computeWorkingSet(
 
   let update: WeightUpdateParams = { direction: 0, rounding: "round" };
 
-  if (maxedOutSets.length >= availableReserve) {
+  if (maxedOutSets.length >= workingSets.length) {
     update = NEXT_WEIGHT_PARAMS[exerciseWeights?.type ?? "full"];
-  } else if (failedSets.length > maxFails) {
+  } else if (failedSets.length > 0) {
     update = PREV_WEIGHT_PARAMS[exerciseWeights?.type ?? "full"];
   }
 
