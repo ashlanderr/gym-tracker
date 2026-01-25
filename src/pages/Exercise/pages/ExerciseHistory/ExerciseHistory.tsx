@@ -13,6 +13,7 @@ import {
   maxBy,
   compareRecordsByDate,
   useQueryExerciseById,
+  type PeriodizationMode,
 } from "../../../../db";
 import { useStore } from "../../../../components";
 import { useMemo, useState } from "react";
@@ -21,6 +22,7 @@ import {
   CHART_PARAMETERS,
   CHART_PERIODS,
   DATE_FORMATTER,
+  PERIODIZATION_DOT_COLORS,
 } from "./constants.ts";
 import { clsx } from "clsx";
 import {
@@ -129,8 +131,9 @@ export function ExerciseHistory() {
               <Line
                 type="linear"
                 dataKey={parameter}
-                stroke="#8884d8"
+                stroke="gray"
                 isAnimationActive={false}
+                dot={<CustomDot />}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -153,3 +156,11 @@ export function ExerciseHistory() {
     </div>
   );
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const CustomDot = (props: any) => {
+  const { cx, cy, payload } = props;
+  const periodization: PeriodizationMode | "" = payload.periodization ?? "";
+  const color = PERIODIZATION_DOT_COLORS[periodization];
+  return <circle cx={cx} cy={cy} r={3} fill={color} />;
+};
