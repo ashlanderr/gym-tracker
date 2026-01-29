@@ -6,6 +6,7 @@ export const CHART_PARAMETERS: ChartParameter[] = [
   { key: "maxWeight", label: "МАКС ВЕС" },
   { key: "bestSetVolume", label: "ОБЪЁМ СЕТА" },
   { key: "workoutVolume", label: "ОБЪЁМ СЕССИИ" },
+  { key: "averageRepMax", label: "СРЕД 1ПМ" },
 ];
 
 export const CHART_PERIODS: ChartPeriod[] = [

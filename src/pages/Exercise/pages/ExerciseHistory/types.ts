@@ -10,6 +10,8 @@ export interface HistoryPoint {
   oneRepMax: number;
   bestSetVolume: number;
   workoutVolume: number;
+  averageRepMax: number;
+  sets: number;
   periodization: PeriodizationMode | undefined;
 }
 
@@ -17,7 +19,8 @@ export type ChartParameterType =
   | "maxWeight"
   | "oneRepMax"
   | "bestSetVolume"
-  | "workoutVolume";
+  | "workoutVolume"
+  | "averageRepMax";
 
 export interface ChartParameter {
   key: ChartParameterType;

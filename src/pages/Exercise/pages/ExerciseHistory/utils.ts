@@ -48,6 +48,8 @@ export function buildHistory(
         oneRepMax: 0,
         bestSetVolume: 0,
         workoutVolume: 0,
+        averageRepMax: 0,
+        sets: 0,
         periodization: performance.periodization,
       };
       points.set(performance.workout, point);
@@ -61,6 +63,12 @@ export function buildHistory(
     point.oneRepMax = Math.max(point.oneRepMax, oneRepMax);
     point.bestSetVolume = Math.max(point.bestSetVolume, setVolume);
     point.workoutVolume += setVolume;
+    point.averageRepMax += oneRepMax;
+    point.sets += 1;
+  }
+
+  for (const point of points.values()) {
+    point.averageRepMax /= point.sets;
   }
 
   return [...points.values()].sort(
