@@ -32,6 +32,7 @@ export function buildHistory(
 
   for (const set of sets) {
     if (!set.completed) continue;
+    if (set.type === "warm-up") continue;
 
     const performance = performances.find((p) => p.id === set.performance);
     if (!performance) continue;
