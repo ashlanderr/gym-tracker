@@ -7,7 +7,7 @@ import { BottomSheet, useStore } from "../../../../components";
 import { TIMER_OPTIONS } from "./constants.ts";
 import { updatePerformance } from "../../../../db";
 
-export function PerformanceTimer({ performance }: PerformanceTimerProps) {
+export function PerformanceTimer({ performance, readonly }: PerformanceTimerProps) {
   const store = useStore();
   const [chooseOpen, setChooseOpen] = useState(false);
 
@@ -16,7 +16,9 @@ export function PerformanceTimer({ performance }: PerformanceTimerProps) {
     : "ВЫКЛ";
 
   const chooseBeginHandler = () => {
-    setChooseOpen(true);
+    if (!readonly) {
+      setChooseOpen(true);
+    }
   };
 
   const chooseCompleteHandler = (option: number) => {

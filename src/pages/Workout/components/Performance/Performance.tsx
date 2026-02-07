@@ -26,7 +26,12 @@ import { addNextSet, buildRecommendations } from "../../../../domain";
 import { PerformanceActions } from "../PerformanceActions";
 import { clsx } from "clsx";
 
-export function Performance({ performance }: PerformanceProps) {
+export function Performance({
+  performance,
+  title,
+  readonly,
+  onShowActions,
+}: PerformanceProps) {
   const store = useStore();
   const { pushModal } = useModalStack();
   const exercise = useQueryExerciseById(store, performance.exercise);
@@ -69,7 +74,11 @@ export function Performance({ performance }: PerformanceProps) {
   };
 
   const actionsHandler = async () => {
-    await pushModal(PerformanceActions, { performance, exercise });
+    if (onShowActions) {
+      onShowActions();
+    } else {
+      await pushModal(PerformanceActions, { performance, exercise });
+    }
   };
 
   return (
@@ -83,10 +92,10 @@ export function Performance({ performance }: PerformanceProps) {
         })}
         onClick={actionsHandler}
       >
-        {exercise?.name ?? "-"}
+        {title ?? exercise?.name ?? "-"}
       </div>
       <div className={s.timer}>
-        <PerformanceTimer performance={performance} />
+        <PerformanceTimer performance={performance} readonly={readonly} />
       </div>
       <table className={s.sets}>
         <thead>
@@ -108,13 +117,16 @@ export function Performance({ performance }: PerformanceProps) {
             exercise,
             measurement,
             oneRepMax: latestRepMax,
+            readonly,
           })}
         </tbody>
       </table>
-      <button className={s.addSetButton} onClick={addSetHandler}>
-        <MdAdd />
-        Добавить сет
-      </button>
+      {!readonly && (
+        <button className={s.addSetButton} onClick={addSetHandler}>
+          <MdAdd />
+          Добавить сет
+        </button>
+      )}
     </div>
   );
 }
@@ -126,6 +138,7 @@ function buildSets({
   exercise,
   measurement,
   oneRepMax,
+  readonly,
 }: {
   prevSets: CompletedSet[];
   sets: Set[];
@@ -133,6 +146,7 @@ function buildSets({
   exercise: Exercise | null;
   measurement: Measurement | null;
   oneRepMax: Record | null;
+  readonly?: boolean;
 }): ReactNode[] {
   const prevWarmUp = prevSets.filter((s) => s.type === "warm-up");
   const prevWorking = prevSets.filter((s) => s.type !== "warm-up");
@@ -185,6 +199,7 @@ function buildSets({
         set={set}
         prevSet={prevSet}
         recSet={recSet}
+        readonly={readonly}
       />,
     );
   });

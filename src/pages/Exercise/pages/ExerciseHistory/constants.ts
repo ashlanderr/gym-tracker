@@ -20,6 +20,15 @@ export const DATE_FORMATTER = new Intl.DateTimeFormat("ru", {
   month: "short",
 });
 
+export const DATE_TIME_FORMATTER = new Intl.DateTimeFormat("ru", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  hour: "numeric",
+  minute: "numeric",
+  weekday: "long",
+});
+
 export const PERIODIZATION_DOT_COLORS: Record<PeriodizationMode | "", string> =
   {
     "": "white",

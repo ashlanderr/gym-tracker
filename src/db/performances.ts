@@ -9,6 +9,7 @@ import {
 } from "./db.ts";
 import type { Store } from "./doc.ts";
 import type { PeriodizationMode } from "./periodization.ts";
+import { useMemo } from "react";
 
 export interface Performance {
   id: string;
@@ -105,13 +106,18 @@ export function useQueryPerformancesByExercise(
   store: Store,
   exercise: string,
 ): Performance[] {
-  return useQueryCollection({
+  const items = useQueryCollection<Performance>({
     collection: collection(store.personal, "performances"),
     filter: {
       exercise: { eq: exercise },
     },
     deps: [exercise],
   });
+
+  return useMemo(
+    () => items.sort((a, b) => b.startedAt - a.startedAt),
+    [items],
+  );
 }
 
 export function addPerformance(store: Store, entity: Performance): Performance {

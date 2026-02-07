@@ -1,5 +1,5 @@
 import s from "./styles.module.scss";
-import { MdArrowBack } from "react-icons/md";
+import { MdArrowBack, MdHistory } from "react-icons/md";
 import type {
   ChartParameterType,
   ChartPeriodType,
@@ -15,13 +15,14 @@ import {
   useQueryExerciseById,
   type PeriodizationMode,
 } from "../../../../db";
-import { useStore } from "../../../../components";
+import { useScrollRestoration, useStore } from "../../../../components";
 import { useMemo, useState } from "react";
 import { buildHistory } from "./utils.ts";
 import {
   CHART_PARAMETERS,
   CHART_PERIODS,
   DATE_FORMATTER,
+  DATE_TIME_FORMATTER,
   PERIODIZATION_DOT_COLORS,
 } from "./constants.ts";
 import { clsx } from "clsx";
@@ -38,10 +39,12 @@ import { formatRecordValue } from "../../../../domain";
 import { PiMedalFill } from "react-icons/pi";
 import { usePageParams } from "../../../hooks.ts";
 import { useNavigate } from "react-router";
+import { Performance } from "../../../Workout";
 
 export function ExerciseHistory() {
   const store = useStore();
   const navigate = useNavigate();
+  const { scrollRef } = useScrollRestoration();
   const { exerciseId } = usePageParams<ExerciseHistoryParams>();
   const exercise = useQueryExerciseById(store, exerciseId);
   const performances = useQueryPerformancesByExercise(store, exerciseId);
@@ -68,7 +71,7 @@ export function ExerciseHistory() {
   if (!exercise) return null;
 
   return (
-    <div className={s.root}>
+    <div className={s.root} ref={scrollRef}>
       <div className={s.toolbar}>
         <button className={s.toolbarButton} onClick={() => navigate(-1)}>
           <MdArrowBack />
@@ -153,6 +156,21 @@ export function ExerciseHistory() {
           ))}
         </div>
       )}
+      <div className={s.performancesTitle}>
+        <MdHistory />
+        История тренировок
+      </div>
+      <div className={s.performances}>
+        {performances.map((p) => (
+          <Performance
+            key={p.id}
+            performance={p}
+            title={DATE_TIME_FORMATTER.format(p.startedAt)}
+            readonly={true}
+            onShowActions={() => navigate(`/workouts/${p.workout}`)}
+          />
+        ))}
+      </div>
     </div>
   );
 }

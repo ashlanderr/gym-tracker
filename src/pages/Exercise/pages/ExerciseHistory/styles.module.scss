@@ -110,6 +110,7 @@
   display: flex;
   align-items: center;
   padding: 16px 0 8px;
+  font-size: 20px;
 }
 
 .record {
@@ -122,4 +123,19 @@
 .recordMedal {
   color: #FF0;
   margin: 0 8px 4px 0;
+}
+
+.performancesTitle {
+  display: flex;
+  align-items: center;
+  padding: 24px 16px 8px;
+  font-size: 20px;
+  gap: 8px;
+}
+
+.performances {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 24px;
 }

@@ -15,6 +15,7 @@ export interface SetRowProps {
   set: Set;
   prevSet: CompletedSet | undefined;
   recSet: RecSetData | undefined;
+  readonly?: boolean;
 }
 
 export interface NewRecordData extends RecordNumbers {

@@ -33,6 +33,7 @@ export function SetRow({
   set,
   prevSet,
   recSet,
+  readonly,
 }: SetRowProps) {
   const store = useStore();
   const { pushModal } = useModalStack();
@@ -119,6 +120,7 @@ export function SetRow({
   };
 
   const completeHandler = async () => {
+    if (readonly) return;
     if (!set.completed) {
       const set = updateSetInner((set) => {
         const weight = set.weight ?? recSet?.weight;
