@@ -49,7 +49,9 @@ export function PerformanceActions({
   const historyHandler = async () => {
     if (exercise) {
       await onCancel();
-      navigate(`/exercises/${exercise.id}/history`);
+      navigate(
+        `/exercises/${exercise.id}/history?program=${performance.program || ""}`,
+      );
     }
   };
 

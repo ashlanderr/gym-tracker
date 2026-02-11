@@ -5,6 +5,7 @@ import {
   useQueryPerformancesByWorkout,
   useQuerySetsByWorkout,
   type Exercise,
+  useQueryProgramById,
 } from "../../db";
 import type { WorkoutParams } from "./types.ts";
 import { usePageParams } from "../hooks.ts";
@@ -16,6 +17,7 @@ import {
   ChooseExercise,
   CompleteWorkoutModal,
   ActiveTimer,
+  ChooseProgramBottomSheet,
 } from "./components";
 import {
   PageModal,
@@ -23,7 +25,11 @@ import {
   useModalStack,
   useScrollRestoration,
 } from "../../components";
-import { completeWorkout, addPerformance } from "../../domain";
+import {
+  completeWorkout,
+  addPerformance,
+  setWorkoutProgram,
+} from "../../domain";
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
@@ -31,6 +37,7 @@ export function Workout() {
   const navigate = useNavigate();
   const { pushModal } = useModalStack();
   const workout = useQueryWorkoutById(store, workoutId);
+  const program = useQueryProgramById(store, workout?.program ?? "");
   const timer = useTimer(
     workout?.startedAt ?? null,
     workout?.completedAt ?? null,
@@ -55,6 +62,16 @@ export function Workout() {
     if (result) {
       completeWorkout(store, workout, result.name);
       navigate("/", { replace: true });
+    }
+  };
+
+  const handleSelectProgram = async () => {
+    if (!workout) return;
+    const result = await pushModal(ChooseProgramBottomSheet, {
+      current: program ?? null,
+    });
+    if (result !== undefined) {
+      setWorkoutProgram(store, workout, result ?? undefined);
     }
   };
 
@@ -86,6 +103,10 @@ export function Workout() {
           <div className={s.statValue}>
             {completedSets.length} / {sets.length}
           </div>
+        </div>
+        <div className={s.stat} onClick={handleSelectProgram}>
+          <div className={s.statName}>Программа</div>
+          <div className={s.statValue}>{program?.name ?? "Базовая"}</div>
         </div>
       </div>
       <div className={s.exercises}>

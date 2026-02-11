@@ -15,9 +15,11 @@ import {
   updatePerformance,
   type Performance,
   type Exercise,
+  type Program,
+  querySetsByPerformance,
 } from "../db";
 import { addPerformance } from "./performances.ts";
-import { MEDAL_RECORDS } from "./records.ts";
+import { MEDAL_RECORDS, updateRecords } from "./records.ts";
 
 export function addWorkout(store: Store, user: string): Workout {
   return addWorkoutInner(store, {
@@ -32,11 +34,12 @@ export function addWorkout(store: Store, user: string): Workout {
 }
 
 export function duplicateWorkout(store: Store, oldWorkout: Workout): Workout {
-  const newWorkout = addWorkout(store, oldWorkout.user);
+  let newWorkout = addWorkout(store, oldWorkout.user);
 
-  updateWorkout(store, {
+  newWorkout = updateWorkout(store, {
     ...newWorkout,
     name: oldWorkout.name,
+    program: oldWorkout.program,
   });
 
   const oldPerformances = queryPerformancesByWorkout(store, oldWorkout.id);
@@ -103,6 +106,29 @@ export function completeWorkout(
   });
 
   return workout;
+}
+
+export function setWorkoutProgram(
+  store: Store,
+  workout: Workout,
+  program: Program | undefined,
+): Workout {
+  const performances = queryPerformancesByWorkout(store, workout.id);
+
+  for (const performance of performances) {
+    updatePerformance(store, {
+      ...performance,
+      program: program?.id,
+    });
+
+    const [set] = querySetsByPerformance(store, performance.id);
+    if (set) updateRecords(store, set);
+  }
+
+  return updateWorkout(store, {
+    ...workout,
+    program: program?.id,
+  });
 }
 
 export function cancelWorkout(store: Store, workout: Workout) {

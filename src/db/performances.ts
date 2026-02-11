@@ -20,6 +20,7 @@ export interface Performance {
   weights?: PerformanceWeights;
   timer?: number;
   periodization?: PeriodizationMode;
+  program: string | undefined;
 }
 
 export type WeightUnits = "kg" | "lbs";
@@ -88,6 +89,7 @@ export function useQueryPreviousPerformance(
   exercise: string,
   startedAt: number,
   periodization: PeriodizationMode | undefined,
+  program: string | undefined,
 ): Performance | null {
   const entities = useQueryCollection<Performance>({
     collection: collection(store.personal, "performances"),
@@ -95,8 +97,9 @@ export function useQueryPreviousPerformance(
       exercise: { eq: exercise },
       startedAt: { lt: startedAt },
       periodization: { eq: periodization },
+      program: { eq: program },
     },
-    deps: [exercise, startedAt, periodization],
+    deps: [exercise, startedAt, periodization, program],
   });
   return maxBy(entities, (a, b) => a.startedAt - b.startedAt);
 }
@@ -104,13 +107,15 @@ export function useQueryPreviousPerformance(
 export function useQueryPerformancesByExercise(
   store: Store,
   exercise: string,
+  program: string | undefined,
 ): Performance[] {
   return useQueryCollection({
     collection: collection(store.personal, "performances"),
     filter: {
       exercise: { eq: exercise },
+      program: { eq: program },
     },
-    deps: [exercise],
+    deps: [exercise, program],
   });
 }
 

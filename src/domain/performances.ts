@@ -41,6 +41,7 @@ export function addPerformance(
     weights: prevPerformance?.weights,
     timer: prevPerformance?.timer,
     periodization: computeNextPeriodization(prevPerformance?.periodization),
+    program: workout.program,
   });
 
   if (prevSets) {

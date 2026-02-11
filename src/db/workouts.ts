@@ -17,6 +17,7 @@ export interface Workout {
   volume?: number;
   sets?: number;
   records?: number;
+  program?: string;
 }
 
 export function queryWorkoutById(store: Store, id: string): Workout | null {

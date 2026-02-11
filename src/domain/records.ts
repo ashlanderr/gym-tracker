@@ -118,6 +118,7 @@ function updateRecord(
     store,
     type,
     performance.exercise,
+    performance.program,
     performance.startedAt,
   );
 
@@ -135,6 +136,7 @@ function updateRecord(
     previous: previousRecord?.current,
     current: maxValue.current,
     full: maxValue.full,
+    program: performance.program,
   });
 }
 

@@ -23,6 +23,7 @@ export interface Record {
   previous: number | undefined;
   current: number;
   full: number | undefined;
+  program: string | undefined;
 }
 
 export interface RecordNumbers {
@@ -59,13 +60,15 @@ export function useQueryRecordsBySet(store: Store, set: string): Record[] {
 export function useQueryRecordsByExercise(
   store: Store,
   exercise: string,
+  program: string | undefined,
 ): Record[] {
   return useQueryCollection({
     collection: collection(store.personal, "records"),
     filter: {
       exercise: { eq: exercise },
+      program: { eq: program },
     },
-    deps: [exercise],
+    deps: [exercise, program],
   });
 }
 
@@ -73,6 +76,7 @@ export function queryPreviousRecordByExercise(
   store: Store,
   type: RecordType,
   exercise: string,
+  program: string | undefined,
   createdAt: number,
 ): Record | null {
   const records = queryCollection<Record>(
@@ -80,6 +84,7 @@ export function queryPreviousRecordByExercise(
     {
       type: { eq: type },
       exercise: { eq: exercise },
+      program: { eq: program },
       createdAt: { le: createdAt },
     },
   );
@@ -90,6 +95,7 @@ export function useQueryPreviousRecordByExercise(
   store: Store,
   type: RecordType,
   exercise: string,
+  program: string | undefined,
   createdAt: number,
 ): Record | null {
   const records = useQueryCollection<Record>({
@@ -97,9 +103,10 @@ export function useQueryPreviousRecordByExercise(
     filter: {
       type: { eq: type },
       exercise: { eq: exercise },
+      program: { eq: program },
       createdAt: { le: createdAt },
     },
-    deps: [type, exercise, createdAt],
+    deps: [type, exercise, program, createdAt],
   });
   return useMemo(() => maxBy(records, compareRecordsByDate), [records]);
 }

@@ -30,15 +30,18 @@ export function ModalStack({ children }: ModalStackProps) {
         data: D,
       ) => {
         const id = generateId();
+        const prevLocation = locationRef.current;
         let result: R | undefined = undefined;
 
         doNavigate(locationRef.current, { state: id });
 
         const promise = new Promise<R | undefined>((resolve) => {
           const listener = () => {
-            window.removeEventListener("popstate", listener);
-            setStack((stack) => stack.slice(0, stack.length - 1));
-            resolve(result);
+            if (prevLocation.state === locationRef.current.state) {
+              window.removeEventListener("popstate", listener);
+              setStack((stack) => stack.slice(0, stack.length - 1));
+              resolve(result);
+            }
           };
 
           window.addEventListener("popstate", listener);

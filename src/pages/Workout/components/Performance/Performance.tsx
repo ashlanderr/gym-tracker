@@ -37,6 +37,7 @@ export function Performance({ performance }: PerformanceProps) {
     store,
     "training_max",
     performance.exercise,
+    performance.program,
     performance.startedAt - 1,
   );
 
@@ -44,6 +45,7 @@ export function Performance({ performance }: PerformanceProps) {
     store,
     "one_rep_max",
     performance.exercise,
+    performance.program,
     performance.startedAt - 1,
   );
 
@@ -54,6 +56,7 @@ export function Performance({ performance }: PerformanceProps) {
     performance.exercise,
     performance.startedAt,
     performance.periodization,
+    performance.program,
   );
 
   const prevSets = useQuerySetsByPerformance(

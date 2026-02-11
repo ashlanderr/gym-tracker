@@ -1,0 +1,31 @@
+.sheetHeader {
+  padding: 24px 16px;
+  border-bottom: 1px solid #666;
+  text-align: center;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  margin: 16px 16px 64px;
+  gap: 8px;
+}
+
+.option {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 16px;
+  background: #555;
+  color: #FFF;
+  border: none;
+  outline: none;
+  line-height: 1;
+  font-family: inherit;
+  align-items: center;
+}
+
+.option.selected {
+  background: #06F;
+}

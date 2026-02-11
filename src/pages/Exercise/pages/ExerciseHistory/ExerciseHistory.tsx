@@ -37,16 +37,22 @@ import { RECORDS_TRANSLATION } from "../../../constants.ts";
 import { formatRecordValue } from "../../../../domain";
 import { PiMedalFill } from "react-icons/pi";
 import { usePageParams } from "../../../hooks.ts";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 
 export function ExerciseHistory() {
   const store = useStore();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const programId = searchParams.get("program") || undefined;
   const { exerciseId } = usePageParams<ExerciseHistoryParams>();
   const exercise = useQueryExerciseById(store, exerciseId);
-  const performances = useQueryPerformancesByExercise(store, exerciseId);
+  const performances = useQueryPerformancesByExercise(
+    store,
+    exerciseId,
+    programId,
+  );
   const sets = useQuerySetsByExercise(store, exerciseId);
-  const records = useQueryRecordsByExercise(store, exerciseId);
+  const records = useQueryRecordsByExercise(store, exerciseId, programId);
   const latestRecords = useMemo(() => {
     return Object.entries(RECORDS_TRANSLATION)
       .map(([recordType, recordName]) => {
