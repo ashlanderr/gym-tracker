@@ -72,12 +72,14 @@ export function useQueryPerformancesByWorkout(
 export function queryPreviousPerformance(
   store: Store,
   exercise: string,
+  program: string | undefined,
   startedAt: number,
 ): Performance | null {
   const entities = queryCollection<Performance>(
     collection(store.personal, "performances"),
     {
       exercise: { eq: exercise },
+      program: { eq: program },
       startedAt: { lt: startedAt },
     },
   );

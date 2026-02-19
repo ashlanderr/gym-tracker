@@ -1,4 +1,4 @@
-export const APP_VERSION = "4.9.0";
+export const APP_VERSION = "4.9.1";
 
 export const DATE_FORMATTER = new Intl.DateTimeFormat("ru", {
   year: "numeric",

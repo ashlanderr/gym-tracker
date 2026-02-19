@@ -26,7 +26,12 @@ export function addPerformance(
   const nextOrder =
     Math.max(-1, ...workoutPerformances.map((s) => s.order)) + 1;
 
-  const prevPerformance = queryPreviousPerformance(store, exercise, Date.now());
+  const prevPerformance = queryPreviousPerformance(
+    store,
+    exercise,
+    workout.program,
+    workout.startedAt,
+  );
 
   const prevSets =
     prevPerformance && querySetsByPerformance(store, prevPerformance.id);
