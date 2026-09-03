@@ -119,6 +119,7 @@ function computeWorkingSet(
 
   if (
     exerciseReps === undefined ||
+    typeof exerciseReps !== "string" ||
     periodization === undefined ||
     performanceWeights === undefined
   ) {

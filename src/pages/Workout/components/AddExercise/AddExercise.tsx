@@ -11,7 +11,7 @@ import {
   updateExercise,
   generateId,
   DEFAULT_EXERCISE_REPS,
-  type ExerciseRepRange,
+  type ExerciseRepRangeSimple,
 } from "../../../../db";
 import {
   EQUIPMENT_TRANSLATION,
@@ -67,7 +67,7 @@ export function AddExercise({
 
   const repsOptions = Object.entries(EXERCISES_REPS_TRANSLATION).map(
     ([key, label]) => ({
-      key: key as ExerciseRepRange,
+      key: key as ExerciseRepRangeSimple,
       label,
     }),
   );

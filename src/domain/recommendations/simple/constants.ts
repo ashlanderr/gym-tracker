@@ -1,4 +1,4 @@
-import type { ExerciseRepRange, ExerciseWeight } from "../../../db";
+import type { ExerciseRepRangeSimple, ExerciseWeight } from "../../../db";
 import type { RoundingMode } from "../../weights";
 
 export const WARM_UP_SETS = [
@@ -26,7 +26,7 @@ export const WARM_UP_SETS = [
   ],
 ];
 
-export const MIN_REPS: Record<ExerciseRepRange, number> = {
+export const MIN_REPS: Record<ExerciseRepRangeSimple, number> = {
   low: 6,
   medium: 8,
   high: 12,

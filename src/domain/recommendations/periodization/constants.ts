@@ -1,5 +1,5 @@
 import type {
-  ExerciseRepRange,
+  ExerciseRepRangeSimple,
   ExerciseWeight,
   PeriodizationMode,
 } from "../../../db";
@@ -33,7 +33,7 @@ export const WARM_UP_SETS = [
 ];
 
 export const MODE_PARAMS: Record<
-  ExerciseRepRange,
+  ExerciseRepRangeSimple,
   Record<PeriodizationMode, ModeParams>
 > = {
   low: {

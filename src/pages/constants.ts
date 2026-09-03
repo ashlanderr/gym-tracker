@@ -4,7 +4,7 @@ import type {
   MuscleType,
   WeightUnits,
   RecordType,
-  ExerciseRepRange,
+  ExerciseRepRangeSimple,
 } from "../db";
 
 export const MUSCLES_TRANSLATION: Record<MuscleType, string> = {
@@ -44,7 +44,10 @@ export const EXERCISE_WEIGHT_TRANSLATION: Record<
   positive: "Утяжеление",
 };
 
-export const EXERCISES_REPS_TRANSLATION: Record<ExerciseRepRange, string> = {
+export const EXERCISES_REPS_TRANSLATION: Record<
+  ExerciseRepRangeSimple,
+  string
+> = {
   low: "Низкий",
   medium: "Средний",
   high: "Высокий",

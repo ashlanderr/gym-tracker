@@ -142,14 +142,22 @@ function computeWorkingSet(
     return { type: "working", weight: undefined, reps: undefined };
   }
 
+  const exerciseRepsNorm = exerciseReps ?? DEFAULT_EXERCISE_REPS;
   const weightType = exerciseWeights?.type ?? DEFAULT_EXERCISE_WEIGHT.type;
-  const minReps = MIN_REPS[exerciseReps ?? DEFAULT_EXERCISE_REPS];
+  const minReps =
+    typeof exerciseRepsNorm === "string"
+      ? MIN_REPS[exerciseRepsNorm]
+      : exerciseRepsNorm.min;
   const rounding = WEIGHT_ROUNDING[weightType];
   const fullWeight = oneRepMaxToWeight(currSelfRepMax, minReps);
   const weight = subtractSelfWeight(exerciseWeights, selfWeight, fullWeight);
   const roundedWeight = snapWeightKg(performanceWeights, weight, rounding);
 
-  return { type: "working", weight: roundedWeight, reps: undefined };
+  return {
+    type: "working",
+    weight: roundedWeight,
+    reps: typeof exerciseRepsNorm === "string" ? undefined : exerciseRepsNorm,
+  };
 }
 
 function computeRepMax(

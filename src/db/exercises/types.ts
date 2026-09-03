@@ -24,7 +24,9 @@ export type EquipmentType =
   | "machine"
   | "plates";
 
-export type ExerciseRepRange = "low" | "medium" | "high";
+export type ExerciseRepRangeSimple = "low" | "medium" | "high";
+export type ExerciseRepRangeCustom = { min: number; max: number };
+export type ExerciseRepRange = ExerciseRepRangeSimple | ExerciseRepRangeCustom;
 
 export interface Exercise {
   id: string;
