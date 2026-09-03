@@ -138,11 +138,16 @@ function computeWorkingSet(
     currSelfRepMax = prevSelfRepMax;
   }
 
+  const exerciseRepsNorm = exerciseReps ?? DEFAULT_EXERCISE_REPS;
+
   if (currSelfRepMax === undefined) {
-    return { type: "working", weight: undefined, reps: undefined };
+    return {
+      type: "working",
+      weight: undefined,
+      reps: typeof exerciseRepsNorm === "string" ? undefined : exerciseRepsNorm,
+    };
   }
 
-  const exerciseRepsNorm = exerciseReps ?? DEFAULT_EXERCISE_REPS;
   const weightType = exerciseWeights?.type ?? DEFAULT_EXERCISE_WEIGHT.type;
   const minReps =
     typeof exerciseRepsNorm === "string"
