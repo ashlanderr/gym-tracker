@@ -44,7 +44,6 @@ export function PerformanceActions({
   const [orderState, setOrderState] = useState<Performance[]>([]);
   const [isReplaceOpen, setReplaceOpen] = useState(false);
   const [isWeightsOpen, setWeightsOpen] = useState(false);
-  const [editState, setEditState] = useState<Exercise | null>(null);
 
   const historyHandler = async () => {
     if (exercise) {
@@ -69,9 +68,10 @@ export function PerformanceActions({
     setReplaceOpen(true);
   };
 
-  const editBeginHandler = () => {
+  const editHandler = async () => {
     if (!exercise) return;
-    setEditState(exercise);
+    await onCancel();
+    await pushModal(AddExercise, exercise);
   };
 
   const replaceCompleteHandler = (exercise: Exercise) => {
@@ -131,7 +131,7 @@ export function PerformanceActions({
             <LuTrendingUp />
             <span>Выбор периодизации</span>
           </button>
-          <button className={s.sheetAction} onClick={editBeginHandler}>
+          <button className={s.sheetAction} onClick={editHandler}>
             <MdEdit />
             <span>Изменить упражнение</span>
           </button>
@@ -159,16 +159,6 @@ export function PerformanceActions({
           onSubmit={replaceCompleteHandler}
         />
       </PageModal>
-
-      {editState && (
-        <PageModal isOpen={true}>
-          <AddExercise
-            exercise={editState}
-            onCancel={() => onCancel()}
-            onSubmit={() => onCancel()}
-          />
-        </PageModal>
-      )}
 
       <PageModal isOpen={isWeightsOpen}>
         <WeightsSelector

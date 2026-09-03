@@ -8,12 +8,7 @@ import s from "./styles.module.scss";
 import { MdAdd, MdArrowBack, MdDelete, MdEdit } from "react-icons/md";
 import { MUSCLES_TRANSLATION } from "../../../constants.ts";
 import { useState } from "react";
-import {
-  PageModal,
-  BottomSheet,
-  useStore,
-  useModalStack,
-} from "../../../../components";
+import { BottomSheet, useStore, useModalStack } from "../../../../components";
 import { AddExercise } from "../AddExercise";
 import { type MouseEvent } from "react";
 import { clsx } from "clsx";
@@ -23,9 +18,7 @@ export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
   const store = useStore();
   const { pushModal } = useModalStack();
   const exercises = useQueryAllExercises(store);
-  const [isAddExerciseOpen, setAddExerciseOpen] = useState(false);
   const [actionsState, setActionsState] = useState<Exercise | null>(null);
-  const [editState, setEditState] = useState<Exercise | null>(null);
   const [search, setSearch] = useState("");
   const searchLower = search.toLowerCase();
   const filteredExercises = exercises.filter(
@@ -36,18 +29,11 @@ export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
       ),
   );
 
-  const onAddCancelHandler = () => {
-    setAddExerciseOpen(false);
-    setEditState(null);
-  };
-
-  const onAddSubmitHandler = (newExercise: Exercise) => {
-    if (!editState) {
+  const addHandler = async () => {
+    const newExercise = await pushModal(AddExercise, null);
+    if (newExercise) {
       onSubmit(newExercise);
-    } else {
-      setEditState(null);
     }
-    setAddExerciseOpen(false);
   };
 
   const exerciseActionsHandler = (event: MouseEvent, exercise: Exercise) => {
@@ -56,11 +42,11 @@ export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
     setActionsState(exercise);
   };
 
-  const editHandler = () => {
+  const editHandler = async () => {
     if (!actionsState) return;
-    setEditState(actionsState);
-    setAddExerciseOpen(true);
+    const exercise = actionsState;
     setActionsState(null);
+    await pushModal(AddExercise, exercise);
   };
 
   const deleteHandler = async () => {
@@ -80,10 +66,7 @@ export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
           <MdArrowBack />
         </button>
         <div className={s.pageTitle}>Выбрать упражнение</div>
-        <button
-          className={s.toolbarButton}
-          onClick={() => setAddExerciseOpen(true)}
-        >
+        <button className={s.toolbarButton} onClick={addHandler}>
           <MdAdd />
         </button>
       </div>
@@ -112,13 +95,6 @@ export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
           </div>
         ))}
       </div>
-      <PageModal isOpen={isAddExerciseOpen}>
-        <AddExercise
-          exercise={editState}
-          onCancel={onAddCancelHandler}
-          onSubmit={onAddSubmitHandler}
-        />
-      </PageModal>
       {actionsState && (
         <BottomSheet isOpen={true} onClose={() => setActionsState(null)}>
           <div className={s.sheetHeader}>Упражнение</div>

@@ -1,11 +1,11 @@
 import s from "./styles.module.scss";
 import { MdArrowBack, MdCheck } from "react-icons/md";
-import type { AddExerciseProps } from "./types.ts";
 import { useState } from "react";
 import {
   addExercise,
   DEFAULT_EXERCISE_WEIGHT,
   type EquipmentType,
+  type Exercise,
   type ExerciseWeight,
   type MuscleType,
   updateExercise,
@@ -13,6 +13,7 @@ import {
   DEFAULT_EXERCISE_REPS,
   type ExerciseRepRangeSimple,
 } from "../../../../db";
+import { CustomRepsModal } from "../CustomRepsModal";
 import {
   EQUIPMENT_TRANSLATION,
   EXERCISE_WEIGHT_TRANSLATION,
@@ -20,14 +21,20 @@ import {
   MUSCLES_TRANSLATION,
 } from "../../../constants.ts";
 import { clsx } from "clsx";
-import { useStore } from "../../../../components";
+import {
+  type ModalProps,
+  PageModal,
+  useModalStack,
+  useStore,
+} from "../../../../components";
 
 export function AddExercise({
-  exercise,
+  data: exercise,
   onCancel,
   onSubmit,
-}: AddExerciseProps) {
+}: ModalProps<Exercise | null, Exercise>) {
   const store = useStore();
+  const { pushModal } = useModalStack();
   const [name, setName] = useState(() => exercise?.name ?? "");
   const trimmedName = name.trim();
   const [equipment, setEquipment] = useState(
@@ -74,6 +81,11 @@ export function AddExercise({
 
   const selfWeightPercentages = [0, 25, 50, 75, 100];
 
+  const customReps = typeof reps !== "string" ? reps : null;
+  const customRepsLabel = customReps
+    ? `${customReps.min}-${customReps.max}`
+    : "Свой";
+
   const disabled =
     !trimmedName || !mainMuscle || secondaryMuscles.includes(mainMuscle);
 
@@ -91,6 +103,11 @@ export function AddExercise({
         setWeight({ type: "negative", selfWeightPercent: 50 });
         break;
     }
+  };
+
+  const customRepsHandler = async () => {
+    const result = await pushModal(CustomRepsModal, customReps);
+    if (result) setReps(result);
   };
 
   const mainMuscleHandler = (muscle: MuscleType) => {
@@ -134,110 +151,123 @@ export function AddExercise({
   };
 
   return (
-    <div className={s.root}>
-      <div className={s.toolbar}>
-        <button className={s.toolbarButton} onClick={onCancel}>
-          <MdArrowBack />
-        </button>
-        <div className={s.pageTitle}>Создать упражнение</div>
-        <button
-          className={s.toolbarButton}
-          disabled={disabled}
-          onClick={submitHandler}
-        >
-          <MdCheck />
-        </button>
+    <PageModal>
+      <div className={s.root}>
+        <div className={s.toolbar}>
+          <button className={s.toolbarButton} onClick={onCancel}>
+            <MdArrowBack />
+          </button>
+          <div className={s.pageTitle}>Создать упражнение</div>
+          <button
+            className={s.toolbarButton}
+            disabled={disabled}
+            onClick={submitHandler}
+          >
+            <MdCheck />
+          </button>
+        </div>
+        <div className={s.body}>
+          <label className={s.label}>Название упражнения</label>
+          <input
+            className={s.input}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <label className={s.label}>Оборудование</label>
+          <div className={s.chips}>
+            {equipments.map((eq) => (
+              <button
+                className={clsx(s.chip, equipment === eq.key && s.selected)}
+                key={eq.key}
+                onClick={() => setEquipment(eq.key)}
+              >
+                {eq.label}
+              </button>
+            ))}
+          </div>
+          <label className={s.label}>Тип веса</label>
+          <div className={s.chips}>
+            {weights.map((w) => (
+              <button
+                className={clsx(s.chip, weight.type === w.key && s.selected)}
+                key={w.key}
+                onClick={() => setWeightHandler(w.key)}
+              >
+                {w.label}
+              </button>
+            ))}
+          </div>
+          {weight.type !== "full" && (
+            <>
+              <label className={s.label}>Процент собственного веса</label>
+              <div className={s.chips}>
+                {selfWeightPercentages.map((p) => (
+                  <button
+                    className={clsx(
+                      s.chip,
+                      weight.selfWeightPercent === p && s.selected,
+                    )}
+                    key={p}
+                    onClick={() =>
+                      setWeight({ ...weight, selfWeightPercent: p })
+                    }
+                  >
+                    {p}%
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+          <label className={s.label}>Диапазон повторений</label>
+          <div className={s.chips}>
+            {repsOptions.map((w) => (
+              <button
+                className={clsx(s.chip, reps === w.key && s.selected)}
+                key={w.key}
+                onClick={() => setReps(w.key)}
+              >
+                {w.label}
+              </button>
+            ))}
+            <button
+              className={clsx(s.chip, customReps && s.selected)}
+              onClick={customRepsHandler}
+            >
+              {customRepsLabel}
+            </button>
+          </div>
+          <label className={s.label}>Основная группа мышц</label>
+          <div className={s.chips}>
+            {muscles.map((muscle) => (
+              <button
+                className={clsx(
+                  s.chip,
+                  mainMuscle === muscle.key && s.selected,
+                )}
+                key={muscle.key}
+                onClick={() => mainMuscleHandler(muscle.key)}
+              >
+                {muscle.label}
+              </button>
+            ))}
+          </div>
+          <label className={s.label}>Другие мышцы</label>
+          <div className={s.chips}>
+            {muscles.map((muscle) => (
+              <button
+                className={clsx(
+                  s.chip,
+                  secondaryMuscles.includes(muscle.key) && s.selected,
+                )}
+                key={muscle.key}
+                onClick={() => secondaryMuscleHandler(muscle.key)}
+              >
+                {muscle.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
-      <div className={s.body}>
-        <label className={s.label}>Название упражнения</label>
-        <input
-          className={s.input}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <label className={s.label}>Оборудование</label>
-        <div className={s.chips}>
-          {equipments.map((eq) => (
-            <button
-              className={clsx(s.chip, equipment === eq.key && s.selected)}
-              key={eq.key}
-              onClick={() => setEquipment(eq.key)}
-            >
-              {eq.label}
-            </button>
-          ))}
-        </div>
-        <label className={s.label}>Тип веса</label>
-        <div className={s.chips}>
-          {weights.map((w) => (
-            <button
-              className={clsx(s.chip, weight.type === w.key && s.selected)}
-              key={w.key}
-              onClick={() => setWeightHandler(w.key)}
-            >
-              {w.label}
-            </button>
-          ))}
-        </div>
-        {weight.type !== "full" && (
-          <>
-            <label className={s.label}>Процент собственного веса</label>
-            <div className={s.chips}>
-              {selfWeightPercentages.map((p) => (
-                <button
-                  className={clsx(
-                    s.chip,
-                    weight.selfWeightPercent === p && s.selected,
-                  )}
-                  key={p}
-                  onClick={() => setWeight({ ...weight, selfWeightPercent: p })}
-                >
-                  {p}%
-                </button>
-              ))}
-            </div>
-          </>
-        )}
-        <label className={s.label}>Диапазон повторений</label>
-        <div className={s.chips}>
-          {repsOptions.map((w) => (
-            <button
-              className={clsx(s.chip, reps === w.key && s.selected)}
-              key={w.key}
-              onClick={() => setReps(w.key)}
-            >
-              {w.label}
-            </button>
-          ))}
-        </div>
-        <label className={s.label}>Основная группа мышц</label>
-        <div className={s.chips}>
-          {muscles.map((muscle) => (
-            <button
-              className={clsx(s.chip, mainMuscle === muscle.key && s.selected)}
-              key={muscle.key}
-              onClick={() => mainMuscleHandler(muscle.key)}
-            >
-              {muscle.label}
-            </button>
-          ))}
-        </div>
-        <label className={s.label}>Другие мышцы</label>
-        <div className={s.chips}>
-          {muscles.map((muscle) => (
-            <button
-              className={clsx(
-                s.chip,
-                secondaryMuscles.includes(muscle.key) && s.selected,
-              )}
-              key={muscle.key}
-              onClick={() => secondaryMuscleHandler(muscle.key)}
-            >
-              {muscle.label}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
+    </PageModal>
   );
 }

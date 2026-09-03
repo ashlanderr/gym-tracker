@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
 export interface PageModalProps {
-  isOpen: boolean;
+  isOpen?: boolean;
   children: ReactNode;
 }
