@@ -28,3 +28,6 @@ dist-ssr
 /scripts/firestore-export.json
 
 .playwright-mcp
+
+# Scratch input for @capacitor/assets, written and removed by generate-app-assets
+/assets

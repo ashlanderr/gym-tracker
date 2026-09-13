@@ -142,6 +142,19 @@ npm run build
 npm test
 ```
 
+### Regenerating Icons
+
+`pwa-assets/logo.png` is the single source for the app's branding. After
+changing it, regenerate both sets of icons:
+
+```bash
+npm run generate-pwa-assets
+npm run generate-app-assets
+```
+
+The first writes the web icons into `public/`; the second derives the Android
+launcher icons and splash screens into `android/app/src/main/res/`.
+
 ## 📱 Usage
 
 ### Starting a Workout
