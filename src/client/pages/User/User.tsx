@@ -8,6 +8,7 @@ import {
 } from "../../db";
 import { useState } from "react";
 import { getAccountId, setAccountId, useAccountId } from "../../account";
+import { trpc } from "../../api";
 import s from "./styles.module.scss";
 import { useNavigate } from "react-router";
 import { MdArrowBack } from "react-icons/md";
@@ -17,6 +18,7 @@ export function User() {
   const accountId = useAccountId();
   const navigate = useNavigate();
   const measurement = useQueryLatestMeasurement(store, null);
+  const me = trpc.me.useQuery();
 
   const [weightInput, setWeightInput] = useState<string | null>(null);
   const [heightInput, setHeightInput] = useState<string | null>(null);
@@ -123,6 +125,12 @@ export function User() {
             placeholder=""
             onChange={(e) => setBackendUrlInput(e.target.value)}
           />
+        </div>
+        <div className={s.field}>
+          <label className={s.fieldLabel}>Аккаунт</label>
+          <div className={s.fieldValue}>
+            {me.data ? me.data.id : "нет связи с сервером"}
+          </div>
         </div>
         <div className={s.field}>
           <label className={s.fieldLabel}>ID</label>

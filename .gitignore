@@ -29,3 +29,7 @@ dist-ssr
 
 # Scratch input for @capacitor/assets, written and removed by generate-app-assets
 /assets
+
+# Server
+.env
+src/generated
