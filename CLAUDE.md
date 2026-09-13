@@ -3,6 +3,12 @@
 Current state: rewrite to android app.
 Read TODO.md for current tasks.
 
+## Tools
+
+Use Read, Edit and Write for files.
+Use Grep and Glob for search.
+Use shell commands only when significantly better for the task.
+
 ## Tests
 
 Use mutation tests methodology:
