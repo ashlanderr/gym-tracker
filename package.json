@@ -20,7 +20,8 @@
     "server:dev": "tsx watch src/server/main.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:up": "docker compose up -d postgres"
+    "db:up": "docker compose up -d postgres",
+    "webview:log": "node scripts/webview-debug.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.2",
