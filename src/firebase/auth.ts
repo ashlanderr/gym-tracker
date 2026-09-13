@@ -1,14 +1,9 @@
-import {
-  getAuth,
-  signInWithPopup,
-  signOut as signOutInner,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInAnonymously as signInAnonymouslyInner,
-  type User as FirebaseUser,
-} from "firebase/auth";
-import { firebaseApp } from "./app.ts";
-import { useEffect, useState } from "react";
+// TEMPORARY: authentication is bypassed.
+//
+// The Firebase Google sign-in relies on signInWithPopup, which does not work
+// inside the Capacitor WebView. Until it is replaced, the app runs against a
+// single hardcoded account so the Android build is usable on a device.
+// Everything below is meant to be thrown away together with src/firebase.
 
 export interface User {
   uid: string;
@@ -16,61 +11,18 @@ export interface User {
   displayName: string | null;
 }
 
-export const firebaseAuth = getAuth(firebaseApp);
+const HARDCODED_USER: User = {
+  uid: "Ne4CDW5bDDaaRuQOGSNd2ojR6Ut1",
+  photoURL: null,
+  displayName: null,
+};
 
-export async function signInWithGoogle() {
-  const provider = new GoogleAuthProvider();
-  const result = await signInWithPopup(firebaseAuth, provider);
-  return result.user;
-}
-
-export async function signInAnonymously() {
-  const result = await signInAnonymouslyInner(firebaseAuth);
-  return result.user;
-}
-
-export async function signOut() {
-  await signOutInner(firebaseAuth);
-}
-
-const LOCAL_STORAGE_KEY = "user";
+const AUTH_STATE = { user: HARDCODED_USER, loading: false };
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(() => {
-    const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return localData ? JSON.parse(localData) : null;
-  });
-  const [loading, setLoading] = useState(user === null);
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged(firebaseAuth, (firebaseUser) => {
-      if (firebaseUser) {
-        const user = convertUser(firebaseUser);
-        setUser(user);
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(user));
-      } else {
-        setUser(null);
-        localStorage.removeItem(LOCAL_STORAGE_KEY);
-      }
-      setLoading(false);
-    });
-
-    return () => unsub();
-  }, []);
-
-  return { user, loading };
+  return AUTH_STATE;
 }
 
 export function useUser() {
-  const { user } = useAuth();
-  if (!user) throw new Error("User is not authenticated");
-  return user;
-}
-
-function convertUser(user: FirebaseUser): User {
-  return {
-    uid: user.uid,
-    photoURL: user.photoURL,
-    displayName: user.displayName,
-  };
+  return HARDCODED_USER;
 }

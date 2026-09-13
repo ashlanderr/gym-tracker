@@ -11,7 +11,6 @@ import {
   MdClose,
   MdDelete,
   MdEdit,
-  MdLogout,
   MdPerson,
   MdPlayArrow,
   MdSettings,
@@ -19,7 +18,7 @@ import {
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { clsx } from "clsx";
-import { signOut, useUser } from "../../firebase/auth.ts";
+import { useUser } from "../../firebase/auth.ts";
 import {
   BottomSheet,
   useConnectionStatus,
@@ -89,10 +88,6 @@ export function Home() {
           <div className={s.userName}>
             {user.displayName ?? "Анонимный Пользователь"}
           </div>
-          <button className={s.signOut} onClick={signOut}>
-            <MdLogout />
-            <span>Выйти</span>
-          </button>
         </div>
         <button className={s.userSettings} onClick={() => navigate("/user")}>
           <MdSettings />

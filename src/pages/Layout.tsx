@@ -1,8 +1,7 @@
 import { HashRouter, Route, Routes } from "react-router";
 import { Workout } from "./Workout";
 import { Home } from "./Home";
-import { ModalStack, ProtectedRoute, StoreProvider } from "../components";
-import { SignIn } from "./SignIn";
+import { ModalStack, StoreProvider } from "../components";
 import { User } from "./User";
 import { ExerciseHistory } from "./Exercise";
 
@@ -12,39 +11,13 @@ export function Layout() {
       <StoreProvider>
         <ModalStack>
           <Routes>
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/workouts/:workoutId"
-              element={
-                <ProtectedRoute>
-                  <Workout />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/" element={<Home />} />
+            <Route path="/workouts/:workoutId" element={<Workout />} />
             <Route
               path="/exercises/:exerciseId/history"
-              element={
-                <ProtectedRoute>
-                  <ExerciseHistory />
-                </ProtectedRoute>
-              }
+              element={<ExerciseHistory />}
             />
-            <Route
-              path="/user"
-              element={
-                <ProtectedRoute>
-                  <User />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/auth/sign-in" element={<SignIn />} />
+            <Route path="/user" element={<User />} />
           </Routes>
         </ModalStack>
       </StoreProvider>
