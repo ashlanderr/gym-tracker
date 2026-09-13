@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Debug builds talk to a development server over plain HTTP on the local
+  network. Release builds keep Android's default, which allows HTTPS only.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <application android:usesCleartextTraffic="true" tools:ignore="UnusedAttribute" />
+</manifest>

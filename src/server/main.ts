@@ -6,10 +6,13 @@ import { auth } from "./auth.ts";
 import { appRouter } from "./router.ts";
 import { createContext } from "./trpc.ts";
 import { PORT } from "./env.ts";
+import { APP_ORIGINS } from "./constants.ts";
 
 const app = express();
 
-app.use(cors());
+// The Better Auth client sends credentials, which a browser refuses to pair
+// with a wildcard origin, so the allowed origins have to be named.
+app.use(cors({ origin: APP_ORIGINS, credentials: true }));
 app.all("/api/auth/{*any}", toNodeHandler(auth));
 app.use("/trpc", createExpressMiddleware({ router: appRouter, createContext }));
 app.get("/alive", (_req, res) => {
