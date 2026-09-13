@@ -7,23 +7,27 @@ import {
   setBackendUrl,
 } from "../../db";
 import { useState } from "react";
-import { useUser } from "../../firebase/auth.ts";
+import { getAccountId, setAccountId, useAccountId } from "../../account";
 import s from "./styles.module.scss";
 import { useNavigate } from "react-router";
 import { MdArrowBack } from "react-icons/md";
 
 export function User() {
   const store = useStore();
-  const user = useUser();
+  const accountId = useAccountId();
   const navigate = useNavigate();
   const measurement = useQueryLatestMeasurement(store, null);
 
   const [weightInput, setWeightInput] = useState<string | null>(null);
   const [heightInput, setHeightInput] = useState<string | null>(null);
   const [backendUrlInput, setBackendUrlInput] = useState<string | null>(null);
+  const [accountIdInput, setAccountIdInput] = useState<string | null>(null);
 
   const canSave =
-    weightInput !== null || heightInput !== null || backendUrlInput !== null;
+    weightInput !== null ||
+    heightInput !== null ||
+    backendUrlInput !== null ||
+    accountIdInput !== null;
 
   const parseValue = (value: string | null, defaultValue: number): number => {
     if (!value) return defaultValue;
@@ -53,7 +57,7 @@ export function User() {
     if (weightInput !== null || heightInput !== null) {
       addMeasurement(store, {
         id: generateId(),
-        user: user.uid,
+        user: accountId,
         weight: parseValue(weightInput, measurement?.weight ?? 0),
         height: parseValue(heightInput, measurement?.height ?? 0),
         createdAt: Date.now(),
@@ -61,9 +65,11 @@ export function User() {
       setWeightInput(null);
       setHeightInput(null);
     }
-    if (backendUrlInput !== null) {
-      setBackendUrl(backendUrlInput);
-      setBackendUrlInput(null);
+    // Both settings are read once while the store is being created, so the
+    // running document keeps pointing at the old room until a reload.
+    if (backendUrlInput !== null || accountIdInput !== null) {
+      if (backendUrlInput !== null) setBackendUrl(backendUrlInput);
+      if (accountIdInput !== null) setAccountId(accountIdInput);
       location.reload();
     }
   };
@@ -116,6 +122,15 @@ export function User() {
             value={backendUrlInput ?? getBackendUrl() ?? ""}
             placeholder=""
             onChange={(e) => setBackendUrlInput(e.target.value)}
+          />
+        </div>
+        <div className={s.field}>
+          <label className={s.fieldLabel}>ID</label>
+          <input
+            className={s.fieldInput}
+            value={accountIdInput ?? getAccountId()}
+            placeholder=""
+            onChange={(e) => setAccountIdInput(e.target.value)}
           />
         </div>
       </div>

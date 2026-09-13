@@ -18,7 +18,7 @@ import {
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { clsx } from "clsx";
-import { useUser } from "../../firebase/auth.ts";
+import { useAccountId } from "../../account";
 import {
   BottomSheet,
   useConnectionStatus,
@@ -31,7 +31,7 @@ import { addWorkout, cancelWorkout, duplicateWorkout } from "../../domain";
 import { CancelWorkoutModal } from "./components";
 
 export function Home() {
-  const user = useUser();
+  const accountId = useAccountId();
   const store = useStore();
   const connection = useConnectionStatus();
   const navigate = useNavigate();
@@ -48,7 +48,7 @@ export function Home() {
   };
 
   const startWorkoutHandler = () => {
-    const newWorkout = addWorkout(store, user.uid);
+    const newWorkout = addWorkout(store, accountId);
     openWorkoutHandler(newWorkout);
   };
 
@@ -77,17 +77,11 @@ export function Home() {
   return (
     <div className={s.body} ref={scrollRef}>
       <div className={s.user}>
-        {user.photoURL ? (
-          <img className={s.userImage} src={user.photoURL} alt="User Photo" />
-        ) : (
-          <div className={s.userImage}>
-            <MdPerson />
-          </div>
-        )}
+        <div className={s.userImage}>
+          <MdPerson />
+        </div>
         <div className={s.userInfo}>
-          <div className={s.userName}>
-            {user.displayName ?? "Анонимный Пользователь"}
-          </div>
+          <div className={s.userName}>Анонимный пользователь</div>
         </div>
         <button className={s.userSettings} onClick={() => navigate("/user")}>
           <MdSettings />

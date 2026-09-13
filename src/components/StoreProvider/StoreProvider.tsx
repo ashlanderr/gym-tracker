@@ -1,30 +1,16 @@
 import { type PropsWithChildren, useRef, useState } from "react";
-import { useAuth } from "../../firebase/auth.ts";
-import {
-  type ConnectionStatus,
-  destroyStore,
-  initStore,
-  type Store,
-} from "../../db";
+import { useAccountId } from "../../account";
+import { type ConnectionStatus, initStore, type Store } from "../../db";
 import { ConnectionContext, StoreContext } from "./constants.ts";
 
 export function StoreProvider({ children }: PropsWithChildren) {
-  const { user } = useAuth();
-  const uid = useRef<string | undefined>(undefined);
-  const store = useRef<Store | null>(null);
+  const accountId = useAccountId();
   const [status, setStatus] = useState<ConnectionStatus>("disconnected");
 
-  if (uid.current !== user?.uid) {
-    uid.current = user?.uid;
-    if (store.current) {
-      destroyStore(store.current);
-      store.current = null;
-    }
-    setStatus("disconnected");
-    if (uid.current) {
-      store.current = initStore(uid.current, setStatus);
-    }
-  }
+  // A ref, not a lazy useState: StrictMode calls the state initializer on both
+  // render passes and the second document would open its own socket.
+  const store = useRef<Store | null>(null);
+  store.current ??= initStore(accountId, setStatus);
 
   return (
     <StoreContext.Provider value={store.current}>

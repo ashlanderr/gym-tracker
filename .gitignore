@@ -24,8 +24,6 @@ dist-ssr
 *.sw?
 
 /yjs
-/scripts/firestore-key.json
-/scripts/firestore-export.json
 
 .playwright-mcp
 

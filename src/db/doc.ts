@@ -84,8 +84,3 @@ function initDoc(
 
   return doc;
 }
-
-export function destroyStore(store: Store) {
-  store.personal.destroy();
-  console.log("store destroyed");
-}
