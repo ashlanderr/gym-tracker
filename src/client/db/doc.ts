@@ -9,78 +9,48 @@ export type ConnectionStatus =
   | "disconnected";
 
 export interface Store {
+  documentId: string;
   personal: Y.Doc;
 }
 
-const BACKEND_URL_STORAGE_KEY = "BACKEND_URL";
-
-export function getBackendUrl() {
-  return localStorage.getItem(BACKEND_URL_STORAGE_KEY);
-}
-
-export function setBackendUrl(url: string) {
-  localStorage.setItem(BACKEND_URL_STORAGE_KEY, url);
-}
-
-export function initStore(
-  uid: string,
-  onStatusChange: (status: ConnectionStatus) => void,
-): Store {
-  const statusMap = new Map<string, ConnectionStatus>();
-
-  const statusHandler = (value: ConnectionStatus, name: string) => {
-    statusMap.set(name, value);
-
-    const values = [...statusMap.values()];
-    const someDisconnected = values.some((v) => v === "disconnected");
-    const someConnecting = values.some((v) => v === "connecting");
-    const someConnected = values.some((v) => v === "connected");
-
-    if (someDisconnected) {
-      onStatusChange("disconnected");
-    } else if (someConnecting) {
-      onStatusChange("connecting");
-    } else if (someConnected) {
-      onStatusChange("connected");
-    } else {
-      onStatusChange("synced");
-    }
-  };
-
-  return {
-    personal: initDoc(`user/${uid}`, statusHandler),
-  };
-}
-
-function initDoc(
-  name: string,
-  onStatusChange: (status: ConnectionStatus, name: string) => void,
-): Y.Doc {
+// The app is local-first: the document exists and accepts writes before there
+// is a network or an account. Sync is attached later, once there is a session.
+export function initStore(documentId: string): Store {
   const doc = new Y.Doc();
 
-  const url = getBackendUrl();
-
-  if (url) {
-    const wsProvider = new WebsocketProvider(url, name, doc);
-
-    wsProvider.on("status", (event) => {
-      console.log(`wsProvider [${name}]: ${event.status}`);
-      onStatusChange(event.status, name);
-    });
-
-    wsProvider.on("sync", (state) => {
-      if (state) {
-        console.log(`wsProvider [${name}]: synced`);
-        onStatusChange("synced", name);
-      }
-    });
-  }
-
-  const idbProvider = new IndexeddbPersistence(name, doc);
-
+  const idbProvider = new IndexeddbPersistence(`user/${documentId}`, doc);
   idbProvider.on("synced", () => {
-    console.log(`idbProvider [${name}]: synced`);
+    console.log(`idbProvider [${documentId}]: synced`);
   });
 
-  return doc;
+  return { documentId, personal: doc };
+}
+
+export function connectStore(
+  store: Store,
+  url: string,
+  token: string,
+  onStatusChange: (status: ConnectionStatus) => void,
+) {
+  const provider = new WebsocketProvider(
+    url,
+    store.documentId,
+    store.personal,
+    {
+      params: { token },
+    },
+  );
+
+  provider.on("status", (event: { status: ConnectionStatus }) => {
+    console.log(`wsProvider [${store.documentId}]: ${event.status}`);
+    onStatusChange(event.status);
+  });
+
+  provider.on("sync", (synced: boolean) => {
+    if (!synced) return;
+    console.log(`wsProvider [${store.documentId}]: synced`);
+    onStatusChange("synced");
+  });
+
+  return () => provider.destroy();
 }

@@ -7,6 +7,7 @@ import { appRouter } from "./router.ts";
 import { createContext } from "./trpc.ts";
 import { PORT } from "./env.ts";
 import { APP_ORIGINS } from "./constants.ts";
+import { listenForSync } from "./sync.ts";
 
 const app = express();
 
@@ -19,6 +20,8 @@ app.get("/alive", (_req, res) => {
   res.status(200).send({});
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`server ready at http://localhost:${PORT}`);
 });
+
+listenForSync(server);

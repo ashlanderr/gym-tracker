@@ -8,19 +8,46 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String     @id @default(cuid())
   name          String
   email         String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean    @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  isAnonymous   Boolean?  @default(false)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  isAnonymous   Boolean?   @default(false)
   sessions      Session[]
   accounts      Account[]
+  documents     Document[]
 
   @@unique([email])
   @@map("user")
+}
+
+// A Yjs document. The id is generated on the device, so linking a login to an
+// anonymous account later only has to change the owner.
+model Document {
+  id        String           @id
+  ownerId   String
+  owner     User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt DateTime         @default(now())
+  updates   DocumentUpdate[]
+
+  @@index([ownerId])
+  @@map("document")
+}
+
+// Yjs updates are appended as they arrive and merged into a single row once
+// enough of them pile up, the way y-leveldb flushes a document.
+model DocumentUpdate {
+  id         BigInt   @id @default(autoincrement())
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  update     Bytes
+  createdAt  DateTime @default(now())
+
+  @@index([documentId, id])
+  @@map("document_update")
 }
 
 model Session {

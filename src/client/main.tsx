@@ -4,10 +4,9 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import { Layout } from "./pages";
 import { initBackButton } from "./native";
-import { ensureSession, queryClient, trpc, trpcClient } from "./api";
+import { queryClient, trpc, trpcClient } from "./api";
 
 initBackButton();
-void ensureSession();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

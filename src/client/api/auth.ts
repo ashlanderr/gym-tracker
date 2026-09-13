@@ -18,16 +18,28 @@ export const authClient = createAuthClient({
   },
 });
 
-// Called once at startup and deliberately not awaited: the app is local-first
-// and has to open with no network at all. A device that fails here keeps its
-// data locally and gets a session on a later launch.
-export async function ensureSession() {
-  if (getAuthToken()) return;
-
+async function signInAnonymously(): Promise<string | null> {
   const { error } = await authClient.signIn.anonymous();
-  if (error) console.warn("anonymous sign-in failed", error);
+  if (error) {
+    console.warn("anonymous sign-in failed", error);
+    return null;
+  }
+  return getAuthToken();
 }
 
-export function useSession() {
-  return authClient.useSession();
+let signingIn: Promise<string | null> | null = null;
+
+// The app is local-first and opens with no network at all, so a failure here
+// only means the device keeps working locally and gets a session later.
+// Callers are not coordinated - StrictMode alone calls this twice - and every
+// concurrent call has to end up on the same account, not one account each.
+export function ensureSession(): Promise<string | null> {
+  const stored = getAuthToken();
+  if (stored) return Promise.resolve(stored);
+
+  signingIn ??= signInAnonymously().finally(() => {
+    signingIn = null;
+  });
+
+  return signingIn;
 }

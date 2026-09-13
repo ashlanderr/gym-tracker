@@ -3,11 +3,9 @@ import {
   addMeasurement,
   useQueryLatestMeasurement,
   generateId,
-  getBackendUrl,
-  setBackendUrl,
 } from "../../db";
 import { useState } from "react";
-import { getAccountId, setAccountId, useAccountId } from "../../account";
+import { useAccountId } from "../../account";
 import { trpc } from "../../api";
 import s from "./styles.module.scss";
 import { useNavigate } from "react-router";
@@ -22,14 +20,7 @@ export function User() {
 
   const [weightInput, setWeightInput] = useState<string | null>(null);
   const [heightInput, setHeightInput] = useState<string | null>(null);
-  const [backendUrlInput, setBackendUrlInput] = useState<string | null>(null);
-  const [accountIdInput, setAccountIdInput] = useState<string | null>(null);
-
-  const canSave =
-    weightInput !== null ||
-    heightInput !== null ||
-    backendUrlInput !== null ||
-    accountIdInput !== null;
+  const canSave = weightInput !== null || heightInput !== null;
 
   const parseValue = (value: string | null, defaultValue: number): number => {
     if (!value) return defaultValue;
@@ -66,13 +57,6 @@ export function User() {
       });
       setWeightInput(null);
       setHeightInput(null);
-    }
-    // Both settings are read once while the store is being created, so the
-    // running document keeps pointing at the old room until a reload.
-    if (backendUrlInput !== null || accountIdInput !== null) {
-      if (backendUrlInput !== null) setBackendUrl(backendUrlInput);
-      if (accountIdInput !== null) setAccountId(accountIdInput);
-      location.reload();
     }
   };
 
@@ -118,28 +102,10 @@ export function User() {
           <label className={s.fieldLabel}>см</label>
         </div>
         <div className={s.field}>
-          <label className={s.fieldLabel}>URL</label>
-          <input
-            className={s.fieldInput}
-            value={backendUrlInput ?? getBackendUrl() ?? ""}
-            placeholder=""
-            onChange={(e) => setBackendUrlInput(e.target.value)}
-          />
-        </div>
-        <div className={s.field}>
           <label className={s.fieldLabel}>Аккаунт</label>
           <div className={s.fieldValue}>
             {me.data ? me.data.id : "нет связи с сервером"}
           </div>
-        </div>
-        <div className={s.field}>
-          <label className={s.fieldLabel}>ID</label>
-          <input
-            className={s.fieldInput}
-            value={accountIdInput ?? getAccountId()}
-            placeholder=""
-            onChange={(e) => setAccountIdInput(e.target.value)}
-          />
         </div>
       </div>
     </div>
