@@ -13,9 +13,14 @@
     "generate-pwa-assets": "pwa-assets-generator",
     "y-websocket": "PORT=1234 YPERSISTENCE=./yjs y-websocket-server",
     "firestore-export": "node scripts/firestore-export.cjs",
-    "yjs-import": "node scripts/yjs-import.cjs"
+    "yjs-import": "node scripts/yjs-import.cjs",
+    "build:app": "tsc -b && cross-env BUILD_TARGET=capacitor vite build",
+    "sync:app": "npm run build:app && cap sync android",
+    "android": "npm run sync:app && cap run android"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
@@ -32,6 +37,7 @@
     "yjs": "^13.6.27"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.2",
     "@eslint/js": "^9.30.1",
     "@playwright/mcp": "^0.0.80",
     "@types/react": "^19.1.8",
@@ -39,6 +45,7 @@
     "@vite-pwa/assets-generator": "^1.0.0",
     "@vitejs/plugin-react": "^4.6.0",
     "@y/websocket-server": "^0.1.1",
+    "cross-env": "^10.1.0",
     "eslint": "^9.30.1",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
