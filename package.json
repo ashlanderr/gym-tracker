@@ -10,7 +10,7 @@
     "test": "vitest",
     "preview": "vite preview",
     "deploy": "gh-pages -d dist",
-    "generate-pwa-assets": "pwa-assets-generator",
+    "generate-pwa-assets": "pwa-assets-generator && node scripts/copy-pwa-assets.mjs",
     "y-websocket": "PORT=1234 YPERSISTENCE=./yjs y-websocket-server",
     "firestore-export": "node scripts/firestore-export.cjs",
     "yjs-import": "node scripts/yjs-import.cjs",
