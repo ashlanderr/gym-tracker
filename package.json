@@ -9,7 +9,6 @@
     "lint": "eslint .",
     "test": "vitest",
     "preview": "vite preview",
-    "deploy": "gh-pages -d dist",
     "generate-pwa-assets": "pwa-assets-generator && node scripts/copy-pwa-assets.mjs",
     "generate-app-assets": "node scripts/generate-app-assets.mjs",
     "build:app": "tsc -b && cross-env BUILD_TARGET=capacitor vite build",
@@ -20,7 +19,8 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:up": "docker compose up -d postgres",
-    "webview:log": "node scripts/webview-debug.mjs"
+    "webview:log": "node scripts/webview-debug.mjs",
+    "test:ci": "vitest run"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.2",
@@ -74,7 +74,6 @@
     "eslint": "^9.30.1",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
-    "gh-pages": "^6.3.0",
     "globals": "^16.3.0",
     "prettier": "^3.6.2",
     "prisma": "^7.10.0",
