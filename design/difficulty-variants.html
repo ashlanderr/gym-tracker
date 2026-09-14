@@ -50,6 +50,13 @@
   .anchored { display:flex; align-items:center; justify-content:center; gap:6px; margin-top:12px; }
   .anchor { font-size:11px; color:#7a7a7a; white-space:nowrap; }
 
+  /* ---------- A3/A4 · gym shorthand, short enough for equal shares ---------- */
+  .segShort { display:flex; width:100%; border:1px solid #333; border-radius:12px; overflow:hidden; margin-top:12px; }
+  .segShort button { flex:1 1 0; background:transparent; border:none; color:#c5c5c5; font-size:15px; padding:14px 2px;
+                     border-left:1px solid #333; white-space:nowrap; }
+  .segShort button:first-child { border-left:none; }
+  .segShort button.sel { background:#06F; color:#fff; font-weight:600; }
+
   /* ---------- N · numbers: the question itself labels the scale ---------- */
   .nums { display:flex; align-items:center; width:100%; border:1px solid #333; border-radius:12px;
           padding:4px; margin-top:12px; }
@@ -162,6 +169,50 @@
       <button class="hit"><span class="bar on" style="height:22px"></span></button>
       <button class="hit"><span class="bar on" style="height:30px"></span></button>
       <button class="hit"><span class="bar" style="height:38px"></span></button>
+    </div>
+  </div>
+</div>
+
+<!-- A3 -->
+<div class="card">
+  <div class="cardHead">
+    <div class="cardTitle">A3 · Короткие слова, равные сегменты</div>
+    <div class="cardNote">«Норм» и «Отказ» вместо «Нормально» и «До отказа». Самое длинное слово усохло до «Тяжело», и равные доли перестали быть проблемой — шрифт вырос с 12 до 15px.</div>
+  </div>
+  <div class="state">пока не ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="segShort">
+      <button>Легко</button><button>Норм</button><button>Тяжело</button><button>Отказ</button>
+    </div>
+  </div>
+  <div class="state">ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="segShort">
+      <button>Легко</button><button>Норм</button><button class="sel">Тяжело</button><button>Отказ</button>
+    </div>
+  </div>
+</div>
+
+<!-- A4 -->
+<div class="card">
+  <div class="cardHead">
+    <div class="cardTitle">A4 · Короткие слова, ширина по слову</div>
+    <div class="cardNote">То же сокращение, но без перегородок и с неравными долями. Разница между словами теперь мала, так что выигрыш от auto-ширины почти исчез — а это аргумент в пользу A3.</div>
+  </div>
+  <div class="state">пока не ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="seg2 fill" style="font-size:15px">
+      <button style="font-size:15px">Легко</button><button style="font-size:15px">Норм</button><button style="font-size:15px">Тяжело</button><button style="font-size:15px">Отказ</button>
+    </div>
+  </div>
+  <div class="state">ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="seg2 fill">
+      <button style="font-size:15px">Легко</button><button style="font-size:15px">Норм</button><button class="sel" style="font-size:15px">Тяжело</button><button style="font-size:15px">Отказ</button>
     </div>
   </div>
 </div>
