@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Workout reps variants</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font: inherit; }
+  html { font-family: Montserrat, "Segoe UI", "Helvetica Neue", sans-serif; background:#111; color:#fff; -webkit-font-smoothing:antialiased; }
+  body { padding:24px; display:flex; gap:20px; align-items:flex-start; }
+
+  .col { display:flex; flex-direction:column; gap:10px; width:393px; flex:0 0 auto; }
+  .caption { font-size:12px; color:#8b9299; line-height:1.5; height:66px; }
+  .caption b { color:#fff; font-weight:600; display:block; font-size:13px; margin-bottom:3px; }
+
+  .phone { width:393px; height:800px; background:#000; border-radius:26px; overflow:hidden;
+           display:flex; flex-direction:column; border:1px solid #2a2a2a; }
+
+  .top { display:flex; align-items:center; padding:10px 8px; flex:0 0 auto; }
+  .ghostBtn { width:40px; height:40px; display:flex; align-items:center; justify-content:center;
+              border:none; background:transparent; color:#6d6d6d; font-size:19px; }
+  .progress { height:2px; display:flex; gap:3px; padding:0 16px; flex:0 0 auto; }
+  .progress i { flex:1 1 0; background:#1e1e1e; border-radius:2px; }
+  .progress i.done { background:#0B0; }
+  .progress i.cur { background:#08F; }
+
+  .stage { flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+           padding:0 24px; text-align:center; }
+
+  .fig { opacity:.85; margin-bottom:18px; }
+  .exName { font-size:29px; font-weight:700; line-height:1.15; letter-spacing:-.01em; }
+  .setLine { font-size:14px; color:#7a7a7a; margin-top:9px; }
+
+  .tap { background:transparent; border:none; color:#fff; display:block; }
+  .weight { font-size:70px; font-weight:600; letter-spacing:-.03em; line-height:1;
+            border-bottom:1px dashed #3a3a3a; padding-bottom:8px; }
+  .weight u { text-decoration:none; font-size:25px; font-weight:500; color:#8d8d8d; margin-left:6px; }
+
+  .reps { font-size:33px; font-weight:500; line-height:1; padding-bottom:6px;
+          border-bottom:1px dashed #303030; }
+  .reps u { text-decoration:none; font-size:18px; color:#8d8d8d; margin-left:6px; font-weight:400; }
+  .g { color:#0B0; font-weight:700; }
+  .dim { color:#6d6d6d; }
+
+  .hints { font-size:11px; color:#4f4f4f; line-height:1.75; margin-top:30px; }
+
+  .action { flex:0 0 auto; padding:0 24px 12px; }
+  .go { width:100%; border:none; border-radius:16px; background:#0B0; color:#fff;
+        font-size:19px; font-weight:700; padding:22px; }
+  .go.ghost { background:transparent; border:2px solid #0B0; color:#0B0; }
+  .drawer { text-align:center; font-size:11px; color:#4a4a4a; padding:10px 0 14px; flex:0 0 auto; }
+
+  /* V3 chips */
+  .chips { display:flex; gap:8px; justify-content:center; }
+  .chip { min-width:54px; border:1px solid #2e2e2e; background:transparent; color:#8d8d8d;
+          border-radius:12px; padding:12px 0; font-size:22px; font-weight:500; }
+  .chip.sel { background:#0B0; border-color:#0B0; color:#fff; font-weight:700; }
+  .chipsNote { font-size:12px; color:#6d6d6d; margin-top:10px; }
+
+  /* V6 frame */
+  .framed { border:2px solid #0B0; border-radius:14px; padding:10px 20px; }
+</style>
+</head>
+<body>
+
+<!-- ===== V1 ===== -->
+<div class="col">
+  <div class="caption"><b>V1 · Зелёный верх диапазона</b>Минимальная правка нынешнего экрана. Зелёная восьмёрка и зелёная кнопка — одно и то же действие.</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
+      <div class="exName">Жим лёжа</div>
+      <div class="setLine">Подход 2 из 3</div>
+      <div style="margin-top:34px"><button class="tap weight">60<u>кг</u></button></div>
+      <div style="margin-top:18px"><button class="tap reps"><span class="dim">6 – </span><span class="g">8</span><u>раз</u></button></div>
+      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
+    </div>
+    <div class="action"><button class="go">Готово</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+<!-- ===== V2 ===== -->
+<div class="col">
+  <div class="caption"><b>V2 · Число крупно, цель мелко</b>Инструкция — одно число. Диапазон уходит в подпись и перестаёт спорить с кнопкой.</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
+      <div class="exName">Жим лёжа</div>
+      <div class="setLine">Подход 2 из 3</div>
+      <div style="margin-top:34px"><button class="tap weight">60<u>кг</u></button></div>
+      <div style="margin-top:18px"><button class="tap reps"><span class="g">8</span><u>раз</u></button></div>
+      <div style="font-size:12px;color:#6d6d6d;margin-top:10px">цель 6 – 8</div>
+      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
+    </div>
+    <div class="action"><button class="go">Готово</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+<!-- ===== V3 ===== -->
+<div class="col">
+  <div class="caption"><b>V3 · Диапазон как ряд</b>Весь диапазон — кнопки. Правка в один тап без шторки, зелёная — то же, что «Готово».</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
+      <div class="exName">Жим лёжа</div>
+      <div class="setLine">Подход 2 из 3</div>
+      <div style="margin-top:32px"><button class="tap weight">60<u>кг</u></button></div>
+      <div class="chips" style="margin-top:24px">
+        <button class="chip">6</button>
+        <button class="chip">7</button>
+        <button class="chip sel">8</button>
+      </div>
+      <div class="chipsNote">повторов</div>
+      <div class="hints">нажми на вес — покажу, какие блины вешать</div>
+    </div>
+    <div class="action"><button class="go">Готово</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+<!-- ===== V4 ===== -->
+<div class="col">
+  <div class="caption"><b>V4 · Одной строкой</b>«60 × 8» — та же запись, что в твоей таблице. Самый компактный центр, но два тапа в одной строке.</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
+      <div class="exName">Жим лёжа</div>
+      <div class="setLine">Подход 2 из 3</div>
+      <div style="margin-top:40px; display:flex; align-items:baseline; gap:12px">
+        <button class="tap weight" style="font-size:62px">60<u style="font-size:22px">кг</u></button>
+        <span style="font-size:30px;color:#5a5a5a">×</span>
+        <button class="tap weight" style="font-size:62px; border-bottom-color:#0B04"><span class="g">8</span></button>
+      </div>
+      <div style="font-size:12px;color:#6d6d6d;margin-top:14px">цель 6 – 8 повторов</div>
+      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
+    </div>
+    <div class="action"><button class="go">Готово</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+<!-- ===== V5 ===== -->
+<div class="col">
+  <div class="caption"><b>V5 · Число внутри кнопки</b>Кнопка прямо называет, что запишет. Никакой догадки — но кнопка перестаёт быть просто «Готово».</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
+      <div class="exName">Жим лёжа</div>
+      <div class="setLine">Подход 2 из 3</div>
+      <div style="margin-top:40px"><button class="tap weight">60<u>кг</u></button></div>
+      <div style="font-size:16px;color:#7a7a7a;margin-top:20px">цель 6 – 8 повторов</div>
+      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на число в кнопке — если получилось иначе</div>
+    </div>
+    <div class="action"><button class="go">Сделал 8 раз</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+<!-- ===== V6 ===== -->
+<div class="col">
+  <div class="caption"><b>V6 · Зелёная рамка</b>Тот же смысл, что V1, но связь тише: рамка намекает на кнопку, не выкрикивая цветом.</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
+      <div class="exName">Жим лёжа</div>
+      <div class="setLine">Подход 2 из 3</div>
+      <div style="margin-top:34px"><button class="tap weight">60<u>кг</u></button></div>
+      <div style="margin-top:20px">
+        <button class="tap reps framed" style="border-bottom-style:solid">
+          <span class="dim" style="font-size:26px">6 – </span><span style="color:#fff">8</span><u>раз</u>
+        </button>
+      </div>
+      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
+    </div>
+    <div class="action"><button class="go">Готово</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+</body>
+</html>
