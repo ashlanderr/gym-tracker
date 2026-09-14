@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Workout target variants</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font: inherit; }
+  html { font-family: Montserrat, "Segoe UI", "Helvetica Neue", sans-serif; background:#111; color:#fff; -webkit-font-smoothing:antialiased; }
+  body { padding:24px; display:flex; gap:20px; align-items:flex-start; }
+
+  .col { display:flex; flex-direction:column; gap:10px; width:393px; flex:0 0 auto; }
+  .caption { font-size:12px; color:#8b9299; line-height:1.5; height:66px; }
+  .caption b { color:#fff; font-weight:600; display:block; font-size:13px; margin-bottom:3px; }
+
+  .phone { width:393px; height:800px; background:#000; border-radius:26px; overflow:hidden;
+           display:flex; flex-direction:column; border:1px solid #2a2a2a; }
+
+  .top { display:flex; align-items:center; padding:10px 8px; flex:0 0 auto; }
+  .ghostBtn { width:40px; height:40px; display:flex; align-items:center; justify-content:center;
+              border:none; background:transparent; color:#6d6d6d; font-size:19px; }
+  .progress { height:2px; display:flex; gap:3px; padding:0 16px; flex:0 0 auto; }
+  .progress i { flex:1 1 0; background:#1e1e1e; border-radius:2px; }
+  .progress i.done { background:#0B0; }
+  .progress i.cur { background:#08F; }
+
+  .stage { flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+           padding:0 24px; text-align:center; }
+
+  .fig { opacity:.85; margin-bottom:18px; }
+  .exName { font-size:29px; font-weight:700; line-height:1.15; letter-spacing:-.01em; }
+  .setLine { font-size:14px; color:#7a7a7a; margin-top:9px; }
+
+  /* the 60 кг × 8 row */
+  .row { display:flex; align-items:flex-start; gap:16px; margin-top:38px; }
+  .cell { display:flex; flex-direction:column; align-items:center; }
+  .big { font-size:60px; font-weight:600; letter-spacing:-.03em; line-height:1; color:#fff;
+         background:transparent; border:none; border-bottom:1px dashed #3a3a3a; padding-bottom:8px; }
+  .big u { text-decoration:none; font-size:21px; font-weight:500; color:#8d8d8d; margin-left:5px; }
+  .times { font-size:27px; color:#484848; margin-top:20px; }
+
+  .under { margin-top:11px; }
+  .t-quiet { font-size:12px; color:#6d6d6d; }
+  .t-loud  { font-size:17px; color:#b0b0b0; }
+  .t-mixed { font-size:12px; color:#787878; }
+  .t-mixed b { font-size:19px; color:#e2e2e2; font-weight:500; display:block; margin-top:3px; letter-spacing:.01em; }
+
+  .ticks { display:flex; gap:12px; font-size:18px; color:#5f5f5f; margin-top:12px; }
+  .ticks b { color:#e8e8e8; font-weight:600; }
+  .ticksNote { font-size:11px; color:#5a5a5a; margin-top:7px; }
+
+  .hints { font-size:11px; color:#4f4f4f; line-height:1.75; margin-top:30px; }
+
+  .action { flex:0 0 auto; padding:0 24px 12px; }
+  .go { width:100%; border:none; border-radius:16px; background:#0B0; color:#fff;
+        font-size:19px; font-weight:700; padding:22px; }
+  .drawer { text-align:center; font-size:11px; color:#4a4a4a; padding:10px 0 14px; flex:0 0 auto; }
+</style>
+</head>
+<body>
+
+<!-- A -->
+<div class="col">
+  <div class="caption"><b>A · Как сейчас</b>База для сравнения. Цель мелкая и по центру — относится будто и к весу тоже.</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
+      <div class="exName">Жим лёжа</div>
+      <div class="setLine">Подход 2 из 3</div>
+      <div class="row">
+        <div class="cell"><button class="big">60<u>кг</u></button></div>
+        <div class="times">×</div>
+        <div class="cell"><button class="big">8<u>раз</u></button></div>
+      </div>
+      <div class="under t-quiet">цель 6 – 8 повторов</div>
+      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
+    </div>
+    <div class="action"><button class="go">Готово</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+<!-- B -->
+<div class="col">
+  <div class="caption"><b>B · Просто крупнее и ярче</b>Тот же макет, цель 17px и светлее. Проверка гипотезы «просто увеличить».</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
+      <div class="exName">Жим лёжа</div>
+      <div class="setLine">Подход 2 из 3</div>
+      <div class="row">
+        <div class="cell"><button class="big">60<u>кг</u></button></div>
+        <div class="times">×</div>
+        <div class="cell"><button class="big">8<u>раз</u></button></div>
+      </div>
+      <div class="under t-loud">цель 6 – 8 повторов</div>
+      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
+    </div>
+    <div class="action"><button class="go">Готово</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+<!-- C -->
+<div class="col">
+  <div class="caption"><b>C · Под повторами</b>Цель уехала под своё число и не трогает вес. Крупнее, но не спорит — потому что подчинена.</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
+      <div class="exName">Жим лёжа</div>
+      <div class="setLine">Подход 2 из 3</div>
+      <div class="row">
+        <div class="cell"><button class="big">60<u>кг</u></button></div>
+        <div class="times">×</div>
+        <div class="cell">
+          <button class="big">8<u>раз</u></button>
+          <div class="under t-loud" style="font-size:15px">цель 6 – 8</div>
+        </div>
+      </div>
+      <div class="hints" style="margin-top:52px">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
+    </div>
+    <div class="action"><button class="go">Готово</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+<!-- D -->
+<div class="col">
+  <div class="caption"><b>D · В строке подхода</b>Цель поднялась наверх и слилась со счётчиком. Минус один элемент, но связь с повторами слабее.</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
+      <div class="exName">Жим лёжа</div>
+      <div class="setLine" style="font-size:15px;color:#949494">Подход 2 из 3&nbsp; ·&nbsp; цель 6 – 8 повторов</div>
+      <div class="row">
+        <div class="cell"><button class="big">60<u>кг</u></button></div>
+        <div class="times">×</div>
+        <div class="cell"><button class="big">8<u>раз</u></button></div>
+      </div>
+      <div class="hints" style="margin-top:44px">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
+    </div>
+    <div class="action"><button class="go">Готово</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+<!-- E -->
+<div class="col">
+  <div class="caption"><b>E · Слово мелко, числа крупно</b>«цель» уходит в подпись, сам диапазон читается почти как значение. Вес не задет.</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
+      <div class="exName">Жим лёжа</div>
+      <div class="setLine">Подход 2 из 3</div>
+      <div class="row">
+        <div class="cell"><button class="big">60<u>кг</u></button></div>
+        <div class="times">×</div>
+        <div class="cell">
+          <button class="big">8<u>раз</u></button>
+          <div class="under t-mixed">цель<b>6 – 8</b></div>
+        </div>
+      </div>
+      <div class="hints" style="margin-top:44px">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
+    </div>
+    <div class="action"><button class="go">Готово</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+<!-- F -->
+<div class="col">
+  <div class="caption"><b>F · Диапазон засечками</b>Слова «цель» нет вообще: видно весь диапазон и где в нём сегодня. Заодно это готовые кнопки правки.</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
+      <div class="exName">Жим лёжа</div>
+      <div class="setLine">Подход 2 из 3</div>
+      <div class="row">
+        <div class="cell"><button class="big">60<u>кг</u></button></div>
+        <div class="times">×</div>
+        <div class="cell">
+          <button class="big">8<u>раз</u></button>
+          <div class="ticks"><span>6</span><span>7</span><b>8</b></div>
+        </div>
+      </div>
+      <div class="hints" style="margin-top:44px">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
+    </div>
+    <div class="action"><button class="go">Готово</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+</body>
+</html>
