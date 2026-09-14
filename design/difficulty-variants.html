@@ -26,11 +26,17 @@
   .seg button:first-child { border-left:none; }
   .seg button.sel { background:#06F; color:#fff; font-weight:600; }
 
-  /* ---------- A2 · pills, width follows the word ---------- */
-  .pills { display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
-  .pills button { background:transparent; border:none; color:#a8a8a8; font-size:13px;
-                  padding:12px 11px; border-radius:999px; white-space:nowrap; }
-  .pills button.sel { background:#06F; color:#fff; font-weight:600; }
+  /* ---------- A2 · one outline, no dividers, chips sized by word ---------- */
+  .seg2 { display:flex; align-items:center; width:100%; border:1px solid #333; border-radius:12px;
+          padding:4px; margin-top:12px; }
+  .seg2 button { background:transparent; border:none; color:#bdbdbd; font-size:13px;
+                 padding:11px 10px; border-radius:9px; white-space:nowrap; }
+  .seg2 button.sel { background:#06F; color:#fff; font-weight:600; }
+  /* a · natural width, spread apart */
+  .seg2.spread { justify-content:space-between; }
+  .seg2.spread button { flex:0 0 auto; }
+  /* b · fills the row, each share proportional to its word */
+  .seg2.fill button { flex:1 1 auto; }
 
   /* ---------- shared mark row ---------- */
   .scale { display:flex; justify-content:center; align-items:flex-end; }
@@ -43,6 +49,16 @@
   /* ---------- F · anchored ends ---------- */
   .anchored { display:flex; align-items:center; justify-content:center; gap:6px; margin-top:12px; }
   .anchor { font-size:11px; color:#7a7a7a; white-space:nowrap; }
+
+  /* ---------- N · numbers: the question itself labels the scale ---------- */
+  .nums { display:flex; align-items:center; width:100%; border:1px solid #333; border-radius:12px;
+          padding:4px; margin-top:12px; }
+  .nums button { flex:1 1 0; background:transparent; border:none; color:#c5c5c5; font-size:17px;
+                 padding:13px 0; border-radius:9px; font-variant-numeric:tabular-nums; }
+  .nums button.sel { background:#06F; color:#fff; font-weight:700; }
+  .meaning { text-align:center; font-size:13px; color:#8d8d8d; margin-top:10px; min-height:18px; }
+  .legend { display:flex; justify-content:space-between; padding:0 6px; margin-top:7px; }
+  .legend span { font-size:10px; color:#6d6d6d; }
 
   /* ---------- G · name above, marks below ---------- */
   .gName { text-align:center; font-size:22px; font-weight:700; margin-top:14px; min-height:28px; }
@@ -76,23 +92,45 @@
   </div>
 </div>
 
-<!-- A2 -->
+<!-- A2a -->
 <div class="card">
   <div class="cardHead">
-    <div class="cardTitle">A2 · Без перегородок, ширина по слову</div>
-    <div class="cardNote">Каждое слово занимает столько, сколько ему нужно, и всё влезает при 13px. Выбранное становится пилюлей. Ничего лишнего не рисуется — ни рамки, ни разделителей.</div>
+    <div class="cardTitle">A2a · Обводка есть, ширина по слову</div>
+    <div class="cardNote">Внешняя рамка на месте, перегородок нет, каждая чипса шириной под своё слово. «Легко» больше не тащит за собой пустоту до размеров «Нормально».</div>
   </div>
   <div class="state">пока не ответили</div>
   <div class="box">
     <div class="askQ">Как прошёл подход?</div>
-    <div class="pills">
+    <div class="seg2 spread">
       <button>Легко</button><button>Нормально</button><button>Тяжело</button><button>До отказа</button>
     </div>
   </div>
   <div class="state">ответили</div>
   <div class="box">
     <div class="askQ">Как прошёл подход?</div>
-    <div class="pills">
+    <div class="seg2 spread">
+      <button>Легко</button><button>Нормально</button><button class="sel">Тяжело</button><button>До отказа</button>
+    </div>
+  </div>
+</div>
+
+<!-- A2b -->
+<div class="card">
+  <div class="cardHead">
+    <div class="cardTitle">A2b · То же, но чипсы заполняют ряд</div>
+    <div class="cardNote">Ширины всё так же неравные и пропорциональны словам, но остаток делится между ними, а не уходит в промежутки. Зона нажатия больше, пустоты внутри рамки нет.</div>
+  </div>
+  <div class="state">пока не ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="seg2 fill">
+      <button>Легко</button><button>Нормально</button><button>Тяжело</button><button>До отказа</button>
+    </div>
+  </div>
+  <div class="state">ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="seg2 fill">
       <button>Легко</button><button>Нормально</button><button class="sel">Тяжело</button><button>До отказа</button>
     </div>
   </div>
@@ -125,6 +163,78 @@
       <button class="hit"><span class="bar on" style="height:30px"></span></button>
       <button class="hit"><span class="bar" style="height:38px"></span></button>
     </div>
+  </div>
+</div>
+
+<div class="rowTitle">Числа — вопрос сам подписывает шкалу</div>
+
+<!-- N1 -->
+<div class="card">
+  <div class="cardHead">
+    <div class="cardTitle">N1 · «Сколько ещё мог?»</div>
+    <div class="cardNote">Числа ничего не значат сами по себе — их значение задаёт вопрос. Поменяли вопрос, и ряд читается без единой подписи, в обоих состояниях.</div>
+  </div>
+  <div class="state">пока не ответили</div>
+  <div class="box">
+    <div class="askQ">Сколько повторов ещё мог?</div>
+    <div class="nums">
+      <button>0</button><button>1</button><button>2</button><button>3</button><button>4+</button>
+    </div>
+  </div>
+  <div class="state">ответили</div>
+  <div class="box">
+    <div class="askQ">Сколько повторов ещё мог?</div>
+    <div class="nums">
+      <button>0</button><button>1</button><button class="sel">2</button><button>3</button><button>4+</button>
+    </div>
+  </div>
+</div>
+
+<!-- N2 -->
+<div class="card">
+  <div class="cardHead">
+    <div class="cardTitle">N2 · То же плюс строка смысла</div>
+    <div class="cardNote">После ответа число переводится в человеческую фразу. До ответа строка пуста, но ряд и без неё понятен — в отличие от меток.</div>
+  </div>
+  <div class="state">пока не ответили</div>
+  <div class="box">
+    <div class="askQ">Сколько повторов ещё мог?</div>
+    <div class="nums">
+      <button>0</button><button>1</button><button>2</button><button>3</button><button>4+</button>
+    </div>
+    <div class="meaning">&nbsp;</div>
+  </div>
+  <div class="state">ответили</div>
+  <div class="box">
+    <div class="askQ">Сколько повторов ещё мог?</div>
+    <div class="nums">
+      <button>0</button><button>1</button><button class="sel">2</button><button>3</button><button>4+</button>
+    </div>
+    <div class="meaning">запас есть, вес можно добавить</div>
+  </div>
+</div>
+
+<!-- N3 -->
+<div class="card">
+  <div class="cardHead">
+    <div class="cardTitle">N3 · RPE, как у конкурента</div>
+    <div class="cardNote">Числа те же по форме, но шкала внешняя: 8 ничего не значит, пока не знаешь RPE. Приходится подписывать края — то есть возвращать те самые слова.</div>
+  </div>
+  <div class="state">пока не ответили</div>
+  <div class="box">
+    <div class="askQ">Оцените усилие</div>
+    <div class="nums">
+      <button>6</button><button>7</button><button>8</button><button>9</button><button>10</button>
+    </div>
+    <div class="legend"><span>легко</span><span>до отказа</span></div>
+  </div>
+  <div class="state">ответили</div>
+  <div class="box">
+    <div class="askQ">Оцените усилие</div>
+    <div class="nums">
+      <button>6</button><button>7</button><button class="sel">8</button><button>9</button><button>10</button>
+    </div>
+    <div class="legend"><span>легко</span><span>до отказа</span></div>
   </div>
 </div>
 
