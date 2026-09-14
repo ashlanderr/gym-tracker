@@ -28,26 +28,30 @@
   .stage { flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center;
            padding:0 24px; text-align:center; }
 
-  .hero { border-radius:16px; object-fit:cover; margin-bottom:16px; background:#000; }
-  .hero.s104 { width:104px; height:104px; }
-  .hero.s150 { width:150px; height:150px; }
-  .hero.s190 { width:190px; height:190px; }
+  .heroWrap { position:relative; margin-bottom:14px; }
+  .hero { width:190px; height:190px; border-radius:16px; object-fit:cover; background:#000; display:block; }
+  .pauseDot { position:absolute; right:8px; bottom:8px; width:22px; height:22px; border-radius:50%;
+              background:#000a; border:1px solid #3d3d3d; display:flex; align-items:center; justify-content:center;
+              font-size:8px; color:#bbb; }
 
-  /* name treatments */
-  .exName { font-size:26px; font-weight:700; line-height:1.2; letter-spacing:-.01em;
+  /* ---------------------------------------------------------------
+     The chevron hangs off the end of the TEXT, not the end of the box.
+     .chev is an empty inline anchor glued to the last character with no
+     whitespace before it, so it cannot wrap onto a line of its own, and
+     it is zero-width because its only content sits in an absolutely
+     positioned ::after. The words therefore centre as if the chevron
+     were not there — on one line and on three.
+     --------------------------------------------------------------- */
+  .exName { font-size:26px; font-weight:700; line-height:1.24; letter-spacing:-.01em;
             background:transparent; border:none; color:#fff; }
-  .exName .chev { color:#5f5f5f; font-weight:400; font-size:22px; margin-left:6px; }
-  /* B: the chevron leaves the flow entirely, so the words centre by themselves
-     regardless of font metrics — no magic padding to keep in sync */
-  .exName.optical { position:relative; }
-  .exName.optical .chev { position:absolute; left:100%; bottom:2px; margin-left:6px; }
-  /* C: the same dashed underline the numbers use */
-  .exName.dashed { border-bottom:1px dashed #3a3a3a; padding-bottom:6px; }
+  .chev { position:relative; display:inline; }
+  .chev::after { content:'›'; position:absolute; left:7px; top:50%; transform:translateY(-52%);
+                 color:#5f5f5f; font-weight:400; font-size:23px; line-height:1; }
 
   .setLine { font-size:14px; color:#7a7a7a; margin-top:10px; }
   .centreMark { position:absolute; left:50%; top:0; bottom:0; width:1px; background:#a0202055; }
 
-  .row { display:flex; align-items:flex-start; gap:16px; margin-top:30px; }
+  .row { display:flex; align-items:flex-start; gap:16px; margin-top:26px; }
   .cell { display:flex; flex-direction:column; align-items:center; }
   .big { font-size:58px; font-weight:600; letter-spacing:-.03em; line-height:1; color:#fff;
          background:transparent; border:none; border-bottom:1px dashed #3a3a3a; padding-bottom:8px; }
@@ -58,28 +62,25 @@
   .action { flex:0 0 auto; padding:0 24px 18px; }
   .go { width:100%; border:none; border-radius:16px; background:#0B0; color:#fff;
         font-size:19px; font-weight:700; padding:22px; }
-
-  .pauseDot { position:absolute; right:6px; bottom:6px; width:20px; height:20px; border-radius:50%;
-              background:#000a; border:1px solid #444; display:flex; align-items:center; justify-content:center;
-              font-size:8px; color:#bbb; }
-  .heroWrap { position:relative; margin-bottom:16px; }
-  .heroWrap .hero { margin-bottom:0; }
 </style>
 </head>
 <body>
 
-<div class="rowTitle">Центрирование названия — красная нить показывает середину экрана</div>
+<div class="rowTitle">Видео 190px, кроп по фигуре. Красная нить — середина экрана</div>
 
 <!-- 1 -->
 <div class="col">
-  <div class="caption"><b>1 · Шеврон в потоке</b>Как сейчас. Строка целиком по центру, значит сами слова уехали влево ровно на половину шеврона. Глаз ловит именно это.</div>
+  <div class="caption"><b>1 · Одна строка</b>Кроп не меняет размер бокса — 190px как был, но чёрные поля ушли и фигура заняла кадр целиком.</div>
   <div class="phone">
     <div class="centreMark"></div>
     <div class="top"><button class="ghostBtn">←</button><div class="clock">12:04</div></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
     <div class="stage">
-      <img class="hero s104" src="assets/bench-press-square.jpg" alt="">
-      <button class="exName" id="n1">Жим лёжа со штангой<span class="chev">›</span></button>
+      <div class="heroWrap">
+        <video class="hero" src="assets/bench-press-sq.mp4" autoplay loop muted playsinline></video>
+        <div class="pauseDot">❚❚</div>
+      </div>
+      <button class="exName" id="n1">Жим лёжа со штангой<span class="chev"></span></button>
       <div class="setLine">Подход 2 из 3</div>
       <div class="row">
         <div class="cell"><button class="big">60<u>кг</u></button><div class="under"></div></div>
@@ -93,60 +94,17 @@
 
 <!-- 2 -->
 <div class="col">
-  <div class="caption"><b>2 · Оптический центр</b>Шеврон вынут из потока и висит за последней строкой. Слова центруются сами, без подгонки под ширину глифа.</div>
+  <div class="caption"><b>2 · Две строки</b>Шеврон приклеен к последнему слову, а не к правому краю кнопки. Раньше он уезжал к краю самой длинной строки.</div>
   <div class="phone">
     <div class="centreMark"></div>
-    <div class="top"><button class="ghostBtn">←</button><div class="clock">12:04</div></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
-    <div class="stage">
-      <img class="hero s104" src="assets/bench-press-square.jpg" alt="">
-      <button class="exName optical" id="n2">Жим лёжа со штангой<span class="chev">›</span></button>
-      <div class="setLine">Подход 2 из 3</div>
-      <div class="row">
-        <div class="cell"><button class="big">60<u>кг</u></button><div class="under"></div></div>
-        <div class="times">×</div>
-        <div class="cell"><button class="big">8<u>раз</u></button><div class="under">цель 6 – 8</div></div>
-      </div>
-    </div>
-    <div class="action"><button class="go">Готово</button></div>
-  </div>
-</div>
-
-<!-- 3 -->
-<div class="col">
-  <div class="caption"><b>3 · Пунктир вместо шеврона</b>Тот же признак нажимаемости, что у веса и повторов. Центрирование перестаёт быть проблемой, и на экране на один вид подсказки меньше.</div>
-  <div class="phone">
-    <div class="centreMark"></div>
-    <div class="top"><button class="ghostBtn">←</button><div class="clock">12:04</div></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
-    <div class="stage">
-      <img class="hero s104" src="assets/bench-press-square.jpg" alt="">
-      <button class="exName dashed" id="n3">Жим лёжа со штангой</button>
-      <div class="setLine">Подход 2 из 3</div>
-      <div class="row">
-        <div class="cell"><button class="big">60<u>кг</u></button><div class="under"></div></div>
-        <div class="times">×</div>
-        <div class="cell"><button class="big">8<u>раз</u></button><div class="under">цель 6 – 8</div></div>
-      </div>
-    </div>
-    <div class="action"><button class="go">Готово</button></div>
-  </div>
-</div>
-
-<div class="rowTitle">Видео на экране подхода и длинные названия</div>
-
-<!-- 4 -->
-<div class="col">
-  <div class="caption"><b>4 · Видео 104px, длинное название</b>«Горизонтальный жим ногами в тренажёре» — две строки, шрифт тот же. Видео идёт, тап по нему ставит паузу.</div>
-  <div class="phone">
     <div class="top"><button class="ghostBtn">←</button><div class="clock">31:08</div></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i></div>
     <div class="stage">
       <div class="heroWrap">
-        <video class="hero s104" src="assets/bench-press.mp4" autoplay loop muted playsinline></video>
+        <video class="hero" src="assets/bench-press-sq.mp4" autoplay loop muted playsinline></video>
         <div class="pauseDot">❚❚</div>
       </div>
-      <button class="exName optical">Горизонтальный жим ногами в тренажёре<span class="chev">›</span></button>
+      <button class="exName" id="n2">Горизонтальный жим ногами в тренажёре<span class="chev"></span></button>
       <div class="setLine">Подход 1 из 3</div>
       <div class="row">
         <div class="cell"><button class="big">70<u>кг</u></button><div class="under"></div></div>
@@ -158,46 +116,48 @@
   </div>
 </div>
 
-<!-- 5 -->
+<!-- 3 -->
 <div class="col">
-  <div class="caption"><b>5 · Видео 150px</b>Крупнее — техника читается, но картинка начинает спорить с числами за первое место. Проверка, где граница.</div>
+  <div class="caption"><b>3 · Короткая последняя строка</b>Худший случай для прежнего решения: последняя строка сильно короче блока, и шеврон висел бы в пустоте справа.</div>
   <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button><div class="clock">12:04</div></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
+    <div class="centreMark"></div>
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">08:22</div></div>
+    <div class="progress"><i class="done"></i><i class="cur"></i><i></i><i></i><i></i><i></i></div>
     <div class="stage">
       <div class="heroWrap">
-        <video class="hero s150" src="assets/bench-press.mp4" autoplay loop muted playsinline></video>
+        <video class="hero" src="assets/bench-press-sq.mp4" autoplay loop muted playsinline></video>
         <div class="pauseDot">❚❚</div>
       </div>
-      <button class="exName optical">Жим лёжа со штангой<span class="chev">›</span></button>
-      <div class="setLine">Подход 2 из 3</div>
+      <button class="exName" id="n3">Разгибание рук на верхнем блоке с канатом стоя<span class="chev"></span></button>
+      <div class="setLine">Подход 2 из 4</div>
       <div class="row">
-        <div class="cell"><button class="big">60<u>кг</u></button><div class="under"></div></div>
+        <div class="cell"><button class="big">25<u>кг</u></button><div class="under"></div></div>
         <div class="times">×</div>
-        <div class="cell"><button class="big">8<u>раз</u></button><div class="under">цель 6 – 8</div></div>
+        <div class="cell"><button class="big">14<u>раз</u></button><div class="under">цель 12 – 15</div></div>
       </div>
     </div>
     <div class="action"><button class="go">Готово</button></div>
   </div>
 </div>
 
-<!-- 6 -->
+<!-- 4 -->
 <div class="col">
-  <div class="caption"><b>6 · Видео 190px</b>Ещё крупнее. Тут уже видео — главный объект экрана, а вес с повторами становятся подписью к нему. Ровно та ошибка, что у конкурента.</div>
+  <div class="caption"><b>4 · Строка впритык к краю</b>Проверка, что нулевой якорь не переносится сам по себе: последняя строка почти во всю ширину, переносить нечего, шеврон уходит за неё.</div>
   <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button><div class="clock">12:04</div></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
+    <div class="centreMark"></div>
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">19:40</div></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
     <div class="stage">
       <div class="heroWrap">
-        <video class="hero s190" src="assets/bench-press.mp4" autoplay loop muted playsinline></video>
+        <video class="hero" src="assets/bench-press-sq.mp4" autoplay loop muted playsinline></video>
         <div class="pauseDot">❚❚</div>
       </div>
-      <button class="exName optical">Жим лёжа со штангой<span class="chev">›</span></button>
-      <div class="setLine">Подход 2 из 3</div>
+      <button class="exName" id="n4">Тяга верхнего блока широким<span class="chev"></span></button>
+      <div class="setLine">Подход 3 из 3</div>
       <div class="row">
-        <div class="cell"><button class="big">60<u>кг</u></button><div class="under"></div></div>
+        <div class="cell"><button class="big">55<u>кг</u></button><div class="under"></div></div>
         <div class="times">×</div>
-        <div class="cell"><button class="big">8<u>раз</u></button><div class="under">цель 6 – 8</div></div>
+        <div class="cell"><button class="big">10<u>раз</u></button><div class="under">цель 8 – 10</div></div>
       </div>
     </div>
     <div class="action"><button class="go">Готово</button></div>
