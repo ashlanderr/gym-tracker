@@ -6,277 +6,221 @@
 <style>
   * { margin:0; padding:0; box-sizing:border-box; font: inherit; }
   html { font-family: Montserrat, "Segoe UI", "Helvetica Neue", sans-serif; background:#111; color:#fff; -webkit-font-smoothing:antialiased; }
-  body { padding:24px; display:flex; flex-wrap:wrap; gap:20px; width:2093px; align-items:flex-start; }
+  body { padding:26px; display:flex; flex-wrap:wrap; gap:20px; width:1300px; align-items:flex-start; }
 
-  .col { display:flex; flex-direction:column; gap:10px; width:393px; flex:0 0 auto; }
-  .caption { font-size:12px; color:#8b9299; line-height:1.5; height:74px; }
-  .caption b { color:#fff; font-weight:600; display:block; font-size:13px; margin-bottom:3px; }
-  .rowTitle { width:100%; font-size:12px; color:#5f6a72; letter-spacing:.14em; text-transform:uppercase; padding:6px 0 0; }
+  .rowTitle { width:100%; font-size:12px; color:#5f6a72; letter-spacing:.14em; text-transform:uppercase; padding:8px 0 0; }
+  .card { width:393px; background:#000; border:1px solid #2a2a2a; border-radius:18px; padding:16px 0 20px; }
+  .cardHead { padding:0 16px; }
+  .cardTitle { font-size:13px; font-weight:600; margin-bottom:4px; }
+  .cardNote { font-size:11px; color:#7c848b; line-height:1.5; min-height:62px; }
+  .state { font-size:10px; color:#4f5a61; letter-spacing:.14em; text-transform:uppercase;
+           padding:0 16px; margin:20px 0 10px; }
+  .box { padding:0 16px; }
 
-  .phone { width:393px; height:800px; background:#000; border-radius:26px; overflow:hidden;
-           display:flex; flex-direction:column; border:1px solid #2a2a2a; }
+  .askQ { font-size:14px; color:#b5b5b5; text-align:center; }
 
-  .top { display:flex; align-items:center; padding:10px 14px 10px 8px; flex:0 0 auto; }
-  .ghostBtn { width:40px; height:40px; display:flex; align-items:center; justify-content:center;
-              border:none; background:transparent; color:#6d6d6d; font-size:19px; }
-  .clock { margin-left:auto; font-size:13px; color:#6d6d6d; font-variant-numeric:tabular-nums; }
-  .progress { height:2px; display:flex; gap:3px; padding:0 16px; flex:0 0 auto; }
-  .progress i { flex:1 1 0; background:#1e1e1e; border-radius:2px; }
-  .progress i.done { background:#0B0; }
-  .progress i.cur { background:#08F; }
-
-  .stage { flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center;
-           padding:0 20px; text-align:center; }
-  .restLabel { font-size:12px; color:#7a7a7a; letter-spacing:.16em; text-transform:uppercase; }
-  .restTime { font-size:86px; font-weight:300; letter-spacing:-.03em; font-variant-numeric:tabular-nums; line-height:1; margin-top:14px; }
-  .adj { display:flex; gap:10px; margin-top:22px; }
-  .adjBtn { border:1px solid #2e2e2e; background:transparent; color:#bdbdbd; border-radius:10px; padding:11px 18px; font-size:13px; }
-
-  .askQ { font-size:14px; color:#b5b5b5; margin-top:34px; }
-  .askWrap { width:100%; margin-top:14px; }
-  .askName { font-size:16px; color:#fff; font-weight:600; margin-top:14px; min-height:20px; }
-  .askName.empty { color:#5a5a5a; font-weight:400; }
-
-  .nextUp { margin-top:34px; font-size:11px; color:#5f5f5f; letter-spacing:.14em; text-transform:uppercase; }
-  .nextVal { font-size:25px; font-weight:600; margin-top:9px; }
-  .nextName { font-size:13px; color:#7a7a7a; margin-top:6px; }
-
-  .action { flex:0 0 auto; padding:0 24px 12px; }
-  .skip { width:100%; border:1px solid #2e2e2e; border-radius:16px; background:transparent; color:#bdbdbd;
-          font-size:16px; font-weight:600; padding:20px; }
-  .drawer { text-align:center; font-size:11px; color:#4a4a4a; padding:10px 0 14px; flex:0 0 auto; }
-
-  /* ---------- A · segmented control, words kept ---------- */
-  .seg { display:flex; width:100%; border:1px solid #333; border-radius:12px; overflow:hidden; }
+  /* ---------- A1 · segments with dividers ---------- */
+  .seg { display:flex; width:100%; border:1px solid #333; border-radius:12px; overflow:hidden; margin-top:12px; }
   .seg button { flex:1 1 0; background:transparent; border:none; color:#bdbdbd; font-size:12px; padding:14px 2px;
                 border-left:1px solid #333; white-space:nowrap; }
   .seg button:first-child { border-left:none; }
   .seg button.sel { background:#06F; color:#fff; font-weight:600; }
 
-  /* ---------- shared scale row ---------- */
-  .scale { display:flex; justify-content:center; align-items:flex-end; gap:0; }
+  /* ---------- A2 · pills, width follows the word ---------- */
+  .pills { display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
+  .pills button { background:transparent; border:none; color:#a8a8a8; font-size:13px;
+                  padding:12px 11px; border-radius:999px; white-space:nowrap; }
+  .pills button.sel { background:#06F; color:#fff; font-weight:600; }
+
+  /* ---------- shared mark row ---------- */
+  .scale { display:flex; justify-content:center; align-items:flex-end; }
   .hit { background:transparent; border:none; padding:10px 13px; display:flex; align-items:flex-end; justify-content:center; }
-
-  /* B · dots that fill up */
-  .dot { width:22px; height:22px; border-radius:50%; border:1.5px solid #4a4a4a; background:transparent; }
-  .dot.on { background:#08F; border-color:#08F; }
-
-  /* C · bars that grow */
   .bar { width:22px; border-radius:4px; border:1.5px solid #4a4a4a; background:transparent; }
   .bar.on { background:#08F; border-color:#08F; }
+  .answer { text-align:center; font-size:16px; color:#fff; font-weight:600; min-height:20px; margin-top:10px; }
+  .answer.none { color:#3f3f3f; font-weight:400; font-size:13px; }
 
-  /* D · one gauge split in four */
-  .gauge { display:flex; width:100%; gap:4px; }
-  .gauge span { flex:1 1 0; height:12px; border-radius:6px; background:#2c2c2c; }
-  .gauge span.on { background:#08F; }
+  /* ---------- F · anchored ends ---------- */
+  .anchored { display:flex; align-items:center; justify-content:center; gap:6px; margin-top:12px; }
+  .anchor { font-size:11px; color:#7a7a7a; white-space:nowrap; }
 
-  /* E · dots that grow and fill */
-  .gdot { border-radius:50%; border:1.5px solid #4a4a4a; background:transparent; }
-  .gdot.on { background:#08F; border-color:#08F; }
+  /* ---------- G · name above, marks below ---------- */
+  .gName { text-align:center; font-size:22px; font-weight:700; margin-top:14px; min-height:28px; }
+  .gName.none { color:#4a4a4a; font-weight:400; font-size:14px; margin-top:19px; min-height:23px; }
+  .gHint { text-align:center; font-size:12px; color:#7a7a7a; margin-top:5px; min-height:17px; }
 </style>
 </head>
 <body>
 
-<div class="rowTitle">Вопрос про подход — четыре ответа, один ряд, без переносов</div>
+<div class="rowTitle">Подписи всегда видны — слова живут в самих кнопках</div>
 
-<!-- A -->
-<div class="col">
-  <div class="caption"><b>A · Сегменты со словами</b>Слова остаются, читать нечего учиться. В один ряд влезают, но ценой 12px — мелковато для пальца и для глаза в зале.</div>
-  <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button><div class="clock">14:22</div></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
-    <div class="stage">
-      <div class="restLabel">Отдых</div>
-      <div class="restTime">1:47</div>
-      <div class="adj"><button class="adjBtn">−15 сек</button><button class="adjBtn">+15 сек</button></div>
-      <div class="askQ">Как прошёл подход?</div>
-      <div class="askWrap">
-        <div class="seg">
-          <button>Легко</button>
-          <button>Нормально</button>
-          <button class="sel">Тяжело</button>
-          <button>До отказа</button>
-        </div>
-      </div>
-      <div class="nextUp">Дальше</div>
-      <div class="nextVal">60 кг&nbsp; ×&nbsp; 8</div>
-      <div class="nextName">Жим лёжа, подход 3 из 3</div>
+<!-- A1 -->
+<div class="card">
+  <div class="cardHead">
+    <div class="cardTitle">A1 · Сегменты с перегородками</div>
+    <div class="cardNote">Равные доли заставляют мерить по самому длинному слову, поэтому шрифт падает до 12px, а вокруг «Легко» остаётся пустота.</div>
+  </div>
+  <div class="state">пока не ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="seg">
+      <button>Легко</button><button>Нормально</button><button>Тяжело</button><button>До отказа</button>
     </div>
-    <div class="action"><button class="skip">Пропустить отдых</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+  <div class="state">ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="seg">
+      <button>Легко</button><button>Нормально</button><button class="sel">Тяжело</button><button>До отказа</button>
+    </div>
   </div>
 </div>
 
-<!-- B -->
-<div class="col">
-  <div class="caption"><b>B · Точки, заполняются слева направо</b>Как оценка в отзыве: больше закрашено — тяжелее. Слово одно и под шкалой, поэтому длина слов больше ничего не ломает.</div>
-  <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button><div class="clock">14:22</div></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
-    <div class="stage">
-      <div class="restLabel">Отдых</div>
-      <div class="restTime">1:47</div>
-      <div class="adj"><button class="adjBtn">−15 сек</button><button class="adjBtn">+15 сек</button></div>
-      <div class="askQ">Как прошёл подход?</div>
-      <div class="askWrap">
-        <div class="scale">
-          <button class="hit"><span class="dot on"></span></button>
-          <button class="hit"><span class="dot on"></span></button>
-          <button class="hit"><span class="dot on"></span></button>
-          <button class="hit"><span class="dot"></span></button>
-        </div>
-        <div class="askName">Тяжело</div>
-      </div>
-      <div class="nextUp">Дальше</div>
-      <div class="nextVal">60 кг&nbsp; ×&nbsp; 8</div>
-      <div class="nextName">Жим лёжа, подход 3 из 3</div>
-    </div>
-    <div class="action"><button class="skip">Пропустить отдых</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
+<!-- A2 -->
+<div class="card">
+  <div class="cardHead">
+    <div class="cardTitle">A2 · Без перегородок, ширина по слову</div>
+    <div class="cardNote">Каждое слово занимает столько, сколько ему нужно, и всё влезает при 13px. Выбранное становится пилюлей. Ничего лишнего не рисуется — ни рамки, ни разделителей.</div>
   </div>
-</div>
-
-<!-- C -->
-<div class="col">
-  <div class="caption"><b>C · Растущие столбики</b>Высота сама говорит «тяжелее», не нужно знать, что слева легко. Ближе всего к языку железа — те же прямоугольники, что блины.</div>
-  <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button><div class="clock">14:22</div></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
-    <div class="stage">
-      <div class="restLabel">Отдых</div>
-      <div class="restTime">1:47</div>
-      <div class="adj"><button class="adjBtn">−15 сек</button><button class="adjBtn">+15 сек</button></div>
-      <div class="askQ">Как прошёл подход?</div>
-      <div class="askWrap">
-        <div class="scale">
-          <button class="hit"><span class="bar on" style="height:14px"></span></button>
-          <button class="hit"><span class="bar on" style="height:22px"></span></button>
-          <button class="hit"><span class="bar on" style="height:30px"></span></button>
-          <button class="hit"><span class="bar" style="height:38px"></span></button>
-        </div>
-        <div class="askName">Тяжело</div>
-      </div>
-      <div class="nextUp">Дальше</div>
-      <div class="nextVal">60 кг&nbsp; ×&nbsp; 8</div>
-      <div class="nextName">Жим лёжа, подход 3 из 3</div>
+  <div class="state">пока не ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="pills">
+      <button>Легко</button><button>Нормально</button><button>Тяжело</button><button>До отказа</button>
     </div>
-    <div class="action"><button class="skip">Пропустить отдых</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
   </div>
-</div>
-
-<!-- D -->
-<div class="col">
-  <div class="caption"><b>D · Шкала на всю ширину</b>Один индикатор, разбитый на четыре. Похоже на уровень заряда — сразу читается как «насколько», но тапать в узкую полосу хуже.</div>
-  <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button><div class="clock">14:22</div></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
-    <div class="stage">
-      <div class="restLabel">Отдых</div>
-      <div class="restTime">1:47</div>
-      <div class="adj"><button class="adjBtn">−15 сек</button><button class="adjBtn">+15 сек</button></div>
-      <div class="askQ">Как прошёл подход?</div>
-      <div class="askWrap">
-        <div class="gauge">
-          <span class="on"></span><span class="on"></span><span class="on"></span><span></span>
-        </div>
-        <div class="askName">Тяжело</div>
-      </div>
-      <div class="nextUp">Дальше</div>
-      <div class="nextVal">60 кг&nbsp; ×&nbsp; 8</div>
-      <div class="nextName">Жим лёжа, подход 3 из 3</div>
+  <div class="state">ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="pills">
+      <button>Легко</button><button>Нормально</button><button class="sel">Тяжело</button><button>До отказа</button>
     </div>
-    <div class="action"><button class="skip">Пропустить отдых</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
-  </div>
-</div>
-
-<!-- E -->
-<div class="col">
-  <div class="caption"><b>E · Точки растут и заполняются</b>Двойное кодирование: и размер, и заливка. Надёжнее читается, но выглядит нарядно — на экране, где всё остальное молчит, это заметно.</div>
-  <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button><div class="clock">14:22</div></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
-    <div class="stage">
-      <div class="restLabel">Отдых</div>
-      <div class="restTime">1:47</div>
-      <div class="adj"><button class="adjBtn">−15 сек</button><button class="adjBtn">+15 сек</button></div>
-      <div class="askQ">Как прошёл подход?</div>
-      <div class="askWrap">
-        <div class="scale" style="align-items:center">
-          <button class="hit"><span class="gdot on" style="width:14px;height:14px"></span></button>
-          <button class="hit"><span class="gdot on" style="width:19px;height:19px"></span></button>
-          <button class="hit"><span class="gdot on" style="width:24px;height:24px"></span></button>
-          <button class="hit"><span class="gdot" style="width:29px;height:29px"></span></button>
-        </div>
-        <div class="askName">Тяжело</div>
-      </div>
-      <div class="nextUp">Дальше</div>
-      <div class="nextVal">60 кг&nbsp; ×&nbsp; 8</div>
-      <div class="nextName">Жим лёжа, подход 3 из 3</div>
-    </div>
-    <div class="action"><button class="skip">Пропустить отдых</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
-  </div>
-</div>
-
-<div class="rowTitle">Незаданное состояние — как выглядит, пока не ответил</div>
-
-<!-- F -->
-<div class="col">
-  <div class="caption"><b>F · C, пока не ответили</b>Ничего не закрашено, под шкалой вместо слова тихая подсказка. Ответ необязателен, и экран не должен выглядеть недозаполненной анкетой.</div>
-  <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button><div class="clock">14:22</div></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
-    <div class="stage">
-      <div class="restLabel">Отдых</div>
-      <div class="restTime">1:47</div>
-      <div class="adj"><button class="adjBtn">−15 сек</button><button class="adjBtn">+15 сек</button></div>
-      <div class="askQ">Как прошёл подход?</div>
-      <div class="askWrap">
-        <div class="scale">
-          <button class="hit"><span class="bar" style="height:14px"></span></button>
-          <button class="hit"><span class="bar" style="height:22px"></span></button>
-          <button class="hit"><span class="bar" style="height:30px"></span></button>
-          <button class="hit"><span class="bar" style="height:38px"></span></button>
-        </div>
-        <div class="askName empty">легко · нормально · тяжело · до отказа</div>
-      </div>
-      <div class="nextUp">Дальше</div>
-      <div class="nextVal">60 кг&nbsp; ×&nbsp; 8</div>
-      <div class="nextName">Жим лёжа, подход 3 из 3</div>
-    </div>
-    <div class="action"><button class="skip">Пропустить отдых</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
   </div>
 </div>
 
 <!-- G -->
-<div class="col">
-  <div class="caption"><b>G · C, ответ «легко»</b>Тот самый ответ, ради которого всё затевалось. Одна закрашенная палка — и вес следующего подхода уже другой.</div>
-  <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button><div class="clock">04:55</div></div>
-    <div class="progress"><i class="done"></i><i class="cur"></i><i></i><i></i><i></i><i></i></div>
-    <div class="stage">
-      <div class="restLabel">Отдых</div>
-      <div class="restTime">2:12</div>
-      <div class="adj"><button class="adjBtn">−15 сек</button><button class="adjBtn">+15 сек</button></div>
-      <div class="askQ">Как прошёл подход?</div>
-      <div class="askWrap">
-        <div class="scale">
-          <button class="hit"><span class="bar on" style="height:14px"></span></button>
-          <button class="hit"><span class="bar" style="height:22px"></span></button>
-          <button class="hit"><span class="bar" style="height:30px"></span></button>
-          <button class="hit"><span class="bar" style="height:38px"></span></button>
-        </div>
-        <div class="askName">Легко</div>
-      </div>
-      <div class="nextUp">Дальше</div>
-      <div class="nextVal">50 кг&nbsp; ×&nbsp; 8</div>
-      <div class="nextName">Жим лёжа, подход 2 из 3</div>
+<div class="card">
+  <div class="cardHead">
+    <div class="cardTitle">G · Имя сверху, метки снизу</div>
+    <div class="cardNote">Паттерн с твоего скриншота, но словами вместо RPE. Пока не ответил — сверху пусто, и метки внизу не значат ничего: та же «большая палочка», только крупнее.</div>
+  </div>
+  <div class="state">пока не ответили</div>
+  <div class="box">
+    <div class="gName none">Как прошёл подход?</div>
+    <div class="gHint"></div>
+    <div class="scale">
+      <button class="hit"><span class="bar" style="height:14px"></span></button>
+      <button class="hit"><span class="bar" style="height:22px"></span></button>
+      <button class="hit"><span class="bar" style="height:30px"></span></button>
+      <button class="hit"><span class="bar" style="height:38px"></span></button>
     </div>
-    <div class="action"><button class="skip">Пропустить отдых</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+  <div class="state">ответили</div>
+  <div class="box">
+    <div class="gName">Тяжело</div>
+    <div class="gHint">ещё один повтор вряд ли</div>
+    <div class="scale">
+      <button class="hit"><span class="bar on" style="height:14px"></span></button>
+      <button class="hit"><span class="bar on" style="height:22px"></span></button>
+      <button class="hit"><span class="bar on" style="height:30px"></span></button>
+      <button class="hit"><span class="bar" style="height:38px"></span></button>
+    </div>
+  </div>
+</div>
+
+<div class="rowTitle">Подписей нет — проверка твоего возражения</div>
+
+<!-- C -->
+<div class="card">
+  <div class="cardHead">
+    <div class="cardTitle">C · Голые столбики</div>
+    <div class="cardNote">Вот оно, возражение целиком: «Как прошёл подход? — Большая палочка». Направление шкалы угадывается, но что означает вторая палка — нет.</div>
+  </div>
+  <div class="state">пока не ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="scale" style="margin-top:12px">
+      <button class="hit"><span class="bar" style="height:14px"></span></button>
+      <button class="hit"><span class="bar" style="height:22px"></span></button>
+      <button class="hit"><span class="bar" style="height:30px"></span></button>
+      <button class="hit"><span class="bar" style="height:38px"></span></button>
+    </div>
+    <div class="answer none">&nbsp;</div>
+  </div>
+  <div class="state">ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="scale" style="margin-top:12px">
+      <button class="hit"><span class="bar on" style="height:14px"></span></button>
+      <button class="hit"><span class="bar on" style="height:22px"></span></button>
+      <button class="hit"><span class="bar on" style="height:30px"></span></button>
+      <button class="hit"><span class="bar" style="height:38px"></span></button>
+    </div>
+    <div class="answer">Тяжело</div>
+  </div>
+</div>
+
+<!-- F -->
+<div class="card">
+  <div class="cardHead">
+    <div class="cardTitle">F · Подписаны только края</div>
+    <div class="cardNote">Компромисс: два слова вместо четырёх задают ось, середина достраивается сама. Название появляется после тапа. Влезает свободно, но «нормально» и «тяжело» до тапа всё равно безымянные.</div>
+  </div>
+  <div class="state">пока не ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="anchored">
+      <span class="anchor">легко</span>
+      <button class="hit"><span class="bar" style="height:14px"></span></button>
+      <button class="hit"><span class="bar" style="height:22px"></span></button>
+      <button class="hit"><span class="bar" style="height:30px"></span></button>
+      <button class="hit"><span class="bar" style="height:38px"></span></button>
+      <span class="anchor">до отказа</span>
+    </div>
+    <div class="answer none">&nbsp;</div>
+  </div>
+  <div class="state">ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="anchored">
+      <span class="anchor">легко</span>
+      <button class="hit"><span class="bar on" style="height:14px"></span></button>
+      <button class="hit"><span class="bar on" style="height:22px"></span></button>
+      <button class="hit"><span class="bar on" style="height:30px"></span></button>
+      <button class="hit"><span class="bar" style="height:38px"></span></button>
+      <span class="anchor">до отказа</span>
+    </div>
+    <div class="answer">Тяжело</div>
+  </div>
+</div>
+
+<!-- B -->
+<div class="card">
+  <div class="cardHead">
+    <div class="cardTitle">B · Голые точки</div>
+    <div class="cardNote">Для полноты: без подписей точки читаются как «3 из 4», то есть как счёт, а не как тяжесть. Хуже столбиков ровно на то, что не кодируют направление.</div>
+  </div>
+  <div class="state">пока не ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="scale" style="margin-top:12px; align-items:center">
+      <button class="hit"><span class="bar" style="height:22px;width:22px;border-radius:50%"></span></button>
+      <button class="hit"><span class="bar" style="height:22px;width:22px;border-radius:50%"></span></button>
+      <button class="hit"><span class="bar" style="height:22px;width:22px;border-radius:50%"></span></button>
+      <button class="hit"><span class="bar" style="height:22px;width:22px;border-radius:50%"></span></button>
+    </div>
+    <div class="answer none">&nbsp;</div>
+  </div>
+  <div class="state">ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="scale" style="margin-top:12px; align-items:center">
+      <button class="hit"><span class="bar on" style="height:22px;width:22px;border-radius:50%"></span></button>
+      <button class="hit"><span class="bar on" style="height:22px;width:22px;border-radius:50%"></span></button>
+      <button class="hit"><span class="bar on" style="height:22px;width:22px;border-radius:50%"></span></button>
+      <button class="hit"><span class="bar" style="height:22px;width:22px;border-radius:50%"></span></button>
+    </div>
+    <div class="answer">Тяжело</div>
   </div>
 </div>
 
