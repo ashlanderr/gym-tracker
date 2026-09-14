@@ -57,6 +57,12 @@
   .segShort button:first-child { border-left:none; }
   .segShort button.sel { background:#06F; color:#fff; font-weight:600; }
 
+  /* ---------- A5 · separate keys, no frame — same style as the reps picker ---------- */
+  .keys { display:flex; gap:6px; width:100%; margin-top:12px; }
+  .keys button { flex:1 1 0; background:#0f0f0f; border:1px solid #2e2e2e; color:#c5c5c5; font-size:15px;
+                 padding:13px 0; border-radius:10px; white-space:nowrap; }
+  .keys button.sel { background:#06F; border-color:#06F; color:#fff; font-weight:600; }
+
   /* ---------- N · numbers: the question itself labels the scale ---------- */
   .nums { display:flex; align-items:center; width:100%; border:1px solid #333; border-radius:12px;
           padding:4px; margin-top:12px; }
@@ -213,6 +219,28 @@
     <div class="askQ">Как прошёл подход?</div>
     <div class="seg2 fill">
       <button style="font-size:15px">Легко</button><button style="font-size:15px">Норм</button><button class="sel" style="font-size:15px">Тяжело</button><button style="font-size:15px">Отказ</button>
+    </div>
+  </div>
+</div>
+
+<!-- A5 -->
+<div class="card">
+  <div class="cardHead">
+    <div class="cardTitle">A5 · Отдельные клавиши, рамки нет</div>
+    <div class="cardNote">У каждого слова своя подложка, общей рамки нет. Ровно тот же стиль, что у быстрого выбора повторов в шторке — то есть язык, который в приложении уже есть.</div>
+  </div>
+  <div class="state">пока не ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="keys">
+      <button>Легко</button><button>Норм</button><button>Тяжело</button><button>Отказ</button>
+    </div>
+  </div>
+  <div class="state">ответили</div>
+  <div class="box">
+    <div class="askQ">Как прошёл подход?</div>
+    <div class="keys">
+      <button>Легко</button><button>Норм</button><button class="sel">Тяжело</button><button>Отказ</button>
     </div>
   </div>
 </div>
