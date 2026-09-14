@@ -78,29 +78,32 @@
   .bigVal { font-size:54px; font-weight:600; min-width:150px; text-align:center; letter-spacing:-.02em; }
   .bigVal u { text-decoration:none; font-size:20px; color:#8d8d8d; margin-left:4px; font-weight:500; }
 
-  /* ---- barbell: plates sit ON the bar, not on a baseline ---- */
-  .rack { position:relative; height:118px; display:flex; align-items:center; justify-content:center;
-          gap:3px; margin-top:20px; }
-  .barline { position:absolute; left:26px; right:26px; height:7px; background:#5f5f5f; border-radius:3px; }
-  .collar { position:absolute; height:15px; width:5px; background:#4a4a4a; border-radius:2px; }
-  .plate { width:15px; border-radius:3px; background:#c2c2c2; position:relative; z-index:2; }
-  .plate span { position:absolute; top:-16px; left:50%; transform:translateX(-50%); font-size:10px; color:#8d8d8d; }
-  .sleeve { width:9px; height:22px; background:#6f6f6f; border-radius:2px; z-index:2; }
-  .grip2 { width:46px; height:13px; background:#6f6f6f; border-radius:3px; z-index:2; }
+  /* ---- barbell: geometry copied from the app's WeightsVisualizer ---- */
+  .barbell { display:flex; position:relative; min-height:20px; align-items:center; gap:1px; }
+  .bar { position:absolute; z-index:0; left:0; right:0; top:50%; height:20px; background:#555;
+         transform:translateY(-50%); border-radius:2px; display:flex; align-items:center; justify-content:center; }
+  .barLabel { margin-top:1px; font-size:16px; }
+  .plate { z-index:1; flex:0 0 auto; width:16px; height:100px; background:#888; position:relative; border-radius:2px; }
+  .innerPlate { width:4px; height:40px; }
+  .plateLabel { position:absolute; left:50%; top:50%; white-space:nowrap;
+                transform:translate(-50%,-50%) rotate(90deg); font-size:12px; }
+  .barSpacer { flex:0 0 auto; width:10px; }
+  .barCenter { flex:1 1 0; }
+  .rackWrap { padding:26px 16px 0; }
 
-  /* ---- dumbbells ---- */
-  .dbPair { display:flex; gap:26px; justify-content:center; align-items:center; margin-top:22px; height:110px; }
-  .db { position:relative; display:flex; align-items:center; gap:2px; }
-  .db .barline { left:8px; right:8px; height:6px; }
-  .dbPlate { width:12px; border-radius:3px; background:#c2c2c2; z-index:2; }
-  .dbGrip { width:26px; height:11px; background:#6f6f6f; border-radius:3px; z-index:2; }
+  .dumbbells { display:flex; gap:8px; justify-content:center; }
+  .dumbbell { width:150px; }
+  .dumbbellLabel { font-size:16px; }
 
-  /* ---- machine stack ---- */
-  .stack { display:flex; flex-direction:column; align-items:center; gap:3px; margin-top:18px; }
-  .brick { width:96px; height:11px; border-radius:3px; background:#2e2e2e; position:relative; }
-  .brick.on { background:#b5b5b5; }
-  .brick.pin::after { content:''; position:absolute; right:-13px; top:2px; width:9px; height:7px;
-                      background:#08F; border-radius:2px; }
+  /* ---- machine stack: the number lives on the brick you pick ---- */
+  .stack { display:flex; flex-direction:column; align-items:center; gap:3px; margin-top:22px; }
+  .brick { width:104px; height:15px; border-radius:2px; background:#3a3a3a; position:relative; }
+  .brick.lifted { background:#888; }
+  .brick.pick { background:#ddd; height:26px; display:flex; align-items:center; justify-content:center; }
+  .brick.pick span { color:#111; font-size:14px; font-weight:700; margin-top:1px; }
+  .brick.pick::after { content:''; position:absolute; right:-18px; top:9px; width:16px; height:8px;
+                       background:#08F; border-radius:2px; }
+  .stackRod { width:8px; height:14px; background:#555; border-radius:2px 2px 0 0; }
 
   .note { text-align:center; font-size:13px; color:#c0c0c0; margin-top:18px; }
   .note b { color:#fff; font-weight:600; }
@@ -279,7 +282,7 @@
 
 <!-- 6 -->
 <div class="col">
-  <div class="caption"><b>6 · Вес: штанга</b>Блины сидят на грифе, а не стоят на полу. Крупной строкой — сколько вешать на сторону.</div>
+  <div class="caption"><b>6 · Вес: штанга</b>Геометрия из нынешнего WeightsVisualizer: вес грифа на самом грифе, номиналы повёрнуты внутри блинов.</div>
   <div class="phone">
     <div class="top"><button class="ghostBtn">←</button><div class="clock">12:04</div></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
@@ -303,20 +306,21 @@
         <div class="bigVal">60<u>кг</u></div>
         <button class="bigStepBtn">+</button>
       </div>
-      <div class="rack">
-        <div class="barline"></div>
-        <div class="sleeve"></div>
-        <div class="plate" style="height:78px"><span>10</span></div>
-        <div class="plate" style="height:44px"><span>2.5</span></div>
-        <div class="collar" style="position:static"></div>
-        <div class="grip2"></div>
-        <div class="collar" style="position:static"></div>
-        <div class="plate" style="height:44px"><span>2.5</span></div>
-        <div class="plate" style="height:78px"><span>10</span></div>
-        <div class="sleeve"></div>
+      <div class="rackWrap">
+        <div class="barbell">
+          <div class="barSpacer"></div>
+          <div class="plate" style="height:47px"><div class="plateLabel">2.5</div></div>
+          <div class="plate" style="height:75px"><div class="plateLabel">10</div></div>
+          <div class="plate innerPlate"></div>
+          <div class="barCenter"></div>
+          <div class="plate innerPlate"></div>
+          <div class="plate" style="height:75px"><div class="plateLabel">10</div></div>
+          <div class="plate" style="height:47px"><div class="plateLabel">2.5</div></div>
+          <div class="barSpacer"></div>
+          <div class="bar"><div class="barLabel">20</div></div>
+        </div>
       </div>
-      <div class="note">на каждую сторону <b>12.5 кг</b></div>
-      <div class="subnote">гриф 20 кг · 10 + 2.5</div>
+      <div class="subnote" style="margin-top:20px">гриф 20 кг · по 12.5 на сторону</div>
       <div class="sheetLinks">
         <button class="link">Ввести вручную</button>
         <button class="link">Мой инвентарь</button>
@@ -327,7 +331,7 @@
 
 <!-- 7 -->
 <div class="col">
-  <div class="caption"><b>7 · Вес: гантели</b>Главное здесь — «по 9 кг в каждой руке». Делить 18 пополам в зале не хочется никому.</div>
+  <div class="caption"><b>7 · Вес: гантели</b>Как у тебя сейчас: вес одной гантели написан на её рукояти, так что делить 18 пополам не приходится.</div>
   <div class="phone">
     <div class="top"><button class="ghostBtn">←</button><div class="clock">22:37</div></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
@@ -351,26 +355,39 @@
         <div class="bigVal">18<u>кг</u></div>
         <button class="bigStepBtn">+</button>
       </div>
-      <div class="dbPair">
-        <div class="db">
-          <div class="barline"></div>
-          <div class="dbPlate" style="height:56px"></div>
-          <div class="dbPlate" style="height:40px"></div>
-          <div class="dbGrip"></div>
-          <div class="dbPlate" style="height:40px"></div>
-          <div class="dbPlate" style="height:56px"></div>
-        </div>
-        <div class="db">
-          <div class="barline"></div>
-          <div class="dbPlate" style="height:56px"></div>
-          <div class="dbPlate" style="height:40px"></div>
-          <div class="dbGrip"></div>
-          <div class="dbPlate" style="height:40px"></div>
-          <div class="dbPlate" style="height:56px"></div>
+      <div class="rackWrap">
+        <div class="dumbbells">
+          <div class="dumbbell">
+            <div class="barbell">
+              <div class="barSpacer"></div>
+              <div class="plate" style="height:50px"></div>
+              <div class="plate" style="height:90px"></div>
+              <div class="plate innerPlate"></div>
+              <div class="barCenter"></div>
+              <div class="plate innerPlate"></div>
+              <div class="plate" style="height:90px"></div>
+              <div class="plate" style="height:50px"></div>
+              <div class="barSpacer"></div>
+              <div class="bar"><div class="dumbbellLabel">9</div></div>
+            </div>
+          </div>
+          <div class="dumbbell">
+            <div class="barbell">
+              <div class="barSpacer"></div>
+              <div class="plate" style="height:50px"></div>
+              <div class="plate" style="height:90px"></div>
+              <div class="plate innerPlate"></div>
+              <div class="barCenter"></div>
+              <div class="plate innerPlate"></div>
+              <div class="plate" style="height:90px"></div>
+              <div class="plate" style="height:50px"></div>
+              <div class="barSpacer"></div>
+              <div class="bar"><div class="dumbbellLabel">9</div></div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="note">по <b>9 кг</b> в каждой руке</div>
-      <div class="subnote">две гантели, шаг ряда 1 кг</div>
+      <div class="subnote" style="margin-top:20px">по 9 кг в каждой руке</div>
       <div class="sheetLinks">
         <button class="link">Ввести вручную</button>
         <button class="link">Мой инвентарь</button>
@@ -381,7 +398,7 @@
 
 <!-- 8 -->
 <div class="col">
-  <div class="caption"><b>8 · Вес: тренажёр</b>Стек с булавкой: не «65 кг», а «седьмая плитка» — то, что ты реально ищешь глазами.</div>
+  <div class="caption"><b>8 · Вес: тренажёр</b>Число стоит на той плитке, куда втыкать булавку. Считать плитки не нужно, подписи на остальных не нужны.</div>
   <div class="phone">
     <div class="top"><button class="ghostBtn">←</button><div class="clock">31:08</div></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i></div>
@@ -406,19 +423,20 @@
         <button class="bigStepBtn">+</button>
       </div>
       <div class="stack">
-        <div class="brick on"></div>
-        <div class="brick on"></div>
-        <div class="brick on"></div>
-        <div class="brick on"></div>
-        <div class="brick on"></div>
-        <div class="brick on"></div>
-        <div class="brick on pin"></div>
+        <div class="stackRod"></div>
+        <div class="brick lifted"></div>
+        <div class="brick lifted"></div>
+        <div class="brick lifted"></div>
+        <div class="brick lifted"></div>
+        <div class="brick lifted"></div>
+        <div class="brick lifted"></div>
+        <div class="brick pick"><span>70</span></div>
+        <div class="brick"></div>
         <div class="brick"></div>
         <div class="brick"></div>
         <div class="brick"></div>
       </div>
-      <div class="note">булавка в <b>7-ю плитку</b></div>
-      <div class="subnote">стек по 10 кг</div>
+      <div class="subnote" style="margin-top:20px">стек в килограммах</div>
       <div class="sheetLinks">
         <button class="link">Ввести вручную</button>
         <button class="link">Мой инвентарь</button>
