@@ -30,7 +30,6 @@
   .exName { font-size:29px; font-weight:700; line-height:1.15; letter-spacing:-.01em; }
   .setLine { font-size:14px; color:#7a7a7a; margin-top:9px; }
 
-  /* the 60 кг × 8 row */
   .row { display:flex; align-items:flex-start; gap:16px; margin-top:38px; }
   .cell { display:flex; flex-direction:column; align-items:center; }
   .big { font-size:60px; font-weight:600; letter-spacing:-.03em; line-height:1; color:#fff;
@@ -38,17 +37,11 @@
   .big u { text-decoration:none; font-size:21px; font-weight:500; color:#8d8d8d; margin-left:5px; }
   .times { font-size:27px; color:#484848; margin-top:20px; }
 
-  .under { margin-top:11px; }
-  .t-quiet { font-size:12px; color:#6d6d6d; }
-  .t-loud  { font-size:17px; color:#b0b0b0; }
-  .t-mixed { font-size:12px; color:#787878; }
-  .t-mixed b { font-size:19px; color:#e2e2e2; font-weight:500; display:block; margin-top:3px; letter-spacing:.01em; }
+  .under { margin-top:11px; font-size:15px; color:#b0b0b0; }
+  .under.quiet { color:#6d6d6d; }
+  .centered { margin-top:11px; font-size:17px; color:#b0b0b0; }
 
-  .ticks { display:flex; gap:12px; font-size:18px; color:#5f5f5f; margin-top:12px; }
-  .ticks b { color:#e8e8e8; font-weight:600; }
-  .ticksNote { font-size:11px; color:#5a5a5a; margin-top:7px; }
-
-  .hints { font-size:11px; color:#4f4f4f; line-height:1.75; margin-top:30px; }
+  .hints { font-size:11px; color:#4f4f4f; line-height:1.75; margin-top:44px; }
 
   .action { flex:0 0 auto; padding:0 24px 12px; }
   .go { width:100%; border:none; border-radius:16px; background:#0B0; color:#fff;
@@ -58,32 +51,9 @@
 </head>
 <body>
 
-<!-- A -->
-<div class="col">
-  <div class="caption"><b>A · Как сейчас</b>База для сравнения. Цель мелкая и по центру — относится будто и к весу тоже.</div>
-  <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
-    <div class="stage">
-      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
-      <div class="exName">Жим лёжа</div>
-      <div class="setLine">Подход 2 из 3</div>
-      <div class="row">
-        <div class="cell"><button class="big">60<u>кг</u></button></div>
-        <div class="times">×</div>
-        <div class="cell"><button class="big">8<u>раз</u></button></div>
-      </div>
-      <div class="under t-quiet">цель 6 – 8 повторов</div>
-      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
-    </div>
-    <div class="action"><button class="go">Готово</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
-  </div>
-</div>
-
 <!-- B -->
 <div class="col">
-  <div class="caption"><b>B · Просто крупнее и ярче</b>Тот же макет, цель 17px и светлее. Проверка гипотезы «просто увеличить».</div>
+  <div class="caption"><b>B · Просто крупнее и ярче</b>Цель 17px по центру под всей строкой. Симметрично, но описывает будто и вес тоже.</div>
   <div class="phone">
     <div class="top"><button class="ghostBtn">←</button></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
@@ -96,8 +66,8 @@
         <div class="times">×</div>
         <div class="cell"><button class="big">8<u>раз</u></button></div>
       </div>
-      <div class="under t-loud">цель 6 – 8 повторов</div>
-      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
+      <div class="centered">цель 6 – 8 повторов</div>
+      <div class="hints" style="margin-top:30px">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
     </div>
     <div class="action"><button class="go">Готово</button></div>
     <div class="drawer">⌃&nbsp; Техника и история</div>
@@ -106,7 +76,7 @@
 
 <!-- C -->
 <div class="col">
-  <div class="caption"><b>C · Под повторами</b>Цель уехала под своё число и не трогает вес. Крупнее, но не спорит — потому что подчинена.</div>
+  <div class="caption"><b>C · Под повторами</b>Цель привязана к своему числу. Под весом пусто — асимметрия намеренная.</div>
   <div class="phone">
     <div class="top"><button class="ghostBtn">←</button></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
@@ -119,41 +89,19 @@
         <div class="times">×</div>
         <div class="cell">
           <button class="big">8<u>раз</u></button>
-          <div class="under t-loud" style="font-size:15px">цель 6 – 8</div>
+          <div class="under">цель 6 – 8</div>
         </div>
       </div>
-      <div class="hints" style="margin-top:52px">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
+      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
     </div>
     <div class="action"><button class="go">Готово</button></div>
     <div class="drawer">⌃&nbsp; Техника и история</div>
   </div>
 </div>
 
-<!-- D -->
+<!-- C + delta, rare state -->
 <div class="col">
-  <div class="caption"><b>D · В строке подхода</b>Цель поднялась наверх и слилась со счётчиком. Минус один элемент, но связь с повторами слабее.</div>
-  <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
-    <div class="stage">
-      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
-      <div class="exName">Жим лёжа</div>
-      <div class="setLine" style="font-size:15px;color:#949494">Подход 2 из 3&nbsp; ·&nbsp; цель 6 – 8 повторов</div>
-      <div class="row">
-        <div class="cell"><button class="big">60<u>кг</u></button></div>
-        <div class="times">×</div>
-        <div class="cell"><button class="big">8<u>раз</u></button></div>
-      </div>
-      <div class="hints" style="margin-top:44px">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
-    </div>
-    <div class="action"><button class="go">Готово</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
-  </div>
-</div>
-
-<!-- E -->
-<div class="col">
-  <div class="caption"><b>E · Слово мелко, числа крупно</b>«цель» уходит в подпись, сам диапазон читается почти как значение. Вес не задет.</div>
+  <div class="caption"><b>C + подпись под весом · день прибавки</b>Симметрия восстановлена, и подпись несёт новость. Так выглядит примерно раз в несколько недель.</div>
   <div class="phone">
     <div class="top"><button class="ghostBtn">←</button></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
@@ -162,23 +110,26 @@
       <div class="exName">Жим лёжа</div>
       <div class="setLine">Подход 2 из 3</div>
       <div class="row">
-        <div class="cell"><button class="big">60<u>кг</u></button></div>
+        <div class="cell">
+          <button class="big">60<u>кг</u></button>
+          <div class="under">+2.5 кг</div>
+        </div>
         <div class="times">×</div>
         <div class="cell">
           <button class="big">8<u>раз</u></button>
-          <div class="under t-mixed">цель<b>6 – 8</b></div>
+          <div class="under">цель 6 – 8</div>
         </div>
       </div>
-      <div class="hints" style="margin-top:44px">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
+      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
     </div>
     <div class="action"><button class="go">Готово</button></div>
     <div class="drawer">⌃&nbsp; Техника и история</div>
   </div>
 </div>
 
-<!-- F -->
+<!-- C + delta, common state -->
 <div class="col">
-  <div class="caption"><b>F · Диапазон засечками</b>Слова «цель» нет вообще: видно весь диапазон и где в нём сегодня. Заодно это готовые кнопки правки.</div>
+  <div class="caption"><b>C + подпись под весом · обычный день</b>Тот же вариант в состоянии, в котором он живёт 80% подходов. Симметрия есть, новости нет.</div>
   <div class="phone">
     <div class="top"><button class="ghostBtn">←</button></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
@@ -187,14 +138,17 @@
       <div class="exName">Жим лёжа</div>
       <div class="setLine">Подход 2 из 3</div>
       <div class="row">
-        <div class="cell"><button class="big">60<u>кг</u></button></div>
+        <div class="cell">
+          <button class="big">60<u>кг</u></button>
+          <div class="under quiet">как раньше</div>
+        </div>
         <div class="times">×</div>
         <div class="cell">
           <button class="big">8<u>раз</u></button>
-          <div class="ticks"><span>6</span><span>7</span><b>8</b></div>
+          <div class="under">цель 6 – 8</div>
         </div>
       </div>
-      <div class="hints" style="margin-top:44px">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
+      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
     </div>
     <div class="action"><button class="go">Готово</button></div>
     <div class="drawer">⌃&nbsp; Техника и история</div>
