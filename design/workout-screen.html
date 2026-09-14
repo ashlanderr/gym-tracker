@@ -6,7 +6,7 @@
 <style>
   * { margin:0; padding:0; box-sizing:border-box; font: inherit; }
   html { font-family: Montserrat, "Segoe UI", "Helvetica Neue", sans-serif; background:#111; color:#fff; -webkit-font-smoothing:antialiased; }
-  body { padding:24px; display:flex; flex-wrap:wrap; gap:20px 20px; width:2093px; align-items:flex-start; }
+  body { padding:24px; display:flex; flex-wrap:wrap; gap:20px; width:2093px; align-items:flex-start; }
 
   .col { display:flex; flex-direction:column; gap:10px; width:393px; flex:0 0 auto; }
   .caption { font-size:12px; color:#8b9299; line-height:1.5; height:62px; }
@@ -16,9 +16,12 @@
   .phone { width:393px; height:800px; background:#000; border-radius:26px; overflow:hidden;
            display:flex; flex-direction:column; border:1px solid #2a2a2a; position:relative; }
 
-  .top { display:flex; align-items:center; padding:10px 8px; flex:0 0 auto; }
+  /* top: back + live workout clock, both leading to the workout */
+  .top { display:flex; align-items:center; padding:10px 14px 10px 8px; flex:0 0 auto; }
   .ghostBtn { width:40px; height:40px; display:flex; align-items:center; justify-content:center;
               border:none; background:transparent; color:#6d6d6d; font-size:19px; }
+  .clock { margin-left:auto; font-size:13px; color:#6d6d6d; font-variant-numeric:tabular-nums; }
+  .clock i { font-style:normal; color:#4a4a4a; }
   .progress { height:2px; display:flex; gap:3px; padding:0 16px; flex:0 0 auto; }
   .progress i { flex:1 1 0; background:#1e1e1e; border-radius:2px; }
   .progress i.done { background:#0B0; }
@@ -38,7 +41,6 @@
          background:transparent; border:none; border-bottom:1px dashed #3a3a3a; padding-bottom:8px; }
   .big u { text-decoration:none; font-size:21px; font-weight:500; color:#8d8d8d; margin-left:5px; }
   .times { font-size:27px; color:#484848; margin-top:20px; }
-  /* the caption slot is always reserved, only its content appears */
   .under { margin-top:11px; font-size:15px; color:#b0b0b0; min-height:19px; }
 
   .hints { font-size:11px; color:#4f4f4f; line-height:1.75; margin-top:44px; }
@@ -52,18 +54,15 @@
 
   /* ---------- rest ---------- */
   .restLabel { font-size:12px; color:#7a7a7a; letter-spacing:.16em; text-transform:uppercase; }
-  .restTime { font-size:88px; font-weight:300; letter-spacing:-.03em; font-variant-numeric:tabular-nums; line-height:1; margin-top:14px; }
-  .adj { display:flex; gap:10px; margin-top:24px; }
+  .restTime { font-size:86px; font-weight:300; letter-spacing:-.03em; font-variant-numeric:tabular-nums; line-height:1; margin-top:14px; }
+  .adj { display:flex; gap:10px; margin-top:22px; }
   .adjBtn { border:1px solid #2e2e2e; background:transparent; color:#bdbdbd; border-radius:10px; padding:11px 18px; font-size:13px; }
-  .easy { margin-top:30px; border:1px solid #3a3a3a; background:transparent; color:#b5b5b5;
-          border-radius:999px; padding:12px 26px; font-size:14px; }
-  .askQ { font-size:14px; color:#b5b5b5; margin-top:30px; }
+  .askQ { font-size:14px; color:#b5b5b5; margin-top:34px; }
   .askOpts { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:12px; }
   .askOpt { border:1px solid #3a3a3a; background:transparent; color:#c2c2c2; border-radius:999px; padding:11px 18px; font-size:14px; }
   .askOpt.sel { background:#06F; border-color:#06F; color:#fff; }
-  .nextUp { margin-top:38px; font-size:11px; color:#5f5f5f; letter-spacing:.14em; text-transform:uppercase; }
+  .nextUp { margin-top:36px; font-size:11px; color:#5f5f5f; letter-spacing:.14em; text-transform:uppercase; }
   .nextVal { font-size:25px; font-weight:600; margin-top:9px; }
-  .nextVal em { font-style:normal; color:#08F; font-size:15px; font-weight:500; margin-left:8px; }
   .nextName { font-size:13px; color:#7a7a7a; margin-top:6px; }
 
   /* ---------- sheets ---------- */
@@ -79,12 +78,33 @@
   .bigVal { font-size:54px; font-weight:600; min-width:150px; text-align:center; letter-spacing:-.02em; }
   .bigVal u { text-decoration:none; font-size:20px; color:#8d8d8d; margin-left:4px; font-weight:500; }
 
-  .plates { display:flex; align-items:flex-end; justify-content:center; gap:3px; height:72px; margin:26px 0 0; }
-  .pl { width:13px; border-radius:2px; background:#7a7a7a; position:relative; }
-  .pl span { position:absolute; top:-15px; left:50%; transform:translateX(-50%); font-size:10px; color:#8d8d8d; }
-  .pl.inner { background:#4a4a4a; height:18px; width:7px; }
-  .barcenter { width:56px; height:8px; background:#8d8d8d; border-radius:2px; margin-bottom:5px; }
-  .note { text-align:center; font-size:12px; color:#7a7a7a; margin-top:16px; }
+  /* ---- barbell: plates sit ON the bar, not on a baseline ---- */
+  .rack { position:relative; height:118px; display:flex; align-items:center; justify-content:center;
+          gap:3px; margin-top:20px; }
+  .barline { position:absolute; left:26px; right:26px; height:7px; background:#5f5f5f; border-radius:3px; }
+  .collar { position:absolute; height:15px; width:5px; background:#4a4a4a; border-radius:2px; }
+  .plate { width:15px; border-radius:3px; background:#c2c2c2; position:relative; z-index:2; }
+  .plate span { position:absolute; top:-16px; left:50%; transform:translateX(-50%); font-size:10px; color:#8d8d8d; }
+  .sleeve { width:9px; height:22px; background:#6f6f6f; border-radius:2px; z-index:2; }
+  .grip2 { width:46px; height:13px; background:#6f6f6f; border-radius:3px; z-index:2; }
+
+  /* ---- dumbbells ---- */
+  .dbPair { display:flex; gap:26px; justify-content:center; align-items:center; margin-top:22px; height:110px; }
+  .db { position:relative; display:flex; align-items:center; gap:2px; }
+  .db .barline { left:8px; right:8px; height:6px; }
+  .dbPlate { width:12px; border-radius:3px; background:#c2c2c2; z-index:2; }
+  .dbGrip { width:26px; height:11px; background:#6f6f6f; border-radius:3px; z-index:2; }
+
+  /* ---- machine stack ---- */
+  .stack { display:flex; flex-direction:column; align-items:center; gap:3px; margin-top:18px; }
+  .brick { width:96px; height:11px; border-radius:3px; background:#2e2e2e; position:relative; }
+  .brick.on { background:#b5b5b5; }
+  .brick.pin::after { content:''; position:absolute; right:-13px; top:2px; width:9px; height:7px;
+                      background:#08F; border-radius:2px; }
+
+  .note { text-align:center; font-size:13px; color:#c0c0c0; margin-top:18px; }
+  .note b { color:#fff; font-weight:600; }
+  .subnote { text-align:center; font-size:11px; color:#6d6d6d; margin-top:6px; }
   .sheetLinks { display:flex; justify-content:center; gap:8px; margin-top:18px; padding:0 16px; }
   .link { flex:1 1 0; border:1px solid #2e2e2e; background:transparent; color:#bdbdbd; border-radius:10px; padding:13px 0; font-size:12px; }
 
@@ -107,10 +127,10 @@
   .act b { margin-left:auto; color:#7a7a7a; font-weight:400; font-size:13px; }
   .act.danger { color:#faa; }
 
-  /* ---------- workout list (drops from the top) ---------- */
-  .lTop { display:flex; align-items:center; gap:6px; padding:10px 12px; background:#222; border-bottom:1px solid #333; }
-  .lTitle { font-weight:700; font-size:15px; }
-  .lFinish { margin-left:auto; background:#06F; border:none; color:#fff; border-radius:6px; padding:9px 12px; font-size:13px; font-weight:600; }
+  /* ---------- workout page (a page, not a drawer) ---------- */
+  .pTop { display:flex; align-items:center; gap:4px; padding:10px 14px 10px 6px; background:#1c1c1c; border-bottom:1px solid #2e2e2e; }
+  .pTitle { font-weight:700; font-size:16px; }
+  .pFinish { margin-left:auto; background:#06F; border:none; color:#fff; border-radius:8px; padding:10px 14px; font-size:13px; font-weight:600; }
   .lStats { display:flex; gap:18px; padding:9px 16px; font-size:11px; color:#8d8d8d; border-bottom:1px solid #1e1e1e; }
   .lStats b { color:#fff; font-weight:600; }
   .lScroll { flex:1 1 0; overflow:hidden; }
@@ -130,7 +150,8 @@
   tr.completed .chk { background:#0B0; }
   .Wm { color:#FF0; }
   .addSet { margin:8px 16px 0; background:#2b2b2b; color:#ddd; border:none; border-radius:8px; padding:11px; font-size:13px; width:calc(100% - 32px); }
-  .closeTop { text-align:center; font-size:11px; color:#4a4a4a; padding:10px 0 12px; }
+  .backToSet { position:absolute; left:16px; right:16px; bottom:14px; background:#242424; border:1px solid #3a3a3a;
+               color:#e0e0e0; border-radius:14px; padding:16px; font-size:14px; text-align:center; }
 </style>
 </head>
 <body>
@@ -139,9 +160,9 @@
 
 <!-- 1 -->
 <div class="col">
-  <div class="caption"><b>1 · Рабочий подход</b>Подписи показываются первые тренировки и потом исчезают. Под весом пусто — новостей нет.</div>
+  <div class="caption"><b>1 · Рабочий подход, первые тренировки</b>Подсказки висят, пока к ним не привыкли. Часы вверху справа идут — единственное, что на экране живое.</div>
   <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">12:04</div></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
     <div class="stage">
       <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
@@ -161,9 +182,9 @@
 
 <!-- 2 -->
 <div class="col">
-  <div class="caption"><b>2 · День прибавки</b>Подпись под весом появляется только когда есть что сказать. Раз в несколько недель экран сам сообщает, что ты стал сильнее.</div>
+  <div class="caption"><b>2 · Он же через месяц, день прибавки</b>Подсказки погасли — это то же состояние, просто позже. Подпись под весом появилась, потому что есть новость.</div>
   <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">08:41</div></div>
     <div class="progress"><i class="done"></i><i class="cur"></i><i></i><i></i><i></i><i></i></div>
     <div class="stage">
       <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
@@ -182,9 +203,9 @@
 
 <!-- 3 -->
 <div class="col">
-  <div class="caption"><b>3 · Разминка</b>Тот же экран, только подпись другая. Иначе непонятно, почему вдруг 20 кг, и человек решит, что приложение сломалось.</div>
+  <div class="caption"><b>3 · Разминка</b>Тот же экран, другая подпись и нет цели повторов. Без неё внезапные 20 кг читаются как сломанное приложение.</div>
   <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">01:12</div></div>
     <div class="progress"><i class="cur"></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="stage">
       <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
@@ -195,6 +216,7 @@
         <div class="times">×</div>
         <div class="cell"><button class="big">12<u>раз</u></button><div class="under"></div></div>
       </div>
+      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
     </div>
     <div class="action"><button class="go">Готово</button></div>
     <div class="drawer">⌃&nbsp; Техника и история</div>
@@ -203,15 +225,21 @@
 
 <!-- 4 -->
 <div class="col">
-  <div class="caption"><b>4 · Отдых, обычный режим</b>Одно число во весь экран. «Было легко» — необязательный тап, единственный сигнал, которого нет в цифрах.</div>
+  <div class="caption"><b>4 · Отдых</b>Вопрос стоит всегда и всегда с четырьмя ответами. «Дальше» — голый факт, без пометок об изменениях.</div>
   <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">14:22</div></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
     <div class="stage">
       <div class="restLabel">Отдых</div>
       <div class="restTime">1:47</div>
       <div class="adj"><button class="adjBtn">−15 сек</button><button class="adjBtn">+15 сек</button></div>
-      <button class="easy">Было легко</button>
+      <div class="askQ">Как прошёл подход?</div>
+      <div class="askOpts">
+        <button class="askOpt">Легко</button>
+        <button class="askOpt">Нормально</button>
+        <button class="askOpt">Тяжело</button>
+        <button class="askOpt">До отказа</button>
+      </div>
       <div class="nextUp">Дальше</div>
       <div class="nextVal">60 кг&nbsp; ×&nbsp; 8</div>
       <div class="nextName">Жим лёжа, подход 3 из 3</div>
@@ -223,9 +251,9 @@
 
 <!-- 5 -->
 <div class="col">
-  <div class="caption"><b>5 · Отдых, пока истории мало</b>Тот же экран спрашивает подробнее. Нажал «легко» — вес вырос сразу, внутри тренировки, а не «учтём в следующий раз».</div>
+  <div class="caption"><b>5 · Отдых, ответ выбран</b>Нажал «Легко» — вес следующего подхода уже другой, но экран об этом не кричит. Причину ты и так знаешь, ты её только что назвал.</div>
   <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">04:55</div></div>
     <div class="progress"><i class="done"></i><i class="cur"></i><i></i><i></i><i></i><i></i></div>
     <div class="stage">
       <div class="restLabel">Отдых</div>
@@ -239,7 +267,7 @@
         <button class="askOpt">До отказа</button>
       </div>
       <div class="nextUp">Дальше</div>
-      <div class="nextVal">45 кг&nbsp; ×&nbsp; 8<em>+5 кг</em></div>
+      <div class="nextVal">50 кг&nbsp; ×&nbsp; 8</div>
       <div class="nextName">Жим лёжа, подход 2 из 3</div>
     </div>
     <div class="action"><button class="skip">Пропустить отдых</button></div>
@@ -251,12 +279,11 @@
 
 <!-- 6 -->
 <div class="col">
-  <div class="caption"><b>6 · Тап по весу</b>Единственное место, где настраиваются веса. Шаг из твоего инвентаря, блины посчитаны.</div>
+  <div class="caption"><b>6 · Вес: штанга</b>Блины сидят на грифе, а не стоят на полу. Крупной строкой — сколько вешать на сторону.</div>
   <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">12:04</div></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
     <div class="stage">
-      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
       <div class="exName">Жим лёжа</div>
       <div class="setLine">Подход 2 из 3</div>
       <div class="row">
@@ -266,7 +293,6 @@
       </div>
     </div>
     <div class="action"><button class="go">Готово</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
 
     <div class="dim"></div>
     <div class="sheet">
@@ -277,16 +303,20 @@
         <div class="bigVal">60<u>кг</u></div>
         <button class="bigStepBtn">+</button>
       </div>
-      <div class="plates">
-        <div class="pl" style="height:40px"><span>10</span></div>
-        <div class="pl" style="height:22px"><span>2.5</span></div>
-        <div class="pl inner"></div>
-        <div class="barcenter"></div>
-        <div class="pl inner"></div>
-        <div class="pl" style="height:22px"><span>2.5</span></div>
-        <div class="pl" style="height:40px"><span>10</span></div>
+      <div class="rack">
+        <div class="barline"></div>
+        <div class="sleeve"></div>
+        <div class="plate" style="height:78px"><span>10</span></div>
+        <div class="plate" style="height:44px"><span>2.5</span></div>
+        <div class="collar" style="position:static"></div>
+        <div class="grip2"></div>
+        <div class="collar" style="position:static"></div>
+        <div class="plate" style="height:44px"><span>2.5</span></div>
+        <div class="plate" style="height:78px"><span>10</span></div>
+        <div class="sleeve"></div>
       </div>
-      <div class="note">гриф 20 + по 12.5 на сторону</div>
+      <div class="note">на каждую сторону <b>12.5 кг</b></div>
+      <div class="subnote">гриф 20 кг · 10 + 2.5</div>
       <div class="sheetLinks">
         <button class="link">Ввести вручную</button>
         <button class="link">Мой инвентарь</button>
@@ -297,12 +327,113 @@
 
 <!-- 7 -->
 <div class="col">
-  <div class="caption"><b>7 · Тап по повторам</b>Цель обведена синим, выбранное — залито. Зелёный не используется нигде, кроме кнопки «Готово».</div>
+  <div class="caption"><b>7 · Вес: гантели</b>Главное здесь — «по 9 кг в каждой руке». Делить 18 пополам в зале не хочется никому.</div>
   <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">22:37</div></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="exName">Французский жим</div>
+      <div class="setLine">Подход 1 из 3</div>
+      <div class="row">
+        <div class="cell"><button class="big">18<u>кг</u></button><div class="under"></div></div>
+        <div class="times">×</div>
+        <div class="cell"><button class="big">12<u>раз</u></button><div class="under">цель 10 – 12</div></div>
+      </div>
+    </div>
+    <div class="action"><button class="go">Готово</button></div>
+
+    <div class="dim"></div>
+    <div class="sheet">
+      <div class="grip"></div>
+      <div class="sheetTitle">Вес</div>
+      <div class="bigStep">
+        <button class="bigStepBtn">−</button>
+        <div class="bigVal">18<u>кг</u></div>
+        <button class="bigStepBtn">+</button>
+      </div>
+      <div class="dbPair">
+        <div class="db">
+          <div class="barline"></div>
+          <div class="dbPlate" style="height:56px"></div>
+          <div class="dbPlate" style="height:40px"></div>
+          <div class="dbGrip"></div>
+          <div class="dbPlate" style="height:40px"></div>
+          <div class="dbPlate" style="height:56px"></div>
+        </div>
+        <div class="db">
+          <div class="barline"></div>
+          <div class="dbPlate" style="height:56px"></div>
+          <div class="dbPlate" style="height:40px"></div>
+          <div class="dbGrip"></div>
+          <div class="dbPlate" style="height:40px"></div>
+          <div class="dbPlate" style="height:56px"></div>
+        </div>
+      </div>
+      <div class="note">по <b>9 кг</b> в каждой руке</div>
+      <div class="subnote">две гантели, шаг ряда 1 кг</div>
+      <div class="sheetLinks">
+        <button class="link">Ввести вручную</button>
+        <button class="link">Мой инвентарь</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 8 -->
+<div class="col">
+  <div class="caption"><b>8 · Вес: тренажёр</b>Стек с булавкой: не «65 кг», а «седьмая плитка» — то, что ты реально ищешь глазами.</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">31:08</div></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i></div>
+    <div class="stage">
+      <div class="exName">Горизонтальный жим ногами</div>
+      <div class="setLine">Подход 1 из 3</div>
+      <div class="row">
+        <div class="cell"><button class="big">70<u>кг</u></button><div class="under"></div></div>
+        <div class="times">×</div>
+        <div class="cell"><button class="big">12<u>раз</u></button><div class="under">цель 10 – 12</div></div>
+      </div>
+    </div>
+    <div class="action"><button class="go">Готово</button></div>
+
+    <div class="dim"></div>
+    <div class="sheet">
+      <div class="grip"></div>
+      <div class="sheetTitle">Вес</div>
+      <div class="bigStep">
+        <button class="bigStepBtn">−</button>
+        <div class="bigVal">70<u>кг</u></div>
+        <button class="bigStepBtn">+</button>
+      </div>
+      <div class="stack">
+        <div class="brick on"></div>
+        <div class="brick on"></div>
+        <div class="brick on"></div>
+        <div class="brick on"></div>
+        <div class="brick on"></div>
+        <div class="brick on"></div>
+        <div class="brick on pin"></div>
+        <div class="brick"></div>
+        <div class="brick"></div>
+        <div class="brick"></div>
+      </div>
+      <div class="note">булавка в <b>7-ю плитку</b></div>
+      <div class="subnote">стек по 10 кг</div>
+      <div class="sheetLinks">
+        <button class="link">Ввести вручную</button>
+        <button class="link">Мой инвентарь</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 9 -->
+<div class="col">
+  <div class="caption"><b>9 · Повторы</b>Только число. «Не смог доделать» убрано: это не количество, а причина, и живёт она в вопросе про сложность.</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">12:04</div></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
     <div class="stage">
-      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
       <div class="exName">Жим лёжа</div>
       <div class="setLine">Подход 2 из 3</div>
       <div class="row">
@@ -312,7 +443,6 @@
       </div>
     </div>
     <div class="action"><button class="go">Готово</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
 
     <div class="dim"></div>
     <div class="sheet">
@@ -331,17 +461,16 @@
         <div class="qr t">8</div>
         <div class="qr">9</div>
       </div>
-      <div class="note">цель 6 – 8 повторов</div>
-      <div class="sheetLinks"><button class="link">Не смог доделать подход</button></div>
+      <div class="subnote" style="margin-top:16px;font-size:12px">цель 6 – 8 повторов</div>
     </div>
   </div>
 </div>
 
-<!-- 8 -->
+<!-- 10 -->
 <div class="col">
-  <div class="caption"><b>8 · Свайп снизу — упражнение</b>Видео, техника, история, замена. Настроек веса тут нет: они живут в весе. Периодизации нет вовсе.</div>
+  <div class="caption"><b>10 · Упражнение — свайп снизу</b>Шторка начинается внутри экрана, поэтому свайп вниз её закрывает и с системной шторкой не спорит.</div>
   <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button></div>
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">12:04</div></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
     <div class="stage">
       <div class="exName">Жим лёжа</div>
@@ -355,7 +484,7 @@
     <div class="action"><button class="go">Готово</button></div>
 
     <div class="dim"></div>
-    <div class="sheet" style="top:60px; padding-top:0; overflow:hidden;">
+    <div class="sheet" style="top:74px; padding-top:0; overflow:hidden;">
       <div class="video">
         <svg viewBox="0 0 120 96" width="130" height="104"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg>
         <div class="play">▶</div>
@@ -374,14 +503,14 @@
   </div>
 </div>
 
-<!-- 9 -->
+<!-- 11 -->
 <div class="col">
-  <div class="caption"><b>9 · Тап по полоске сверху — вся тренировка</b>Нынешний UI без изменений. Верх экрана — тренировка целиком, низ — текущее упражнение.</div>
+  <div class="caption"><b>11 · Вся тренировка — тап по полоске или часам</b>Это страница, а не шторка: есть шапка, «назад» и явная кнопка возврата к подходу. Свайп сверху не используется — он системный.</div>
   <div class="phone">
-    <div class="closeTop">⌃&nbsp; свернуть</div>
-    <div class="lTop">
-      <div class="lTitle">Вся тренировка</div>
-      <button class="lFinish">Закончить</button>
+    <div class="pTop">
+      <button class="ghostBtn" style="color:#fff">←</button>
+      <div class="pTitle">Вся тренировка</div>
+      <button class="pFinish">Закончить</button>
     </div>
     <div class="lStats"><span><b>12:04</b> время</span><span><b>480</b> кг</span><span><b>2/20</b> сетов</span><span style="margin-left:auto;color:#08F">UpLow</span></div>
     <div class="lScroll">
@@ -406,11 +535,11 @@
           <thead><tr><th>Подх.</th><th class="cPrev">Пред.</th><th class="cW">КГ</th><th class="cR">Повт.</th><th>✓</th></tr></thead>
           <tbody>
             <tr><td>1</td><td>180 × 12</td><td class="gh">185</td><td class="gh">10 – 12</td><td><span class="chk">✓</span></td></tr>
-            <tr><td>2</td><td>180 × 12</td><td class="gh">185</td><td class="gh">10 – 12</td><td><span class="chk">✓</span></td></tr>
           </tbody>
         </table>
       </div>
     </div>
+    <div class="backToSet">← Вернуться к подходу · Жим лёжа 2 из 3</div>
   </div>
 </div>
 
