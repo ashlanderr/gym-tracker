@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Exercise page</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font: inherit; }
+  html { font-family: Montserrat, "Segoe UI", "Helvetica Neue", sans-serif; background:#111; color:#fff; -webkit-font-smoothing:antialiased; }
+  body { padding:24px; display:flex; flex-wrap:wrap; gap:20px; width:1700px; align-items:flex-start; }
+
+  .col { display:flex; flex-direction:column; gap:10px; width:393px; flex:0 0 auto; }
+  .caption { font-size:12px; color:#8b9299; line-height:1.5; height:74px; }
+  .caption b { color:#fff; font-weight:600; display:block; font-size:13px; margin-bottom:3px; }
+
+  .phone { width:393px; height:800px; background:#000; border-radius:26px; overflow:hidden;
+           display:flex; flex-direction:column; border:1px solid #2a2a2a; }
+
+  /* ---------- focus screen ---------- */
+  .top { display:flex; align-items:center; padding:10px 14px 10px 8px; flex:0 0 auto; }
+  .ghostBtn { width:40px; height:40px; display:flex; align-items:center; justify-content:center;
+              border:none; background:transparent; color:#6d6d6d; font-size:19px; }
+  .clock { margin-left:auto; font-size:13px; color:#6d6d6d; font-variant-numeric:tabular-nums; }
+  .progress { height:2px; display:flex; gap:3px; padding:0 16px; flex:0 0 auto; }
+  .progress i { flex:1 1 0; background:#1e1e1e; border-radius:2px; }
+  .progress i.done { background:#0B0; }
+  .progress i.cur { background:#08F; }
+
+  .stage { flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+           padding:0 24px; text-align:center; }
+  .hero { width:104px; height:104px; border-radius:16px; object-fit:cover; margin-bottom:16px; }
+  .exName { font-size:29px; font-weight:700; line-height:1.15; letter-spacing:-.01em;
+            background:transparent; border:none; color:#fff; display:inline-flex; align-items:center; gap:6px; }
+  .exName em { font-style:normal; color:#5f5f5f; font-size:24px; font-weight:400; }
+  .setLine { font-size:14px; color:#7a7a7a; margin-top:9px; }
+
+  .row { display:flex; align-items:flex-start; gap:16px; margin-top:34px; }
+  .cell { display:flex; flex-direction:column; align-items:center; }
+  .big { font-size:60px; font-weight:600; letter-spacing:-.03em; line-height:1; color:#fff;
+         background:transparent; border:none; border-bottom:1px dashed #3a3a3a; padding-bottom:8px; }
+  .big u { text-decoration:none; font-size:21px; font-weight:500; color:#8d8d8d; margin-left:5px; }
+  .times { font-size:27px; color:#484848; margin-top:20px; }
+  .under { margin-top:11px; font-size:15px; color:#b0b0b0; min-height:19px; }
+  .hints { font-size:11px; color:#4f4f4f; line-height:1.75; margin-top:38px; }
+  .action { flex:0 0 auto; padding:0 24px 18px; }
+  .go { width:100%; border:none; border-radius:16px; background:#0B0; color:#fff;
+        font-size:19px; font-weight:700; padding:22px; }
+
+  /* ---------- exercise page ---------- */
+  .pTop { display:flex; align-items:center; gap:2px; padding:10px 14px 10px 6px; flex:0 0 auto; }
+  .pTitle { font-weight:700; font-size:17px; }
+  .tabs { display:flex; padding:0 16px; gap:22px; border-bottom:1px solid #222; flex:0 0 auto; }
+  .tab { background:transparent; border:none; color:#7a7a7a; font-size:14px; padding:10px 0 12px;
+         border-bottom:2px solid transparent; margin-bottom:-1px; }
+  .tab.on { color:#fff; font-weight:600; border-bottom-color:#08F; }
+  .scroll { flex:1 1 0; overflow:hidden; }
+
+  video.demo, img.demo { width:100%; height:206px; object-fit:cover; background:#000; display:block; }
+  .pName { font-size:21px; font-weight:700; padding:16px 16px 0; }
+  .muscles { padding:10px 16px 0; font-size:12px; line-height:1.7; color:#8d8d8d; }
+  .muscles b { color:#dcdcdc; font-weight:500; }
+  .cues { padding:16px 16px 0; }
+  .cue { display:flex; gap:10px; font-size:13px; color:#b5b5b5; line-height:1.5; margin-top:9px; }
+  .cue i { font-style:normal; color:#4a4a4a; font-variant-numeric:tabular-nums; }
+
+  .secTitle { font-size:11px; color:#5f6a72; letter-spacing:.14em; text-transform:uppercase; padding:24px 16px 0; }
+  .alts { padding:10px 12px 0; display:flex; flex-direction:column; gap:6px; }
+  .alt { display:flex; align-items:center; gap:12px; padding:8px; border-radius:12px; background:#151515; }
+  .altThumb { width:44px; height:44px; border-radius:9px; background:#232323; flex:0 0 auto;
+              display:flex; align-items:center; justify-content:center; color:#4f4f4f; font-size:16px; }
+  .altName { font-size:13px; color:#e0e0e0; flex:1 1 auto; }
+  .altNote { font-size:11px; color:#7a7a7a; margin-top:2px; }
+  .altSwap { border:1px solid #2e2e2e; background:transparent; color:#bdbdbd; border-radius:9px;
+             padding:9px 12px; font-size:12px; flex:0 0 auto; }
+
+  /* ---------- progress ---------- */
+  .metrics { display:flex; gap:7px; padding:14px 16px 0; overflow:hidden; }
+  .metric { flex:0 0 auto; border:1px solid #2e2e2e; background:transparent; color:#a8a8a8;
+            border-radius:999px; padding:9px 13px; font-size:12px; white-space:nowrap; }
+  .metric.on { background:#06F; border-color:#06F; color:#fff; font-weight:600; }
+  .periods { display:flex; gap:7px; padding:10px 16px 0; }
+  .period { border:1px solid #2e2e2e; background:transparent; color:#8d8d8d; border-radius:8px;
+            padding:7px 11px; font-size:11px; }
+  .period.on { color:#fff; border-color:#5a5a5a; }
+  .chartWrap { padding:14px 8px 0; }
+  .chartNote { padding:6px 16px 0; font-size:11px; color:#5f5f5f; line-height:1.5; }
+
+  .records { padding:22px 16px 0; }
+  .record { display:flex; align-items:center; gap:10px; padding:11px 0; border-top:1px solid #1e1e1e; font-size:13px; }
+  .record:first-of-type { border-top:none; }
+  .recName { color:#a8a8a8; flex:1 1 auto; }
+  .recVal { font-weight:600; font-variant-numeric:tabular-nums; }
+  .medal { color:#e8c24a; font-size:14px; }
+
+  /* ---------- history ---------- */
+  .sess { padding:16px 16px 0; }
+  .sessTop { display:flex; align-items:baseline; gap:8px; }
+  .sessDate { font-size:14px; font-weight:600; }
+  .sessProg { font-size:11px; color:#6d8ba8; }
+  .sessSum { margin-left:auto; font-size:12px; color:#7a7a7a; font-variant-numeric:tabular-nums; }
+  .sets { display:flex; flex-wrap:wrap; gap:6px; margin-top:9px; }
+  .set { border:1px solid #242424; background:#121212; border-radius:8px; padding:7px 10px;
+         font-size:13px; font-variant-numeric:tabular-nums; color:#d8d8d8; }
+  .set.warm { color:#c9b500; border-color:#3a3400; }
+  .set.rec { border-color:#5a4a12; }
+  .sessDiv { height:1px; background:#1a1a1a; margin:16px 16px 0; }
+</style>
+</head>
+<body>
+
+<!-- 1 · focus -->
+<div class="col">
+  <div class="caption"><b>1 · Экран подхода</b>Настоящий кадр вместо человечка. Нижняя строчка «Техника и история» удалена — вместо неё шеврон у названия, и сама картинка тоже нажимается.</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">12:04</div></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
+    <div class="stage">
+      <img class="hero" src="assets/bench-press-square.jpg" alt="">
+      <button class="exName">Жим лёжа <em>›</em></button>
+      <div class="setLine">Подход 2 из 3</div>
+      <div class="row">
+        <div class="cell"><button class="big">60<u>кг</u></button><div class="under"></div></div>
+        <div class="times">×</div>
+        <div class="cell"><button class="big">8<u>раз</u></button><div class="under">цель 6 – 8</div></div>
+      </div>
+      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе<br>нажми на название — техника, прогресс, замена</div>
+    </div>
+    <div class="action"><button class="go">Готово</button></div>
+  </div>
+</div>
+
+<!-- 2 · technique -->
+<div class="col">
+  <div class="caption"><b>2 · Техника</b>Видео играет само — здесь движение и есть содержимое. Аналоги живут тут же: замена это знание об упражнении, а не операция над тренировкой.</div>
+  <div class="phone">
+    <div class="pTop"><button class="ghostBtn" style="color:#fff">←</button><div class="pTitle">Жим лёжа</div></div>
+    <div class="tabs">
+      <button class="tab on">Техника</button>
+      <button class="tab">Прогресс</button>
+      <button class="tab">История</button>
+    </div>
+    <div class="scroll">
+      <video class="demo" src="assets/bench-press.mp4" poster="assets/bench-press-poster.jpg"
+             autoplay loop muted playsinline></video>
+      <div class="pName">Жим лёжа со штангой</div>
+      <div class="muscles">
+        Основные: <b>грудь</b><br>
+        Дополнительные: <b>трицепс, передняя дельта</b><br>
+        Оборудование: <b>штанга, скамья</b>
+      </div>
+      <div class="cues">
+        <div class="cue"><i>1</i><span>Лопатки сведены и прижаты, стопы всей подошвой в полу.</span></div>
+        <div class="cue"><i>2</i><span>Опускай штангу к нижней части груди, локти под 45° к корпусу.</span></div>
+        <div class="cue"><i>3</i><span>Не отрывай таз от скамьи и не выключай локти в верхней точке.</span></div>
+      </div>
+      <div class="secTitle">Похожие упражнения</div>
+      <div class="alts">
+        <div class="alt">
+          <div class="altThumb">▦</div>
+          <div class="altName">Жим гантелей лёжа<div class="altNote">если скамья со штангой занята</div></div>
+          <button class="altSwap">Заменить</button>
+        </div>
+        <div class="alt">
+          <div class="altThumb">▦</div>
+          <div class="altName">Жим в тренажёре<div class="altNote">проще по технике</div></div>
+          <button class="altSwap">Заменить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3 · progress -->
+<div class="col">
+  <div class="caption"><b>3 · Прогресс</b>По умолчанию «сила за тренировку» — она одна замечает добитый повтор в слабом подходе. Провалы в местах прибавки веса не сглажены, они честные.</div>
+  <div class="phone">
+    <div class="pTop"><button class="ghostBtn" style="color:#fff">←</button><div class="pTitle">Жим лёжа</div></div>
+    <div class="tabs">
+      <button class="tab">Техника</button>
+      <button class="tab on">Прогресс</button>
+      <button class="tab">История</button>
+    </div>
+    <div class="scroll">
+      <div class="metrics">
+        <button class="metric on">Сила за тренировку</button>
+        <button class="metric">Лучший подход</button>
+        <button class="metric">Макс</button>
+      </div>
+      <div class="periods">
+        <button class="period on">3 мес</button>
+        <button class="period">1 год</button>
+        <button class="period">всё</button>
+      </div>
+      <div class="chartWrap">
+        <svg viewBox="0 0 360 172" width="100%" height="172">
+          <g stroke="#1c1c1c" stroke-width="1">
+            <line x1="36" y1="28"  x2="348" y2="28"/>
+            <line x1="36" y1="63"  x2="348" y2="63"/>
+            <line x1="36" y1="98"  x2="348" y2="98"/>
+            <line x1="36" y1="133" x2="348" y2="133"/>
+          </g>
+          <g fill="#5a5a5a" font-size="9" text-anchor="end" font-family="Montserrat, Segoe UI, sans-serif">
+            <text x="30" y="31">75</text>
+            <text x="30" y="66">73</text>
+            <text x="30" y="101">71</text>
+            <text x="30" y="136">69</text>
+          </g>
+          <polyline fill="none" stroke="#08F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"
+            points="36,138 63,124 90,110 117,98 144,103 171,89 198,76 225,63 252,70 279,55 306,41 333,29"/>
+          <g fill="#08F">
+            <circle cx="36"  cy="138" r="2.5"/><circle cx="63"  cy="124" r="2.5"/>
+            <circle cx="90"  cy="110" r="2.5"/><circle cx="117" cy="98"  r="2.5"/>
+            <circle cx="144" cy="103" r="2.5"/><circle cx="171" cy="89"  r="2.5"/>
+            <circle cx="198" cy="76"  r="2.5"/><circle cx="225" cy="63"  r="2.5"/>
+            <circle cx="252" cy="70"  r="2.5"/><circle cx="279" cy="55"  r="2.5"/>
+            <circle cx="306" cy="41"  r="2.5"/>
+          </g>
+          <circle cx="333" cy="29" r="4" fill="#fff"/>
+          <g fill="#5a5a5a" font-size="9" font-family="Montserrat, Segoe UI, sans-serif">
+            <text x="36" y="160">18 июн</text>
+            <text x="160" y="160">24 июл</text>
+            <text x="300" y="160">14 сен</text>
+          </g>
+        </svg>
+      </div>
+      <div class="chartNote">Две ступеньки вниз — прибавки веса: повторы упали с 8 до 6, и оценка максимума на неделю просела. Так и должно быть.</div>
+
+      <div class="secTitle">Личные рекорды</div>
+      <div class="records">
+        <div class="record"><span class="medal">●</span><div class="recName">Лучший подход</div><div class="recVal">62.5 × 8</div></div>
+        <div class="record"><span class="medal">●</span><div class="recName">Оценка максимума</div><div class="recVal">77.6 кг</div></div>
+        <div class="record"><span class="medal">●</span><div class="recName">Максимальный вес</div><div class="recVal">65 кг</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4 · history -->
+<div class="col">
+  <div class="caption"><b>4 · История</b>Прошлые выполнения этого места в программе. Разминочные подходы приглушены, рекорды помечены — остальное просто числа.</div>
+  <div class="phone">
+    <div class="pTop"><button class="ghostBtn" style="color:#fff">←</button><div class="pTitle">Жим лёжа</div></div>
+    <div class="tabs">
+      <button class="tab">Техника</button>
+      <button class="tab">Прогресс</button>
+      <button class="tab on">История</button>
+    </div>
+    <div class="scroll">
+      <div class="sess">
+        <div class="sessTop">
+          <div class="sessDate">14 сентября</div>
+          <div class="sessProg">UpLow</div>
+          <div class="sessSum">4 подхода</div>
+        </div>
+        <div class="sets">
+          <span class="set warm">20 × 12</span>
+          <span class="set">62.5 × 8</span>
+          <span class="set rec">62.5 × 8 <span class="medal">●</span></span>
+          <span class="set">62.5 × 7</span>
+        </div>
+      </div>
+      <div class="sessDiv"></div>
+      <div class="sess">
+        <div class="sessTop">
+          <div class="sessDate">10 сентября</div>
+          <div class="sessProg">UpLow</div>
+          <div class="sessSum">4 подхода</div>
+        </div>
+        <div class="sets">
+          <span class="set warm">20 × 12</span>
+          <span class="set">62.5 × 7</span>
+          <span class="set">62.5 × 7</span>
+          <span class="set">62.5 × 6</span>
+        </div>
+      </div>
+      <div class="sessDiv"></div>
+      <div class="sess">
+        <div class="sessTop">
+          <div class="sessDate">6 сентября</div>
+          <div class="sessProg">UpLow</div>
+          <div class="sessSum">4 подхода</div>
+        </div>
+        <div class="sets">
+          <span class="set warm">20 × 12</span>
+          <span class="set">60 × 8</span>
+          <span class="set">60 × 8</span>
+          <span class="set">60 × 8</span>
+        </div>
+      </div>
+      <div class="sessDiv"></div>
+      <div class="sess">
+        <div class="sessTop">
+          <div class="sessDate">2 сентября</div>
+          <div class="sessProg">UpLow</div>
+          <div class="sessSum">4 подхода</div>
+        </div>
+        <div class="sets">
+          <span class="set warm">20 × 10</span>
+          <span class="set">60 × 8</span>
+          <span class="set">60 × 7</span>
+          <span class="set">60 × 6</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
