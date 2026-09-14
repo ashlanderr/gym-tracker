@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Difficulty control weight</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font: inherit; }
+  html { font-family: Montserrat, "Segoe UI", "Helvetica Neue", sans-serif; background:#111; color:#fff; -webkit-font-smoothing:antialiased; }
+  body { padding:24px; display:flex; flex-wrap:wrap; gap:20px; width:1700px; align-items:flex-start; }
+
+  .col { display:flex; flex-direction:column; gap:10px; width:393px; flex:0 0 auto; }
+  .caption { font-size:12px; color:#8b9299; line-height:1.5; height:76px; }
+  .caption b { color:#fff; font-weight:600; display:block; font-size:13px; margin-bottom:3px; }
+
+  .phone { width:393px; height:800px; background:#000; border-radius:26px; overflow:hidden;
+           display:flex; flex-direction:column; border:1px solid #2a2a2a; }
+
+  .top { display:flex; align-items:center; padding:10px 14px 10px 8px; flex:0 0 auto; }
+  .ghostBtn { width:40px; height:40px; display:flex; align-items:center; justify-content:center;
+              border:none; background:transparent; color:#6d6d6d; font-size:19px; }
+  .clock { margin-left:auto; font-size:13px; color:#6d6d6d; font-variant-numeric:tabular-nums; }
+  .progress { height:2px; display:flex; gap:3px; padding:0 16px; flex:0 0 auto; }
+  .progress i { flex:1 1 0; background:#1e1e1e; border-radius:2px; }
+  .progress i.done { background:#0B0; }
+  .progress i.cur { background:#08F; }
+
+  .stage { flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+           padding:0 24px; text-align:center; }
+  .restLabel { font-size:12px; color:#7a7a7a; letter-spacing:.16em; text-transform:uppercase; }
+  .restTime { font-size:86px; font-weight:300; letter-spacing:-.03em; font-variant-numeric:tabular-nums; line-height:1; margin-top:14px; }
+  .adj { display:flex; gap:10px; margin-top:22px; }
+  .adjBtn { border:1px solid #2e2e2e; background:transparent; color:#bdbdbd; border-radius:10px; padding:11px 18px; font-size:13px; }
+  .askQ { font-size:14px; color:#b5b5b5; margin-top:34px; }
+  .nextUp { margin-top:36px; font-size:11px; color:#5f5f5f; letter-spacing:.14em; text-transform:uppercase; }
+  .nextVal { font-size:25px; font-weight:600; margin-top:9px; }
+  .nextName { font-size:13px; color:#7a7a7a; margin-top:6px; }
+
+  .action { flex:0 0 auto; padding:0 24px 12px; }
+  .skip { width:100%; border:1px solid #2e2e2e; border-radius:16px; background:transparent; color:#bdbdbd;
+          font-size:16px; font-weight:600; padding:20px; }
+  .drawer { text-align:center; font-size:11px; color:#4a4a4a; padding:10px 0 14px; flex:0 0 auto; }
+
+  /* P1 · straight port: full width, bordered keys */
+  .keys { display:flex; gap:6px; width:100%; margin-top:12px; }
+  .keys button { flex:1 1 0; background:#0f0f0f; border:1px solid #2e2e2e; color:#c5c5c5; font-size:15px;
+                 padding:13px 0; border-radius:10px; white-space:nowrap; }
+  .keys button.sel { background:#06F; border-color:#06F; color:#fff; font-weight:600; }
+
+  /* P2 · content width, centred */
+  .keys.narrow { width:auto; justify-content:center; }
+  .keys.narrow button { flex:0 0 auto; padding:12px 14px; }
+
+  /* P3 · no outlines, fill only */
+  .keys.soft button { border-color:transparent; background:#141414; }
+  .keys.soft button.sel { background:#06F; border-color:#06F; }
+
+  /* P5 · exactly the style of the -15/+15 buttons */
+  .keys.same button { background:transparent; border:1px solid #2e2e2e; color:#bdbdbd; font-size:13px;
+                      padding:11px 14px; border-radius:10px; }
+  .keys.same button.sel { background:#06F; border-color:#06F; color:#fff; font-weight:600; }
+
+  /* P4 · lighter everything */
+  .keys.light button { font-size:13px; padding:10px 0; background:#121212; border-color:#262626; color:#a8a8a8; }
+  .keys.light button.sel { background:#06F; border-color:#06F; color:#fff; }
+</style>
+</head>
+<body>
+
+<!-- P1 -->
+<div class="col">
+  <div class="caption"><b>P1 · Прямой перенос</b>Как нарисовано в сравнении: во всю ширину, обводка у каждой клавиши, 15px. Самый тяжёлый объект после таймера.</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">14:22</div></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="restLabel">Отдых</div>
+      <div class="restTime">1:47</div>
+      <div class="adj"><button class="adjBtn">−15 сек</button><button class="adjBtn">+15 сек</button></div>
+      <div class="askQ">Как прошёл подход?</div>
+      <div class="keys">
+        <button>Легко</button><button>Норм</button><button>Тяжело</button><button>Отказ</button>
+      </div>
+      <div class="nextUp">Дальше</div>
+      <div class="nextVal">60 кг&nbsp; ×&nbsp; 8</div>
+      <div class="nextName">Жим лёжа, подход 3 из 3</div>
+    </div>
+    <div class="action"><button class="skip">Пропустить отдых</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+<!-- P2 -->
+<div class="col">
+  <div class="caption"><b>P2 · По содержимому, по центру</b>Ряд перестаёт упираться в края и встаёт в один столбец с «−15 / +15». Горизонталь больше не выпирает.</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">14:22</div></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="restLabel">Отдых</div>
+      <div class="restTime">1:47</div>
+      <div class="adj"><button class="adjBtn">−15 сек</button><button class="adjBtn">+15 сек</button></div>
+      <div class="askQ">Как прошёл подход?</div>
+      <div class="keys narrow">
+        <button>Легко</button><button>Норм</button><button>Тяжело</button><button>Отказ</button>
+      </div>
+      <div class="nextUp">Дальше</div>
+      <div class="nextVal">60 кг&nbsp; ×&nbsp; 8</div>
+      <div class="nextName">Жим лёжа, подход 3 из 3</div>
+    </div>
+    <div class="action"><button class="skip">Пропустить отдых</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+<!-- P3 -->
+<div class="col">
+  <div class="caption"><b>P3 · Без обводок, только подложка</b>Четыре линии обводки убраны, остаётся мягкая заливка. Нажимаемость сохраняется, вес линий падает вдвое.</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">14:22</div></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="restLabel">Отдых</div>
+      <div class="restTime">1:47</div>
+      <div class="adj"><button class="adjBtn">−15 сек</button><button class="adjBtn">+15 сек</button></div>
+      <div class="askQ">Как прошёл подход?</div>
+      <div class="keys soft narrow">
+        <button>Легко</button><button>Норм</button><button>Тяжело</button><button>Отказ</button>
+      </div>
+      <div class="nextUp">Дальше</div>
+      <div class="nextVal">60 кг&nbsp; ×&nbsp; 8</div>
+      <div class="nextName">Жим лёжа, подход 3 из 3</div>
+    </div>
+    <div class="action"><button class="skip">Пропустить отдых</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+<!-- P5 -->
+<div class="col">
+  <div class="caption"><b>P5 · Тем же стилем, что «−15 / +15»</b>Клавиши перестают быть отдельным видом контрола и становятся такими же, как кнопки таймера над ними. На экране остаётся один стиль кнопки вместо двух.</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">14:22</div></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="restLabel">Отдых</div>
+      <div class="restTime">1:47</div>
+      <div class="adj"><button class="adjBtn">−15 сек</button><button class="adjBtn">+15 сек</button></div>
+      <div class="askQ">Как прошёл подход?</div>
+      <div class="keys same narrow">
+        <button>Легко</button><button>Норм</button><button>Тяжело</button><button>Отказ</button>
+      </div>
+      <div class="nextUp">Дальше</div>
+      <div class="nextVal">60 кг&nbsp; ×&nbsp; 8</div>
+      <div class="nextName">Жим лёжа, подход 3 из 3</div>
+    </div>
+    <div class="action"><button class="skip">Пропустить отдых</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+<!-- P4 -->
+<div class="col">
+  <div class="caption"><b>P4 · Тише во всём</b>13px, ниже клавиши, приглушённый контур и текст. Ряд уходит на тот же уровень громкости, что «−15 / +15».</div>
+  <div class="phone">
+    <div class="top"><button class="ghostBtn">←</button><div class="clock">14:22</div></div>
+    <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
+    <div class="stage">
+      <div class="restLabel">Отдых</div>
+      <div class="restTime">1:47</div>
+      <div class="adj"><button class="adjBtn">−15 сек</button><button class="adjBtn">+15 сек</button></div>
+      <div class="askQ">Как прошёл подход?</div>
+      <div class="keys light narrow">
+        <button>Легко</button><button>Норм</button><button>Тяжело</button><button>Отказ</button>
+      </div>
+      <div class="nextUp">Дальше</div>
+      <div class="nextVal">60 кг&nbsp; ×&nbsp; 8</div>
+      <div class="nextName">Жим лёжа, подход 3 из 3</div>
+    </div>
+    <div class="action"><button class="skip">Пропустить отдых</button></div>
+    <div class="drawer">⌃&nbsp; Техника и история</div>
+  </div>
+</div>
+
+</body>
+</html>
