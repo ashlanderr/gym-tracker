@@ -8,166 +8,93 @@
   html { font-family: Montserrat, "Segoe UI", "Helvetica Neue", sans-serif; background:#111; color:#fff; -webkit-font-smoothing:antialiased; }
   body { padding:28px; width:1300px; }
 
-  h2 { font-size:12px; color:#5f6a72; letter-spacing:.14em; text-transform:uppercase; margin:26px 0 14px; }
+  h2 { font-size:12px; color:#5f6a72; letter-spacing:.14em; text-transform:uppercase; margin:28px 0 14px; }
   h2:first-child { margin-top:0; }
   .grid { display:flex; gap:20px; flex-wrap:wrap; }
   .card { width:393px; background:#000; border:1px solid #2a2a2a; border-radius:18px; padding:16px 14px 18px; }
   .cardTitle { font-size:13px; font-weight:600; margin-bottom:4px; }
-  .cardNote { font-size:11px; color:#7c848b; line-height:1.5; min-height:32px; }
-  .stageBox { padding:22px 8px 6px; }
+  .cardNote { font-size:11px; color:#7c848b; line-height:1.5; min-height:46px; }
+  .stageBox { padding:24px 8px 6px; }
   .subnote { text-align:center; font-size:11px; color:#6d6d6d; margin-top:18px; }
 
-  /* ---------- shared barbell geometry (from the app) ---------- */
+  /* ---------------------------------------------------------------
+     One rule for every number drawn on iron.
+     Digits are centred on the font's line box, not on the digits
+     themselves, so any box that "looks centred" in one font drifts in
+     the next. .num kills the line box (line-height:1) and applies a
+     single optical nudge, used in every place a number sits on metal.
+     --------------------------------------------------------------- */
+  .num { display:block; line-height:1; transform:translateY(.055em); font-variant-numeric:tabular-nums; }
+
+  /* ---------- barbell geometry (from the app), style B ---------- */
   .barbell { display:flex; position:relative; min-height:20px; align-items:center; gap:1px; }
   .bar { position:absolute; z-index:0; left:0; right:0; top:50%; transform:translateY(-50%);
+         height:17px; background:linear-gradient(180deg,#5c5c5c,#414141); border-radius:6px;
          display:flex; align-items:center; justify-content:center; }
-  .barLabel { margin-top:1px; font-size:16px; }
-  .plate { z-index:1; flex:0 0 auto; position:relative; }
+  .barLabel { font-size:15px; color:#ececec; font-weight:500; }
+  .plate { z-index:1; flex:0 0 auto; position:relative; width:17px; border-radius:5px;
+           background:linear-gradient(180deg,#dcdcdc,#b2b2b2); box-shadow:inset 0 0 0 1px rgba(255,255,255,.22); }
+  .innerPlate { width:5px; height:40px; border-radius:3px; }
   .plateLabel { position:absolute; left:50%; top:50%; white-space:nowrap;
-                transform:translate(-50%,-50%) rotate(90deg); font-size:12px; }
+                transform:translate(-50%,-50%) rotate(90deg); font-size:12px; color:#1d1d1d; font-weight:600; }
   .barSpacer { flex:0 0 auto; width:10px; }
   .barCenter { flex:1 1 0; }
 
-  /* --- style A: exactly what the app draws today --- */
-  .sA .bar { height:20px; background:#555; border-radius:2px; }
-  .sA .barLabel { color:#fff; }
-  .sA .plate { width:16px; background:#888; border-radius:2px; }
-  .sA .innerPlate { width:4px; height:40px; }
-  .sA .plateLabel { color:#fff; }
-
-  /* --- style B: soft, light iron, stamped numbers --- */
-  .sB .bar { height:17px; background:linear-gradient(180deg,#5c5c5c,#414141); border-radius:6px; }
-  .sB .barLabel { color:#ececec; font-weight:500; }
-  .sB .plate { width:17px; border-radius:5px; background:linear-gradient(180deg,#dcdcdc,#b2b2b2);
-               box-shadow:inset 0 0 0 1px rgba(255,255,255,.22); }
-  .sB .innerPlate { width:5px; height:40px; border-radius:3px; }
-  .sB .plateLabel { color:#1d1d1d; font-weight:600; }
-
-  /* --- style C: soft, but iron stays dark --- */
-  .sC .bar { height:17px; background:linear-gradient(180deg,#585858,#3d3d3d); border-radius:6px; }
-  .sC .barLabel { color:#ececec; font-weight:500; }
-  .sC .plate { width:17px; border-radius:5px; background:linear-gradient(180deg,#a2a2a2,#7c7c7c);
-               box-shadow:inset 0 0 0 1px rgba(255,255,255,.14); }
-  .sC .innerPlate { width:5px; height:40px; border-radius:3px; }
-  .sC .plateLabel { color:#fff; font-weight:600; }
-
-  /* ---------- dumbbells ---------- */
   .dumbbells { display:flex; gap:10px; justify-content:center; }
   .dumbbell { width:170px; }
 
   /* ---------- machine stack ---------- */
-  .stack { display:flex; flex-direction:column; align-items:center; gap:3px; position:relative; }
+  .stack { display:flex; flex-direction:column; align-items:center; gap:3px; }
   .rod { width:9px; height:16px; background:linear-gradient(180deg,#6a6a6a,#4e4e4e); border-radius:3px 3px 0 0; }
   .brick { width:118px; height:15px; border-radius:4px; background:#333; }
   .brick.lifted { background:linear-gradient(180deg,#9b9b9b,#787878); box-shadow:inset 0 0 0 1px rgba(255,255,255,.12); }
   .brick.pick { height:28px; background:linear-gradient(180deg,#e2e2e2,#bdbdbd);
                 box-shadow:inset 0 0 0 1px rgba(255,255,255,.3); display:flex; align-items:center; justify-content:center;
                 position:relative; }
-  .brick.pick span { color:#161616; font-size:14px; font-weight:700; margin-top:1px; }
+  .brick.pick .num { color:#161616; font-size:14px; font-weight:700; }
   .pin { position:absolute; right:-20px; top:10px; width:18px; height:8px; background:#08F; border-radius:3px; }
 
-  .addChip { width:74px; height:19px; border-radius:6px; background:linear-gradient(180deg,#d8d8d8,#b4b4b4);
-             box-shadow:inset 0 0 0 1px rgba(255,255,255,.28); display:flex; align-items:center; justify-content:center;
-             color:#161616; font-size:11px; font-weight:700; }
-  .dial { position:absolute; right:14px; top:14px; width:52px; height:52px; border-radius:50%;
-          background:linear-gradient(180deg,#4e4e4e,#343434); box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);
-          display:flex; align-items:center; justify-content:center; flex-direction:column; }
-  .dial b { font-size:14px; font-weight:700; color:#ececec; }
-  .dial i { font-style:normal; font-size:9px; color:#9a9a9a; margin-top:1px; }
-  .dialTick { position:absolute; top:5px; left:50%; transform:translateX(-50%); width:2px; height:7px; background:#08F; border-radius:1px; }
-  .stackRow { display:flex; justify-content:center; position:relative; }
+  .addChip { width:74px; height:20px; border-radius:6px; background:linear-gradient(180deg,#d8d8d8,#b4b4b4);
+             box-shadow:inset 0 0 0 1px rgba(255,255,255,.28); display:flex; align-items:center; justify-content:center; }
+  .addChip .num { color:#161616; font-size:11px; font-weight:700; }
+
+  .stackRow { display:flex; justify-content:center; align-items:flex-start; gap:18px; }
+  .dialSlot { padding-top:22px; }
+  .dialCap { text-align:center; font-size:10px; color:#6d6d6d; margin-top:6px; letter-spacing:.06em; }
 </style>
 </head>
 <body>
 
-<h2>1 · Стиль отрисовки — геометрия одна, подача разная. Штанга 102.5 кг</h2>
+<h2>1 · Принято: стиль B, единицы U3 — на снаряде, не на номиналах</h2>
 <div class="grid">
 
   <div class="card">
-    <div class="cardTitle">A · Как сейчас в приложении</div>
-    <div class="cardNote">Плоские серые блины, тонкие скругления, белые цифры на сером.</div>
-    <div class="stageBox sA">
+    <div class="cardTitle">Штанга 102.5 кг</div>
+    <div class="cardNote">Единица стоит на грифе — единственном числе, которое здесь измеряет предмет. Номиналы блинов голые, это их имена.</div>
+    <div class="stageBox">
       <div class="barbell">
         <div class="barSpacer"></div>
-        <div class="plate" style="height:38px"><div class="plateLabel">1.25</div></div>
-        <div class="plate" style="height:86px"><div class="plateLabel">15</div></div>
-        <div class="plate" style="height:102px"><div class="plateLabel">25</div></div>
+        <div class="plate" style="height:38px"><div class="plateLabel"><span class="num">1.25</span></div></div>
+        <div class="plate" style="height:86px"><div class="plateLabel"><span class="num">15</span></div></div>
+        <div class="plate" style="height:102px"><div class="plateLabel"><span class="num">25</span></div></div>
         <div class="plate innerPlate"></div>
         <div class="barCenter"></div>
         <div class="plate innerPlate"></div>
-        <div class="plate" style="height:102px"><div class="plateLabel">25</div></div>
-        <div class="plate" style="height:86px"><div class="plateLabel">15</div></div>
-        <div class="plate" style="height:38px"><div class="plateLabel">1.25</div></div>
+        <div class="plate" style="height:102px"><div class="plateLabel"><span class="num">25</span></div></div>
+        <div class="plate" style="height:86px"><div class="plateLabel"><span class="num">15</span></div></div>
+        <div class="plate" style="height:38px"><div class="plateLabel"><span class="num">1.25</span></div></div>
         <div class="barSpacer"></div>
-        <div class="bar"><div class="barLabel">20</div></div>
+        <div class="bar"><div class="barLabel"><span class="num">20 кг</span></div></div>
       </div>
     </div>
-    <div class="subnote">гриф 20 · по 41.25 на сторону</div>
+    <div class="subnote">по 41.25 на сторону</div>
   </div>
 
   <div class="card">
-    <div class="cardTitle">B · Мягкий, светлое железо</div>
-    <div class="cardNote">Номинал выштампован на блине тёмным. Больше похоже на настоящий блин, читается дальше.</div>
-    <div class="stageBox sB">
-      <div class="barbell">
-        <div class="barSpacer"></div>
-        <div class="plate" style="height:38px"><div class="plateLabel">1.25</div></div>
-        <div class="plate" style="height:86px"><div class="plateLabel">15</div></div>
-        <div class="plate" style="height:102px"><div class="plateLabel">25</div></div>
-        <div class="plate innerPlate"></div>
-        <div class="barCenter"></div>
-        <div class="plate innerPlate"></div>
-        <div class="plate" style="height:102px"><div class="plateLabel">25</div></div>
-        <div class="plate" style="height:86px"><div class="plateLabel">15</div></div>
-        <div class="plate" style="height:38px"><div class="plateLabel">1.25</div></div>
-        <div class="barSpacer"></div>
-        <div class="bar"><div class="barLabel">20</div></div>
-      </div>
-    </div>
-    <div class="subnote">гриф 20 · по 41.25 на сторону</div>
-  </div>
-
-  <div class="card">
-    <div class="cardTitle">C · Мягкий, тёмное железо</div>
-    <div class="cardNote">Те же скругления и объём, но блины остаются тёмными и не бьют по глазам на чёрном экране.</div>
-    <div class="stageBox sC">
-      <div class="barbell">
-        <div class="barSpacer"></div>
-        <div class="plate" style="height:38px"><div class="plateLabel">1.25</div></div>
-        <div class="plate" style="height:86px"><div class="plateLabel">15</div></div>
-        <div class="plate" style="height:102px"><div class="plateLabel">25</div></div>
-        <div class="plate innerPlate"></div>
-        <div class="barCenter"></div>
-        <div class="plate innerPlate"></div>
-        <div class="plate" style="height:102px"><div class="plateLabel">25</div></div>
-        <div class="plate" style="height:86px"><div class="plateLabel">15</div></div>
-        <div class="plate" style="height:38px"><div class="plateLabel">1.25</div></div>
-        <div class="barSpacer"></div>
-        <div class="bar"><div class="barLabel">20</div></div>
-      </div>
-    </div>
-    <div class="subnote">гриф 20 · по 41.25 на сторону</div>
-  </div>
-</div>
-
-<h2>2 · Единицы измерения — одна на снаряд, а не на каждый номинал</h2>
-<div class="grid">
-
-  <div class="card">
-    <div class="cardTitle">U1 · Только в подписи</div>
-    <div class="cardNote">Единица внизу, на картинке голые числа. Консистентно, но снаряд и правда ощущается пустым.</div>
-    <div class="stageBox sB">
-      <div class="barbell">
-        <div class="barSpacer"></div>
-        <div class="plate" style="height:95px"><div class="plateLabel">20</div></div>
-        <div class="plate innerPlate"></div>
-        <div class="barCenter"></div>
-        <div class="plate innerPlate"></div>
-        <div class="plate" style="height:95px"><div class="plateLabel">20</div></div>
-        <div class="barSpacer"></div>
-        <div class="bar"><div class="barLabel">20</div></div>
-      </div>
-      <div class="dumbbells" style="margin-top:28px">
+    <div class="cardTitle">Гантели 18 кг</div>
+    <div class="cardNote">На рукояти вес одной гантели — предмет целиком, значит с единицей. Делить пополам не приходится.</div>
+    <div class="stageBox">
+      <div class="dumbbells" style="margin-top:34px">
         <div class="dumbbell">
           <div class="barbell">
             <div class="barSpacer"></div>
@@ -179,29 +106,9 @@
             <div class="plate" style="height:88px"></div>
             <div class="plate" style="height:50px"></div>
             <div class="barSpacer"></div>
-            <div class="bar"><div class="barLabel">9</div></div>
+            <div class="bar"><div class="barLabel"><span class="num">9 кг</span></div></div>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="subnote">всё в килограммах</div>
-  </div>
-
-  <div class="card">
-    <div class="cardTitle">U2 · На гантели и стеке, но не на штанге</div>
-    <div class="cardNote">То, чего хочется интуитивно. Работает, но правило сформулировать нечем — и это мешает.</div>
-    <div class="stageBox sB">
-      <div class="barbell">
-        <div class="barSpacer"></div>
-        <div class="plate" style="height:95px"><div class="plateLabel">20</div></div>
-        <div class="plate innerPlate"></div>
-        <div class="barCenter"></div>
-        <div class="plate innerPlate"></div>
-        <div class="plate" style="height:95px"><div class="plateLabel">20</div></div>
-        <div class="barSpacer"></div>
-        <div class="bar"><div class="barLabel">20</div></div>
-      </div>
-      <div class="dumbbells" style="margin-top:28px">
         <div class="dumbbell">
           <div class="barbell">
             <div class="barSpacer"></div>
@@ -213,66 +120,50 @@
             <div class="plate" style="height:88px"></div>
             <div class="plate" style="height:50px"></div>
             <div class="barSpacer"></div>
-            <div class="bar"><div class="barLabel">9 кг</div></div>
+            <div class="bar"><div class="barLabel"><span class="num">9 кг</span></div></div>
           </div>
         </div>
       </div>
     </div>
-    <div class="subnote">гриф 20 кг · по 20 на сторону</div>
+    <div class="subnote">две гантели</div>
   </div>
 
   <div class="card">
-    <div class="cardTitle">U3 · На снаряде, но не на номиналах</div>
-    <div class="cardNote">Единица стоит там, где число описывает целый предмет: гриф, гантель, плитка. Блины остаются голыми — у них это имя, а не измерение.</div>
-    <div class="stageBox sB">
+    <div class="cardTitle">Выравнивание</div>
+    <div class="cardNote">Все числа на железе центруются одним правилом: line-height гасится, применяется единый оптический сдвиг. Никаких точечных margin-top, которые расходятся при смене шрифта.</div>
+    <div class="stageBox" style="padding-top:34px">
       <div class="barbell">
         <div class="barSpacer"></div>
-        <div class="plate" style="height:95px"><div class="plateLabel">20</div></div>
+        <div class="plate" style="height:95px"><div class="plateLabel"><span class="num">20</span></div></div>
         <div class="plate innerPlate"></div>
         <div class="barCenter"></div>
         <div class="plate innerPlate"></div>
-        <div class="plate" style="height:95px"><div class="plateLabel">20</div></div>
+        <div class="plate" style="height:95px"><div class="plateLabel"><span class="num">20</span></div></div>
         <div class="barSpacer"></div>
-        <div class="bar"><div class="barLabel">20 кг</div></div>
-      </div>
-      <div class="dumbbells" style="margin-top:28px">
-        <div class="dumbbell">
-          <div class="barbell">
-            <div class="barSpacer"></div>
-            <div class="plate" style="height:50px"></div>
-            <div class="plate" style="height:88px"></div>
-            <div class="plate innerPlate"></div>
-            <div class="barCenter"></div>
-            <div class="plate innerPlate"></div>
-            <div class="plate" style="height:88px"></div>
-            <div class="plate" style="height:50px"></div>
-            <div class="barSpacer"></div>
-            <div class="bar"><div class="barLabel">9 кг</div></div>
-          </div>
-        </div>
+        <div class="bar"><div class="barLabel"><span class="num">20 кг</span></div></div>
       </div>
     </div>
     <div class="subnote">по 20 на сторону</div>
   </div>
 </div>
 
-<h2>3 · Тренажёр: 72.5 кг — стек по 10 плюс 2.5 тонкой настройки. Одно представление на любой механизм</h2>
+<h2>2 · Тонкая настройка стека: 72.5 кг = стек 70 плюс 2.5</h2>
 <div class="grid">
 
   <div class="card">
-    <div class="cardTitle">M1 · Довесок над стеком</div>
-    <div class="cardNote">Добавка рисуется сверху стека и не притворяется ни магнитом, ни крутилкой — просто «ещё столько же сверху». Одна картинка на любой тренажёр.</div>
+    <div class="cardTitle">M1 · Плашка над стеком</div>
+    <div class="cardNote">Добавка ничего не изображает — просто «сверху ещё столько». Одна картинка на любой механизм, отсутствие добавки стоит одной плашки.</div>
     <div class="stageBox">
       <div class="stack">
         <div class="rod"></div>
-        <div class="addChip">+2.5</div>
+        <div class="addChip"><span class="num">+2.5</span></div>
         <div class="brick lifted"></div>
         <div class="brick lifted"></div>
         <div class="brick lifted"></div>
         <div class="brick lifted"></div>
         <div class="brick lifted"></div>
         <div class="brick lifted"></div>
-        <div class="brick pick"><span>70 кг</span><div class="pin"></div></div>
+        <div class="brick pick"><span class="num">70 кг</span><div class="pin"></div></div>
         <div class="brick"></div>
         <div class="brick"></div>
         <div class="brick"></div>
@@ -282,31 +173,70 @@
   </div>
 
   <div class="card">
-    <div class="cardTitle">M2 · Только подписью</div>
-    <div class="cardNote">Картинка не усложняется вовсе. Зато добавку легко проскочить глазом — а забывают обычно именно её.</div>
+    <div class="cardTitle">M2 · Крутилка сбоку</div>
+    <div class="cardNote">Диск с делениями и синей риской на нужном делении. Тот же синий, что у булавки, — значит «вот сюда поставь».</div>
     <div class="stageBox">
-      <div class="stack">
-        <div class="rod"></div>
-        <div class="brick lifted"></div>
-        <div class="brick lifted"></div>
-        <div class="brick lifted"></div>
-        <div class="brick lifted"></div>
-        <div class="brick lifted"></div>
-        <div class="brick lifted"></div>
-        <div class="brick pick"><span>70 кг</span><div class="pin"></div></div>
-        <div class="brick"></div>
-        <div class="brick"></div>
-        <div class="brick"></div>
+      <div class="stackRow">
+        <div class="stack">
+          <div class="rod"></div>
+          <div class="brick lifted"></div>
+          <div class="brick lifted"></div>
+          <div class="brick lifted"></div>
+          <div class="brick lifted"></div>
+          <div class="brick lifted"></div>
+          <div class="brick lifted"></div>
+          <div class="brick pick"><span class="num">70 кг</span><div class="pin"></div></div>
+          <div class="brick"></div>
+          <div class="brick"></div>
+          <div class="brick"></div>
+        </div>
+        <div class="dialSlot">
+          <svg width="74" height="74" viewBox="0 0 74 74">
+            <circle cx="37" cy="37" r="33" fill="#242424" stroke="#3d3d3d" stroke-width="1.5"/>
+            <g stroke="#6a6a6a" stroke-width="2" stroke-linecap="round">
+              <line x1="37" y1="9"  x2="37" y2="15"/>
+              <line x1="57" y1="17" x2="53" y2="21"/>
+              <line x1="65" y1="37" x2="59" y2="37"/>
+              <line x1="57" y1="57" x2="53" y2="53"/>
+              <line x1="37" y1="65" x2="37" y2="59"/>
+              <line x1="17" y1="57" x2="21" y2="53"/>
+              <line x1="9"  y1="37" x2="15" y2="37"/>
+              <line x1="17" y1="17" x2="21" y2="21"/>
+            </g>
+            <line x1="57" y1="17" x2="53" y2="21" stroke="#08F" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="37" cy="37" r="20" fill="#3a3a3a" stroke="#4d4d4d" stroke-width="1"/>
+            <text x="37" y="37" fill="#ececec" font-family="Montserrat, Segoe UI, sans-serif" font-size="14"
+                  font-weight="700" text-anchor="middle" dominant-baseline="central">2.5</text>
+          </svg>
+          <div class="dialCap">ТОНКАЯ</div>
+        </div>
       </div>
     </div>
-    <div class="subnote">плюс 2.5 кг тонкой настройки · итого 72.5 кг</div>
+    <div class="subnote">итого 72.5 кг</div>
   </div>
 
   <div class="card">
-    <div class="cardTitle">M3 · Без тонкой настройки</div>
-    <div class="cardNote">Как тот же стек выглядит, когда добавки нет. Разница с M1 — ровно одна плашка, ничего не перестраивается.</div>
+    <div class="cardTitle">M3 · Крутилка над стеком</div>
+    <div class="cardNote">Диск сидит на штоке там, где на реальной машине и стоит селектор. Компактнее, но накрывает верх стека и спорит с ним за внимание.</div>
     <div class="stageBox">
       <div class="stack">
+        <svg width="66" height="66" viewBox="0 0 74 74" style="margin-bottom:-4px">
+          <circle cx="37" cy="37" r="33" fill="#242424" stroke="#3d3d3d" stroke-width="1.5"/>
+          <g stroke="#6a6a6a" stroke-width="2" stroke-linecap="round">
+            <line x1="37" y1="9"  x2="37" y2="15"/>
+            <line x1="57" y1="17" x2="53" y2="21"/>
+            <line x1="65" y1="37" x2="59" y2="37"/>
+            <line x1="57" y1="57" x2="53" y2="53"/>
+            <line x1="37" y1="65" x2="37" y2="59"/>
+            <line x1="17" y1="57" x2="21" y2="53"/>
+            <line x1="9"  y1="37" x2="15" y2="37"/>
+            <line x1="17" y1="17" x2="21" y2="21"/>
+          </g>
+          <line x1="57" y1="17" x2="53" y2="21" stroke="#08F" stroke-width="3.5" stroke-linecap="round"/>
+          <circle cx="37" cy="37" r="20" fill="#3a3a3a" stroke="#4d4d4d" stroke-width="1"/>
+          <text x="37" y="37" fill="#ececec" font-family="Montserrat, Segoe UI, sans-serif" font-size="14"
+                font-weight="700" text-anchor="middle" dominant-baseline="central">2.5</text>
+        </svg>
         <div class="rod"></div>
         <div class="brick lifted"></div>
         <div class="brick lifted"></div>
@@ -314,13 +244,47 @@
         <div class="brick lifted"></div>
         <div class="brick lifted"></div>
         <div class="brick lifted"></div>
-        <div class="brick pick"><span>70 кг</span><div class="pin"></div></div>
+        <div class="brick pick"><span class="num">70 кг</span><div class="pin"></div></div>
         <div class="brick"></div>
         <div class="brick"></div>
         <div class="brick"></div>
       </div>
     </div>
-    <div class="subnote">итого 70 кг</div>
+    <div class="subnote">итого 72.5 кг</div>
+  </div>
+
+  <div class="card">
+    <div class="cardTitle">M4 · Шкала-дуга сбоку</div>
+    <div class="cardNote">Не круг, а сектор: видно и сколько выставлено, и сколько всего можно добрать. Меньше похоже на настоящую железку, но честнее как шкала.</div>
+    <div class="stageBox">
+      <div class="stackRow">
+        <div class="stack">
+          <div class="rod"></div>
+          <div class="brick lifted"></div>
+          <div class="brick lifted"></div>
+          <div class="brick lifted"></div>
+          <div class="brick lifted"></div>
+          <div class="brick lifted"></div>
+          <div class="brick lifted"></div>
+          <div class="brick pick"><span class="num">70 кг</span><div class="pin"></div></div>
+          <div class="brick"></div>
+          <div class="brick"></div>
+          <div class="brick"></div>
+        </div>
+        <div class="dialSlot">
+          <svg width="74" height="74" viewBox="0 0 74 74">
+            <path d="M 14 58 A 32 32 0 1 1 60 58" fill="none" stroke="#333" stroke-width="7" stroke-linecap="round"/>
+            <path d="M 14 58 A 32 32 0 0 1 16 21" fill="none" stroke="#08F" stroke-width="7" stroke-linecap="round"/>
+            <text x="37" y="34" fill="#ececec" font-family="Montserrat, Segoe UI, sans-serif" font-size="16"
+                  font-weight="700" text-anchor="middle" dominant-baseline="central">2.5</text>
+            <text x="37" y="52" fill="#7a7a7a" font-family="Montserrat, Segoe UI, sans-serif" font-size="9"
+                  text-anchor="middle" dominant-baseline="central">из 10</text>
+          </svg>
+          <div class="dialCap">ТОНКАЯ</div>
+        </div>
+      </div>
+    </div>
+    <div class="subnote">итого 72.5 кг</div>
   </div>
 </div>
 
