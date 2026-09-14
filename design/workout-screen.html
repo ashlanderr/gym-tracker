@@ -30,8 +30,18 @@
   .stage { flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center;
            padding:0 24px; text-align:center; }
 
-  .fig { opacity:.85; margin-bottom:18px; }
-  .exName { font-size:29px; font-weight:700; line-height:1.15; letter-spacing:-.01em; }
+  .heroWrap { position:relative; margin-bottom:14px; }
+  .hero { width:190px; height:190px; border-radius:16px; object-fit:cover; background:#000; display:block; }
+  .pauseDot { position:absolute; right:8px; bottom:8px; width:22px; height:22px; border-radius:50%;
+              background:#000a; border:1px solid #3d3d3d; display:flex; align-items:center; justify-content:center;
+              font-size:8px; color:#bbb; }
+  .exName { font-size:26px; font-weight:700; line-height:1.24; letter-spacing:-.01em;
+            background:transparent; border:none; color:#fff; }
+  /* chevron hangs off the end of the text, not the box: empty inline anchor
+     glued to the last character, glyph in an absolute ::after */
+  .chev { position:relative; display:inline; }
+  .chev::after { content:'›'; position:absolute; left:7px; top:50%; transform:translateY(-52%);
+                 color:#5f5f5f; font-weight:400; font-size:23px; line-height:1; }
   .setLine { font-size:14px; color:#7a7a7a; margin-top:9px; }
   .setLine.warm { color:#c9b500; }
 
@@ -188,18 +198,20 @@
     <div class="top"><button class="ghostBtn">←</button><div class="clock">12:04</div></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
     <div class="stage">
-      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
-      <div class="exName">Жим лёжа</div>
+      <div class="heroWrap">
+        <video class="hero" src="assets/bench-press-sq.mp4" autoplay loop muted playsinline></video>
+        <div class="pauseDot">❚❚</div>
+      </div>
+      <button class="exName">Жим лёжа со штангой<span class="chev"></span></button>
       <div class="setLine">Подход 2 из 3</div>
       <div class="row">
         <div class="cell"><button class="big">60<u>кг</u></button><div class="under"></div></div>
         <div class="times">×</div>
         <div class="cell"><button class="big">8<u>раз</u></button><div class="under">цель 6 – 8</div></div>
       </div>
-      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
+      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе<br>нажми на название — техника, прогресс, замена</div>
     </div>
-    <div class="action"><button class="go">Готово</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
+    <div class="action"><button class="go">Сделано</button></div>
   </div>
 </div>
 
@@ -210,8 +222,11 @@
     <div class="top"><button class="ghostBtn">←</button><div class="clock">08:41</div></div>
     <div class="progress"><i class="done"></i><i class="cur"></i><i></i><i></i><i></i><i></i></div>
     <div class="stage">
-      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
-      <div class="exName">Жим лёжа</div>
+      <div class="heroWrap">
+        <video class="hero" src="assets/bench-press-sq.mp4" autoplay loop muted playsinline></video>
+        <div class="pauseDot">❚❚</div>
+      </div>
+      <button class="exName">Жим лёжа со штангой<span class="chev"></span></button>
       <div class="setLine">Подход 1 из 3</div>
       <div class="row">
         <div class="cell"><button class="big">62.5<u>кг</u></button><div class="under">+2.5 кг</div></div>
@@ -219,8 +234,7 @@
         <div class="cell"><button class="big">6<u>раз</u></button><div class="under">цель 6 – 8</div></div>
       </div>
     </div>
-    <div class="action"><button class="go">Готово</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
+    <div class="action"><button class="go">Сделано</button></div>
   </div>
 </div>
 
@@ -231,18 +245,20 @@
     <div class="top"><button class="ghostBtn">←</button><div class="clock">01:12</div></div>
     <div class="progress"><i class="cur"></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="stage">
-      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
-      <div class="exName">Жим лёжа</div>
+      <div class="heroWrap">
+        <video class="hero" src="assets/bench-press-sq.mp4" autoplay loop muted playsinline></video>
+        <div class="pauseDot">❚❚</div>
+      </div>
+      <button class="exName">Жим лёжа со штангой<span class="chev"></span></button>
       <div class="setLine warm">Разминка 1 из 2</div>
       <div class="row">
         <div class="cell"><button class="big">20<u>кг</u></button><div class="under"></div></div>
         <div class="times">×</div>
         <div class="cell"><button class="big">12<u>раз</u></button><div class="under"></div></div>
       </div>
-      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
+      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе<br>нажми на название — техника, прогресс, замена</div>
     </div>
-    <div class="action"><button class="go">Готово</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
+    <div class="action"><button class="go">Сделано</button></div>
   </div>
 </div>
 
@@ -265,7 +281,6 @@
       <div class="nextName">Жим лёжа, подход 3 из 3</div>
     </div>
     <div class="action"><button class="skip">Пропустить отдых</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
   </div>
 </div>
 
@@ -288,7 +303,6 @@
       <div class="nextName">Жим лёжа, подход 2 из 3</div>
     </div>
     <div class="action"><button class="skip">Пропустить отдых</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
   </div>
 </div>
 
@@ -301,7 +315,7 @@
     <div class="top"><button class="ghostBtn">←</button><div class="clock">12:04</div></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
     <div class="stage">
-      <div class="exName">Жим лёжа</div>
+      <button class="exName">Жим лёжа со штангой<span class="chev"></span></button>
       <div class="setLine">Подход 2 из 3</div>
       <div class="row">
         <div class="cell"><button class="big">60<u>кг</u></button><div class="under"></div></div>
@@ -309,7 +323,7 @@
         <div class="cell"><button class="big">8<u>раз</u></button><div class="under">цель 6 – 8</div></div>
       </div>
     </div>
-    <div class="action"><button class="go">Готово</button></div>
+    <div class="action"><button class="go">Сделано</button></div>
 
     <div class="dim"></div>
     <div class="sheet">
@@ -350,7 +364,7 @@
     <div class="top"><button class="ghostBtn">←</button><div class="clock">22:37</div></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
     <div class="stage">
-      <div class="exName">Французский жим</div>
+      <button class="exName">Французский жим с гантелями<span class="chev"></span></button>
       <div class="setLine">Подход 1 из 3</div>
       <div class="row">
         <div class="cell"><button class="big">18<u>кг</u></button><div class="under"></div></div>
@@ -358,7 +372,7 @@
         <div class="cell"><button class="big">12<u>раз</u></button><div class="under">цель 10 – 12</div></div>
       </div>
     </div>
-    <div class="action"><button class="go">Готово</button></div>
+    <div class="action"><button class="go">Сделано</button></div>
 
     <div class="dim"></div>
     <div class="sheet">
@@ -417,7 +431,7 @@
     <div class="top"><button class="ghostBtn">←</button><div class="clock">31:08</div></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i></div>
     <div class="stage">
-      <div class="exName">Горизонтальный жим ногами</div>
+      <button class="exName">Горизонтальный жим ногами в тренажёре<span class="chev"></span></button>
       <div class="setLine">Подход 1 из 3</div>
       <div class="row">
         <div class="cell"><button class="big">70<u>кг</u></button><div class="under"></div></div>
@@ -425,7 +439,7 @@
         <div class="cell"><button class="big">12<u>раз</u></button><div class="under">цель 10 – 12</div></div>
       </div>
     </div>
-    <div class="action"><button class="go">Готово</button></div>
+    <div class="action"><button class="go">Сделано</button></div>
 
     <div class="dim"></div>
     <div class="sheet">
@@ -466,7 +480,7 @@
     <div class="top"><button class="ghostBtn">←</button><div class="clock">12:04</div></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
     <div class="stage">
-      <div class="exName">Жим лёжа</div>
+      <button class="exName">Жим лёжа со штангой<span class="chev"></span></button>
       <div class="setLine">Подход 2 из 3</div>
       <div class="row">
         <div class="cell"><button class="big">60<u>кг</u></button><div class="under"></div></div>
@@ -474,7 +488,7 @@
         <div class="cell"><button class="big">7<u>раз</u></button><div class="under">цель 6 – 8</div></div>
       </div>
     </div>
-    <div class="action"><button class="go">Готово</button></div>
+    <div class="action"><button class="go">Сделано</button></div>
 
     <div class="dim"></div>
     <div class="sheet">
@@ -505,7 +519,7 @@
     <div class="top"><button class="ghostBtn">←</button><div class="clock">12:04</div></div>
     <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
     <div class="stage">
-      <div class="exName">Жим лёжа</div>
+      <button class="exName">Жим лёжа со штангой<span class="chev"></span></button>
       <div class="setLine">Подход 2 из 3</div>
       <div class="row">
         <div class="cell"><button class="big">60<u>кг</u></button><div class="under"></div></div>
@@ -513,7 +527,7 @@
         <div class="cell"><button class="big">8<u>раз</u></button><div class="under">цель 6 – 8</div></div>
       </div>
     </div>
-    <div class="action"><button class="go">Готово</button></div>
+    <div class="action"><button class="go">Сделано</button></div>
 
     <div class="dim"></div>
     <div class="sheet" style="top:74px; padding-top:0; overflow:hidden;">

@@ -164,19 +164,17 @@ const partial = {
   next: `<div><b>Жим лёжа 60 кг</b> — тот же вес, что сегодня</div>`,
 };
 
+// Warm ramp: hue carries the data, brightness stays free to mean hierarchy
+// the way it does everywhere else in the app.
 const cards = [
-  ["Шкала по яркости", "Ни одного нового цвета на экране. Зелёный остаётся только за кнопкой, как мы и договаривались.", {...pushDay, ramp:"mono"}],
-  ["Приглушённая тёплая", "Один новый оттенок, и он нигде больше не используется — значит не с чем перепутать. Чуть живее монохрома.", {...pushDay, ramp:"warm"}],
-  ["Как у Hevy", "Бирюза, оранжевый, красный. Видно интенсивность, но экран внезапно становится самым пёстрым местом в приложении.", {...pushDay, ramp:"loud"}],
+  ["День с событиями", "Манекен отвечает «что тренировал» без чтения. Ниже — то, чего не было раньше, и что изменится в следующий раз.", pushDay],
+  ["Обычный день", "Рекордов нет, и так будет чаще всего: блок «сегодня впервые» просто исчезает. «В следующий раз» не пустеет никогда.", legDay],
+  ["Тренировка брошена", "Невыполненные подходы удаляются — значит сказать об этом надо до сохранения. Предупреждение стоит выше плана.", partial],
 ];
 
-document.write(`<div class="rowTitle">Шкала манекена — один и тот же день, три раскраски</div>`);
 for (const [t, note, o] of cards) {
-  document.write(`<div class="col"><div class="caption"><b>${t}</b>${note}</div>${phone(o)}</div>`);
+  document.write(`<div class="col"><div class="caption"><b>${t}</b>${note}</div>${phone({...o, ramp:"warm"})}</div>`);
 }
-document.write(`<div class="rowTitle">Остальные состояния — шкала по яркости</div>`);
-document.write(`<div class="col"><div class="caption"><b>Обычный день</b>Рекордов нет, блок «сегодня впервые» исчез. «В следующий раз» не пустеет никогда.</div>${phone({...legDay, ramp:"mono"})}</div>`);
-document.write(`<div class="col"><div class="caption"><b>Тренировка брошена</b>Предупреждение стоит выше плана: сначала о потере, потом о будущем.</div>${phone({...partial, ramp:"mono"})}</div>`);
 </script>
 </body>
 </html>
