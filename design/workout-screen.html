@@ -78,32 +78,48 @@
   .bigVal { font-size:54px; font-weight:600; min-width:150px; text-align:center; letter-spacing:-.02em; }
   .bigVal u { text-decoration:none; font-size:20px; color:#8d8d8d; margin-left:4px; font-weight:500; }
 
-  /* ---- barbell: geometry copied from the app's WeightsVisualizer ---- */
+  /* ---------------------------------------------------------------
+     Numbers on iron: one centring rule.
+     Digits centre on the font's line box, which reserves descender
+     room digits never use, so anything tuned by eye in one font drifts
+     in the next. Kill the line box, apply one optical nudge, lock
+     tabular figures. Retune if Montserrat is ever actually bundled —
+     index.css asks for it but nothing loads it, so the app has always
+     drawn in the system fallback.
+     --------------------------------------------------------------- */
+  .num { display:block; line-height:1; transform:translateY(-.055em); font-variant-numeric:tabular-nums; }
+
+  /* ---- geometry from the app's WeightsVisualizer, softened ---- */
   .barbell { display:flex; position:relative; min-height:20px; align-items:center; gap:1px; }
-  .bar { position:absolute; z-index:0; left:0; right:0; top:50%; height:20px; background:#555;
-         transform:translateY(-50%); border-radius:2px; display:flex; align-items:center; justify-content:center; }
-  .barLabel { margin-top:1px; font-size:16px; }
-  .plate { z-index:1; flex:0 0 auto; width:16px; height:100px; background:#888; position:relative; border-radius:2px; }
-  .innerPlate { width:4px; height:40px; }
+  .bar { position:absolute; z-index:0; left:0; right:0; top:50%; transform:translateY(-50%);
+         height:17px; background:linear-gradient(180deg,#5c5c5c,#414141); border-radius:6px;
+         display:flex; align-items:center; justify-content:center; }
+  .barLabel { font-size:15px; color:#ececec; font-weight:500; }
+  .plate { z-index:1; flex:0 0 auto; position:relative; width:17px; border-radius:5px;
+           background:linear-gradient(180deg,#dcdcdc,#b2b2b2); box-shadow:inset 0 0 0 1px rgba(255,255,255,.22); }
+  .innerPlate { width:5px; height:40px; border-radius:3px; }
   .plateLabel { position:absolute; left:50%; top:50%; white-space:nowrap;
-                transform:translate(-50%,-50%) rotate(90deg); font-size:12px; }
+                transform:translate(-50%,-50%) rotate(90deg); font-size:12px; color:#1d1d1d; font-weight:600; }
   .barSpacer { flex:0 0 auto; width:10px; }
   .barCenter { flex:1 1 0; }
   .rackWrap { padding:26px 16px 0; }
 
-  .dumbbells { display:flex; gap:8px; justify-content:center; }
+  .dumbbells { display:flex; gap:10px; justify-content:center; }
   .dumbbell { width:150px; }
-  .dumbbellLabel { font-size:16px; }
 
   /* ---- machine stack: the number lives on the brick you pick ---- */
   .stack { display:flex; flex-direction:column; align-items:center; gap:3px; margin-top:22px; }
-  .brick { width:104px; height:15px; border-radius:2px; background:#3a3a3a; position:relative; }
-  .brick.lifted { background:#888; }
-  .brick.pick { background:#ddd; height:26px; display:flex; align-items:center; justify-content:center; }
-  .brick.pick span { color:#111; font-size:14px; font-weight:700; margin-top:1px; }
-  .brick.pick::after { content:''; position:absolute; right:-18px; top:9px; width:16px; height:8px;
-                       background:#08F; border-radius:2px; }
-  .stackRod { width:8px; height:14px; background:#555; border-radius:2px 2px 0 0; }
+  .stackRod { width:9px; height:16px; background:linear-gradient(180deg,#6a6a6a,#4e4e4e); border-radius:3px 3px 0 0; }
+  .brick { width:112px; height:15px; border-radius:4px; background:#333; position:relative; }
+  .brick.lifted { background:linear-gradient(180deg,#9b9b9b,#787878); box-shadow:inset 0 0 0 1px rgba(255,255,255,.12); }
+  .brick.pick { height:28px; background:linear-gradient(180deg,#e2e2e2,#bdbdbd);
+                box-shadow:inset 0 0 0 1px rgba(255,255,255,.3); display:flex; align-items:center; justify-content:center; }
+  .brick.pick .num { color:#161616; font-size:14px; font-weight:700; }
+  .brick.pick::after { content:''; position:absolute; right:-20px; top:10px; width:18px; height:8px;
+                       background:#08F; border-radius:3px; }
+  .addChip { width:70px; height:20px; border-radius:6px; background:linear-gradient(180deg,#d8d8d8,#b4b4b4);
+             box-shadow:inset 0 0 0 1px rgba(255,255,255,.28); display:flex; align-items:center; justify-content:center; }
+  .addChip .num { color:#161616; font-size:11px; font-weight:700; }
 
   .note { text-align:center; font-size:13px; color:#c0c0c0; margin-top:18px; }
   .note b { color:#fff; font-weight:600; }
@@ -309,18 +325,18 @@
       <div class="rackWrap">
         <div class="barbell">
           <div class="barSpacer"></div>
-          <div class="plate" style="height:47px"><div class="plateLabel">2.5</div></div>
-          <div class="plate" style="height:75px"><div class="plateLabel">10</div></div>
+          <div class="plate" style="height:47px"><div class="plateLabel"><span class="num">2.5</span></div></div>
+          <div class="plate" style="height:75px"><div class="plateLabel"><span class="num">10</span></div></div>
           <div class="plate innerPlate"></div>
           <div class="barCenter"></div>
           <div class="plate innerPlate"></div>
-          <div class="plate" style="height:75px"><div class="plateLabel">10</div></div>
-          <div class="plate" style="height:47px"><div class="plateLabel">2.5</div></div>
+          <div class="plate" style="height:75px"><div class="plateLabel"><span class="num">10</span></div></div>
+          <div class="plate" style="height:47px"><div class="plateLabel"><span class="num">2.5</span></div></div>
           <div class="barSpacer"></div>
-          <div class="bar"><div class="barLabel">20</div></div>
+          <div class="bar"><div class="barLabel"><span class="num">20 кг</span></div></div>
         </div>
       </div>
-      <div class="subnote" style="margin-top:20px">гриф 20 кг · по 12.5 на сторону</div>
+      <div class="subnote" style="margin-top:22px">по 12.5 на сторону</div>
       <div class="sheetLinks">
         <button class="link">Ввести вручную</button>
         <button class="link">Мой инвентарь</button>
@@ -368,7 +384,7 @@
               <div class="plate" style="height:90px"></div>
               <div class="plate" style="height:50px"></div>
               <div class="barSpacer"></div>
-              <div class="bar"><div class="dumbbellLabel">9</div></div>
+              <div class="bar"><div class="barLabel"><span class="num">9 кг</span></div></div>
             </div>
           </div>
           <div class="dumbbell">
@@ -382,12 +398,12 @@
               <div class="plate" style="height:90px"></div>
               <div class="plate" style="height:50px"></div>
               <div class="barSpacer"></div>
-              <div class="bar"><div class="dumbbellLabel">9</div></div>
+              <div class="bar"><div class="barLabel"><span class="num">9 кг</span></div></div>
             </div>
           </div>
         </div>
       </div>
-      <div class="subnote" style="margin-top:20px">по 9 кг в каждой руке</div>
+      <div class="subnote" style="margin-top:22px">две гантели</div>
       <div class="sheetLinks">
         <button class="link">Ввести вручную</button>
         <button class="link">Мой инвентарь</button>
@@ -430,13 +446,13 @@
         <div class="brick lifted"></div>
         <div class="brick lifted"></div>
         <div class="brick lifted"></div>
-        <div class="brick pick"><span>70</span></div>
+        <div class="brick pick"><span class="num">70 кг</span></div>
         <div class="brick"></div>
         <div class="brick"></div>
         <div class="brick"></div>
         <div class="brick"></div>
       </div>
-      <div class="subnote" style="margin-top:20px">стек в килограммах</div>
+      <div class="subnote" style="margin-top:22px">итого 70 кг</div>
       <div class="sheetLinks">
         <button class="link">Ввести вручную</button>
         <button class="link">Мой инвентарь</button>
