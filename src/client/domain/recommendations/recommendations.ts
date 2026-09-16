@@ -7,8 +7,8 @@ import type {
 import { WARM_UP_SETS } from "./constants.ts";
 import { addSelfWeight, snapWeightKg, subtractSelfWeight } from "../weights";
 
-// Working sets are not recommended until the new algorithm is written:
-// only the target rep range is shown, and warm-ups follow the working weight.
+// A stub until the real algorithm is designed: working sets repeat the weight
+// of the same set last time, warm-ups follow the working weight.
 export function buildRecommendations(
   params: RecommendationParams,
 ): RecSetData[] {
@@ -18,10 +18,14 @@ export function buildRecommendations(
   const prevWorkingSets = previousSets.filter((s) => s.type !== "warm-up");
   const warmUpCount = currentSets.length - currWorkingSets.length;
   let warmUpIndex = 0;
+  let workingIndex = 0;
 
   return currentSets.map((set) => {
     if (set.type !== "warm-up") {
-      return { type: set.type, weight: undefined, reps };
+      const previous =
+        prevWorkingSets.at(workingIndex) ?? prevWorkingSets.at(-1);
+      workingIndex += 1;
+      return { type: set.type, weight: previous?.weight, reps };
     }
 
     const warmUp = computeWarmUpSet(

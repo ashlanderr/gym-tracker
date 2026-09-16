@@ -51,3 +51,4 @@ Suggest changes to make production quality code.
 
 - The only existing user is the author. Don't plan data migrations or backward compatibility for stored data: the data model can be refactored freely.
 - The old recommendation algorithms are being thrown away. Don't suggest characterization tests or preserving their behavior.
+- Don't invent recommendation or hint logic (weights, reps, when to show hints or questions) without explicit instructions. It's a separate design task. Use the dumbest possible stubs: repeat the last value, always show.
