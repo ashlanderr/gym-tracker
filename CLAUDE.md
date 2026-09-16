@@ -48,3 +48,6 @@ Keep the code clean from unnecessary comments.
 Expect large functionality and UI changes.
 Don't stick to old patterns.
 Suggest changes to make production quality code.
+
+- The only existing user is the author. Don't plan data migrations or backward compatibility for stored data: the data model can be refactored freely.
+- The old recommendation algorithms are being thrown away. Don't suggest characterization tests or preserving their behavior.
