@@ -27,7 +27,7 @@ import {
 } from "../../../../domain";
 import { PerformanceActions } from "../PerformanceActions";
 
-export function Performance({ performance }: PerformanceProps) {
+export function Performance({ performance, currentSet }: PerformanceProps) {
   const store = useStore();
   const { pushModal } = useModalStack();
   const exercise = useQueryExerciseById(store, performance.exercise);
@@ -88,6 +88,7 @@ export function Performance({ performance }: PerformanceProps) {
             exercise,
             measurement,
             gym,
+            currentSet,
           })}
         </tbody>
       </table>
@@ -106,6 +107,7 @@ function buildSets({
   exercise,
   measurement,
   gym,
+  currentSet,
 }: {
   prevSets: CompletedSet[];
   sets: Set[];
@@ -113,6 +115,7 @@ function buildSets({
   exercise: Exercise;
   measurement: Measurement | null;
   gym: Gym;
+  currentSet: string | undefined;
 }): ReactNode[] {
   const prevWarmUp = prevSets.filter((s) => s.type === "warm-up");
   const prevWorking = prevSets.filter((s) => s.type !== "warm-up");
@@ -158,6 +161,7 @@ function buildSets({
         key={set.id}
         number={number}
         set={set}
+        isCurrent={set.id === currentSet}
         prevSet={prevSet}
         recSet={recSet}
       />,

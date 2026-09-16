@@ -1,0 +1,35 @@
+.body {
+  padding: 26px 16px 0;
+}
+
+.subnote {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 11px;
+  color: #6d6d6d;
+}
+
+.warning {
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #c0c0c0;
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 0 16px;
+}
+
+.link {
+  flex: 1 1 0;
+  padding: 13px 0;
+  border: 1px solid #2e2e2e;
+  border-radius: 10px;
+  background: transparent;
+  color: #bdbdbd;
+  font-size: 12px;
+}

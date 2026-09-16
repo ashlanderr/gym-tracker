@@ -1,0 +1,102 @@
+.stage {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.label {
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #7a7a7a;
+
+  &:not(:first-child) {
+    margin-top: 36px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: #5f5f5f;
+  }
+}
+
+.time {
+  margin-top: 14px;
+  font-size: 86px;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.adjust {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.question {
+  margin-top: 34px;
+  font-size: 14px;
+  color: #b5b5b5;
+}
+
+// The answer keys are drawn exactly like the timer buttons above them, so the
+// row never outweighs the timer it sits under.
+.keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.key {
+  flex: 0 0 auto;
+  padding: 11px 14px;
+  border: 1px solid #2e2e2e;
+  border-radius: 10px;
+  background: transparent;
+  color: #bdbdbd;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.selected {
+  border-color: #06f;
+  background: #06f;
+  color: #fff;
+  font-weight: 600;
+}
+
+.next {
+  margin-top: 9px;
+  font-size: 25px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.nextName {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #7a7a7a;
+}
+
+.action {
+  flex: 0 0 auto;
+  padding: 0 24px 12px;
+}
+
+.skip {
+  width: 100%;
+  padding: 20px;
+  border: 1px solid #2e2e2e;
+  border-radius: 16px;
+  background: transparent;
+  color: #bdbdbd;
+  font-size: 16px;
+  font-weight: 600;
+}

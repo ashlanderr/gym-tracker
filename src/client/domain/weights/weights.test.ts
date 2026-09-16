@@ -3,7 +3,7 @@ import {
   oneRepMaxToWeight,
   volumeToOneRepMax,
 } from "./weights.ts";
-import { computeWeights, snapWeightKg } from "./constructor.ts";
+import { computeWeights, snapWeightKg, stepWeightKg } from "./constructor.ts";
 import { EXERCISES } from "../../db/exercises/constants.ts";
 import {
   defaultGym,
@@ -108,6 +108,20 @@ test("stack in pounds converts back to kilograms", () => {
   const result = computeWeights(machine, stack, 114 * 0.454);
   expect(result).toMatchObject({ stack: 115, additional: 0 });
   expect(result?.totalKg).toBeCloseTo(115 * 0.454);
+});
+
+test("weight steps to the next assemblable value", () => {
+  const barbell = exercise({ type: "barbell" });
+  const plates = gym({
+    bars: { units: "kg", items: [20] },
+    plates: { units: "kg", items: [10, 2.5] },
+  });
+
+  expect(stepWeightKg(barbell, plates, 60, 1, 1)).toEqual(65);
+  expect(stepWeightKg(barbell, plates, 60, -1, 1)).toEqual(55);
+  expect(stepWeightKg(exercise({ type: "none" }), plates, 0, 1, 2.5)).toEqual(
+    2.5,
+  );
 });
 
 test("one rep max equivalents", () => {

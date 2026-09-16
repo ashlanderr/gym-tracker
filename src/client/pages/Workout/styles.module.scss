@@ -99,3 +99,31 @@
     gap: 4px;
   }
 }
+
+.backToSet {
+  position: sticky;
+  bottom: 14px;
+  margin: auto 16px 14px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #3a3a3a;
+  border-radius: 14px;
+  background: #242424;
+  color: #e0e0e0;
+  font-size: 14px;
+}
+
+.backToSetText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.backToSetPosition {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}

@@ -1,5 +1,6 @@
 import { HashRouter, Route, Routes } from "react-router";
 import { Workout } from "./Workout";
+import { WorkoutFocus } from "./WorkoutFocus";
 import { Home } from "./Home";
 import { ModalStack, StoreProvider } from "../components";
 import { User } from "./User";
@@ -12,7 +13,8 @@ export function Layout() {
         <ModalStack>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/workouts/:workoutId" element={<Workout />} />
+            <Route path="/workouts/:workoutId" element={<WorkoutFocus />} />
+            <Route path="/workouts/:workoutId/all" element={<Workout />} />
             <Route
               path="/exercises/:exerciseId/history"
               element={<ExerciseHistory />}

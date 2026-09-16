@@ -12,6 +12,7 @@ import { kgToUnits, unitsToKg } from "./weights.ts";
 
 const EPSILON = 1e-6;
 const PRECISION = 100;
+const STEP_PROBE_KG = 0.01;
 
 export function computeWeights(
   exercise: Exercise,
@@ -48,6 +49,28 @@ export function snapWeightKg(
   rounding: RoundingMode = "round",
 ): number {
   return computeWeights(exercise, gym, weightKg, rounding)?.totalKg ?? weightKg;
+}
+
+// The nearest weight in the given direction that the inventory can
+// assemble, or a plain step when it can not.
+export function stepWeightKg(
+  exercise: Exercise,
+  gym: Gym,
+  weightKg: number,
+  direction: 1 | -1,
+  fallbackStepKg: number,
+): number {
+  if (computeWeights(exercise, gym, weightKg)) {
+    const next = snapWeightKg(
+      exercise,
+      gym,
+      weightKg + direction * STEP_PROBE_KG,
+      direction > 0 ? "ceil" : "floor",
+    );
+    if (Math.abs(next - weightKg) > EPSILON) return next;
+  }
+
+  return Math.max(0, weightKg + direction * fallbackStepKg);
 }
 
 export function getWeightUnits(exercise: Exercise, gym: Gym): WeightUnits {

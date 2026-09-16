@@ -1,0 +1,36 @@
+.quick {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 22px;
+  padding: 0 16px;
+}
+
+.option {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 13px 0;
+  border: 1px solid #2e2e2e;
+  border-radius: 10px;
+  background: #0f0f0f;
+  color: #ddd;
+  font-size: 15px;
+}
+
+.target {
+  border-color: #1d4676;
+  color: #6ea8e6;
+}
+
+.selected {
+  border-color: #06f;
+  background: #06f;
+  color: #fff;
+}
+
+.subnote {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: #6d6d6d;
+}

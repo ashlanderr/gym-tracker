@@ -32,6 +32,7 @@ export function SetRow({
   performance,
   number,
   set,
+  isCurrent,
   prevSet,
   recSet,
 }: SetRowProps) {
@@ -169,7 +170,7 @@ export function SetRow({
   };
 
   return (
-    <tr className={clsx(set.completed && s.completed)}>
+    <tr className={clsx(set.completed && s.completed, isCurrent && s.current)}>
       <td className={s.setNumValue} onClick={setInfoHandler}>
         {renderSetBadge(set, number, records, localChange)}
       </td>

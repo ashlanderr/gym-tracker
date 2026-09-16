@@ -4,18 +4,18 @@ import {
   useQueryWorkoutById,
   useQueryPerformancesByWorkout,
   useQuerySetsByWorkout,
+  useQueryExerciseById,
   type Exercise,
 } from "../../db";
 import type { WorkoutParams } from "./types.ts";
 import { usePageParams } from "../hooks.ts";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { useTimer } from "../hooks.ts";
 import {
   Performance,
   ChooseExercise,
   CompleteWorkoutModal,
-  ActiveTimer,
 } from "./components";
 import {
   PageModal,
@@ -23,7 +23,12 @@ import {
   useModalStack,
   useScrollRestoration,
 } from "../../components";
-import { completeWorkout, addPerformance } from "../../domain";
+import {
+  completeWorkout,
+  addPerformance,
+  buildWorkoutSteps,
+  findCurrentStep,
+} from "../../domain";
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
@@ -41,6 +46,15 @@ export function Workout() {
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
   const [isAddPerformanceOpen, setAddPerformanceOpen] = useState(false);
   const { scrollRef } = useScrollRestoration();
+  const steps = useMemo(
+    () => buildWorkoutSteps(performances, sets),
+    [performances, sets],
+  );
+  const current = workout?.completedAt ? undefined : findCurrentStep(steps);
+  const currentExercise = useQueryExerciseById(
+    store,
+    current?.performance.exercise ?? "",
+  );
 
   const addPerformanceHandler = (exercise: Exercise) => {
     if (!workout) return;
@@ -60,12 +74,11 @@ export function Workout() {
 
   return (
     <div className={s.root} ref={scrollRef}>
-      <ActiveTimer />
       <div className={s.toolbar}>
         <button className={s.backButton} onClick={() => navigate(-1)}>
           <MdArrowBack />
         </button>
-        <div className={s.pageTitle}>Тренировка</div>
+        <div className={s.pageTitle}>Вся тренировка</div>
         <button className={s.finishButton} onClick={completeHandler}>
           {workout?.completedAt ? "Обновить" : "Закончить"}
         </button>
@@ -90,7 +103,11 @@ export function Workout() {
       </div>
       <div className={s.exercises}>
         {performances.map((performance) => (
-          <Performance key={performance.id} performance={performance} />
+          <Performance
+            key={performance.id}
+            performance={performance}
+            currentSet={current?.set.id}
+          />
         ))}
         <button
           className={s.addExerciseButton}
@@ -100,6 +117,17 @@ export function Workout() {
           Добавить упражнение
         </button>
       </div>
+      {current && currentExercise && (
+        <button className={s.backToSet} onClick={() => navigate(-1)}>
+          <MdArrowBack />
+          <span className={s.backToSetText}>
+            Вернуться к подходу · {currentExercise.name}
+          </span>
+          <span className={s.backToSetPosition}>
+            {current.number} из {current.count}
+          </span>
+        </button>
+      )}
       <PageModal isOpen={isAddPerformanceOpen}>
         <ChooseExercise
           onCancel={() => setAddPerformanceOpen(false)}

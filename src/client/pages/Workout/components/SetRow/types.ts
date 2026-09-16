@@ -15,6 +15,7 @@ export interface SetRowProps {
   performance: Performance;
   number: string;
   set: Set;
+  isCurrent: boolean;
   prevSet: CompletedSet | undefined;
   recSet: RecSetData | undefined;
 }

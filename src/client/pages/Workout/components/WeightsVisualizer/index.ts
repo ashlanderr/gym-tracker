@@ -1,1 +1,2 @@
-export * from "./WeightsVisualizer";
+export * from "./WeightsVisualizer.tsx";
+export * from "./utils.ts";

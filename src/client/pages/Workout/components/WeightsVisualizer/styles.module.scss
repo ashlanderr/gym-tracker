@@ -1,3 +1,13 @@
+// Digits centre on the font line box, which reserves descender room digits
+// never use. One rule for every number on the iron: no line box, one
+// optical nudge, tabular figures.
+.num {
+  display: block;
+  line-height: 1;
+  transform: translateY(-0.055em);
+  font-variant-numeric: tabular-nums;
+}
+
 .barbell {
   display: flex;
   position: relative;
@@ -12,33 +22,36 @@
   left: 0;
   right: 0;
   top: 50%;
-  height: 20px;
-  background: #555;
+  height: 17px;
   transform: translateY(-50%);
-  border-radius: 2px;
+  background: linear-gradient(180deg, #5c5c5c, #414141);
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .barLabel {
-  margin-top: 1px;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #ececec;
+  white-space: nowrap;
 }
 
 .plate {
   z-index: 1;
   flex: 0 0 auto;
-  width: 16px;
-  height: 100px;
-  background: #888;
   position: relative;
-  border-radius: 2px;
+  width: 17px;
+  border-radius: 5px;
+  background: linear-gradient(180deg, #dcdcdc, #b2b2b2);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
 }
 
 .innerPlate {
-  width: 4px;
+  width: 5px;
   height: 40px;
+  border-radius: 3px;
 }
 
 .plateLabel {
@@ -46,8 +59,10 @@
   left: 50%;
   top: 50%;
   white-space: nowrap;
-  transform: translate(-50%, -50%) translate(0, 0) rotate(90deg);
+  transform: translate(-50%, -50%) rotate(90deg);
   font-size: 12px;
+  font-weight: 600;
+  color: #1d1d1d;
 }
 
 .barSpacer {
@@ -61,36 +76,85 @@
 
 .dumbbells {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   justify-content: center;
 }
 
 .dumbbell {
-  width: 150px;
+  flex: 0 1 150px;
 }
 
-.dumbbellLabel {
-  font-size: 16px;
+.dumbbellOuter {
+  height: 50px;
 }
 
-.machineWeights {
+.dumbbellInner {
+  height: 90px;
+}
+
+.stack {
   display: flex;
-  gap: 16px;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.stackRod {
+  width: 9px;
+  height: 16px;
+  background: linear-gradient(180deg, #6a6a6a, #4e4e4e);
+  border-radius: 3px 3px 0 0;
+}
+
+.brick {
+  position: relative;
+  width: 112px;
+  height: 15px;
+  border-radius: 4px;
+  background: #333;
+}
+
+.lifted {
+  background: linear-gradient(180deg, #9b9b9b, #787878);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.pick {
+  height: 28px;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  align-items: center;
+  background: linear-gradient(180deg, #e2e2e2, #bdbdbd);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  font-size: 14px;
+  font-weight: 700;
+  color: #161616;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: -20px;
+    top: 10px;
+    width: 18px;
+    height: 8px;
+    background: #08F;
+    border-radius: 3px;
+  }
 }
 
-.machineWeight {
+.addChip {
+  width: 70px;
+  height: 20px;
+  margin-bottom: 4px;
+  border-radius: 6px;
   display: flex;
-  gap: 4px;
   align-items: center;
-  background: #666;
-  padding: 8px;
-  border-radius: 8px;
-
-  & > span {
-    margin-top: 2px;
-  }
+  justify-content: center;
+  background: linear-gradient(180deg, #d8d8d8, #b4b4b4);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+  font-size: 11px;
+  font-weight: 700;
+  color: #161616;
 }
 
 .platesMachine {
@@ -101,8 +165,8 @@
   .barbell:nth-child(2) {
     transform: scaleX(-1);
 
-    .plate {
-      transform: scaleX(-1);
+    .plateLabel {
+      transform: translate(-50%, -50%) rotate(90deg) scaleY(-1);
     }
   }
 }
@@ -118,21 +182,4 @@
   bottom: 0;
   width: 16px;
   background: #555;
-}
-
-.invalid {
-  .bar,
-  .platesHolder {
-    background: #844;
-  }
-
-  .plate {
-    background: #A66;
-  }
-
-  .barLabel,
-  .plateLabel,
-  .dumbbellLabel {
-    color: #FCC;
-  }
 }
