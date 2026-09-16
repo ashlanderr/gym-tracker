@@ -1,5 +1,5 @@
 import { ModalDialog, type ModalProps } from "../../../../components";
-import type { ExerciseRepRangeCustom } from "../../../../db";
+import type { RepRange } from "../../../../db";
 import { useState } from "react";
 import s from "./styles.module.scss";
 
@@ -7,7 +7,7 @@ export function CustomRepsModal({
   data,
   onCancel,
   onSubmit,
-}: ModalProps<ExerciseRepRangeCustom | null, ExerciseRepRangeCustom>) {
+}: ModalProps<RepRange | null, RepRange>) {
   const [min, setMin] = useState(() => data?.min.toString() ?? "");
   const [max, setMax] = useState(() => data?.max.toString() ?? "");
 

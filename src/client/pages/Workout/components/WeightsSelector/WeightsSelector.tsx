@@ -2,34 +2,180 @@ import type { Selector, WeightsSelectorProps } from "./types.ts";
 import { MdArrowBack, MdCheck } from "react-icons/md";
 import s from "./styles.module.scss";
 import {
-  type EquipmentType,
-  type PerformanceWeights,
+  DEFAULT_WEIGHT_UNITS,
+  type DumbbellSet,
+  type Gym,
+  type StackWeights,
   type WeightUnits,
 } from "../../../../db";
 import { UNITS_TRANSLATION } from "../../../constants.ts";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { clsx } from "clsx";
 import {
   BARBELL_BASES,
-  BARBELL_DEFAULT_BASE,
   DEFAULT_PLATES,
+  DUMBBELL_MAX,
+  DUMBBELL_MIN,
+  DUMBBELL_STEPS,
+  STACK_ADDITIONAL,
+  STACK_BASES,
+  STACK_STEPS,
 } from "../constants.ts";
-import { assertNever } from "../../../../utils";
+
+type Draft<T> = { [K in keyof T]?: T[K] };
 
 export function WeightsSelector({
-  equipment,
-  weights,
+  exercise,
+  gym,
   onCancel,
   onSubmit,
 }: WeightsSelectorProps) {
-  const [state, setState] = useState(weights);
+  const [plates, setPlates] = useState(gym.plates);
+  const [bars, setBars] = useState(gym.bars);
+  // Only the first dumbbell set is editable here, the model supports several.
+  const [dumbbells, setDumbbells] = useState<Draft<DumbbellSet>>(
+    () => gym.dumbbells.at(0) ?? { units: DEFAULT_WEIGHT_UNITS },
+  );
+  const [stack, setStack] = useState<Draft<StackWeights>>(
+    () => gym.stacks[exercise.id] ?? { units: DEFAULT_WEIGHT_UNITS },
+  );
 
-  useEffect(() => {
-    setState(weights);
-  }, [weights]);
+  const buildGym = (): Gym | null => {
+    switch (exercise.load.type) {
+      case "none":
+        return gym;
+
+      case "barbell":
+        return plates.items.length !== 0 && bars.items.length !== 0
+          ? { ...gym, plates, bars }
+          : null;
+
+      case "plates":
+        return plates.items.length !== 0 ? { ...gym, plates } : null;
+
+      case "dumbbell": {
+        const { units, min, max, step } = dumbbells;
+        if (!units || min === undefined || max === undefined) return null;
+        if (step === undefined || min > max) return null;
+        const set = { units, min, max, step };
+        return { ...gym, dumbbells: [set, ...gym.dumbbells.slice(1)] };
+      }
+
+      case "stack": {
+        const { units, base, step, additional } = stack;
+        if (!units || base === undefined || step === undefined) return null;
+        const weights = { units, base, step, additional };
+        return { ...gym, stacks: { ...gym.stacks, [exercise.id]: weights } };
+      }
+    }
+  };
+
+  const newGym = buildGym();
 
   const submitHandler = () => {
-    onSubmit(state);
+    if (newGym) onSubmit(newGym);
+  };
+
+  const renderBody = () => {
+    switch (exercise.load.type) {
+      case "none":
+        return null;
+
+      case "barbell":
+        return (
+          <>
+            {unitsSelector(plates.units, (units) => {
+              setPlates({ units, items: [] });
+              setBars({ units, items: [] });
+            })}
+            {selector({
+              label: "Грифы",
+              hint: "Все грифы в зале. Для веса берётся самый тяжёлый, который подходит.",
+              options: BARBELL_BASES[bars.units],
+              render: (value) => value.toString(),
+              isSelected: (value) => bars.items.includes(value),
+              toggle: (value) =>
+                setBars({ ...bars, items: toggle(bars.items, value) }),
+            })}
+            {platesSelector(plates, setPlates)}
+          </>
+        );
+
+      case "plates":
+        return (
+          <>
+            {unitsSelector(plates.units, (units) =>
+              setPlates({ units, items: [] }),
+            )}
+            {platesSelector(plates, setPlates)}
+          </>
+        );
+
+      case "dumbbell":
+        return (
+          <>
+            {unitsSelector(dumbbells.units, (units) => setDumbbells({ units }))}
+            {selector({
+              label: "Самая лёгкая гантель",
+              options: DUMBBELL_MIN,
+              render: (value) => value.toString(),
+              isSelected: (value) => dumbbells.min === value,
+              toggle: (min) => setDumbbells({ ...dumbbells, min }),
+            })}
+            {selector({
+              label: "Самая тяжёлая гантель",
+              options: DUMBBELL_MAX,
+              render: (value) => value.toString(),
+              isSelected: (value) => dumbbells.max === value,
+              toggle: (max) => setDumbbells({ ...dumbbells, max }),
+            })}
+            {selector({
+              label: "Шаг веса гантелей",
+              hint: "Разница между соседними весами.",
+              options: DUMBBELL_STEPS,
+              render: (value) => value.toString(),
+              isSelected: (value) => dumbbells.step === value,
+              toggle: (step) => setDumbbells({ ...dumbbells, step }),
+            })}
+          </>
+        );
+
+      case "stack":
+        return (
+          <>
+            {unitsSelector(stack.units, (units) => setStack({ units }))}
+            {selector({
+              label: "Начальный вес",
+              hint: "Вес, который поднимается без плиток.",
+              options: STACK_BASES,
+              render: (value) => value.toString(),
+              isSelected: (value) => stack.base === value,
+              toggle: (base) => setStack({ ...stack, base }),
+            })}
+            {selector({
+              label: "Шаг веса плиток",
+              hint: "Разница между соседними плитками.",
+              options: STACK_STEPS,
+              render: (value) => value.toString(),
+              isSelected: (value) => stack.step === value,
+              toggle: (step) => setStack({ ...stack, step }),
+            })}
+            {selector({
+              label: "Добавочный вес",
+              hint: "Мелкая плитка или грузик для точной настройки.",
+              options: STACK_ADDITIONAL,
+              render: (value) => value.toString(),
+              isSelected: (value) => stack.additional === value,
+              toggle: (additional) =>
+                setStack({
+                  ...stack,
+                  additional:
+                    additional !== stack.additional ? additional : undefined,
+                }),
+            })}
+          </>
+        );
+    }
   };
 
   return (
@@ -38,217 +184,46 @@ export function WeightsSelector({
         <button className={s.toolbarButton} onClick={onCancel}>
           <MdArrowBack />
         </button>
-        <div className={s.pageTitle}>Настройка весов</div>
+        <div className={s.pageTitle}>Мой инвентарь</div>
         <button
           className={s.toolbarButton}
           onClick={submitHandler}
-          disabled={!validateWeights(equipment, state)}
+          disabled={!newGym}
         >
           <MdCheck />
         </button>
       </div>
-      <div className={s.body}>
-        {unitsSelector(state, setState)}
-        {state && buildBody(equipment, state, setState)}
-      </div>
+      <div className={s.body}>{renderBody()}</div>
     </div>
   );
 }
 
-function buildBody(
-  equipment: EquipmentType,
-  weights: PerformanceWeights,
-  onChange: (weights: PerformanceWeights) => void,
+function platesSelector(
+  plates: Gym["plates"],
+  onChange: (plates: Gym["plates"]) => void,
 ) {
-  switch (equipment) {
-    case "none":
-      return null;
-
-    case "barbell":
-      return barbellWeights(weights, onChange);
-
-    case "dumbbell":
-      return dumbbellWeights(weights, onChange);
-
-    case "machine":
-      return machineWeights(weights, onChange);
-
-    case "plates":
-      return platesWeights(weights, onChange);
-
-    default:
-      assertNever(equipment);
-  }
-}
-
-function toggleArray<T>(array: T[], value: T): T[] {
-  return array.includes(value)
-    ? array.filter((s) => s !== value)
-    : [...array, value];
-}
-
-function barbellWeights(
-  weights: PerformanceWeights,
-  onChange: (weights: PerformanceWeights) => void,
-) {
-  const units = weights.units;
-  const unitsStr = UNITS_TRANSLATION[units];
-  const steps = Array.isArray(weights.steps) ? weights.steps : [];
-  const defaultBase = BARBELL_DEFAULT_BASE[units];
-  const base = weights.base;
-
-  return (
-    <>
-      {selector({
-        label: "Вес пустого грифа",
-        hint: `Сколько весит гриф без блинов (стандартный ${defaultBase} ${unitsStr}).`,
-        options: BARBELL_BASES[units],
-        render: (value) => value.toString(),
-        isSelected: (value) => value === base,
-        toggle: (value) => onChange({ ...weights, base: value, count: 2 }),
-      })}
-      {selector({
-        label: "Доступные блины",
-        hint: "Укажите блины, которыми вы реально пользуетесь.",
-        options: DEFAULT_PLATES[units],
-        render: (value) => value.toString(),
-        isSelected: (value) => steps.includes(value),
-        toggle: (value) =>
-          onChange({ ...weights, steps: toggleArray(steps, value) }),
-      })}
-    </>
-  );
-}
-
-function dumbbellWeights(
-  weights: PerformanceWeights,
-  onChange: (weights: PerformanceWeights) => void,
-) {
-  const steps = typeof weights.steps === "number" ? weights.steps : undefined;
-  const count = weights.count;
-
-  return (
-    <>
-      {selector({
-        label: "Количество гантелей",
-        hint: "Сколько используется одновременно.",
-        options: [1, 2],
-        render: (value) => value.toString(),
-        isSelected: (value) => count === value,
-        toggle: (value) => onChange({ ...weights, count: value }),
-      })}
-      {selector({
-        label: "Шаг веса гантелей",
-        hint: "Разница между соседними весами.",
-        options: [1, 2, 2.5, 5],
-        render: (value) => value.toString(),
-        isSelected: (value) => steps === value,
-        toggle: (value) => onChange({ ...weights, steps: value }),
-      })}
-    </>
-  );
-}
-
-function machineWeights(
-  weights: PerformanceWeights,
-  onChange: (weights: PerformanceWeights) => void,
-) {
-  const stepOptions = [2.5, 5, 10, 15, 20];
-  const base = weights.base;
-  const steps = typeof weights?.steps === "number" ? weights.steps : undefined;
-  const additional = weights.additional;
-  const count = weights.count;
-  const additionalOptions =
-    steps !== undefined ? stepOptions.filter((s) => s < steps) : [];
-
-  return (
-    <>
-      {selector({
-        label: "Количество блоков",
-        hint: "Сколько стеков используется одновременно.",
-        options: [1, 2],
-        render: (value) => value.toString(),
-        isSelected: (value) => count === value,
-        toggle: (value) => onChange({ ...weights, count: value }),
-      })}
-      {selector({
-        label: "Начальный вес",
-        hint: "Вес первой плитки в стеке.",
-        options: stepOptions,
-        render: (value) => value.toString(),
-        isSelected: (value) => base === value,
-        toggle: (value) => onChange({ ...weights, base: value }),
-      })}
-      {selector({
-        label: "Шаг веса плиток",
-        hint: "Разница между соседними плитками.",
-        options: stepOptions,
-        render: (value) => value.toString(),
-        isSelected: (value) => steps === value,
-        toggle: (value) =>
-          onChange({ ...weights, steps: value, additional: undefined }),
-      })}
-      {additionalOptions.length !== 0 &&
-        selector({
-          label: "Дополнительный шаг",
-          hint: "Вес мелких гирек или ручек для точной настройки.",
-          options: additionalOptions,
-          render: (value) => value.toString(),
-          isSelected: (value) => additional === value,
-          toggle: (value) =>
-            onChange({
-              ...weights,
-              additional: value !== additional ? value : undefined,
-            }),
-        })}
-    </>
-  );
-}
-
-function platesWeights(
-  weights: PerformanceWeights,
-  onChange: (weights: PerformanceWeights) => void,
-) {
-  const units = weights.units;
-  const steps = Array.isArray(weights?.steps) ? weights.steps : [];
-  const count = weights?.count;
-
-  return (
-    <>
-      {selector({
-        label: "Количество держателей",
-        hint: "Сколько мест для установки блинов на тренажёре.",
-        options: [1, 2],
-        render: (value) => value.toString(),
-        isSelected: (value) => count === value,
-        toggle: (value) => onChange({ ...weights, count: value }),
-      })}
-      {selector({
-        label: "Доступные блины",
-        hint: "Укажите блины, которыми вы реально пользуетесь.",
-        options: DEFAULT_PLATES[units],
-        render: (value) => value.toString(),
-        isSelected: (value) => steps.includes(value),
-        toggle: (value) =>
-          onChange({ ...weights, steps: toggleArray(steps, value) }),
-      })}
-    </>
-  );
+  return selector({
+    label: "Блины",
+    hint: "Все блины в зале. Они общие для всех упражнений.",
+    options: DEFAULT_PLATES[plates.units],
+    render: (value) => value.toString(),
+    isSelected: (value) => plates.items.includes(value),
+    toggle: (value) =>
+      onChange({ ...plates, items: toggle(plates.items, value) }),
+  });
 }
 
 function unitsSelector(
-  weights: PerformanceWeights | undefined,
-  onChange: (weights: PerformanceWeights | undefined) => void,
+  selected: WeightUnits | undefined,
+  onChange: (units: WeightUnits) => void,
 ) {
-  const selected = weights?.units ?? "";
-
-  return selector<WeightUnits | "">({
+  return selector<WeightUnits>({
     label: "Единицы измерения",
     hint: "Система, в которой подписаны веса в зале.",
-    options: ["", "kg", "lbs"],
-    render: (value) => (value ? UNITS_TRANSLATION[value] : "ВЫКЛ"),
+    options: ["kg", "lbs"],
+    render: (value) => UNITS_TRANSLATION[value],
     isSelected: (value) => selected === value,
-    toggle: (value) => onChange(value ? { units: value } : undefined),
+    toggle: (value) => value !== selected && onChange(value),
   });
 }
 
@@ -272,50 +247,8 @@ function selector<T extends string | number>(props: Selector<T>) {
   );
 }
 
-function validateWeights(
-  equipment: EquipmentType,
-  weights: PerformanceWeights | undefined,
-): boolean {
-  if (!weights) return true;
-
-  switch (equipment) {
-    case "none":
-      return true;
-
-    case "barbell":
-      return (
-        weights.base !== undefined &&
-        Array.isArray(weights.steps) &&
-        weights.steps.length !== 0 &&
-        weights.additional === undefined &&
-        weights.count === 2
-      );
-
-    case "dumbbell":
-      return (
-        weights.base === undefined &&
-        typeof weights.steps === "number" &&
-        weights.additional === undefined &&
-        weights.count !== undefined
-      );
-
-    case "machine":
-      return (
-        weights.base !== undefined &&
-        typeof weights.steps === "number" &&
-        weights.count !== undefined
-      );
-
-    case "plates":
-      return (
-        weights.base === undefined &&
-        Array.isArray(weights.steps) &&
-        weights.steps.length !== 0 &&
-        weights.additional === undefined &&
-        weights.count !== undefined
-      );
-
-    default:
-      assertNever(equipment);
-  }
+function toggle<T>(array: T[], value: T): T[] {
+  return array.includes(value)
+    ? array.filter((v) => v !== value)
+    : [...array, value];
 }

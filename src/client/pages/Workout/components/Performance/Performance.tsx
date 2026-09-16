@@ -12,19 +12,20 @@ import {
   type Performance,
   type Measurement,
   useQueryLatestMeasurement,
-  type Record,
-  useQueryPreviousRecordByExercise,
-  DEFAULT_WEIGHT_UNITS,
-  DEFAULT_EXERCISE_REPS,
+  useQueryCurrentGym,
+  type Gym,
 } from "../../../../db";
 import { useModalStack, useStore } from "../../../../components";
 import { SetRow } from "../SetRow";
 import { UNITS_TRANSLATION } from "../../../constants.ts";
 import { PerformanceTimer } from "../PerformanceTimer";
 import { assertNever } from "../../../../utils";
-import { addNextSet, buildRecommendations } from "../../../../domain";
+import {
+  addNextSet,
+  buildRecommendations,
+  getWeightUnits,
+} from "../../../../domain";
 import { PerformanceActions } from "../PerformanceActions";
-import { clsx } from "clsx";
 
 export function Performance({ performance }: PerformanceProps) {
   const store = useStore();
@@ -32,31 +33,13 @@ export function Performance({ performance }: PerformanceProps) {
   const exercise = useQueryExerciseById(store, performance.exercise);
   const sets = useQuerySetsByPerformance(store, performance.id);
   const measurement = useQueryLatestMeasurement(store, performance.startedAt);
-
-  const trainingMax = useQueryPreviousRecordByExercise(
-    store,
-    "training_max",
-    performance.exercise,
-    performance.program,
-    performance.startedAt - 1,
-  );
-
-  const oneRepMax = useQueryPreviousRecordByExercise(
-    store,
-    "one_rep_max",
-    performance.exercise,
-    performance.program,
-    performance.startedAt - 1,
-  );
-
-  const latestRepMax = selectLatestRepMax(trainingMax, oneRepMax);
+  const gym = useQueryCurrentGym(store, performance.user);
 
   const prevPerformance = useQueryPreviousPerformance(
     store,
+    performance.slot,
     performance.exercise,
     performance.startedAt,
-    performance.periodization,
-    performance.program,
   );
 
   const prevSets = useQuerySetsByPerformance(
@@ -64,7 +47,9 @@ export function Performance({ performance }: PerformanceProps) {
     prevPerformance?.id ?? "",
   ).filter((s) => s.completed);
 
-  const units = performance?.weights?.units ?? DEFAULT_WEIGHT_UNITS;
+  if (!exercise) return null;
+
+  const units = getWeightUnits(exercise, gym);
   const unitsText = UNITS_TRANSLATION[units];
 
   const addSetHandler = () => {
@@ -77,16 +62,8 @@ export function Performance({ performance }: PerformanceProps) {
 
   return (
     <div className={s.exercise}>
-      <div
-        className={clsx({
-          [s.exerciseName]: true,
-          [s.lightMode]: performance.periodization === "light",
-          [s.mediumMode]: performance.periodization === "medium",
-          [s.heavyMode]: performance.periodization === "heavy",
-        })}
-        onClick={actionsHandler}
-      >
-        {exercise?.name ?? "-"}
+      <div className={s.exerciseName} onClick={actionsHandler}>
+        {exercise.name}
       </div>
       <div className={s.timer}>
         <PerformanceTimer performance={performance} />
@@ -110,7 +87,7 @@ export function Performance({ performance }: PerformanceProps) {
             performance,
             exercise,
             measurement,
-            oneRepMax: latestRepMax,
+            gym,
           })}
         </tbody>
       </table>
@@ -128,26 +105,24 @@ function buildSets({
   performance,
   exercise,
   measurement,
-  oneRepMax,
+  gym,
 }: {
   prevSets: CompletedSet[];
   sets: Set[];
   performance: Performance;
-  exercise: Exercise | null;
+  exercise: Exercise;
   measurement: Measurement | null;
-  oneRepMax: Record | null;
+  gym: Gym;
 }): ReactNode[] {
   const prevWarmUp = prevSets.filter((s) => s.type === "warm-up");
   const prevWorking = prevSets.filter((s) => s.type !== "warm-up");
   const recommendations = buildRecommendations({
     currentSets: sets,
     previousSets: prevSets,
-    performanceWeights: performance.weights,
-    exerciseWeights: exercise?.weight,
-    exerciseReps: exercise?.reps ?? DEFAULT_EXERCISE_REPS,
+    exercise,
+    gym,
+    reps: performance.reps,
     selfWeight: measurement?.weight,
-    periodization: performance?.periodization,
-    oneRepMax: oneRepMax ?? undefined,
   });
 
   const result: ReactNode[] = [];
@@ -163,10 +138,6 @@ function buildSets({
       number = "W";
     } else if (set.type === "working") {
       number = (workingIndex + 1).toString();
-    } else if (set.type === "failure") {
-      number = "F";
-    } else if (set.type === "light") {
-      number = "L";
     } else {
       assertNever(set.type);
     }
@@ -182,6 +153,7 @@ function buildSets({
     result.push(
       <SetRow
         exercise={exercise}
+        gym={gym}
         performance={performance}
         key={set.id}
         number={number}
@@ -193,10 +165,4 @@ function buildSets({
   });
 
   return result;
-}
-
-function selectLatestRepMax(a: Record | null, b: Record | null): Record | null {
-  if (!a) return b;
-  if (!b) return a;
-  return a.createdAt > b.createdAt ? a : b;
 }

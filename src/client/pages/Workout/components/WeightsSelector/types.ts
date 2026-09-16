@@ -1,10 +1,10 @@
-import type { PerformanceWeights, EquipmentType } from "../../../../db";
+import type { Exercise, Gym } from "../../../../db";
 
 export interface WeightsSelectorProps {
-  equipment: EquipmentType;
-  weights: PerformanceWeights | undefined;
+  exercise: Exercise;
+  gym: Gym;
   onCancel: () => void;
-  onSubmit: (value: PerformanceWeights | undefined) => void;
+  onSubmit: (gym: Gym) => void;
 }
 
 export interface Selector<T extends string | number> {

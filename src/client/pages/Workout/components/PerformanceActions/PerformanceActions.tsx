@@ -18,10 +18,12 @@ import {
 import type { PerformanceActionsData } from "./types.ts";
 import {
   type Exercise,
+  type Gym,
   type Performance,
-  type PerformanceWeights,
   queryPerformancesByWorkout,
+  updateGym,
   updatePerformance,
+  useQueryCurrentGym,
 } from "../../../../db";
 import { deletePerformance, replacePerformance } from "../../../../domain";
 import { useNavigate } from "react-router";
@@ -30,8 +32,9 @@ import { PerformanceOrder } from "../PerformanceOrder";
 import { ChooseExercise } from "../ChooseExercise";
 import { AddExercise } from "../AddExercise";
 import { WeightsSelector } from "../WeightsSelector";
-import { LuTrendingUp } from "react-icons/lu";
-import { PeriodizationSelector } from "../PeriodizationSelector";
+import { LuRepeat } from "react-icons/lu";
+import { CustomRepsModal } from "../CustomRepsModal";
+import { formatRepRange } from "../SetRow/utils.ts";
 
 export function PerformanceActions({
   data,
@@ -44,14 +47,11 @@ export function PerformanceActions({
   const [orderState, setOrderState] = useState<Performance[]>([]);
   const [isReplaceOpen, setReplaceOpen] = useState(false);
   const [isWeightsOpen, setWeightsOpen] = useState(false);
+  const gym = useQueryCurrentGym(store, performance.user);
 
   const historyHandler = async () => {
-    if (exercise) {
-      await onCancel();
-      navigate(
-        `/exercises/${exercise.id}/history?program=${performance.program || ""}`,
-      );
-    }
+    await onCancel();
+    navigate(`/exercises/${exercise.id}/history`);
   };
 
   const orderBeginHandler = () => {
@@ -69,7 +69,6 @@ export function PerformanceActions({
   };
 
   const editHandler = async () => {
-    if (!exercise) return;
     await onCancel();
     await pushModal(AddExercise, exercise);
   };
@@ -88,20 +87,15 @@ export function PerformanceActions({
     setWeightsOpen(true);
   };
 
-  const weightsCompleteHandler = (weights: PerformanceWeights | undefined) => {
-    updatePerformance(store, { ...performance, weights });
+  const weightsCompleteHandler = (gym: Gym) => {
+    updateGym(store, gym);
     onCancel();
   };
 
-  const periodizationHandler = async () => {
+  const repsHandler = async () => {
     await onCancel();
-    const periodization = await pushModal(PeriodizationSelector, null);
-    if (periodization) {
-      updatePerformance(store, {
-        ...performance,
-        periodization: periodization !== "none" ? periodization : undefined,
-      });
-    }
+    const reps = await pushModal(CustomRepsModal, performance.reps);
+    if (reps) updatePerformance(store, { ...performance, reps });
   };
 
   return (
@@ -121,15 +115,15 @@ export function PerformanceActions({
             <MdAutorenew />
             <span>Заменить на другое</span>
           </button>
-          {exercise?.equipment && (
+          {exercise.load.type !== "none" && (
             <button className={s.sheetAction} onClick={weightsBeginHandler}>
               <TbWeight />
-              <span>Настройка весов</span>
+              <span>Мой инвентарь</span>
             </button>
           )}
-          <button className={s.sheetAction} onClick={periodizationHandler}>
-            <LuTrendingUp />
-            <span>Выбор периодизации</span>
+          <button className={s.sheetAction} onClick={repsHandler}>
+            <LuRepeat />
+            <span>Повторы: {formatRepRange(performance.reps)}</span>
           </button>
           <button className={s.sheetAction} onClick={editHandler}>
             <MdEdit />
@@ -162,8 +156,8 @@ export function PerformanceActions({
 
       <PageModal isOpen={isWeightsOpen}>
         <WeightsSelector
-          equipment={exercise?.equipment ?? "none"}
-          weights={performance.weights}
+          exercise={exercise}
+          gym={gym}
           onCancel={() => onCancel()}
           onSubmit={weightsCompleteHandler}
         />

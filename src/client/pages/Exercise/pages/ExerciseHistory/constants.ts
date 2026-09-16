@@ -1,5 +1,4 @@
 import type { ChartParameter, ChartPeriod } from "./types.ts";
-import type { PeriodizationMode } from "../../../../db";
 
 export const CHART_PARAMETERS: ChartParameter[] = [
   { key: "oneRepMax", label: "1ПМ" },
@@ -19,11 +18,3 @@ export const DATE_FORMATTER = new Intl.DateTimeFormat("ru", {
   day: "numeric",
   month: "short",
 });
-
-export const PERIODIZATION_DOT_COLORS: Record<PeriodizationMode | "", string> =
-  {
-    "": "white",
-    light: "#8F8",
-    medium: "#FF0",
-    heavy: "#F84",
-  };

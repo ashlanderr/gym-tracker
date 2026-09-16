@@ -8,31 +8,40 @@ import {
   useQueryCollection,
 } from "./db.ts";
 import type { Store } from "./doc.ts";
-import type { PeriodizationMode } from "./periodization.ts";
+import type { RepRange } from "./exercises";
 
 export interface Performance {
   id: string;
+
   user: string;
+
   workout: string;
+
   exercise: string;
+
+  // ID позиции упражнения внутри программы тренировок.
+  // Позволяет собрать историю выполнения для рекомендаций.
+  // Веса и повторы зависят от того, какие упражнения уже были в тренировке,
+  // поэтому нельзя использовать общую историю упражнения.
+  // Копируется без изменения при дублировании тренировки.
+  // Выдаётся новый при создании нового выполнения упражнения внутри тренировки
+  // и при замене упражнения: новое упражнение берёт историю по упражнению в целом.
+  slot: string;
+
+  // Порядок внутри тренировки.
   order: number;
+
+  // Дупликация времени старта тренировки для оптимизации запросов.
   startedAt: number;
-  weights?: PerformanceWeights;
+
+  // Базовый диапазон повторов. По умолчанию берётся из упражнения.
+  // Для разных выполнений одного упражнения внутри программы может быть разным, поэтому он тут.
+  // Если инвентарь не позволяет повысить вес при достижении верха диапазона,
+  // то расширяется в большую сторону до красивых значений.
+  reps: RepRange;
+
+  // Время таймера в секундах.
   timer?: number;
-  periodization?: PeriodizationMode;
-  program: string | undefined;
-}
-
-export type WeightUnits = "kg" | "lbs";
-
-export const DEFAULT_WEIGHT_UNITS: WeightUnits = "kg";
-
-export interface PerformanceWeights {
-  units: WeightUnits;
-  base?: number;
-  steps?: number | number[];
-  additional?: number;
-  count?: number;
 }
 
 export function queryPerformanceById(
@@ -69,55 +78,64 @@ export function useQueryPerformancesByWorkout(
   return [...performances].sort((a, b) => a.order - b.order);
 }
 
+// The latest performance of the slot, or of the exercise in general
+// when the slot has no history yet.
 export function queryPreviousPerformance(
   store: Store,
+  slot: string,
   exercise: string,
-  program: string | undefined,
   startedAt: number,
 ): Performance | null {
   const entities = queryCollection<Performance>(
     collection(store.personal, "performances"),
     {
       exercise: { eq: exercise },
-      program: { eq: program },
       startedAt: { lt: startedAt },
     },
   );
-  return maxBy(entities, (a, b) => a.startedAt - b.startedAt);
+  return selectPreviousPerformance(entities, slot);
 }
 
 export function useQueryPreviousPerformance(
   store: Store,
+  slot: string,
   exercise: string,
   startedAt: number,
-  periodization: PeriodizationMode | undefined,
-  program: string | undefined,
 ): Performance | null {
   const entities = useQueryCollection<Performance>({
     collection: collection(store.personal, "performances"),
     filter: {
       exercise: { eq: exercise },
       startedAt: { lt: startedAt },
-      periodization: { eq: periodization },
-      program: { eq: program },
     },
-    deps: [exercise, startedAt, periodization, program],
+    deps: [exercise, startedAt],
   });
-  return maxBy(entities, (a, b) => a.startedAt - b.startedAt);
+  return selectPreviousPerformance(entities, slot);
+}
+
+function selectPreviousPerformance(
+  performances: Performance[],
+  slot: string,
+): Performance | null {
+  const byDate = (a: Performance, b: Performance) => a.startedAt - b.startedAt;
+  return (
+    maxBy(
+      performances.filter((p) => p.slot === slot),
+      byDate,
+    ) ?? maxBy(performances, byDate)
+  );
 }
 
 export function useQueryPerformancesByExercise(
   store: Store,
   exercise: string,
-  program: string | undefined,
 ): Performance[] {
   return useQueryCollection({
     collection: collection(store.personal, "performances"),
     filter: {
       exercise: { eq: exercise },
-      program: { eq: program },
     },
-    deps: [exercise, program],
+    deps: [exercise],
   });
 }
 

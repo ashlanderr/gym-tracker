@@ -13,7 +13,7 @@ import {
   maxBy,
   compareRecordsByDate,
   useQueryExerciseById,
-  type PeriodizationMode,
+  getExerciseMuscles,
 } from "../../../../db";
 import { useStore } from "../../../../components";
 import { useMemo, useState } from "react";
@@ -22,7 +22,6 @@ import {
   CHART_PARAMETERS,
   CHART_PERIODS,
   DATE_FORMATTER,
-  PERIODIZATION_DOT_COLORS,
 } from "./constants.ts";
 import { clsx } from "clsx";
 import {
@@ -37,22 +36,16 @@ import { RECORDS_TRANSLATION } from "../../../constants.ts";
 import { formatRecordValue } from "../../../../domain";
 import { PiMedalFill } from "react-icons/pi";
 import { usePageParams } from "../../../hooks.ts";
-import { useNavigate, useSearchParams } from "react-router";
+import { useNavigate } from "react-router";
 
 export function ExerciseHistory() {
   const store = useStore();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const programId = searchParams.get("program") || undefined;
   const { exerciseId } = usePageParams<ExerciseHistoryParams>();
   const exercise = useQueryExerciseById(store, exerciseId);
-  const performances = useQueryPerformancesByExercise(
-    store,
-    exerciseId,
-    programId,
-  );
+  const performances = useQueryPerformancesByExercise(store, exerciseId);
   const sets = useQuerySetsByExercise(store, exerciseId);
-  const records = useQueryRecordsByExercise(store, exerciseId, programId);
+  const records = useQueryRecordsByExercise(store, exerciseId);
   const latestRecords = useMemo(() => {
     return Object.entries(RECORDS_TRANSLATION)
       .map(([recordType, recordName]) => {
@@ -83,7 +76,7 @@ export function ExerciseHistory() {
       </div>
       <div className={s.name}>{exercise.name}</div>
       <div className={s.muscles}>
-        {exercise.muscles.map((m) => (
+        {getExerciseMuscles(exercise).map((m) => (
           <div className={s.muscle} key={m}>
             {MUSCLES_TRANSLATION[m]}
           </div>
@@ -139,7 +132,6 @@ export function ExerciseHistory() {
                 dataKey={parameter}
                 stroke="gray"
                 isAnimationActive={false}
-                dot={<CustomDot />}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -162,11 +154,3 @@ export function ExerciseHistory() {
     </div>
   );
 }
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const CustomDot = (props: any) => {
-  const { cx, cy, payload } = props;
-  const periodization: PeriodizationMode | "" = payload.periodization ?? "";
-  const color = PERIODIZATION_DOT_COLORS[periodization];
-  return <circle cx={cx} cy={cy} r={3} fill={color} />;
-};

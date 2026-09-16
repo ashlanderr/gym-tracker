@@ -17,24 +17,44 @@ export type MuscleType =
   | "triceps"
   | "upper_back";
 
-export type EquipmentType =
-  | "none"
-  | "barbell"
-  | "dumbbell"
-  | "machine"
-  | "plates";
+export type EquipmentTag = "barbell" | "dumbbell" | "machine" | "bench";
 
-export type ExerciseRepRangeSimple = "low" | "medium" | "high";
-export type ExerciseRepRangeCustom = { min: number; max: number };
-export type ExerciseRepRange = ExerciseRepRangeSimple | ExerciseRepRangeCustom;
+// How the weight of the exercise is assembled from the gym inventory.
+// Plate-loaded machines rarely have the sled weight written on them,
+// so for `plates` only the plates are counted.
+export type ExerciseLoad =
+  | { type: "none" }
+  | { type: "barbell" }
+  | { type: "dumbbell"; count: 1 | 2 }
+  | { type: "stack" }
+  | { type: "plates"; sides: 1 | 2 };
+
+export type ExerciseAsset =
+  | { type: "video"; url: string }
+  | { type: "image"; url: string };
 
 export interface Exercise {
   id: string;
   name: string;
-  muscles: MuscleType[];
-  equipment?: EquipmentType;
-  weight?: ExerciseWeight;
-  reps?: ExerciseRepRange;
+  primaryMuscles: MuscleType[];
+  secondaryMuscles: MuscleType[];
+  equipment: EquipmentTag[];
+  load: ExerciseLoad;
+  weight: ExerciseWeight;
+  reps: RepRange;
+  asset?: ExerciseAsset;
+  alternatives: ExerciseAlternative[];
+  instructions: string[];
+}
+
+export interface ExerciseAlternative {
+  id: string;
+  benefits: string;
+}
+
+export interface RepRange {
+  min: number;
+  max: number;
 }
 
 export type ExerciseWeight =

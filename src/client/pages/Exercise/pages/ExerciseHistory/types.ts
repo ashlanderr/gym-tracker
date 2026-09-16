@@ -1,5 +1,3 @@
-import type { PeriodizationMode } from "../../../../db";
-
 export interface ExerciseHistoryParams {
   exerciseId: string;
 }
@@ -12,7 +10,6 @@ export interface HistoryPoint {
   workoutVolume: number;
   averageRepMax: number;
   sets: number;
-  periodization: PeriodizationMode | undefined;
 }
 
 export type ChartParameterType =

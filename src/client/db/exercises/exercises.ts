@@ -7,13 +7,15 @@ import {
   useQueryCollection,
 } from "../db.ts";
 import { type Store } from "../doc.ts";
-import type { Exercise, ExerciseWeight, ExerciseRepRange } from "./types.ts";
+import type { Exercise, ExerciseWeight, MuscleType } from "./types.ts";
 import { EXERCISES } from "./constants.ts";
 import { useMemo } from "react";
 
 export const DEFAULT_EXERCISE_WEIGHT: ExerciseWeight = { type: "full" };
 
-export const DEFAULT_EXERCISE_REPS: ExerciseRepRange = "low";
+export function getExerciseMuscles(exercise: Exercise): MuscleType[] {
+  return [...exercise.primaryMuscles, ...exercise.secondaryMuscles];
+}
 
 export function queryExerciseById(store: Store, id: string): Exercise | null {
   const defaultExercise = EXERCISES[id];

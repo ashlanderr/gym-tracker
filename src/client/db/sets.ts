@@ -7,9 +7,11 @@ import {
 } from "./db.ts";
 import type { Store } from "./doc.ts";
 
-export type SetType = "warm-up" | "working" | "failure" | "light";
+export type SetType = "warm-up" | "working";
 
 export type Set = DraftSet | CompletedSet;
+
+export type Effort = "easy" | "normal" | "hard" | "failure";
 
 export interface DraftSet {
   id: string;
@@ -17,6 +19,7 @@ export interface DraftSet {
   workout: string;
   exercise: string;
   performance: string;
+  slot: string;
   order: number;
   type: SetType;
   weight: number | undefined;
@@ -30,11 +33,13 @@ export interface CompletedSet {
   workout: string;
   exercise: string;
   performance: string;
+  slot: string;
   order: number;
   type: SetType;
   weight: number;
   reps: number;
   completed: true;
+  effort?: Effort;
 }
 
 export function querySetsByWorkout(store: Store, workout: string): Set[] {

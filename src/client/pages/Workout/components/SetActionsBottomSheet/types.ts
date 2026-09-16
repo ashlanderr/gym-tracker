@@ -1,9 +1,9 @@
-import type { Exercise, Performance, Set } from "../../../../db";
+import type { Exercise, Gym, Set } from "../../../../db";
 import type { RecSetData } from "../../../../domain";
 
 export interface SetActionBottomSheetData {
-  exercise: Exercise | null;
-  performance: Performance;
+  exercise: Exercise;
+  gym: Gym;
   set: Set;
   recSet: RecSetData | undefined;
 }

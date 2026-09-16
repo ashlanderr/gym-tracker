@@ -12,7 +12,7 @@ export function SetActionsBottomSheet({
   onCancel,
 }: ModalProps<SetActionBottomSheetData, null>) {
   const store = useStore();
-  const { exercise, performance, set, recSet } = data;
+  const { exercise, gym, set, recSet } = data;
   const expectedWeight = set.weight ?? recSet?.weight;
 
   const setTypeHandler = (type: SetType) => {
@@ -32,8 +32,8 @@ export function SetActionsBottomSheet({
       <div className={s.sheetWeights}>
         {expectedWeight !== undefined && (
           <WeightsVisualizer
-            equipment={exercise?.equipment ?? "none"}
-            weights={performance.weights}
+            exercise={exercise}
+            gym={gym}
             weightKg={expectedWeight}
           />
         )}
@@ -52,20 +52,6 @@ export function SetActionsBottomSheet({
         >
           <span className={s.workingSet}>1</span>
           <span>Обычный подход</span>
-        </button>
-        <button
-          className={s.sheetAction}
-          onClick={() => setTypeHandler("light")}
-        >
-          <span className={s.lightSet}>L</span>
-          <span>Легкий подход</span>
-        </button>
-        <button
-          className={s.sheetAction}
-          onClick={() => setTypeHandler("failure")}
-        >
-          <span className={s.failureSet}>F</span>
-          <span>Подход в отказ</span>
         </button>
         <button
           className={clsx(s.sheetAction, s.danger)}

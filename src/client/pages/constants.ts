@@ -1,10 +1,11 @@
 import type {
-  EquipmentType,
+  EquipmentTag,
+  ExerciseLoad,
   ExerciseWeight,
   MuscleType,
+  RepRange,
   WeightUnits,
   RecordType,
-  ExerciseRepRangeSimple,
 } from "../db";
 
 export const MUSCLES_TRANSLATION: Record<MuscleType, string> = {
@@ -27,11 +28,18 @@ export const MUSCLES_TRANSLATION: Record<MuscleType, string> = {
   upper_back: "Верх спины",
 };
 
-export const EQUIPMENT_TRANSLATION: Record<EquipmentType, string> = {
-  none: "Нет",
+export const EQUIPMENT_TRANSLATION: Record<EquipmentTag, string> = {
   barbell: "Штанга",
   dumbbell: "Гантели",
-  machine: "Блок",
+  machine: "Тренажёр",
+  bench: "Скамья",
+};
+
+export const LOAD_TRANSLATION: Record<ExerciseLoad["type"], string> = {
+  none: "Без веса",
+  barbell: "Штанга",
+  dumbbell: "Гантели",
+  stack: "Блок",
   plates: "Блины",
 };
 
@@ -44,14 +52,12 @@ export const EXERCISE_WEIGHT_TRANSLATION: Record<
   positive: "Утяжеление",
 };
 
-export const EXERCISES_REPS_TRANSLATION: Record<
-  ExerciseRepRangeSimple,
-  string
-> = {
-  low: "Низкий",
-  medium: "Средний",
-  high: "Высокий",
-};
+export const REP_RANGE_PRESETS: RepRange[] = [
+  { min: 6, max: 8 },
+  { min: 8, max: 12 },
+  { min: 10, max: 12 },
+  { min: 12, max: 15 },
+];
 
 export const UNITS_TRANSLATION: Record<WeightUnits, string> = {
   kg: "KG",
@@ -60,7 +66,6 @@ export const UNITS_TRANSLATION: Record<WeightUnits, string> = {
 
 export const RECORDS_TRANSLATION: Record<RecordType, string> = {
   one_rep_max: "Лучший 1ПМ",
-  training_max: "Рабочий 1ПМ",
   weight: "Самый большой вес",
   volume: "Лучший объём",
 };

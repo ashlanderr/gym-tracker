@@ -4,9 +4,11 @@ import {
   type Performance,
   queryPerformancesByWorkout,
   queryPreviousPerformance,
+  queryExerciseById,
   querySetsByPerformance,
   type Store,
   type Workout,
+  type RepRange,
   deletePerformance as deletePerformanceInner,
   queryRecordsByPerformance,
   deleteRecord,
@@ -15,12 +17,39 @@ import {
   updatePerformance,
 } from "../db";
 import { addNextSet, duplicateSet } from "./sets.ts";
-import { computeNextPeriodization } from "./recommendations";
+
+const DEFAULT_REPS: RepRange = { min: 8, max: 12 };
 
 export function addPerformance(
   store: Store,
   workout: Workout,
   exercise: string,
+): Performance {
+  return createPerformance(store, workout, exercise, generateId(), null);
+}
+
+// Copies a performance into another workout keeping its slot, so the slot
+// history continues. Sets are copied from the latest performance of the slot.
+export function continuePerformance(
+  store: Store,
+  workout: Workout,
+  oldPerformance: Performance,
+): Performance {
+  return createPerformance(
+    store,
+    workout,
+    oldPerformance.exercise,
+    oldPerformance.slot,
+    oldPerformance,
+  );
+}
+
+function createPerformance(
+  store: Store,
+  workout: Workout,
+  exercise: string,
+  slot: string,
+  template: Performance | null,
 ): Performance {
   const workoutPerformances = queryPerformancesByWorkout(store, workout.id);
   const nextOrder =
@@ -28,28 +57,32 @@ export function addPerformance(
 
   const prevPerformance = queryPreviousPerformance(
     store,
+    slot,
     exercise,
-    workout.program,
     workout.startedAt,
   );
 
-  const prevSets =
-    prevPerformance && querySetsByPerformance(store, prevPerformance.id);
+  const source = template ?? prevPerformance;
+  const reps =
+    source?.reps ?? queryExerciseById(store, exercise)?.reps ?? DEFAULT_REPS;
 
   const performance = addPerformanceInner(store, {
     id: generateId(),
     user: workout.user,
     workout: workout.id,
-    exercise: exercise,
+    exercise,
+    slot,
     order: nextOrder,
     startedAt: workout.startedAt,
-    weights: prevPerformance?.weights,
-    timer: prevPerformance?.timer,
-    periodization: computeNextPeriodization(prevPerformance?.periodization),
-    program: workout.program,
+    reps,
+    timer: source?.timer,
   });
 
-  if (prevSets) {
+  const prevSets = prevPerformance
+    ? querySetsByPerformance(store, prevPerformance.id)
+    : [];
+
+  if (prevSets.length !== 0) {
     for (const oldSet of prevSets) {
       duplicateSet(store, performance, oldSet);
     }
@@ -81,10 +114,8 @@ export function replacePerformance(
 
   const newPerformance = addPerformance(store, workout, newExercise);
 
-  updatePerformance(store, {
+  return updatePerformance(store, {
     ...newPerformance,
     order: oldPerformance.order,
   });
-
-  return newPerformance;
 }

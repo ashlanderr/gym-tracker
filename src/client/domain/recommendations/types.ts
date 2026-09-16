@@ -1,11 +1,4 @@
-import type {
-  PerformanceWeights,
-  SetType,
-  ExerciseWeight,
-  RecordNumbers,
-  ExerciseRepRange,
-  PeriodizationMode,
-} from "../../db";
+import type { Exercise, Gym, RepRange, SetType } from "../../db";
 
 export interface DraftSetData {
   type: SetType;
@@ -19,11 +12,6 @@ export interface CompletedSetData {
   reps: number;
 }
 
-export interface RepRange {
-  min: number;
-  max: number;
-}
-
 export interface RecSetData {
   type: SetType;
   weight: number | undefined;
@@ -33,10 +21,8 @@ export interface RecSetData {
 export interface RecommendationParams {
   currentSets: DraftSetData[];
   previousSets: CompletedSetData[];
-  exerciseWeights?: ExerciseWeight;
-  exerciseReps?: ExerciseRepRange;
-  performanceWeights?: PerformanceWeights;
+  exercise: Exercise;
+  gym: Gym;
+  reps: RepRange;
   selfWeight?: number;
-  oneRepMax?: RecordNumbers;
-  periodization?: PeriodizationMode;
 }

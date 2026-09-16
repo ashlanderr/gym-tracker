@@ -15,7 +15,6 @@ import {
   queryRecordsByPerformance,
   deleteRecord,
   maxBy,
-  type RecordNumbers,
   queryWorkoutById,
 } from "../db";
 import { addSelfWeight, volumeToOneRepMax } from "./weights";
@@ -23,7 +22,6 @@ import { addSelfWeight, volumeToOneRepMax } from "./weights";
 interface RecordData {
   set: CompletedSet;
   current: number;
-  full: number;
   createdAt: number;
 }
 
@@ -42,58 +40,21 @@ export function updateRecords(store: Store, set: Set) {
   const measurement = queryLatestMeasurement(store, performance.startedAt);
   const selfWeight = measurement?.weight;
 
-  updateRecord(
-    store,
-    performance,
-    "one_rep_max",
-    (s) => volumeToOneRepMax(s.weight, s.reps),
-    (s) =>
-      volumeToOneRepMax(
-        addSelfWeight(exercise.weight, selfWeight, s.weight),
-        s.reps,
-      ),
-    addIfGreater,
-  );
+  const fullWeight = (set: CompletedSet) =>
+    addSelfWeight(exercise.weight, selfWeight, set.weight);
 
-  updateRecord(
-    store,
-    performance,
-    "training_max",
-    (s) => volumeToOneRepMax(s.weight, s.reps),
-    (s) =>
-      volumeToOneRepMax(
-        addSelfWeight(exercise.weight, selfWeight, s.weight),
-        s.reps,
-      ),
-    addOnHeavyPerformance(performance),
+  updateRecord(store, performance, "one_rep_max", (s) =>
+    volumeToOneRepMax(fullWeight(s), s.reps),
   );
-
-  updateRecord(
-    store,
-    performance,
-    "weight",
-    (s) => s.weight,
-    (s) => addSelfWeight(exercise.weight, selfWeight, s.weight),
-    addIfGreater,
-  );
-
-  updateRecord(
-    store,
-    performance,
-    "volume",
-    (s) => s.weight * s.reps,
-    (s) => addSelfWeight(exercise.weight, selfWeight, s.weight) * s.reps,
-    addIfGreater,
-  );
+  updateRecord(store, performance, "weight", fullWeight);
+  updateRecord(store, performance, "volume", (s) => fullWeight(s) * s.reps);
 }
 
 function updateRecord(
   store: Store,
   performance: Performance,
   type: RecordType,
-  currentSelector: (set: CompletedSet) => number,
-  fullSelector: (set: CompletedSet) => number,
-  shouldAdd: (previous: RecordNumbers, current: RecordNumbers) => boolean,
+  selector: (set: CompletedSet) => number,
 ) {
   queryRecordsByPerformance(store, performance.id) //
     .filter((r) => r.type === type)
@@ -106,8 +67,7 @@ function updateRecord(
     .filter((s) => s.type !== "warm-up")
     .map((s) => ({
       set: s,
-      current: currentSelector(s),
-      full: fullSelector(s),
+      current: selector(s),
       createdAt: performance.startedAt,
     }));
 
@@ -118,11 +78,12 @@ function updateRecord(
     store,
     type,
     performance.exercise,
-    performance.program,
     performance.startedAt,
   );
 
-  if (previousRecord && !shouldAdd(previousRecord, maxValue)) return;
+  if (previousRecord && compareRecordsByValue(maxValue, previousRecord) <= 0) {
+    return;
+  }
 
   addRecord(store, {
     id: generateId(),
@@ -135,19 +96,5 @@ function updateRecord(
     type: type,
     previous: previousRecord?.current,
     current: maxValue.current,
-    full: maxValue.full,
-    program: performance.program,
   });
-}
-
-function addIfGreater(
-  previous: RecordNumbers,
-  current: RecordNumbers,
-): boolean {
-  return compareRecordsByValue(current, previous) > 0;
-}
-
-function addOnHeavyPerformance(performance: Performance) {
-  const isHeavy = performance?.periodization === "heavy";
-  return () => isHeavy;
 }

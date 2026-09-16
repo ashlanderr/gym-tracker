@@ -5,11 +5,13 @@ import type {
   Exercise,
   RecordNumbers,
   RecordType,
+  Gym,
 } from "../../../../db";
 import type { RecSetData } from "../../../../domain";
 
 export interface SetRowProps {
-  exercise: Exercise | null;
+  exercise: Exercise;
+  gym: Gym;
   performance: Performance;
   number: string;
   set: Set;

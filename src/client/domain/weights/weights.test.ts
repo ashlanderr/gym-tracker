@@ -1,136 +1,113 @@
 import {
-  computeWeights,
   oneRepMaxToReps,
   oneRepMaxToWeight,
-  snapWeightKg,
-  unitsToKg,
   volumeToOneRepMax,
 } from "./weights.ts";
-import type { PerformanceWeights } from "../../db";
-import type { WeightsConstructor } from "./types.ts";
+import { computeWeights, snapWeightKg } from "./constructor.ts";
+import { EXERCISES } from "../../db/exercises/constants.ts";
+import {
+  defaultGym,
+  type Exercise,
+  type ExerciseLoad,
+  type Gym,
+} from "../../db";
 
-test("round plate weights", () => {
-  const plateWeights: PerformanceWeights = {
+const BENCH_PRESS = EXERCISES["OvlOX8JCqg0lEuaPBU3G"];
+
+function exercise(load: ExerciseLoad): Exercise {
+  return { ...BENCH_PRESS, load };
+}
+
+function gym(patch: Partial<Gym>): Gym {
+  return { ...defaultGym("user"), ...patch };
+}
+
+test("barbell takes the heaviest bar that fits", () => {
+  const barbell = exercise({ type: "barbell" });
+  const plates = gym({
+    bars: { units: "kg", items: [10, 20] },
+    plates: { units: "kg", items: [20, 10, 5, 2.5] },
+  });
+
+  expect(computeWeights(barbell, plates, 15)).toEqual({
+    type: "barbell",
     units: "kg",
-    steps: [5, 10, 20],
-    count: 1,
-  };
+    totalKg: 15,
+    bar: 10,
+    plates: [2.5],
+  });
 
-  const data = [
-    {
-      weight: 10,
-      plates: [
-        //
-        { weight: 10, count: 1 },
-      ],
-    },
-    {
-      weight: 12,
-      plates: [
-        //
-        { weight: 10, count: 1 },
-      ],
-    },
-    {
-      weight: 13,
-      plates: [
-        //
-        { weight: 10, count: 1 },
-        { weight: 5, count: 1 },
-      ],
-    },
-    {
-      weight: 15,
-      plates: [
-        //
-        { weight: 10, count: 1 },
-        { weight: 5, count: 1 },
-      ],
-    },
-    {
-      weight: 17,
-      plates: [
-        //
-        { weight: 10, count: 1 },
-        { weight: 5, count: 1 },
-      ],
-    },
-    {
-      weight: 19,
-      plates: [
-        //
-        { weight: 20, count: 1 },
-      ],
-    },
-  ];
+  expect(computeWeights(barbell, plates, 60)).toEqual({
+    type: "barbell",
+    units: "kg",
+    totalKg: 60,
+    bar: 20,
+    plates: [20],
+  });
 
-  for (const { weight, plates } of data) {
-    const result = computeWeights(plateWeights, weight);
-    expect(result.steps).toEqual(plates);
-  }
+  expect(snapWeightKg(barbell, plates, 8)).toEqual(10);
 });
 
-test("round machine weights", () => {
-  const machineWeights: PerformanceWeights = {
-    units: "kg",
-    base: 0,
-    steps: 5,
-  };
+test("plates are assembled from any denominations", () => {
+  const machine = exercise({ type: "plates", sides: 2 });
+  const plates = gym({ plates: { units: "kg", items: [20, 15] } });
 
-  expect(snapWeightKg(machineWeights, 10)).toEqual(10);
-  expect(snapWeightKg(machineWeights, 12)).toEqual(10);
-  expect(snapWeightKg(machineWeights, 14)).toEqual(15);
-  expect(snapWeightKg(machineWeights, 17)).toEqual(15);
-  expect(snapWeightKg(machineWeights, 19)).toEqual(20);
+  expect(computeWeights(machine, plates, 60)).toMatchObject({
+    totalKg: 60,
+    plates: [15, 15],
+  });
+  expect(snapWeightKg(machine, plates, 68)).toEqual(70);
+  expect(snapWeightKg(machine, plates, 68, "floor")).toEqual(60);
 });
 
-test("round machine weights with additional weight 1", () => {
-  const machineWeights: PerformanceWeights = {
-    units: "lbs",
-    base: 10,
-    steps: 15,
-    additional: 5,
-  };
-
-  const weightKg = unitsToKg(110, "lbs");
-  const actual = computeWeights(machineWeights, weightKg);
-
-  const expected: WeightsConstructor = {
-    units: "lbs",
-    base: 10,
-    steps: [
-      { weight: 15, count: 6 },
-      { weight: 5, count: 2 },
+test("dumbbells are picked across sets", () => {
+  const dumbbells = exercise({ type: "dumbbell", count: 2 });
+  const sets = gym({
+    dumbbells: [
+      { units: "kg", min: 1, max: 10, step: 1 },
+      { units: "kg", min: 12, max: 48, step: 2 },
     ],
-    count: 1,
-    totalUnits: 110,
-    totalKg: weightKg,
-  };
+  });
 
-  expect(actual).toEqual(expected);
+  expect(computeWeights(dumbbells, sets, 18)).toEqual({
+    type: "dumbbell",
+    units: "kg",
+    totalKg: 18,
+    dumbbell: 9,
+    count: 2,
+  });
+  expect(snapWeightKg(dumbbells, sets, 23, "ceil")).toEqual(24);
+  expect(snapWeightKg(dumbbells, sets, 200)).toEqual(96);
 });
 
-test("round machine weights with additional weight 2", () => {
-  const machineWeights: PerformanceWeights = {
-    units: "lbs",
-    base: 10,
-    steps: [5, 15],
-  };
+test("stack is configured per exercise", () => {
+  const machine = exercise({ type: "stack" });
+  const stack = gym({
+    stacks: {
+      [machine.id]: { units: "kg", base: 0, step: 10, additional: 2.5 },
+    },
+  });
 
-  const weightKg = unitsToKg(114, "lbs");
-  const roundedKg = unitsToKg(115, "lbs");
-  const actual = computeWeights(machineWeights, weightKg);
+  expect(computeWeights(machine, stack, 73)).toEqual({
+    type: "stack",
+    units: "kg",
+    totalKg: 72.5,
+    stack: 70,
+    additional: 2.5,
+  });
+  expect(snapWeightKg(machine, stack, 77)).toEqual(80);
+  expect(computeWeights(machine, gym({}), 73)).toBeNull();
+});
 
-  const expected: WeightsConstructor = {
-    units: "lbs",
-    base: 10,
-    steps: [{ weight: 15, count: 7 }],
-    count: 1,
-    totalUnits: 115,
-    totalKg: roundedKg,
-  };
+test("stack in pounds converts back to kilograms", () => {
+  const machine = exercise({ type: "stack" });
+  const stack = gym({
+    stacks: { [machine.id]: { units: "lbs", base: 10, step: 15 } },
+  });
 
-  expect(actual).toEqual(expected);
+  const result = computeWeights(machine, stack, 114 * 0.454);
+  expect(result).toMatchObject({ stack: 115, additional: 0 });
+  expect(result?.totalKg).toBeCloseTo(115 * 0.454);
 });
 
 test("one rep max equivalents", () => {

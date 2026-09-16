@@ -3,6 +3,7 @@ import {
   deleteExercise,
   type Exercise,
   useQueryAllExercises,
+  getExerciseMuscles,
 } from "../../../../db";
 import s from "./styles.module.scss";
 import { MdAdd, MdArrowBack, MdDelete, MdEdit } from "react-icons/md";
@@ -24,7 +25,7 @@ export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
   const filteredExercises = exercises.filter(
     (e) =>
       e.name.toLowerCase().includes(searchLower) ||
-      e.muscles.some((m) =>
+      getExerciseMuscles(e).some((m) =>
         MUSCLES_TRANSLATION[m]?.toLowerCase()?.includes(searchLower),
       ),
   );
@@ -86,7 +87,7 @@ export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
           >
             <div className={s.exerciseName}> {exercise.name}</div>
             <div className={s.muscles}>
-              {exercise.muscles.map((m) => (
+              {getExerciseMuscles(exercise).map((m) => (
                 <div key={m} className={s.muscle}>
                   {MUSCLES_TRANSLATION[m] ?? m}
                 </div>

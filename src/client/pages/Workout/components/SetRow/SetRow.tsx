@@ -8,12 +8,12 @@ import {
   type Set,
   useQueryRecordsBySet,
   type Record,
-  type Performance,
 } from "../../../../db";
 import { clsx } from "clsx";
 import { PiArrowDownBold, PiArrowUpBold, PiMedalFill } from "react-icons/pi";
 import {
   addSelfWeight,
+  getWeightUnits,
   kgToUnits,
   MEDAL_RECORDS,
   snapWeightKg,
@@ -28,6 +28,7 @@ import { SetActionsBottomSheet } from "../SetActionsBottomSheet";
 
 export function SetRow({
   exercise,
+  gym,
   performance,
   number,
   set,
@@ -45,13 +46,13 @@ export function SetRow({
 
   const prevOneRepMax = prevSet
     ? volumeToOneRepMax(
-        addSelfWeight(exercise?.weight, undefined, prevSet.weight),
+        addSelfWeight(exercise.weight, undefined, prevSet.weight),
         prevSet.reps,
       )
     : undefined;
   const currOneRepMax = set.completed
     ? volumeToOneRepMax(
-        addSelfWeight(exercise?.weight, undefined, set.weight),
+        addSelfWeight(exercise.weight, undefined, set.weight),
         set.reps,
       )
     : undefined;
@@ -65,9 +66,11 @@ export function SetRow({
     updatedSet.current = set;
   }, [set]);
 
+  const units = getWeightUnits(exercise, gym);
+
   const convertWeight = (weightKg: number | undefined): number | undefined => {
     return weightKg !== undefined
-      ? Math.round(kgToUnits(weightKg, performance.weights?.units) * 100) / 100
+      ? Math.round(kgToUnits(weightKg, units) * 100) / 100
       : undefined;
   };
 
@@ -92,11 +95,11 @@ export function SetRow({
     setWeightInput(null);
 
     let newWeightKg = !Number.isNaN(newWeight)
-      ? unitsToKg(newWeight, performance.weights?.units)
+      ? unitsToKg(newWeight, units)
       : undefined;
 
     if (newWeightKg !== undefined) {
-      newWeightKg = snapWeightKg(performance.weights, newWeightKg);
+      newWeightKg = snapWeightKg(exercise, gym, newWeightKg);
     }
 
     const set = updateSetInner((set) =>
@@ -145,7 +148,7 @@ export function SetRow({
     if (!set.completed) {
       await pushModal(SetActionsBottomSheet, {
         exercise,
-        performance,
+        gym,
         set,
         recSet,
       });
@@ -168,7 +171,7 @@ export function SetRow({
   return (
     <tr className={clsx(set.completed && s.completed)}>
       <td className={s.setNumValue} onClick={setInfoHandler}>
-        {renderSetBadge(performance, set, number, records, localChange)}
+        {renderSetBadge(set, number, records, localChange)}
       </td>
       <td className={s.prevVolumeValue} onClick={copyPreviousHandler}>
         {prev}
@@ -211,7 +214,6 @@ export function SetRow({
 }
 
 function renderSetBadge(
-  performance: Performance,
   set: Set,
   number: string,
   records: Record[],
@@ -221,7 +223,7 @@ function renderSetBadge(
     return <PiMedalFill className={s.recordMedal} />;
   }
 
-  if (!performance.periodization && set.type !== "warm-up" && localChange) {
+  if (set.type !== "warm-up" && localChange) {
     if (localChange > 0) {
       return <PiArrowUpBold className={s.increment} />;
     }
@@ -235,8 +237,6 @@ function renderSetBadge(
       className={clsx({
         [s.warmUpSet]: set.type === "warm-up",
         [s.workingSet]: set.type === "working",
-        [s.lightSet]: set.type === "light",
-        [s.failureSet]: set.type === "failure",
       })}
     >
       {number}

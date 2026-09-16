@@ -1,97 +1,71 @@
-import type { EquipmentType, PerformanceWeights } from "../../../../db";
+import type { Exercise, Gym } from "../../../../db";
 import s from "./styles.module.scss";
 import { clsx } from "clsx";
 import { RiPlayList2Fill } from "react-icons/ri";
 import { LuCircleGauge } from "react-icons/lu";
-import { computeWeights } from "../../../../domain";
+import { computeWeights, type WeightsConstructor } from "../../../../domain";
 
 export interface WeightsVisualizerProps {
-  equipment: EquipmentType;
-  weights: PerformanceWeights | undefined;
+  exercise: Exercise;
+  gym: Gym;
   weightKg: number;
 }
 
-export function WeightsVisualizer(props: WeightsVisualizerProps) {
-  const { equipment } = props;
+export function WeightsVisualizer({
+  exercise,
+  gym,
+  weightKg,
+}: WeightsVisualizerProps) {
+  const ctor = computeWeights(exercise, gym, weightKg);
+  if (!ctor) return null;
 
-  switch (equipment) {
+  const isInvalid = !isSameWeight(ctor.totalKg, weightKg);
+
+  switch (ctor.type) {
     case "barbell":
-      return barbellWeights(props);
+      return barbellWeights(ctor, isInvalid);
 
     case "dumbbell":
-      return dumbbellWeights(props);
+      return dumbbellWeights(ctor, isInvalid);
 
-    case "machine":
-      return machineWeights(props);
+    case "stack":
+      return stackWeights(ctor);
 
     case "plates":
-      return platesWeights(props);
-
-    default:
-      return null;
+      return platesWeights(ctor, isInvalid);
   }
 }
 
-function barbellWeights({ weights, weightKg }: WeightsVisualizerProps) {
-  const ctor = computeWeights(weights, weightKg);
-  const isInvalid = !isSameWeight(ctor.totalKg, weightKg);
-  const steps: Array<{ weight: number; height: number }> = [];
+type Ctor<T extends WeightsConstructor["type"]> = Extract<
+  WeightsConstructor,
+  { type: T }
+>;
 
-  for (const step of ctor.steps ?? []) {
-    for (let i = 0; i < step.count; ++i) {
-      steps.push({
-        weight: step.weight,
-        height: Math.pow(Math.max(1.25, Math.min(45, step.weight)), 1 / 3) * 35,
-      });
-    }
-  }
+function barbellWeights(ctor: Ctor<"barbell">, isInvalid: boolean) {
+  const left = renderPlates([...ctor.plates].reverse(), "left");
+  const right = renderPlates(ctor.plates, "right");
 
   return (
     <div className={clsx(s.barbell, isInvalid && s.invalid)}>
       <div className={s.barSpacer} />
-      {[...steps].reverse().map((step, i) => (
-        <div className={s.plate} key={i} style={{ height: step.height }}>
-          <div className={s.plateLabel}>{step.weight}</div>
-        </div>
-      ))}
+      {left}
       <div className={clsx(s.plate, s.innerPlate)} />
       <div className={s.barCenter} />
       <div className={clsx(s.plate, s.innerPlate)} />
-      {steps.map((step, i) => (
-        <div className={s.plate} key={i} style={{ height: step.height }}>
-          <div className={s.plateLabel}>{step.weight}</div>
-        </div>
-      ))}
+      {right}
       <div className={s.barSpacer} />
       <div className={s.bar}>
-        <div className={s.barLabel}>{ctor.base}</div>
+        <div className={s.barLabel}>{ctor.bar}</div>
       </div>
     </div>
   );
 }
 
-function dumbbellWeights({ weights, weightKg }: WeightsVisualizerProps) {
-  const ctor = computeWeights(weights, weightKg);
-  const isInvalid = !isSameWeight(ctor.totalKg, weightKg);
-
-  const step = ctor.steps?.at(0);
-  if (!step) return null;
-
-  const weight = step.weight * step.count;
-
-  let repeat: number[];
-  if (ctor.count === 2) {
-    repeat = [0, 1];
-  } else if (ctor.count === 1) {
-    repeat = [0];
-  } else {
-    return null;
-  }
-
+function dumbbellWeights(ctor: Ctor<"dumbbell">, isInvalid: boolean) {
   return (
     <div className={clsx(s.dumbbells, isInvalid && s.invalid)}>
-      {repeat.map((r) => (
-        <div className={s.dumbbell} key={r}>
+      {Array.from({ length: ctor.count }, (_, i) => (
+        <div className={s.dumbbell} key={i}>
           <div className={s.barbell}>
             <div className={s.barSpacer} />
             <div className={s.plate} style={{ height: 50 }} />
@@ -103,7 +77,7 @@ function dumbbellWeights({ weights, weightKg }: WeightsVisualizerProps) {
             <div className={s.plate} style={{ height: 50 }} />
             <div className={s.barSpacer} />
             <div className={s.bar}>
-              <div className={s.dumbbellLabel}>{weight}</div>
+              <div className={s.dumbbellLabel}>{ctor.dumbbell}</div>
             </div>
           </div>
         </div>
@@ -112,61 +86,30 @@ function dumbbellWeights({ weights, weightKg }: WeightsVisualizerProps) {
   );
 }
 
-function machineWeights({ weights, weightKg }: WeightsVisualizerProps) {
-  const ctor = computeWeights(weights, weightKg);
-  const baseWeight = ctor.base ?? 0;
-  const mainStep = ctor.steps?.at(0) ?? { weight: 0, count: 0 };
-  const additionalStep = ctor.steps?.at(1) ?? { weight: 0, count: 0 };
-  const mainWeight = mainStep.weight * mainStep.count;
-  const additionalWeight = additionalStep.weight * additionalStep.count;
-
+function stackWeights(ctor: Ctor<"stack">) {
   return (
     <div className={s.machineWeights}>
       <div className={s.machineWeight}>
         <RiPlayList2Fill />
-        <span>{baseWeight + mainWeight}</span>
+        <span>{ctor.stack}</span>
       </div>
       <div className={s.machineWeight}>
         <LuCircleGauge />
-        <span>{additionalWeight}</span>
+        <span>{ctor.additional}</span>
       </div>
     </div>
   );
 }
 
-function platesWeights({ weights, weightKg }: WeightsVisualizerProps) {
-  const ctor = computeWeights(weights, weightKg);
-  const isInvalid = !isSameWeight(ctor.totalKg, weightKg);
-  const steps: Array<{ weight: number; height: number }> = [];
-
-  for (const step of ctor.steps ?? []) {
-    for (let i = 0; i < step.count; ++i) {
-      steps.push({
-        weight: step.weight,
-        height: Math.pow(Math.max(1.25, Math.min(45, step.weight)), 1 / 3) * 35,
-      });
-    }
-  }
-
-  let repeat: number[];
-  if (ctor.count === 2) {
-    repeat = [0, 1];
-  } else if (ctor.count === 1) {
-    repeat = [0];
-  } else {
-    return null;
-  }
+function platesWeights(ctor: Ctor<"plates">, isInvalid: boolean) {
+  const plates = renderPlates([...ctor.plates].reverse(), "side");
 
   return (
     <div className={clsx(s.platesMachine, isInvalid && s.invalid)}>
-      {repeat.map((r) => (
-        <div className={s.barbell} key={r}>
+      {Array.from({ length: ctor.sides }, (_, i) => (
+        <div className={s.barbell} key={i}>
           <div className={s.barSpacer} />
-          {[...steps].reverse().map((step, i) => (
-            <div className={s.plate} key={i} style={{ height: step.height }}>
-              <div className={s.plateLabel}>{step.weight}</div>
-            </div>
-          ))}
+          {plates}
           <div className={clsx(s.plate, s.innerPlate)} />
           <div className={s.platesSpacer} />
           <div className={s.platesHolder} />
@@ -175,6 +118,22 @@ function platesWeights({ weights, weightKg }: WeightsVisualizerProps) {
       ))}
     </div>
   );
+}
+
+function renderPlates(plates: number[], side: string) {
+  return plates.map((weight, i) => (
+    <div
+      className={s.plate}
+      key={`${side}-${i}`}
+      style={{ height: plateHeight(weight) }}
+    >
+      <div className={s.plateLabel}>{weight}</div>
+    </div>
+  ));
+}
+
+function plateHeight(weight: number): number {
+  return Math.pow(Math.max(1.25, Math.min(45, weight)), 1 / 3) * 35;
 }
 
 function isSameWeight(a: number, b: number): boolean {

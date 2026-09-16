@@ -4,22 +4,24 @@ import { useState } from "react";
 import {
   addExercise,
   DEFAULT_EXERCISE_WEIGHT,
-  type EquipmentType,
+  type EquipmentTag,
   type Exercise,
+  type ExerciseLoad,
   type ExerciseWeight,
   type MuscleType,
+  type RepRange,
   updateExercise,
   generateId,
-  DEFAULT_EXERCISE_REPS,
-  type ExerciseRepRangeSimple,
 } from "../../../../db";
 import { CustomRepsModal } from "../CustomRepsModal";
 import {
   EQUIPMENT_TRANSLATION,
   EXERCISE_WEIGHT_TRANSLATION,
-  EXERCISES_REPS_TRANSLATION,
+  LOAD_TRANSLATION,
   MUSCLES_TRANSLATION,
+  REP_RANGE_PRESETS,
 } from "../../../constants.ts";
+import { formatRepRange } from "../SetRow/utils.ts";
 import { clsx } from "clsx";
 import {
   type ModalProps,
@@ -27,6 +29,10 @@ import {
   useModalStack,
   useStore,
 } from "../../../../components";
+
+const DEFAULT_LOAD: ExerciseLoad = { type: "none" };
+
+const COUNTS = [1, 2] as const;
 
 export function AddExercise({
   data: exercise,
@@ -37,20 +43,23 @@ export function AddExercise({
   const { pushModal } = useModalStack();
   const [name, setName] = useState(() => exercise?.name ?? "");
   const trimmedName = name.trim();
-  const [equipment, setEquipment] = useState(
-    () => exercise?.equipment ?? "none",
+  const [equipment, setEquipment] = useState<EquipmentTag[]>(
+    () => exercise?.equipment ?? [],
+  );
+  const [load, setLoad] = useState<ExerciseLoad>(
+    () => exercise?.load ?? DEFAULT_LOAD,
   );
   const [weight, setWeight] = useState(
     () => exercise?.weight ?? DEFAULT_EXERCISE_WEIGHT,
   );
-  const [reps, setReps] = useState(
-    () => exercise?.reps ?? DEFAULT_EXERCISE_REPS,
+  const [reps, setReps] = useState<RepRange>(
+    () => exercise?.reps ?? REP_RANGE_PRESETS[0],
   );
-  const [mainMuscle, setMainMuscle] = useState(
-    () => exercise?.muscles?.[0] ?? null,
+  const [primaryMuscles, setPrimaryMuscles] = useState<MuscleType[]>(
+    () => exercise?.primaryMuscles ?? [],
   );
-  const [secondaryMuscles, setSecondaryMuscles] = useState(
-    () => exercise?.muscles?.slice?.(1) ?? [],
+  const [secondaryMuscles, setSecondaryMuscles] = useState<MuscleType[]>(
+    () => exercise?.secondaryMuscles ?? [],
   );
 
   const muscles = Object.entries(MUSCLES_TRANSLATION).map(([key, label]) => ({
@@ -60,10 +69,15 @@ export function AddExercise({
 
   const equipments = Object.entries(EQUIPMENT_TRANSLATION).map(
     ([key, label]) => ({
-      key: key as EquipmentType,
+      key: key as EquipmentTag,
       label,
     }),
   );
+
+  const loads = Object.entries(LOAD_TRANSLATION).map(([key, label]) => ({
+    key: key as ExerciseLoad["type"],
+    label,
+  }));
 
   const weights = Object.entries(EXERCISE_WEIGHT_TRANSLATION).map(
     ([key, label]) => ({
@@ -72,22 +86,14 @@ export function AddExercise({
     }),
   );
 
-  const repsOptions = Object.entries(EXERCISES_REPS_TRANSLATION).map(
-    ([key, label]) => ({
-      key: key as ExerciseRepRangeSimple,
-      label,
-    }),
-  );
-
   const selfWeightPercentages = [0, 25, 50, 75, 100];
 
-  const customReps = typeof reps !== "string" ? reps : null;
-  const customRepsLabel = customReps
-    ? `${customReps.min}-${customReps.max}`
-    : "Свой";
+  const isPresetReps = REP_RANGE_PRESETS.some((r) => isSameRange(r, reps));
 
   const disabled =
-    !trimmedName || !mainMuscle || secondaryMuscles.includes(mainMuscle);
+    !trimmedName ||
+    primaryMuscles.length === 0 ||
+    primaryMuscles.some((m) => secondaryMuscles.includes(m));
 
   const setWeightHandler = (type: ExerciseWeight["type"]) => {
     switch (type) {
@@ -105,46 +111,50 @@ export function AddExercise({
     }
   };
 
-  const customRepsHandler = async () => {
-    const result = await pushModal(CustomRepsModal, customReps);
-    if (result) setReps(result);
-  };
+  const setLoadHandler = (type: ExerciseLoad["type"]) => {
+    switch (type) {
+      case "dumbbell":
+        setLoad({ type, count: 2 });
+        break;
 
-  const mainMuscleHandler = (muscle: MuscleType) => {
-    setMainMuscle(mainMuscle === muscle ? null : muscle);
-  };
+      case "plates":
+        setLoad({ type, sides: 2 });
+        break;
 
-  const secondaryMuscleHandler = (muscle: MuscleType) => {
-    if (secondaryMuscles.includes(muscle)) {
-      setSecondaryMuscles(secondaryMuscles.filter((m) => m !== muscle));
-    } else {
-      setSecondaryMuscles([...secondaryMuscles, muscle]);
+      default:
+        setLoad({ type });
+        break;
     }
   };
 
+  const customRepsHandler = async () => {
+    const result = await pushModal(CustomRepsModal, reps);
+    if (result) setReps(result);
+  };
+
   const submitHandler = () => {
-    if (!trimmedName) return;
-    if (!mainMuscle) return;
+    if (disabled) return;
+
+    const data = {
+      name: trimmedName,
+      primaryMuscles,
+      secondaryMuscles,
+      equipment,
+      load,
+      weight,
+      reps,
+    };
 
     if (exercise) {
-      const newExercise = {
-        ...exercise,
-        name: trimmedName,
-        muscles: [mainMuscle, ...secondaryMuscles],
-        equipment,
-        weight,
-        reps,
-      };
+      const newExercise = { ...exercise, ...data };
       updateExercise(store, newExercise);
       onSubmit(newExercise);
     } else {
       const newExercise = addExercise(store, {
         id: generateId(),
-        name: trimmedName,
-        muscles: [mainMuscle, ...secondaryMuscles],
-        equipment,
-        weight,
-        reps,
+        ...data,
+        alternatives: [],
+        instructions: [],
       });
       onSubmit(newExercise);
     }
@@ -177,14 +187,61 @@ export function AddExercise({
           <div className={s.chips}>
             {equipments.map((eq) => (
               <button
-                className={clsx(s.chip, equipment === eq.key && s.selected)}
+                className={clsx(
+                  s.chip,
+                  equipment.includes(eq.key) && s.selected,
+                )}
                 key={eq.key}
-                onClick={() => setEquipment(eq.key)}
+                onClick={() => setEquipment(toggle(equipment, eq.key))}
               >
                 {eq.label}
               </button>
             ))}
           </div>
+          <label className={s.label}>Чем набирается вес</label>
+          <div className={s.chips}>
+            {loads.map((l) => (
+              <button
+                className={clsx(s.chip, load.type === l.key && s.selected)}
+                key={l.key}
+                onClick={() => setLoadHandler(l.key)}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
+          {load.type === "dumbbell" && (
+            <>
+              <label className={s.label}>Количество гантелей</label>
+              <div className={s.chips}>
+                {COUNTS.map((count) => (
+                  <button
+                    className={clsx(s.chip, load.count === count && s.selected)}
+                    key={count}
+                    onClick={() => setLoad({ ...load, count })}
+                  >
+                    {count}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+          {load.type === "plates" && (
+            <>
+              <label className={s.label}>Сколько сторон нагружать</label>
+              <div className={s.chips}>
+                {COUNTS.map((sides) => (
+                  <button
+                    className={clsx(s.chip, load.sides === sides && s.selected)}
+                    key={sides}
+                    onClick={() => setLoad({ ...load, sides })}
+                  >
+                    {sides}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
           <label className={s.label}>Тип веса</label>
           <div className={s.chips}>
             {weights.map((w) => (
@@ -220,32 +277,34 @@ export function AddExercise({
           )}
           <label className={s.label}>Диапазон повторений</label>
           <div className={s.chips}>
-            {repsOptions.map((w) => (
+            {REP_RANGE_PRESETS.map((range) => (
               <button
-                className={clsx(s.chip, reps === w.key && s.selected)}
-                key={w.key}
-                onClick={() => setReps(w.key)}
+                className={clsx(s.chip, isSameRange(range, reps) && s.selected)}
+                key={formatRepRange(range)}
+                onClick={() => setReps(range)}
               >
-                {w.label}
+                {formatRepRange(range)}
               </button>
             ))}
             <button
-              className={clsx(s.chip, customReps && s.selected)}
+              className={clsx(s.chip, !isPresetReps && s.selected)}
               onClick={customRepsHandler}
             >
-              {customRepsLabel}
+              {isPresetReps ? "Свой" : formatRepRange(reps)}
             </button>
           </div>
-          <label className={s.label}>Основная группа мышц</label>
+          <label className={s.label}>Основные мышцы</label>
           <div className={s.chips}>
             {muscles.map((muscle) => (
               <button
                 className={clsx(
                   s.chip,
-                  mainMuscle === muscle.key && s.selected,
+                  primaryMuscles.includes(muscle.key) && s.selected,
                 )}
                 key={muscle.key}
-                onClick={() => mainMuscleHandler(muscle.key)}
+                onClick={() =>
+                  setPrimaryMuscles(toggle(primaryMuscles, muscle.key))
+                }
               >
                 {muscle.label}
               </button>
@@ -260,7 +319,9 @@ export function AddExercise({
                   secondaryMuscles.includes(muscle.key) && s.selected,
                 )}
                 key={muscle.key}
-                onClick={() => secondaryMuscleHandler(muscle.key)}
+                onClick={() =>
+                  setSecondaryMuscles(toggle(secondaryMuscles, muscle.key))
+                }
               >
                 {muscle.label}
               </button>
@@ -270,4 +331,14 @@ export function AddExercise({
       </div>
     </PageModal>
   );
+}
+
+function toggle<T>(array: T[], value: T): T[] {
+  return array.includes(value)
+    ? array.filter((v) => v !== value)
+    : [...array, value];
+}
+
+function isSameRange(a: RepRange, b: RepRange): boolean {
+  return a.min === b.min && a.max === b.max;
 }
