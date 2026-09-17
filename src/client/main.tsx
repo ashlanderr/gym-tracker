@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClientProvider } from "@tanstack/react-query";
-import "@fontsource-variable/montserrat";
+import "@fontsource-variable/manrope";
 import "./index.css";
 import { Layout } from "./pages";
 import { initBackButton } from "./native";
