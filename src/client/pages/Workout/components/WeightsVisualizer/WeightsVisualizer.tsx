@@ -21,9 +21,11 @@ export function WeightsVisualizer({
   const ctor = computeWeights(exercise, gym, weightKg);
   if (!ctor) return null;
 
+  const rackHeight = plateHeight(Math.max(0, ...gym.plates.items));
+
   switch (ctor.type) {
     case "barbell":
-      return barbellWeights(ctor);
+      return barbellWeights(ctor, rackHeight);
 
     case "dumbbell":
       return dumbbellWeights(ctor);
@@ -32,7 +34,7 @@ export function WeightsVisualizer({
       return stackWeights(ctor, gym.stacks[exercise.id]?.step ?? 1);
 
     case "plates":
-      return platesWeights(ctor);
+      return platesWeights(ctor, rackHeight);
   }
 }
 
@@ -41,9 +43,11 @@ type Ctor<T extends WeightsConstructor["type"]> = Extract<
   { type: T }
 >;
 
-function barbellWeights(ctor: Ctor<"barbell">) {
+// The rack keeps the height of the largest plate in the gym, so changing the
+// weight never moves the bar.
+function barbellWeights(ctor: Ctor<"barbell">, height: number) {
   return (
-    <div className={s.barbell}>
+    <div className={s.barbell} style={{ height }}>
       <div className={s.barSpacer} />
       {renderPlates([...ctor.plates].reverse(), "left")}
       <div className={clsx(s.plate, s.innerPlate)} />
@@ -95,12 +99,14 @@ function stackWeights(ctor: Ctor<"stack">, step: number) {
 
   return (
     <div className={s.stack}>
-      {ctor.additional !== 0 && (
-        <div className={s.addChip}>
-          <span className={s.num}>+{ctor.additional}</span>
-        </div>
-      )}
-      <div className={s.stackRod} />
+      <div className={s.stackTop}>
+        <div className={s.stackRod} />
+        {ctor.additional !== 0 && (
+          <div className={s.addChip}>
+            <span className={s.num}>+{ctor.additional}</span>
+          </div>
+        )}
+      </div>
       {Array.from({ length: lifted }, (_, i) => (
         <div className={clsx(s.brick, s.lifted)} key={`lifted-${i}`} />
       ))}
@@ -116,13 +122,13 @@ function stackWeights(ctor: Ctor<"stack">, step: number) {
   );
 }
 
-function platesWeights(ctor: Ctor<"plates">) {
+function platesWeights(ctor: Ctor<"plates">, height: number) {
   const plates = [...ctor.plates].reverse();
 
   return (
     <div className={s.platesMachine}>
       {Array.from({ length: ctor.sides }, (_, i) => (
-        <div className={s.barbell} key={i}>
+        <div className={s.barbell} key={i} style={{ height }}>
           <div className={s.barSpacer} />
           {renderPlates(plates, `side-${i}`)}
           <div className={clsx(s.plate, s.innerPlate)} />

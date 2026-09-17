@@ -2,6 +2,7 @@ import {
   collection,
   insertEntity,
   maxBy,
+  minBy,
   queryCollection,
   useQueryCollection,
 } from "./db.ts";
@@ -15,17 +16,17 @@ export interface Measurement {
   height: number;
 }
 
+// The latest measurement before the date, or the earliest one when the body
+// was measured only later.
 export function queryLatestMeasurement(
   store: Store,
   beforeDate: number | null,
 ): Measurement | null {
   const entities = queryCollection<Measurement>(
     collection(store.personal, "measurements"),
-    {
-      createdAt: { lt: beforeDate ?? Infinity },
-    },
+    {},
   );
-  return maxBy(entities, (a, b) => a.createdAt - b.createdAt);
+  return selectMeasurement(entities, beforeDate);
 }
 
 export function useQueryLatestMeasurement(
@@ -34,12 +35,21 @@ export function useQueryLatestMeasurement(
 ): Measurement | null {
   const entities = useQueryCollection<Measurement>({
     collection: collection(store.personal, "measurements"),
-    filter: {
-      createdAt: { lt: beforeDate ?? Infinity },
-    },
-    deps: [beforeDate],
+    filter: {},
+    deps: [],
   });
-  return maxBy(entities, (a, b) => a.createdAt - b.createdAt);
+  return selectMeasurement(entities, beforeDate);
+}
+
+function selectMeasurement(
+  measurements: Measurement[],
+  beforeDate: number | null,
+): Measurement | null {
+  const byDate = (a: Measurement, b: Measurement) => a.createdAt - b.createdAt;
+  const before = measurements.filter(
+    (m) => m.createdAt < (beforeDate ?? Infinity),
+  );
+  return maxBy(before, byDate) ?? minBy(measurements, byDate);
 }
 
 export function addMeasurement(store: Store, entity: Measurement): Measurement {

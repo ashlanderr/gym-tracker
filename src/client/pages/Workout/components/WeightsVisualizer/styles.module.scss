@@ -99,10 +99,26 @@
   gap: 3px;
 }
 
+// The rod rises above the stack and the add-on sits on the top brick,
+// threaded on the rod. The top keeps its height with or without it.
+.stackTop {
+  position: relative;
+  width: 112px;
+  height: 46px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
 .stackRod {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  bottom: -3px;
+  left: 50%;
   width: 9px;
-  height: 16px;
-  background: linear-gradient(180deg, #6a6a6a, #4e4e4e);
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #6a6a6a, #4e4e4e);
   border-radius: 3px 3px 0 0;
 }
 
@@ -143,9 +159,10 @@
 }
 
 .addChip {
+  position: relative;
+  z-index: 1;
   width: 70px;
   height: 20px;
-  margin-bottom: 4px;
   border-radius: 6px;
   display: flex;
   align-items: center;
