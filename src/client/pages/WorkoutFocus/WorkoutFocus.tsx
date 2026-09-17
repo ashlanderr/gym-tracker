@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router";
 import { useAtomValue } from "jotai";
 import { MdArrowBack } from "react-icons/md";
+import { AnimatePresence, motion } from "motion/react";
 import {
   useQueryPerformancesByWorkout,
   useQuerySetsByWorkout,
@@ -56,6 +57,11 @@ export function WorkoutFocus() {
     }
   };
 
+  const isResting = current !== undefined && restSeconds > 0;
+  const stageKey = current
+    ? `${isResting ? "rest" : "set"}-${current.set.id}`
+    : `message-${steps.length === 0}`;
+
   const renderStage = () => {
     if (steps.length === 0) {
       return (
@@ -67,7 +73,7 @@ export function WorkoutFocus() {
       );
     }
 
-    if (current && restSeconds > 0) {
+    if (current && isResting) {
       return (
         <RestView next={current} seconds={restSeconds} lastSet={lastSet} />
       );
@@ -107,7 +113,18 @@ export function WorkoutFocus() {
           />
         ))}
       </button>
-      {renderStage()}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={stageKey}
+          className={s.stage}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -16 }}
+          transition={{ duration: 0.16, ease: "easeOut" }}
+        >
+          {renderStage()}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
