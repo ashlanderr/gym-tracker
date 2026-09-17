@@ -10,15 +10,11 @@ import {
   useQuerySetsByWorkout,
   useQueryWorkoutById,
 } from "../../db";
-import { useModalStack, useStore } from "../../components";
-import {
-  buildWorkoutSteps,
-  completeWorkout,
-  findCurrentStep,
-} from "../../domain";
+import { useStore } from "../../components";
+import { buildWorkoutSteps, findCurrentStep } from "../../domain";
 import { usePageParams } from "../hooks.ts";
 import type { WorkoutParams } from "../Workout/types.ts";
-import { CompleteWorkoutModal, useActiveTimer } from "../Workout/components";
+import { useActiveTimer } from "../Workout/components";
 import { FocusMessage, RestView, SetView } from "./components";
 import { useClock, useRestSeconds } from "./hooks.ts";
 import { LAST_COMPLETED_SET_ATOM } from "./constants.ts";
@@ -27,7 +23,6 @@ export function WorkoutFocus() {
   const { workoutId } = usePageParams<WorkoutParams>();
   const store = useStore();
   const navigate = useNavigate();
-  const { pushModal } = useModalStack();
   const workout = useQueryWorkoutById(store, workoutId);
   const performances = useQueryPerformancesByWorkout(store, workoutId);
   const sets = useQuerySetsByWorkout(store, workoutId);
@@ -45,17 +40,7 @@ export function WorkoutFocus() {
 
   const openTable = () => navigate(`/workouts/${workoutId}/all`);
 
-  const completeHandler = async () => {
-    if (!workout) return;
-    const result = await pushModal(CompleteWorkoutModal, {
-      workout,
-      partial: false,
-    });
-    if (result) {
-      completeWorkout(store, workout, result.name);
-      navigate("/", { replace: true });
-    }
-  };
+  const openFinish = () => navigate(`/workouts/${workoutId}/finish`);
 
   const isResting = current !== undefined && restSeconds > 0;
   const stageKey = current
@@ -87,7 +72,7 @@ export function WorkoutFocus() {
       <FocusMessage
         text="Все подходы сделаны"
         action="Закончить тренировку"
-        onAction={completeHandler}
+        onAction={openFinish}
       />
     );
   };

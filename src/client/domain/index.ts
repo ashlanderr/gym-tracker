@@ -5,3 +5,4 @@ export * from "./recommendations";
 export * from "./workout.ts";
 export * from "./records.ts";
 export * from "./steps.ts";
+export * from "./muscles.ts";

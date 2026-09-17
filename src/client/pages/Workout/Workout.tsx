@@ -64,6 +64,12 @@ export function Workout() {
 
   const completeHandler = async () => {
     if (!workout) return;
+
+    if (workout.completedAt === null) {
+      navigate(`/workouts/${workout.id}/finish`);
+      return;
+    }
+
     const partial = sets.some((s) => !s.completed);
     const result = await pushModal(CompleteWorkoutModal, { workout, partial });
     if (result) {

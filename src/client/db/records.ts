@@ -39,6 +39,19 @@ export function queryRecordsByWorkout(store: Store, workout: string): Record[] {
   });
 }
 
+export function useQueryRecordsByWorkout(
+  store: Store,
+  workout: string,
+): Record[] {
+  return useQueryCollection({
+    collection: collection(store.personal, "records"),
+    filter: {
+      workout: { eq: workout },
+    },
+    deps: [workout],
+  });
+}
+
 export function queryRecordsByPerformance(
   store: Store,
   performance: string,

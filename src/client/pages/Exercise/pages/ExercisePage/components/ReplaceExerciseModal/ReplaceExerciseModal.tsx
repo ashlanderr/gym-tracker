@@ -1,6 +1,6 @@
 import s from "./styles.module.scss";
 import { ModalDialog, type ModalProps } from "../../../../../../components";
-import { pluralize } from "../../../../../../utils";
+import { isSingular, pluralize } from "../../../../../../utils";
 import type { ReplaceExerciseData } from "./types.ts";
 
 export function ReplaceExerciseModal({
@@ -26,7 +26,7 @@ export function ReplaceExerciseModal({
         <p className={s.text}>
           {doneSets === 1
             ? "Сделанный подход не сохранится."
-            : `Сделанные ${pluralize(doneSets, ["подход", "подхода", "подходов"])} не сохранятся.`}
+            : `${isSingular(doneSets) ? "Сделанный" : "Сделанные"} ${pluralize(doneSets, ["подход", "подхода", "подходов"])} не ${isSingular(doneSets) ? "сохранится" : "сохранятся"}.`}
         </p>
       )}
     </ModalDialog>
