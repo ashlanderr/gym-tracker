@@ -80,7 +80,7 @@ export function SetView({ step }: SetViewProps) {
         </button>
         <div className={clsx(s.setLine, isWarmUp && s.warmUp)}>{setLine}</div>
         <div className={s.numbers}>
-          <div className={clsx(s.cell, s.weightCell)}>
+          <div className={s.cell}>
             <button
               className={clsx(s.big, weight.isText && s.bigText)}
               onClick={weightHandler}
@@ -91,7 +91,7 @@ export function SetView({ step }: SetViewProps) {
             <div className={s.under}>{formatWeightChange(plan)}</div>
           </div>
           <div className={s.times}>×</div>
-          <div className={clsx(s.cell, s.repsCell)}>
+          <div className={s.cell}>
             <button className={s.big} onClick={repsHandler}>
               {plan.reps}
               <span className={s.units}>раз</span>
