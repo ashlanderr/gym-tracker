@@ -116,10 +116,11 @@
 .done {
   width: 100%;
   padding: 22px;
-  border: none;
+  border: 1px solid transparent;
   border-radius: 16px;
   background: #0b0;
   color: #fff;
   font-size: 19px;
   font-weight: 700;
+  line-height: 1.2;
 }

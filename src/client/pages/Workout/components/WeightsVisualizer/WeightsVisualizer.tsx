@@ -1,4 +1,4 @@
-import type { Exercise, Gym } from "../../../../db";
+import type { Exercise, Gym, StackWeights } from "../../../../db";
 import s from "./styles.module.scss";
 import { clsx } from "clsx";
 import { computeWeights, type WeightsConstructor } from "../../../../domain";
@@ -10,8 +10,8 @@ export interface WeightsVisualizerProps {
   weightKg: number;
 }
 
-const STACK_LIFTED_LIMIT = 6;
-const STACK_REST = 4;
+const STACK_BRICKS = 11;
+const STACK_BELOW_PIN = 3;
 
 export function WeightsVisualizer({
   exercise,
@@ -31,7 +31,7 @@ export function WeightsVisualizer({
       return dumbbellWeights(ctor);
 
     case "stack":
-      return stackWeights(ctor, gym.stacks[exercise.id]?.step ?? 1);
+      return stackWeights(ctor, gym.stacks[exercise.id]);
 
     case "plates":
       return platesWeights(ctor, rackHeight);
@@ -91,11 +91,13 @@ function dumbbellWeights(ctor: Ctor<"dumbbell">) {
   );
 }
 
-function stackWeights(ctor: Ctor<"stack">, step: number) {
-  const lifted = Math.min(
-    STACK_LIFTED_LIMIT,
-    Math.max(0, Math.round(ctor.stack / step) - 1),
-  );
+// The stack always shows the same bricks and only the pin moves, like on a
+// machine. Heavy weights scroll the bricks so a few stay below the pin.
+function stackWeights(ctor: Ctor<"stack">, stack: StackWeights | undefined) {
+  const base = stack?.base ?? 0;
+  const step = stack?.step || 1;
+  const pin = Math.max(0, Math.round((ctor.stack - base) / step));
+  const offset = Math.max(0, pin - (STACK_BRICKS - STACK_BELOW_PIN - 1));
 
   return (
     <div className={s.stack}>
@@ -107,17 +109,25 @@ function stackWeights(ctor: Ctor<"stack">, step: number) {
           </div>
         )}
       </div>
-      {Array.from({ length: lifted }, (_, i) => (
-        <div className={clsx(s.brick, s.lifted)} key={`lifted-${i}`} />
-      ))}
-      <div className={clsx(s.brick, s.pick)}>
-        <span className={s.num}>
-          {ctor.stack} {UNITS_SHORT[ctor.units]}
-        </span>
-      </div>
-      {Array.from({ length: STACK_REST }, (_, i) => (
-        <div className={s.brick} key={`rest-${i}`} />
-      ))}
+      {Array.from({ length: STACK_BRICKS }, (_, i) => {
+        const brick = i + offset;
+        return (
+          <div
+            key={i}
+            className={clsx(
+              s.brick,
+              brick < pin && s.lifted,
+              brick === pin && s.pick,
+            )}
+          >
+            {brick === pin && (
+              <span className={s.num}>
+                {ctor.stack} {UNITS_SHORT[ctor.units]}
+              </span>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
