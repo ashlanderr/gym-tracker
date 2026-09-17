@@ -47,7 +47,7 @@ table {
     border-spacing: 0;
 }
 html {
-    font-family: Montserrat, "Helvetica Neue", sans-serif;
+    font-family: "Montserrat Variable", "Helvetica Neue", sans-serif;
     background: #000;
     color: #fff;
     user-select: none;
@@ -56,4 +56,7 @@ html, body, #root {
     width: 100%;
     height: 100%;
     overflow: hidden;
+}
+button, input, select, textarea {
+    font: inherit;
 }
