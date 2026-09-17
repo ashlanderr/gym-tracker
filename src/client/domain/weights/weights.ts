@@ -81,7 +81,7 @@ export function kgToUnits(
   switch (units ?? DEFAULT_WEIGHT_UNITS) {
     case "kg":
       return weightKg;
-    case "lbs":
+    case "lb":
       return weightKg / 0.454;
   }
 }
@@ -93,7 +93,7 @@ export function unitsToKg(
   switch (units ?? DEFAULT_WEIGHT_UNITS) {
     case "kg":
       return weightUnits;
-    case "lbs":
+    case "lb":
       return weightUnits * 0.454;
   }
 }

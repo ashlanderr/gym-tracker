@@ -61,12 +61,12 @@ export const REP_RANGE_PRESETS: RepRange[] = [
 
 export const UNITS_TRANSLATION: Record<WeightUnits, string> = {
   kg: "KG",
-  lbs: "LBS",
+  lb: "LB",
 };
 
 export const UNITS_SHORT: Record<WeightUnits, string> = {
   kg: "кг",
-  lbs: "lb",
+  lb: "lb",
 };
 
 export const RECORDS_TRANSLATION: Record<RecordType, string> = {

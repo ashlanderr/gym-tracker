@@ -35,10 +35,12 @@ export interface StackWeights {
   units: WeightUnits;
   base: number;
   step: number;
+  // Fine adjustment step: an add-on weight or a dial. Every multiple of it
+  // below the main step is available.
   additional?: number;
 }
 
-export type WeightUnits = "kg" | "lbs";
+export type WeightUnits = "kg" | "lb";
 
 export const DEFAULT_WEIGHT_UNITS: WeightUnits = "kg";
 

@@ -162,7 +162,7 @@ export function WeightsSelector({
             })}
             {selector({
               label: "Добавочный вес",
-              hint: "Мелкая плитка или грузик для точной настройки.",
+              hint: "Шаг точной настройки: гирька или крутилка. Доступны все кратные ему веса меньше шага плиток.",
               options: STACK_ADDITIONAL,
               render: (value) => value.toString(),
               isSelected: (value) => stack.additional === value,
@@ -220,7 +220,7 @@ function unitsSelector(
   return selector<WeightUnits>({
     label: "Единицы измерения",
     hint: "Система, в которой подписаны веса в зале.",
-    options: ["kg", "lbs"],
+    options: ["kg", "lb"],
     render: (value) => UNITS_TRANSLATION[value],
     isSelected: (value) => selected === value,
     toggle: (value) => value !== selected && onChange(value),

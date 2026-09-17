@@ -2,12 +2,12 @@ import type { WeightUnits } from "../../../db";
 
 export const DEFAULT_PLATES: Record<WeightUnits, number[]> = {
   kg: [0.5, 1.25, 2.5, 5, 10, 15, 20, 25],
-  lbs: [2.5, 5, 10, 25, 35, 45],
+  lb: [2.5, 5, 10, 25, 35, 45],
 };
 
 export const BARBELL_BASES: Record<WeightUnits, number[]> = {
   kg: [5, 7.5, 10, 15, 20],
-  lbs: [15, 25, 35, 45],
+  lb: [15, 25, 35, 45],
 };
 
 export const DUMBBELL_MIN = [1, 2, 2.5, 4, 5];

@@ -176,7 +176,7 @@ function stackWeights(
   rounding: RoundingMode,
 ): WeightsConstructor {
   const { units, base, step } = stack;
-  const additional = stack.additional ?? 0;
+  const offsets = fineOffsets(step, stack.additional);
   const target = kgToUnits(weightKg, units);
   const maxSteps =
     step > 0 ? Math.max(0, Math.ceil((target - base) / step) + 1) : 0;
@@ -184,8 +184,9 @@ function stackWeights(
   const candidates: Array<{ stack: number; additional: number }> = [];
   for (let i = 0; i <= maxSteps; ++i) {
     const weight = roundPrecise(base + i * step);
-    candidates.push({ stack: weight, additional: 0 });
-    if (additional > 0) candidates.push({ stack: weight, additional });
+    for (const additional of offsets) {
+      candidates.push({ stack: weight, additional });
+    }
   }
 
   const chosen = pickCandidate(
@@ -202,6 +203,17 @@ function stackWeights(
     stack: chosen.stack,
     additional: chosen.additional,
   };
+}
+
+// Every multiple of the fine step that stays below the main step.
+function fineOffsets(step: number, fine: number | undefined): number[] {
+  const offsets = [0];
+  if (!fine || fine <= 0) return offsets;
+
+  for (let i = 1; i * fine < step - EPSILON; ++i) {
+    offsets.push(roundPrecise(i * fine));
+  }
+  return offsets;
 }
 
 // Plates of any denomination are unlimited. Among the reachable sums the one

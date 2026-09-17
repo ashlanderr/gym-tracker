@@ -95,14 +95,27 @@ test("stack is configured per exercise", () => {
     stack: 70,
     additional: 2.5,
   });
-  expect(snapWeightKg(machine, stack, 77)).toEqual(80);
+  expect(snapWeightKg(machine, stack, 77)).toEqual(77.5);
   expect(computeWeights(machine, gym({}), 73)).toBeNull();
+});
+
+test("fine adjustment covers every fraction of the main step", () => {
+  const machine = exercise({ type: "stack" });
+  const stack = gym({
+    stacks: { [machine.id]: { units: "kg", base: 0, step: 20, additional: 5 } },
+  });
+
+  expect(computeWeights(machine, stack, 54)).toMatchObject({
+    stack: 40,
+    additional: 15,
+  });
+  expect(snapWeightKg(machine, stack, 59)).toEqual(60);
 });
 
 test("stack in pounds converts back to kilograms", () => {
   const machine = exercise({ type: "stack" });
   const stack = gym({
-    stacks: { [machine.id]: { units: "lbs", base: 10, step: 15 } },
+    stacks: { [machine.id]: { units: "lb", base: 10, step: 15 } },
   });
 
   const result = computeWeights(machine, stack, 114 * 0.454);
