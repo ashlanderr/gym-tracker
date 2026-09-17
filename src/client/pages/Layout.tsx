@@ -1,5 +1,18 @@
-import { HashRouter, Route, Routes, useLocation } from "react-router";
-import { AnimatePresence, motion, MotionConfig } from "motion/react";
+import {
+  HashRouter,
+  NavigationType,
+  Route,
+  Routes,
+  useLocation,
+  useNavigationType,
+} from "react-router";
+import {
+  AnimatePresence,
+  motion,
+  MotionConfig,
+  type Transition,
+  type Variants,
+} from "motion/react";
 import { Workout } from "./Workout";
 import { WorkoutFocus } from "./WorkoutFocus";
 import { Home } from "./Home";
@@ -7,6 +20,20 @@ import { ModalStack, StoreProvider } from "../components";
 import { User } from "./User";
 import { ExercisePage } from "./Exercise";
 import s from "./layout.module.scss";
+
+const PAGE_OFFSET = 64;
+
+const PAGE_VARIANTS: Variants = {
+  enter: (direction: number) => ({ x: direction * PAGE_OFFSET, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (direction: number) => ({ x: -direction * PAGE_OFFSET, opacity: 0 }),
+};
+
+const PAGE_TRANSITION: Transition = {
+  type: "tween",
+  ease: [0.32, 0.72, 0, 1],
+  duration: 0.26,
+};
 
 export function Layout() {
   return (
@@ -23,18 +50,22 @@ export function Layout() {
 }
 
 // Keyed by path: a modal changes only the history state, so the page stays.
+// Pages move along one axis: forward slides in from the right, back returns.
 function AnimatedRoutes() {
   const location = useLocation();
+  const direction = useNavigationType() === NavigationType.Pop ? -1 : 1;
 
   return (
-    <AnimatePresence initial={false}>
+    <AnimatePresence initial={false} custom={direction}>
       <motion.div
         key={location.pathname}
         className={s.page}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.18 }}
+        custom={direction}
+        variants={PAGE_VARIANTS}
+        initial="enter"
+        animate="center"
+        exit="exit"
+        transition={PAGE_TRANSITION}
       >
         <Routes location={location}>
           <Route path="/" element={<Home />} />

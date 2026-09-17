@@ -1,0 +1,9 @@
+.text {
+  font-size: 15px;
+  line-height: 1.45;
+  color: #ddd;
+
+  & + & {
+    margin-top: 8px;
+  }
+}

@@ -4,22 +4,30 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { MdArrowBack } from "react-icons/md";
 import {
+  queryExerciseById,
   useQueryExerciseById,
   useQueryPerformanceById,
+  useQuerySetsByPerformance,
   useQueryWorkoutById,
 } from "../../../../db";
-import { useStore } from "../../../../components";
+import { useModalStack, useStore } from "../../../../components";
 import { replacePerformance } from "../../../../domain";
 import { usePageParams } from "../../../hooks.ts";
 import { TABS } from "./constants.ts";
 import type { ExercisePageParams, ExerciseTab } from "./types.ts";
-import { HistoryTab, ProgressTab, TechniqueTab } from "./components";
+import {
+  HistoryTab,
+  ProgressTab,
+  ReplaceExerciseModal,
+  TechniqueTab,
+} from "./components";
 
 // Opened from a workout, the page carries the performance and can replace
 // the exercise in it. Otherwise it is read-only.
 export function ExercisePage() {
   const store = useStore();
   const navigate = useNavigate();
+  const { pushModal } = useModalStack();
   const { exerciseId } = usePageParams<ExercisePageParams>();
   const [searchParams] = useSearchParams();
   const [tab, setTab] = useState<ExerciseTab>("technique");
@@ -29,13 +37,25 @@ export function ExercisePage() {
     searchParams.get("performance") ?? "",
   );
   const workout = useQueryWorkoutById(store, performance?.workout ?? "");
+  const performanceSets = useQuerySetsByPerformance(
+    store,
+    performance?.id ?? "",
+  );
 
   if (!exercise) return null;
 
   const canReplace = performance !== null && workout?.completedAt === null;
 
-  const replaceHandler = (alternative: string) => {
+  const replaceHandler = async (alternative: string) => {
     if (!performance) return;
+
+    const confirmed = await pushModal(ReplaceExerciseModal, {
+      from: exercise.name,
+      to: queryExerciseById(store, alternative)?.name ?? "",
+      doneSets: performanceSets.filter((set) => set.completed).length,
+    });
+    if (!confirmed) return;
+
     replacePerformance(store, performance, alternative);
     navigate(-1);
   };
@@ -64,7 +84,7 @@ export function ExercisePage() {
         <button className={s.back} onClick={() => navigate(-1)}>
           <MdArrowBack />
         </button>
-        <div className={s.title}>{exercise.name}</div>
+        <div className={s.title}>Упражнение</div>
       </div>
       <div className={s.tabs}>
         {TABS.map(({ key, label }) => (
