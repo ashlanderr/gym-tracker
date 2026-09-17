@@ -94,3 +94,12 @@
   font-weight: 600;
   line-height: 1.2;
 }
+
+// Skipping rest is not something to encourage, but after the last set
+// there is nothing left to wait for, so finishing is the main action.
+.finish {
+  border-color: transparent;
+  background: #06f;
+  color: #fff;
+  font-weight: 700;
+}

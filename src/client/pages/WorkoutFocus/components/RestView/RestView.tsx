@@ -72,7 +72,7 @@ export function RestView({ next, seconds, lastSet, onFinish }: RestViewProps) {
             Пропустить отдых
           </button>
         ) : (
-          <button className={s.skip} onClick={finishHandler}>
+          <button className={clsx(s.skip, s.finish)} onClick={finishHandler}>
             Завершить тренировку
           </button>
         )}
