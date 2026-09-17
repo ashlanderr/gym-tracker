@@ -4,20 +4,26 @@ import { useNavigate } from "react-router";
 import { MdClose } from "react-icons/md";
 import { PiMedalFill } from "react-icons/pi";
 import {
+  type Exercise,
   useQueryAllExercises,
   useQueryCompletedWorkouts,
+  useQueryCurrentGym,
   useQueryPerformancesByWorkout,
   useQueryRecordsByWorkout,
   useQuerySetsByWorkout,
   useQueryWorkoutById,
 } from "../../db";
 import { useStore } from "../../components";
-import { completeWorkout, computeMuscleLevels } from "../../domain";
+import {
+  completeWorkout,
+  computeMuscleLevels,
+  getWeightUnits,
+} from "../../domain";
 import { isSingular, pluralize } from "../../utils";
 import { usePageParams } from "../hooks.ts";
-import { UNITS_SHORT, WEIGHT_SIGNS } from "../constants.ts";
+import { UNITS_SHORT } from "../constants.ts";
 import type { WorkoutParams } from "../Workout/types.ts";
-import { formatNumber, useClock } from "../WorkoutFocus/hooks.ts";
+import { formatExerciseWeight, useClock } from "../WorkoutFocus/hooks.ts";
 import { BodyMap } from "./components";
 import { buildFinishSummary, formatDurationWords } from "./utils.ts";
 
@@ -38,6 +44,7 @@ export function WorkoutFinish() {
   const exercises = useQueryAllExercises(store);
   const completedWorkouts = useQueryCompletedWorkouts(store);
   const clock = useClock(workout?.startedAt);
+  const gym = useQueryCurrentGym(store, workout?.user ?? "");
 
   const summary = useMemo(
     () =>
@@ -59,6 +66,14 @@ export function WorkoutFinish() {
   const number =
     completedWorkouts.length + (workout.completedAt === null ? 1 : 0);
   const kg = UNITS_SHORT.kg;
+
+  // Exercises may use different units in the same gym, so every weight
+  // carries its own.
+  const weightText = (exercise: Exercise, weightKg: number) => {
+    const units = getWeightUnits(exercise, gym);
+    const weight = formatExerciseWeight(exercise, units, weightKg);
+    return `${weight.value} ${weight.units}`;
+  };
 
   const finishHandler = () => {
     completeWorkout(store, workout, workout.name);
@@ -110,7 +125,7 @@ export function WorkoutFinish() {
           <div className={s.section}>
             <div className={s.sectionTitle}>Сегодня впервые</div>
             {summary.events.map((event, i) => {
-              const weight = `${WEIGHT_SIGNS[event.exercise.weight.type]}${formatNumber(event.weight)}`;
+              const weight = weightText(event.exercise, event.weight);
               return (
                 <div className={s.event} key={`${event.exercise.id}-${i}`}>
                   {event.type === "best_set" ? (
@@ -123,7 +138,7 @@ export function WorkoutFinish() {
                     <span className={s.muted}>
                       {event.type === "best_set"
                         ? `— лучший подход ${weight} × ${event.reps}`
-                        : `— вес вырос до ${weight} ${kg}`}
+                        : `— вес вырос до ${weight}`}
                     </span>
                   </div>
                 </div>
@@ -137,8 +152,7 @@ export function WorkoutFinish() {
             {summary.nextTime.map(({ exercise, weight }, i) => (
               <div className={s.next} key={`${exercise.id}-${i}`}>
                 <b>
-                  {exercise.name} {WEIGHT_SIGNS[exercise.weight.type]}
-                  {formatNumber(weight)} {kg}
+                  {exercise.name} {weightText(exercise, weight)}
                 </b>{" "}
                 — тот же вес, что сегодня
               </div>

@@ -62,7 +62,14 @@ export function SetView({ step }: SetViewProps) {
     updateSet(store, completed);
     updateRecords(store, completed);
     setLastCompleted(completed.id);
-    startTimer(step.performance.timer ?? DEFAULT_REST_SECONDS);
+
+    // The current set is the first unfinished one, so finishing the last
+    // step finishes the workout: there is nothing to rest for.
+    if (step.isLast) {
+      navigate(`/workouts/${step.performance.workout}/finish`);
+    } else {
+      startTimer(step.performance.timer ?? DEFAULT_REST_SECONDS);
+    }
   };
 
   return (

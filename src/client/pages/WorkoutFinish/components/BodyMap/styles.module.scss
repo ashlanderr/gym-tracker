@@ -17,21 +17,3 @@
   text-transform: uppercase;
   color: #5a5a5a;
 }
-
-.scale {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 10px;
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  color: #5a5a5a;
-
-  i {
-    display: block;
-    width: 22px;
-    height: 5px;
-    border-radius: 2px;
-  }
-}

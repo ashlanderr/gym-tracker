@@ -15,28 +15,19 @@ export function BodyMap({ levels }: BodyMapProps) {
   );
 
   return (
-    <>
-      <div className={s.figures}>
-        {VIEWS.map(({ type, label }) => (
-          <div className={s.figure} key={type}>
-            <Model
-              type={type}
-              data={data}
-              bodyColor={BODY_COLOR}
-              highlightedColors={LEVEL_COLORS}
-              svgStyle={{ display: "block" }}
-            />
-            <div className={s.caption}>{label}</div>
-          </div>
-        ))}
-      </div>
-      <div className={s.scale}>
-        мало
-        {LEVEL_COLORS.map((color) => (
-          <i key={color} style={{ background: color }} />
-        ))}
-        много
-      </div>
-    </>
+    <div className={s.figures}>
+      {VIEWS.map(({ type, label }) => (
+        <div className={s.figure} key={type}>
+          <Model
+            type={type}
+            data={data}
+            bodyColor={BODY_COLOR}
+            highlightedColors={LEVEL_COLORS}
+            svgStyle={{ display: "block" }}
+          />
+          <div className={s.caption}>{label}</div>
+        </div>
+      ))}
+    </div>
   );
 }

@@ -93,13 +93,24 @@ export function formatWeight(
   plan: StepPlan,
   weightKg: number | undefined,
 ): FormattedWeight {
+  return formatExerciseWeight(plan.exercise, plan.units, weightKg);
+}
+
+export function formatExerciseWeight(
+  exercise: Exercise,
+  units: WeightUnits,
+  weightKg: number | undefined,
+): FormattedWeight {
   if (weightKg === undefined) return { value: "–", units: "", isEmpty: true };
 
-  const value = formatNumber(kgToUnits(weightKg, plan.units));
-  const units = UNITS_SHORT[plan.units];
-  const sign = WEIGHT_SIGNS[plan.exercise.weight.type];
+  const value = formatNumber(kgToUnits(weightKg, units));
+  const sign = WEIGHT_SIGNS[exercise.weight.type];
 
-  return { value: `${sign}${value}`, units, isEmpty: false };
+  return {
+    value: `${sign}${value}`,
+    units: UNITS_SHORT[units],
+    isEmpty: false,
+  };
 }
 
 export function formatWeightChange(plan: StepPlan): string {
