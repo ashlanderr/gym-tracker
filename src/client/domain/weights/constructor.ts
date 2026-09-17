@@ -52,7 +52,8 @@ export function snapWeightKg(
 }
 
 // The nearest weight in the given direction that the inventory can
-// assemble, or a plain step when it can not.
+// assemble. At the edge of the inventory the weight stays put; without an
+// inventory a plain step is used.
 export function stepWeightKg(
   exercise: Exercise,
   gym: Gym,
@@ -60,17 +61,18 @@ export function stepWeightKg(
   direction: 1 | -1,
   fallbackStepKg: number,
 ): number {
-  if (computeWeights(exercise, gym, weightKg)) {
-    const next = snapWeightKg(
-      exercise,
-      gym,
-      weightKg + direction * STEP_PROBE_KG,
-      direction > 0 ? "ceil" : "floor",
-    );
-    if (Math.abs(next - weightKg) > EPSILON) return next;
+  if (!computeWeights(exercise, gym, weightKg)) {
+    return Math.max(0, weightKg + direction * fallbackStepKg);
   }
 
-  return Math.max(0, weightKg + direction * fallbackStepKg);
+  const next = snapWeightKg(
+    exercise,
+    gym,
+    weightKg + direction * STEP_PROBE_KG,
+    direction > 0 ? "ceil" : "floor",
+  );
+  const moved = (next - weightKg) * direction > EPSILON;
+  return moved ? next : weightKg;
 }
 
 export function getWeightUnits(exercise: Exercise, gym: Gym): WeightUnits {

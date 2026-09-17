@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   type Exercise,
+  type ExerciseWeight,
   type Gym,
   type RepRange,
   type Set,
@@ -86,31 +87,28 @@ export function useStepPlan(step: WorkoutStep): StepPlan | null {
 export interface FormattedWeight {
   value: string;
   units: string;
-  isText: boolean;
+  isEmpty: boolean;
 }
 
-// Exercises that add weight to the body show the addition, and plain body
-// weight reads as words on the set screen.
+// Body weight exercises show what is added to or taken from the body.
 export function formatWeight(
   plan: StepPlan,
   weightKg: number | undefined,
-  { bodyWeightAsText = true } = {},
 ): FormattedWeight {
-  if (weightKg === undefined) return { value: "—", units: "", isText: false };
+  if (weightKg === undefined) return { value: "–", units: "", isEmpty: true };
 
   const value = formatNumber(kgToUnits(weightKg, plan.units));
   const units = UNITS_SHORT[plan.units];
+  const sign = WEIGHT_SIGNS[plan.exercise.weight.type];
 
-  if (plan.exercise.weight.type !== "positive") {
-    return { value, units, isText: false };
-  }
-
-  if (weightKg === 0 && bodyWeightAsText) {
-    return { value: "Свой вес", units: "", isText: true };
-  }
-
-  return { value: `+${value}`, units, isText: false };
+  return { value: `${sign}${value}`, units, isEmpty: false };
 }
+
+const WEIGHT_SIGNS: Record<ExerciseWeight["type"], string> = {
+  full: "",
+  positive: "+",
+  negative: "−",
+};
 
 export function formatWeightChange(plan: StepPlan): string {
   const { weightKg, previousWeightKg } = plan;

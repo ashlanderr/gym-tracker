@@ -41,7 +41,7 @@ export function WeightSheet({
     ctor !== null &&
     weightKg !== undefined &&
     Math.abs(ctor.totalKg - weightKg) < 1e-3;
-  const weight = formatWeight(plan, weightKg, { bodyWeightAsText: false });
+  const weight = formatWeight(plan, weightKg);
 
   const saveWeight = (newWeightKg: number) => {
     if (set.completed) return;

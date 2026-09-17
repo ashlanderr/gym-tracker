@@ -82,7 +82,7 @@ export function SetView({ step }: SetViewProps) {
         <div className={s.numbers}>
           <div className={s.cell}>
             <button
-              className={clsx(s.big, weight.isText && s.bigText)}
+              className={clsx(s.big, weight.isEmpty && s.empty)}
               onClick={weightHandler}
             >
               {weight.value}

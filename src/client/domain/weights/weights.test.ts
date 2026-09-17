@@ -137,6 +137,21 @@ test("weight steps to the next assemblable value", () => {
   );
 });
 
+test("weight stays at the edge of the inventory", () => {
+  const machine = exercise({ type: "stack" });
+  const stack = gym({
+    stacks: {
+      [machine.id]: { units: "kg", base: 5, step: 5, additional: 2.5 },
+    },
+  });
+
+  expect(stepWeightKg(machine, stack, 5, -1, 2.5)).toEqual(5);
+  expect(stepWeightKg(machine, stack, 2.5, -1, 2.5)).toEqual(2.5);
+  expect(stepWeightKg(machine, stack, 7.5, -1, 2.5)).toEqual(5);
+  expect(stepWeightKg(machine, stack, 63, -1, 2.5)).toEqual(62.5);
+  expect(stepWeightKg(machine, stack, 63, 1, 2.5)).toEqual(65);
+});
+
 test("one rep max equivalents", () => {
   expect(oneRepMaxToWeight(volumeToOneRepMax(60, 6), 6)).closeTo(60, 0.1);
   expect(oneRepMaxToWeight(volumeToOneRepMax(60, 3), 3)).closeTo(60, 0.1);
