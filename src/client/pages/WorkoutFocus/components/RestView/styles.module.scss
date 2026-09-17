@@ -14,13 +14,6 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: #7a7a7a;
-
-  &:not(:first-child) {
-    margin-top: 36px;
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    color: #5f5f5f;
-  }
 }
 
 // Minutes and seconds take equal halves around the colon, so the colon
@@ -83,25 +76,6 @@
   background: #06f;
   color: #fff;
   font-weight: 600;
-}
-
-.nextMain {
-  margin-top: 9px;
-  font-size: 25px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.nextName {
-  white-space: normal;
-  font-size: 22px;
-  line-height: 1.25;
-}
-
-.nextSub {
-  margin-top: 6px;
-  font-size: 13px;
-  color: #7a7a7a;
 }
 
 .action {

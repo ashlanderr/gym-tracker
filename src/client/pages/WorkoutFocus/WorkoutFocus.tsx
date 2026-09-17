@@ -42,10 +42,10 @@ export function WorkoutFocus() {
 
   const openFinish = () => navigate(`/workouts/${workoutId}/finish`);
 
-  const isResting = current !== undefined && restSeconds > 0;
-  const stageKey = current
-    ? `${isResting ? "rest" : "set"}-${current.set.id}`
-    : `message-${steps.length === 0}`;
+  // The rest after the last set belongs to this workout only when the set
+  // that started it is one of its own.
+  const isResting = restSeconds > 0 && (current !== undefined || !!lastSet);
+  const stageKey = `${isResting ? "rest" : "set"}-${current?.set.id ?? steps.length === 0}`;
 
   const renderStage = () => {
     if (steps.length === 0) {
@@ -58,9 +58,14 @@ export function WorkoutFocus() {
       );
     }
 
-    if (current && isResting) {
+    if (isResting) {
       return (
-        <RestView next={current} seconds={restSeconds} lastSet={lastSet} />
+        <RestView
+          next={current}
+          seconds={restSeconds}
+          lastSet={lastSet}
+          onFinish={openFinish}
+        />
       );
     }
 

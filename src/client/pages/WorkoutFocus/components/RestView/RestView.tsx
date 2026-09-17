@@ -4,23 +4,26 @@ import { useStore } from "../../../../components";
 import { type Effort, updateSet } from "../../../../db";
 import { useActiveTimer } from "../../../Workout/components";
 import { EFFORTS, REST_ADJUST_SECONDS } from "../../constants.ts";
-import { formatWeight, useStepPlan } from "../../hooks.ts";
+import { NextUp } from "../NextUp";
 import type { RestViewProps } from "./types.ts";
 
-export function RestView({ next, seconds, lastSet }: RestViewProps) {
+// Without a next step the rest follows the last set: the person can still
+// rate it, and the action finishes the workout instead of skipping rest.
+export function RestView({ next, seconds, lastSet, onFinish }: RestViewProps) {
   const store = useStore();
   const { startTimer } = useActiveTimer();
-  const plan = useStepPlan(next);
 
   const effortHandler = (effort: Effort) => {
     if (!lastSet?.completed) return;
     updateSet(store, { ...lastSet, effort });
   };
 
+  const finishHandler = () => {
+    startTimer(undefined);
+    onFinish();
+  };
+
   const minutes = Math.floor(seconds / 60);
-  const weight = plan && formatWeight(plan, plan.weightKg);
-  const nextKind = next.set.type === "warm-up" ? "Разминка" : "Подход";
-  const isSameExercise = lastSet?.performance === next.performance.id;
 
   return (
     <>
@@ -61,36 +64,18 @@ export function RestView({ next, seconds, lastSet }: RestViewProps) {
             </div>
           </>
         )}
-        {plan && weight && (
-          <>
-            <div className={s.label}>Дальше</div>
-            {isSameExercise ? (
-              <>
-                <div className={s.nextMain}>
-                  {weight.value} {weight.units} × {plan.reps}
-                </div>
-                <div className={s.nextSub}>
-                  {nextKind} {next.number} из {next.count}
-                </div>
-              </>
-            ) : (
-              <>
-                <div className={clsx(s.nextMain, s.nextName)}>
-                  {plan.exercise.name}
-                </div>
-                <div className={s.nextSub}>
-                  {nextKind} {next.number} из {next.count} · {weight.value}{" "}
-                  {weight.units} × {plan.reps}
-                </div>
-              </>
-            )}
-          </>
-        )}
+        {next && <NextUp next={next} lastSet={lastSet} />}
       </div>
       <div className={s.action}>
-        <button className={s.skip} onClick={() => startTimer(undefined)}>
-          Пропустить отдых
-        </button>
+        {next ? (
+          <button className={s.skip} onClick={() => startTimer(undefined)}>
+            Пропустить отдых
+          </button>
+        ) : (
+          <button className={s.skip} onClick={finishHandler}>
+            Завершить тренировку
+          </button>
+        )}
       </div>
     </>
   );
