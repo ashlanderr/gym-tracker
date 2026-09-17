@@ -4,6 +4,12 @@ import type { Effort } from "../../db";
 // The profile has no sex yet, so the button uses the male form until it does.
 export const DONE_LABEL = "Сделал";
 
+export const SET_FORMS: [string, string, string] = [
+  "подход",
+  "подхода",
+  "подходов",
+];
+
 // Performances without a configured timer still get a rest screen, because
 // the question about the set lives there.
 export const DEFAULT_REST_SECONDS = 120;

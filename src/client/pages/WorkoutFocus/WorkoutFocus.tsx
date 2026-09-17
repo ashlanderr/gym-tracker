@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import { useMemo } from "react";
 import { useNavigate } from "react-router";
 import { useAtomValue } from "jotai";
-import { MdArrowBack } from "react-icons/md";
+import { MdArrowBack, MdCheck } from "react-icons/md";
 import { AnimatePresence, motion } from "motion/react";
 import {
   useQueryPerformancesByWorkout,
@@ -17,7 +17,9 @@ import type { WorkoutParams } from "../Workout/types.ts";
 import { useActiveTimer } from "../Workout/components";
 import { FocusMessage, RestView, SetView } from "./components";
 import { useClock, useRestSeconds } from "./hooks.ts";
-import { LAST_COMPLETED_SET_ATOM } from "./constants.ts";
+import { LAST_COMPLETED_SET_ATOM, SET_FORMS } from "./constants.ts";
+import { pluralize } from "../../utils";
+import { formatDurationWords } from "../WorkoutFinish/utils.ts";
 
 export function WorkoutFocus() {
   const { workoutId } = usePageParams<WorkoutParams>();
@@ -37,6 +39,8 @@ export function WorkoutFocus() {
   );
   const current = findCurrentStep(steps);
   const lastSet = sets.find((set) => set.id === lastSetId);
+  const doneSets = sets.filter((set) => set.completed).length;
+  const elapsed = workout ? Date.now() - workout.startedAt : 0;
 
   const openTable = () => navigate(`/workouts/${workoutId}/all`);
 
@@ -51,7 +55,7 @@ export function WorkoutFocus() {
     if (steps.length === 0) {
       return (
         <FocusMessage
-          text="В тренировке пока нет упражнений"
+          title="В тренировке пока нет упражнений"
           action="Добавить упражнение"
           onAction={openTable}
         />
@@ -75,9 +79,13 @@ export function WorkoutFocus() {
 
     return (
       <FocusMessage
-        text="Все подходы сделаны"
+        icon={<MdCheck />}
+        title="Все подходы сделаны"
+        details={`${pluralize(doneSets, SET_FORMS)} · ${formatDurationWords(elapsed)}`}
+        text="Посмотри итоги или добавь ещё упражнение, если силы остались"
         action="Закончить тренировку"
         onAction={openFinish}
+        secondary={{ label: "Добавить упражнение", onClick: openTable }}
       />
     );
   };
