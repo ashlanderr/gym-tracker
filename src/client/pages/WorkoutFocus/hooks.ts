@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   type Exercise,
-  type ExerciseWeight,
   type Gym,
   type RepRange,
   type Set,
@@ -19,7 +18,7 @@ import {
   kgToUnits,
   type WorkoutStep,
 } from "../../domain";
-import { UNITS_SHORT } from "../constants.ts";
+import { UNITS_SHORT, WEIGHT_SIGNS } from "../constants.ts";
 
 export interface StepPlan {
   set: Set;
@@ -90,7 +89,6 @@ export interface FormattedWeight {
   isEmpty: boolean;
 }
 
-// Body weight exercises show what is added to or taken from the body.
 export function formatWeight(
   plan: StepPlan,
   weightKg: number | undefined,
@@ -103,12 +101,6 @@ export function formatWeight(
 
   return { value: `${sign}${value}`, units, isEmpty: false };
 }
-
-const WEIGHT_SIGNS: Record<ExerciseWeight["type"], string> = {
-  full: "",
-  positive: "+",
-  negative: "−",
-};
 
 export function formatWeightChange(plan: StepPlan): string {
   const { weightKg, previousWeightKg } = plan;

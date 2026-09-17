@@ -227,8 +227,21 @@ export const EXERCISES: Record<string, Exercise> = {
     weight: { type: "full" },
     reps: { min: 6, max: 8 },
     asset: PLACEHOLDER_ASSET,
-    alternatives: [],
-    instructions: [],
+    alternatives: [
+      {
+        id: "uTAoik0jk8O6L43JTxWm",
+        benefits: "если скамья со штангой занята",
+      },
+      {
+        id: "Lf2a6CaubEowWiwdb4R8",
+        benefits: "проще по технике",
+      },
+    ],
+    instructions: [
+      "Лопатки сведены и прижаты, стопы всей подошвой в полу.",
+      "Опускай штангу к нижней части груди, локти под 45° к корпусу.",
+      "Не отрывай таз от скамьи и не выключай локти в верхней точке.",
+    ],
   },
   ["6RvYYb7MsBwFBPOLQ7H7"]: {
     id: "6RvYYb7MsBwFBPOLQ7H7",

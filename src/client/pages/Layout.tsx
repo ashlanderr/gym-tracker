@@ -5,7 +5,7 @@ import { WorkoutFocus } from "./WorkoutFocus";
 import { Home } from "./Home";
 import { ModalStack, StoreProvider } from "../components";
 import { User } from "./User";
-import { ExerciseHistory } from "./Exercise";
+import { ExercisePage } from "./Exercise";
 import s from "./layout.module.scss";
 
 export function Layout() {
@@ -40,10 +40,7 @@ function AnimatedRoutes() {
           <Route path="/" element={<Home />} />
           <Route path="/workouts/:workoutId" element={<WorkoutFocus />} />
           <Route path="/workouts/:workoutId/all" element={<Workout />} />
-          <Route
-            path="/exercises/:exerciseId/history"
-            element={<ExerciseHistory />}
-          />
+          <Route path="/exercises/:exerciseId" element={<ExercisePage />} />
           <Route path="/user" element={<User />} />
         </Routes>
       </motion.div>

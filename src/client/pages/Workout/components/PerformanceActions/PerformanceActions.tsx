@@ -51,7 +51,7 @@ export function PerformanceActions({
 
   const historyHandler = async () => {
     await onCancel();
-    navigate(`/exercises/${exercise.id}/history`);
+    navigate(`/exercises/${exercise.id}?performance=${performance.id}`);
   };
 
   const orderBeginHandler = () => {

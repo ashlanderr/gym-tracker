@@ -5,6 +5,7 @@ import {
   insertEntity,
   maxBy,
   queryCollection,
+  useGetEntity,
   useQueryCollection,
 } from "./db.ts";
 import type { Store } from "./doc.ts";
@@ -49,6 +50,17 @@ export function queryPerformanceById(
   id: string,
 ): Performance | null {
   return getEntity(collection(store.personal, "performances"), id);
+}
+
+export function useQueryPerformanceById(
+  store: Store,
+  id: string,
+): Performance | null {
+  return useGetEntity({
+    collection: collection(store.personal, "performances"),
+    id,
+    deps: [id],
+  });
 }
 
 export function queryPerformancesByWorkout(

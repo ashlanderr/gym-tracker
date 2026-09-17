@@ -73,7 +73,11 @@ export function SetView({ step }: SetViewProps) {
         )}
         <button
           className={s.name}
-          onClick={() => navigate(`/exercises/${exercise.id}/history`)}
+          onClick={() =>
+            navigate(
+              `/exercises/${exercise.id}?performance=${step.performance.id}`,
+            )
+          }
         >
           {exercise.name}
           <span className={s.chevron} />

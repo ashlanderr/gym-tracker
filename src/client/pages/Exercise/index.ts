@@ -1,1 +1,1 @@
-export { ExerciseHistory } from "./pages";
+export { ExercisePage } from "./pages";

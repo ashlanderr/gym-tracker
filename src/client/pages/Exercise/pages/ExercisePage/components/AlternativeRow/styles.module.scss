@@ -1,0 +1,57 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 12px;
+  background: #151515;
+}
+
+.open {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.thumb {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 9px;
+  object-fit: cover;
+  background: #232323;
+}
+
+.text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.name {
+  font-size: 13px;
+  color: #e0e0e0;
+}
+
+.benefits {
+  font-size: 11px;
+  color: #7a7a7a;
+}
+
+.replace {
+  flex: 0 0 auto;
+  padding: 9px 12px;
+  border: 1px solid #2e2e2e;
+  border-radius: 9px;
+  background: transparent;
+  color: #bdbdbd;
+  font-size: 12px;
+}

@@ -1,0 +1,58 @@
+.video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: #000;
+}
+
+.name {
+  padding: 16px 16px 0;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.facts {
+  padding: 10px 16px 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #8d8d8d;
+
+  b {
+    font-weight: 500;
+    color: #dcdcdc;
+  }
+}
+
+.cues {
+  padding: 8px 16px 0;
+}
+
+.cue {
+  display: flex;
+  gap: 10px;
+  margin-top: 9px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #b5b5b5;
+}
+
+.cueNumber {
+  color: #4a4a4a;
+  font-variant-numeric: tabular-nums;
+}
+
+.section {
+  padding: 24px 16px 0;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #5f6a72;
+}
+
+.alternatives {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px 0;
+}

@@ -8,6 +8,13 @@ import type {
   RecordType,
 } from "../db";
 
+// Body weight exercises show what is added to or taken from the body.
+export const WEIGHT_SIGNS: Record<ExerciseWeight["type"], string> = {
+  full: "",
+  positive: "+",
+  negative: "−",
+};
+
 export const MUSCLES_TRANSLATION: Record<MuscleType, string> = {
   abs: "Пресс",
   abductors: "Отводящие мышцы",
