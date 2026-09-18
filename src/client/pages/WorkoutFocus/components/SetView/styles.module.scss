@@ -102,10 +102,22 @@
 }
 
 .hints {
-  margin-top: 44px;
+  margin: 44px 0 22px;
   font-size: 11px;
   line-height: 1.75;
   color: #4f4f4f;
+}
+
+// Short screens buy room for the exercise picture out of the spacing, which is
+// generous by design but the first thing that should give when height runs out.
+@media (max-height: 720px) {
+  .numbers {
+    margin-top: 22px;
+  }
+
+  .hints {
+    margin: 20px 0 14px;
+  }
 }
 
 .action {
