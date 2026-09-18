@@ -1,4 +1,5 @@
 import s from "./styles.module.scss";
+import { ExerciseCrossFade } from "../../../../../../components";
 import type { MuscleType } from "../../../../../../db";
 import {
   EQUIPMENT_TRANSLATION,
@@ -21,14 +22,11 @@ export function TechniqueTab({ exercise, onReplace }: TechniqueTabProps) {
 
   return (
     <>
-      {exercise.asset?.type === "video" && (
-        <video
-          className={s.video}
-          src={exercise.asset.url}
-          autoPlay
-          loop
-          muted
-          playsInline
+      {exercise.asset?.type === "cross-fade" && (
+        <ExerciseCrossFade
+          className={s.animation}
+          startUrl={exercise.asset.startUrl}
+          endUrl={exercise.asset.endUrl}
         />
       )}
       <div className={s.name}>{exercise.name}</div>

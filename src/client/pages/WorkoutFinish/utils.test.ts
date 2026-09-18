@@ -3,7 +3,7 @@ import { EXERCISES } from "../../db/exercises/constants.ts";
 import type { Performance, Record, RecordType, Set } from "../../db";
 
 const BENCH = EXERCISES["OvlOX8JCqg0lEuaPBU3G"];
-const ROW = EXERCISES["TKCpwpwjAtyQOCYMR4jG"];
+const ROW = EXERCISES["7WHNH0KA8Fved2WkuQ1s"];
 
 const performance = (id: string, exercise: string, order: number) =>
   ({

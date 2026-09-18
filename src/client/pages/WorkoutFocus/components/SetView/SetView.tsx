@@ -18,7 +18,7 @@ import {
   HINTS,
   LAST_COMPLETED_SET_ATOM,
 } from "../../constants.ts";
-import { ExerciseVideo } from "../ExerciseVideo";
+import { ExerciseAnimation } from "../ExerciseAnimation";
 import { WeightSheet } from "../WeightSheet";
 import { RepsSheet } from "../RepsSheet";
 import type { SetViewProps } from "./types.ts";
@@ -80,8 +80,11 @@ export function SetView({ step }: SetViewProps) {
   return (
     <>
       <div className={s.stage}>
-        {exercise.asset?.type === "video" && (
-          <ExerciseVideo url={exercise.asset.url} />
+        {exercise.asset?.type === "cross-fade" && (
+          <ExerciseAnimation
+            startUrl={exercise.asset.startUrl}
+            endUrl={exercise.asset.endUrl}
+          />
         )}
         <button
           className={s.name}

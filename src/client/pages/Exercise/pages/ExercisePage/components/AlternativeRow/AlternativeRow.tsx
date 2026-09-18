@@ -1,6 +1,6 @@
 import s from "./styles.module.scss";
 import { useNavigate } from "react-router";
-import { useStore } from "../../../../../../components";
+import { ExerciseCrossFade, useStore } from "../../../../../../components";
 import { useQueryExerciseById } from "../../../../../../db";
 import type { AlternativeRowProps } from "./types.ts";
 
@@ -20,13 +20,11 @@ export function AlternativeRow({
         className={s.open}
         onClick={() => navigate(`/exercises/${exercise.id}`)}
       >
-        {exercise.asset?.type === "video" ? (
-          <video
+        {exercise.asset?.type === "cross-fade" ? (
+          <ExerciseCrossFade
             className={s.thumb}
-            src={exercise.asset.url}
-            muted
-            playsInline
-            preload="metadata"
+            startUrl={exercise.asset.startUrl}
+            endUrl={exercise.asset.endUrl}
           />
         ) : (
           <span className={s.thumb} />
