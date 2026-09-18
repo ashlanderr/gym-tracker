@@ -136,11 +136,43 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
 npm run build
 ```
 
+### Building the Android App
+
+Requires a JDK and the Android SDK. Gradle finds the SDK through
+`android/local.properties`, which holds a `sdk.dir` path for this machine and is
+not committed — Android Studio writes it on first open, or create it by hand:
+
+```
+sdk.dir=C:/Android/Sdk
+```
+
+Then build. Both commands rebuild the web bundle, sync it into the native
+project, and run Gradle; the APK path is printed at the end.
+
+```bash
+npm run apk
+```
+
+```bash
+npm run apk:release
+```
+
+The debug APK lands in `android/app/build/outputs/apk/debug/app-debug.apk`. To
+build and launch on a connected device or emulator instead, use `npm run
+android`.
+
 ### Running Tests
 
 ```bash
 npm test
 ```
+
+### Adding an Exercise
+
+Exercises are illustrated by a pair of frames the app cross-fades between. The
+masters live in `media/exercise-frames/`, and `media/README.md` covers the whole
+loop: drawing the pair, building the bundled images, and wiring the exercise
+into the catalog.
 
 ### Regenerating Icons
 
