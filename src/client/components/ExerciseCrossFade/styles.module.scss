@@ -1,0 +1,52 @@
+.root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+.frame {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+// Only the end frame animates; the start frame sits underneath it the whole
+// time, so the pair never shows a gap while the browser decodes.
+.end {
+  opacity: 0;
+  animation: crossFade 5s ease-in-out infinite;
+}
+
+.paused {
+  animation-play-state: paused;
+}
+
+// Hold each end of the movement still long enough to read it, then take a
+// visible moment to travel between them. Matching timings either side keeps
+// the loop from looking like it snaps back.
+@keyframes crossFade {
+  0%,
+  32% {
+    opacity: 0;
+  }
+  50%,
+  82% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .end {
+    animation: none;
+    opacity: 1;
+  }
+}

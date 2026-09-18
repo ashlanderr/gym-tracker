@@ -29,7 +29,18 @@ export type ExerciseLoad =
   | { type: "stack" }
   | { type: "plates"; sides: 1 | 2 };
 
+// A cross-fade is two stills of the same shot — the start and the end of the
+// movement — that the UI fades between.
+//
+// This replaced a baked video, and deliberately so. Fading between two images
+// is a few lines of CSS, so the clip bought nothing in effort; meanwhile the
+// frames are the artwork itself, while a video is a render of it. From an mp4
+// the stills cannot be recovered, so changing the timing, the crop or the
+// aspect ratio would mean re-encoding from masters that would have to be kept
+// alongside the video anyway — paying for the same content twice. Keeping only
+// the frames leaves the source editable and the bundle smaller.
 export type ExerciseAsset =
+  | { type: "cross-fade"; startUrl: string; endUrl: string }
   | { type: "video"; url: string }
   | { type: "image"; url: string };
 
