@@ -10,21 +10,27 @@ these files, shrinks them, and writes the results into
   exercise, under CC BY-SA 4.0. It covers the exercises nothing has been drawn
   for yet; `everkinetic/README.md` covers the import and what the licence
   obliges us to do.
-- `exercise-frames/` — two square frames per exercise, `<slug>-start.webp` and
-  `<slug>-end.webp`, at 2048px. They are the start and the end position of one
-  movement, drawn from the same camera so the app can cross-fade between them.
-- `exercise-frames/replaced/` — drawn pairs the imported line art has taken
-  over. A catalog in two drawing styles reads as a mistake, so the six
-  exercises that exist in both sets now use the imported version, and their
-  renders sit here. The build ignores this folder; nothing is lost if the
-  choice is reversed.
-- `character-reference.webp` — the anatomical figure every exercise is drawn
-  from. It is not used by the app and is never bundled. It exists so that new
-  frames can be generated with the same body, shading, shorts and lighting as
-  the ones already in the catalog; without it a new exercise comes out looking
-  like it belongs to a different set.
+- `line-art/` — line art generated for this project in the same style, for the
+  exercises the imported set has no drawing for. Ours, with no licence
+  attached; `line-art/README.md` has the prompt and the measurements behind it.
+- `exercise-frames/` — the shaded 2048px renders the catalog started with:
+  two square frames per exercise, `<slug>-start.webp` and `<slug>-end.webp`,
+  the start and the end of one movement from the same camera. The folder is
+  empty now — see below — but the build still reads it, so putting a pair back
+  is all it takes.
+- `exercise-frames/replaced/` — those renders. A catalog in two drawing styles
+  reads as a mistake, and once the line art covered sixty exercises the seven
+  shaded ones were the odd ones out, so they moved here. The build ignores this
+  folder; nothing is lost if the choice is reversed.
+- `character-reference.webp` — the anatomical figure the shaded renders were
+  drawn from. It is not used by the app and is never bundled. It exists so a
+  new render comes out with the same body, shading, shorts and lighting as the
+  others rather than looking like it belongs to a different set.
 
 ## Adding an exercise
+
+Line art is the current style: `line-art/README.md` has the prompt and what to
+check before keeping a pair. The steps below are for a shaded render instead.
 
 1. Draw the pair of frames and save them as
    `media/exercise-frames/<slug>-start.webp` and `<slug>-end.webp`.

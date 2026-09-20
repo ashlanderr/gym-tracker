@@ -11,6 +11,9 @@
 //   media/everkinetic/      two-colour line art imported from the everkinetic
 //                           data set. Colours are inverted so it reads on a
 //                           dark screen, and it ships as SVG.
+//   media/line-art/         line art generated for this project, as whatever
+//                           the model produced. Flattened to two colours and
+//                           inverted, then bundled as lossless WebP.
 //
 // Usage: node scripts/prepare-exercise-images.mjs [--force]
 
@@ -26,12 +29,14 @@ import {
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
+import sharp from "sharp";
 
 const run = promisify(execFile);
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SRC_DIR = join(ROOT, "media", "exercise-frames");
 const SVG_SRC_DIR = join(ROOT, "media", "everkinetic");
+const LINE_ART_DIR = join(ROOT, "media", "line-art");
 const OUT_DIR = join(ROOT, "src", "client", "db", "exercises", "assets");
 
 // 640 rather than the size the workout card shows: the technique tab draws the
@@ -61,6 +66,28 @@ function invert(svg) {
     /fill="#([0-9a-f]{3}|[0-9a-f]{6})"/gi,
     (_, hex) => `fill="${negate(hex)}"`,
   );
+}
+
+// Generated line art arrives as a photo-ish file — a JPEG of a drawing, with
+// grey fringes around every stroke. Flattening it to two colours first is what
+// makes the rest cheap: as a pure black-and-white bitmap the pair costs 4.8 kB
+// at 640px and 10.8 kB at 1280px in lossless WebP, against 23 kB for the same
+// frame at 640px in lossy WebP, which is also visibly worse on line art, and
+// 40 kB for a vector tracing of it. Being cheap at 1280 is why it ships at
+// 1280: the technique tab draws these nearly full width, where a 640px still
+// is soft on a 3x screen.
+const LINE_ART_SIZE = 1280;
+const LINE_ART_THRESHOLD = 170;
+
+async function buildLineArtFrame(source, outPath) {
+  await sharp(source)
+    .flatten({ background: "#fff" })
+    .greyscale()
+    .threshold(LINE_ART_THRESHOLD)
+    .negate()
+    .resize(LINE_ART_SIZE, LINE_ART_SIZE, { fit: "inside" })
+    .webp({ lossless: true, effort: 6 })
+    .toFile(outPath);
 }
 
 function negate(hex) {
@@ -216,13 +243,52 @@ async function buildImported() {
   return slugs.map((slug) => ({ slug, ext: "svg" }));
 }
 
+async function buildLineArt() {
+  if (!(await exists(LINE_ART_DIR))) return [];
+
+  const files = await readdir(LINE_ART_DIR);
+  const pattern = /-start\.(jpg|jpeg|png|webp)$/i;
+  const slugs = [
+    ...new Set(
+      files.filter((f) => pattern.test(f)).map((f) => f.replace(pattern, "")),
+    ),
+  ].sort();
+
+  const sourceFor = (slug, end) =>
+    files.find((f) =>
+      new RegExp(`^${slug}-${end}\\.(jpg|jpeg|png|webp)$`, "i").test(f),
+    );
+
+  let bytes = 0;
+
+  for (const slug of slugs) {
+    for (const end of ["start", "end"]) {
+      const name = sourceFor(slug, end);
+      if (!name) throw new Error(`${slug} has no ${end} frame`);
+
+      const outPath = join(OUT_DIR, `${slug}-${end}.webp`);
+      await buildLineArtFrame(join(LINE_ART_DIR, name), outPath);
+      bytes += (await stat(outPath)).size;
+    }
+  }
+
+  if (slugs.length) {
+    console.log(`line art: ${slugs.length} flattened, ${bytes} bytes total`);
+  }
+  return slugs.map((slug) => ({ slug, ext: "webp" }));
+}
+
 async function main() {
   const force = process.argv.includes("--force");
 
   await mkdir(OUT_DIR, { recursive: true });
   await mkdir(SRC_DIR, { recursive: true });
 
-  const frames = [...(await buildRendered(force)), ...(await buildImported())];
+  const frames = [
+    ...(await buildRendered(force)),
+    ...(await buildImported()),
+    ...(await buildLineArt()),
+  ];
 
   if (!frames.length) throw new Error(`no masters in ${SRC_DIR}`);
 
@@ -230,7 +296,7 @@ async function main() {
     .map(({ slug }) => slug)
     .filter((slug, i, all) => all.indexOf(slug) !== i);
   if (duplicates.length) {
-    throw new Error(`${duplicates[0]} has masters in both media directories`);
+    throw new Error(`${duplicates[0]} has masters in two media directories`);
   }
 
   // Anything left over belongs to an exercise that is no longer in the catalog.
