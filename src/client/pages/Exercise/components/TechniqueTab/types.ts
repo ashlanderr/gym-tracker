@@ -1,4 +1,4 @@
-import type { Exercise } from "../../../../../../db";
+import type { Exercise } from "../../../../db";
 
 export interface TechniqueTabProps {
   exercise: Exercise;

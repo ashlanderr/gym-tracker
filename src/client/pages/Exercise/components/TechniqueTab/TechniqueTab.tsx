@@ -1,10 +1,10 @@
 import s from "./styles.module.scss";
-import { ExerciseCrossFade } from "../../../../../../components";
-import type { MuscleType } from "../../../../../../db";
+import { ExerciseCrossFade } from "../../../../components";
+import type { MuscleType } from "../../../../db";
 import {
   EQUIPMENT_TRANSLATION,
   MUSCLES_TRANSLATION,
-} from "../../../../../constants.ts";
+} from "../../../constants.ts";
 import { AlternativeRow } from "../AlternativeRow";
 import type { TechniqueTabProps } from "./types.ts";
 

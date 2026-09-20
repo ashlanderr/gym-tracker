@@ -18,10 +18,10 @@ import {
   useQueryPerformancesByExercise,
   useQueryRecordsByExercise,
   useQuerySetsByExercise,
-} from "../../../../../../db";
-import { useStore } from "../../../../../../components";
-import { addSelfWeight } from "../../../../../../domain";
-import { UNITS_SHORT, WEIGHT_SIGNS } from "../../../../../constants.ts";
+} from "../../../../db";
+import { useStore } from "../../../../components";
+import { addSelfWeight } from "../../../../domain";
+import { UNITS_SHORT, WEIGHT_SIGNS } from "../../../constants.ts";
 import {
   AXIS_DATE_FORMATTER,
   CHART_METRICS,

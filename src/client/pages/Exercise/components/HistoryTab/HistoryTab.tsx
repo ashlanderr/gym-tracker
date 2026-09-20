@@ -6,11 +6,11 @@ import {
   useQueryPerformancesByExercise,
   useQueryRecordsByExercise,
   useQuerySetsByExercise,
-} from "../../../../../../db";
-import { useStore } from "../../../../../../components";
-import { MEDAL_RECORDS } from "../../../../../../domain";
-import { pluralize } from "../../../../../../utils";
-import { WEIGHT_SIGNS } from "../../../../../constants.ts";
+} from "../../../../db";
+import { useStore } from "../../../../components";
+import { MEDAL_RECORDS } from "../../../../domain";
+import { pluralize } from "../../../../utils";
+import { WEIGHT_SIGNS } from "../../../constants.ts";
 import { SESSION_DATE_FORMATTER } from "../../constants.ts";
 import { buildSessions } from "../../utils.ts";
 import type { HistoryTabProps } from "./types.ts";

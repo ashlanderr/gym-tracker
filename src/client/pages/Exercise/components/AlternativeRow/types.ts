@@ -1,4 +1,4 @@
-import type { ExerciseAlternative } from "../../../../../../db";
+import type { ExerciseAlternative } from "../../../../db";
 
 export interface AlternativeRowProps {
   alternative: ExerciseAlternative;

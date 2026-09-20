@@ -1,5 +1,5 @@
 import { buildHistory, buildSessions } from "./utils.ts";
-import type { Performance, Set, SetType } from "../../../../db";
+import type { Performance, Set, SetType } from "../../db";
 
 const DAY = 24 * 3600 * 1000;
 const NOW = new Date(2026, 8, 17).valueOf();

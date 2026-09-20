@@ -1,4 +1,4 @@
-import type { CompletedSet, Performance } from "../../../../db";
+import type { CompletedSet, Performance } from "../../db";
 
 export interface ExercisePageParams {
   exerciseId: string;

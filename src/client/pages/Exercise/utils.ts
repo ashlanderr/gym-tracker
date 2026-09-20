@@ -1,5 +1,5 @@
-import type { CompletedSet, Performance, Set } from "../../../../db";
-import { volumeToOneRepMax } from "../../../../domain";
+import type { CompletedSet, Performance, Set } from "../../db";
+import { volumeToOneRepMax } from "../../domain";
 import type { ChartPeriod, HistoryPoint, HistorySession } from "./types.ts";
 import { PERIOD_MONTHS } from "./constants.ts";
 

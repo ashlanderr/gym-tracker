@@ -2,8 +2,8 @@ import { buildFinishSummary } from "./utils.ts";
 import { EXERCISES } from "../../db/exercises/constants.ts";
 import type { Performance, Record, RecordType, Set } from "../../db";
 
-const BENCH = EXERCISES["OvlOX8JCqg0lEuaPBU3G"];
-const ROW = EXERCISES["7WHNH0KA8Fved2WkuQ1s"];
+const BENCH = EXERCISES["bench_press"];
+const ROW = EXERCISES["lat_pulldown_wide"];
 
 const performance = (id: string, exercise: string, order: number) =>
   ({

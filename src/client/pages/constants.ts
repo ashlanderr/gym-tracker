@@ -24,7 +24,7 @@ export const MUSCLES_TRANSLATION: Record<MuscleType, string> = {
   chest: "Грудь",
   forearms: "Предплечья",
   glutes: "Ягодицы",
-  hamstrings: "Подколенные сухожилия",
+  hamstrings: "Бицепс бедра",
   lats: "Широчайшие",
   lower_back: "Низ спины",
   neck: "Шея",
@@ -39,7 +39,10 @@ export const EQUIPMENT_TRANSLATION: Record<EquipmentTag, string> = {
   barbell: "Штанга",
   dumbbell: "Гантели",
   machine: "Тренажёр",
+  cable: "Кроссовер",
+  smith: "Смит",
   bench: "Скамья",
+  bodyweight: "Свой вес",
 };
 
 export const LOAD_TRANSLATION: Record<ExerciseLoad["type"], string> = {

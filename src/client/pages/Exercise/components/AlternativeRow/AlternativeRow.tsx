@@ -1,7 +1,7 @@
 import s from "./styles.module.scss";
 import { useNavigate } from "react-router";
-import { ExerciseCrossFade, useStore } from "../../../../../../components";
-import { useQueryExerciseById } from "../../../../../../db";
+import { ExerciseCrossFade, useStore } from "../../../../components";
+import { useQueryExerciseById } from "../../../../db";
 import type { AlternativeRowProps } from "./types.ts";
 
 export function AlternativeRow({

@@ -1,6 +1,4 @@
 import s from "./styles.module.scss";
-import { clsx } from "clsx";
-import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { MdArrowBack } from "react-icons/md";
 import {
@@ -13,14 +11,9 @@ import {
 import { useModalStack, useStore } from "../../../../components";
 import { replacePerformance } from "../../../../domain";
 import { usePageParams } from "../../../hooks.ts";
-import { TABS } from "./constants.ts";
-import type { ExercisePageParams, ExerciseTab } from "./types.ts";
-import {
-  HistoryTab,
-  ProgressTab,
-  ReplaceExerciseModal,
-  TechniqueTab,
-} from "./components";
+import type { ExercisePageParams } from "../../types.ts";
+import { ExerciseDetails } from "../../components";
+import { ReplaceExerciseModal } from "./components";
 
 // Opened from a workout, the page carries the performance and can replace
 // the exercise in it. Otherwise it is read-only.
@@ -30,7 +23,6 @@ export function ExercisePage() {
   const { pushModal } = useModalStack();
   const { exerciseId } = usePageParams<ExercisePageParams>();
   const [searchParams] = useSearchParams();
-  const [tab, setTab] = useState<ExerciseTab>("technique");
   const exercise = useQueryExerciseById(store, exerciseId);
   const performance = useQueryPerformanceById(
     store,
@@ -60,24 +52,6 @@ export function ExercisePage() {
     navigate(-1);
   };
 
-  const renderTab = () => {
-    switch (tab) {
-      case "technique":
-        return (
-          <TechniqueTab
-            exercise={exercise}
-            onReplace={canReplace ? replaceHandler : undefined}
-          />
-        );
-
-      case "progress":
-        return <ProgressTab exercise={exercise} />;
-
-      case "history":
-        return <HistoryTab exercise={exercise} />;
-    }
-  };
-
   return (
     <div className={s.root}>
       <div className={s.top}>
@@ -86,20 +60,10 @@ export function ExercisePage() {
         </button>
         <div className={s.title}>Упражнение</div>
       </div>
-      <div className={s.tabs}>
-        {TABS.map(({ key, label }) => (
-          <button
-            key={key}
-            className={clsx(s.tab, key === tab && s.active)}
-            onClick={() => setTab(key)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-      <div className={s.content} key={tab}>
-        {renderTab()}
-      </div>
+      <ExerciseDetails
+        exercise={exercise}
+        onReplace={canReplace ? replaceHandler : undefined}
+      />
     </div>
   );
 }

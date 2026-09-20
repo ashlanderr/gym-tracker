@@ -2,7 +2,7 @@ import { buildRecommendations } from "./recommendations.ts";
 import { EXERCISES } from "../../db/exercises/constants.ts";
 import { defaultGym } from "../../db";
 
-const BENCH_PRESS = EXERCISES["OvlOX8JCqg0lEuaPBU3G"];
+const BENCH_PRESS = EXERCISES["bench_press"];
 const REPS = { min: 6, max: 8 };
 
 const draft = (type: "warm-up" | "working") => ({

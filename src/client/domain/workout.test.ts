@@ -12,7 +12,7 @@ import { addWorkout, duplicateWorkout } from "./workout.ts";
 import { addNextSet } from "./sets.ts";
 import { addPerformance, replacePerformance } from "./performances.ts";
 
-const BENCH_PRESS = "OvlOX8JCqg0lEuaPBU3G";
+const BENCH_PRESS = "bench_press";
 const DUMBBELL_PRESS = "uTAoik0jk8O6L43JTxWm";
 const BUTTERFLY = "tX9HxwCkIckqNaEaf2Dq";
 

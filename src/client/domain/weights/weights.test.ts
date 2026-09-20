@@ -12,7 +12,7 @@ import {
   type Gym,
 } from "../../db";
 
-const BENCH_PRESS = EXERCISES["OvlOX8JCqg0lEuaPBU3G"];
+const BENCH_PRESS = EXERCISES["bench_press"];
 
 function exercise(load: ExerciseLoad): Exercise {
   return { ...BENCH_PRESS, load };

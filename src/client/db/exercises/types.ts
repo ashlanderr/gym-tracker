@@ -17,7 +17,14 @@ export type MuscleType =
   | "triceps"
   | "upper_back";
 
-export type EquipmentTag = "barbell" | "dumbbell" | "machine" | "bench";
+export type EquipmentTag =
+  | "barbell"
+  | "dumbbell"
+  | "machine"
+  | "cable"
+  | "smith"
+  | "bench"
+  | "bodyweight";
 
 // How the weight of the exercise is assembled from the gym inventory.
 // Plate-loaded machines rarely have the sled weight written on them,
@@ -72,3 +79,5 @@ export type ExerciseWeight =
   | { type: "full" }
   | { type: "positive"; selfWeightPercent: number }
   | { type: "negative"; selfWeightPercent: number };
+
+export const DEFAULT_EXERCISE_WEIGHT: ExerciseWeight = { type: "full" };

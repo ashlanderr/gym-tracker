@@ -1,9 +1,9 @@
 import { computeMuscleLevels } from "./muscles.ts";
 import { EXERCISES } from "../db/exercises/constants.ts";
 
-const BENCH_PRESS = EXERCISES["OvlOX8JCqg0lEuaPBU3G"];
-const LATERAL_RAISE = EXERCISES["Lr7Kq2VmXa9TdNbZ0sWc"];
-const TRICEPS_PUSHDOWN = EXERCISES["P6WeZVykfwg8kSKaz5XC"];
+const BENCH_PRESS = EXERCISES["bench_press"];
+const LATERAL_RAISE = EXERCISES["lateral_raise"];
+const TRICEPS_PUSHDOWN = EXERCISES["triceps_pushdown_rope"];
 
 test("muscles are ranked against the busiest one", () => {
   const levels = computeMuscleLevels([
