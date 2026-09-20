@@ -6,6 +6,10 @@ these files, shrinks them, and writes the results into
 
 ## What is here
 
+- `everkinetic/` — line art imported from an open data set, two SVG frames per
+  exercise, under CC BY-SA 4.0. It covers the exercises nothing has been drawn
+  for yet; `everkinetic/README.md` covers the import and what the licence
+  obliges us to do.
 - `exercise-frames/` — two square frames per exercise, `<slug>-start.webp` and
   `<slug>-end.webp`, at 2048px. They are the start and the end position of one
   movement, drawn from the same camera so the app can cross-fade between them.
@@ -63,3 +67,8 @@ carries no such restriction.
 The frames are therefore drawn rather than bought, and the masters are kept here
 so they can always be re-cropped, re-sized or re-encoded without going back to
 the tool that made them.
+
+The imported set in `everkinetic/` is the pragmatic half of the same decision:
+it is free to use commercially, so it fills the catalog now, at the price of an
+attribution the app still owes and a share-alike obligation on the adapted
+images. Anything redrawn here later replaces it.

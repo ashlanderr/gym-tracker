@@ -1,14 +1,28 @@
-// Turns the authored exercise renders into the images the app bundles.
+// Turns the exercise masters into the images the app bundles.
 //
-// Each exercise is two square frames — the start and the end of the movement —
-// that the UI cross-fades between. The renders are authored at 2048px; this
-// only scales them down and re-encodes them, deliberately leaving the framing
-// exactly as drawn so the black around the subject stays part of the picture.
+// Each exercise is two frames — the start and the end of the movement — that
+// the UI cross-fades between. There are two kinds of masters and they are
+// built differently:
+//
+//   media/exercise-frames/  square renders drawn for this project, 2048px.
+//                           Scaled down and re-encoded as WebP, deliberately
+//                           keeping the framing exactly as drawn so the black
+//                           around the subject stays part of the picture.
+//   media/everkinetic/      two-colour line art imported from the everkinetic
+//                           data set. Colours are inverted so it reads on a
+//                           dark screen, and it ships as SVG.
 //
 // Usage: node scripts/prepare-exercise-images.mjs [--force]
 
 import { execFile } from "node:child_process";
-import { mkdir, readdir, rm, stat, writeFile } from "node:fs/promises";
+import {
+  mkdir,
+  readdir,
+  readFile,
+  rm,
+  stat,
+  writeFile,
+} from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
@@ -17,6 +31,7 @@ const run = promisify(execFile);
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SRC_DIR = join(ROOT, "media", "exercise-frames");
+const SVG_SRC_DIR = join(ROOT, "media", "everkinetic");
 const OUT_DIR = join(ROOT, "src", "client", "db", "exercises", "assets");
 
 // 640 rather than the size the workout card shows: the technique tab draws the
@@ -35,6 +50,31 @@ const SIZE = 640;
 // nearly free, and re-cropping later never needs the original tool.
 const QUALITY = 82;
 
+// The imported art keeps its vector form instead of joining that pipeline.
+// Measured on one frame: the SVG is 27.2 kB, which the APK deflates to 11.8 kB,
+// against 19.9 kB for a 640px lossy WebP that cannot be deflated any further
+// and is already soft on a 3x screen. Flat two-colour line art is what vector
+// formats are good at; the drawn renders are shaded and are exactly what they
+// are bad at, so the two kinds of master ship in different formats.
+function invert(svg) {
+  return svg.replace(
+    /fill="#([0-9a-f]{3}|[0-9a-f]{6})"/gi,
+    (_, hex) => `fill="${negate(hex)}"`,
+  );
+}
+
+function negate(hex) {
+  const full =
+    hex.length === 3 ? [...hex].map((c) => c + c).join("") : hex.toLowerCase();
+
+  const inverted = full
+    .match(/../g)
+    .map((pair) => (255 - parseInt(pair, 16)).toString(16).padStart(2, "0"))
+    .join("");
+
+  return `#${inverted}`;
+}
+
 async function exists(path) {
   try {
     await stat(path);
@@ -45,6 +85,7 @@ async function exists(path) {
 }
 
 async function encode(source, outPath) {
+  // prettier-ignore
   await run("ffmpeg", [
     "-y", "-v", "error",
     "-i", source,
@@ -60,20 +101,24 @@ function identifier(slug) {
   return slug.replace(/[^A-Za-z0-9]+/g, "_").replace(/^_|_$/g, "");
 }
 
-async function writeAssetModule(slugs) {
+async function writeAssetModule(frames) {
   const names = new Map();
-  for (const slug of [...slugs].sort()) {
-    const name = identifier(slug);
+  for (const frame of [...frames].sort((a, b) =>
+    a.slug.localeCompare(b.slug),
+  )) {
+    const name = identifier(frame.slug);
     if (names.has(name)) {
-      throw new Error(`${slug} and ${names.get(name)} collide as ${name}`);
+      throw new Error(
+        `${frame.slug} and ${names.get(name).slug} collide as ${name}`,
+      );
     }
-    names.set(name, slug);
+    names.set(name, frame);
   }
 
   const imports = [...names]
-    .flatMap(([name, slug]) => [
-      `import ${name}Start from "./assets/${slug}-start.webp";`,
-      `import ${name}End from "./assets/${slug}-end.webp";`,
+    .flatMap(([name, { slug, ext }]) => [
+      `import ${name}Start from "./assets/${slug}-start.${ext}";`,
+      `import ${name}End from "./assets/${slug}-end.${ext}";`,
     ])
     .join("\n");
 
@@ -96,12 +141,7 @@ async function writeAssetModule(slugs) {
   );
 }
 
-async function main() {
-  const force = process.argv.includes("--force");
-
-  await mkdir(OUT_DIR, { recursive: true });
-  await mkdir(SRC_DIR, { recursive: true });
-
+async function buildRendered(force) {
   const files = await readdir(SRC_DIR);
   const slugs = [
     ...new Set(
@@ -110,8 +150,6 @@ async function main() {
         .map((f) => f.replace(/-start\.(webp|jpg|jpeg|png)$/i, "")),
     ),
   ].sort();
-
-  if (!slugs.length) throw new Error(`no *-start.* frames in ${SRC_DIR}`);
 
   const sourceFor = (slug, end) =>
     files.find((f) =>
@@ -142,8 +180,66 @@ async function main() {
     built += 1;
   }
 
+  console.log(`rendered: ${built} built, ${skipped} up to date`);
+  return slugs.map((slug) => ({ slug, ext: "webp" }));
+}
+
+async function buildImported() {
+  if (!(await exists(SVG_SRC_DIR))) return [];
+
+  const files = await readdir(SVG_SRC_DIR);
+  const slugs = [
+    ...new Set(
+      files
+        .filter((f) => f.endsWith("-start.svg"))
+        .map((f) => f.replace(/-start\.svg$/, "")),
+    ),
+  ].sort();
+
+  let bytes = 0;
+
+  for (const slug of slugs) {
+    for (const end of ["start", "end"]) {
+      const source = join(SVG_SRC_DIR, `${slug}-${end}.svg`);
+      if (!(await exists(source))) {
+        throw new Error(`${slug} has no ${end} frame`);
+      }
+
+      const outPath = join(OUT_DIR, `${slug}-${end}.svg`);
+      const svg = invert(await readFile(source, "utf8"));
+      await writeFile(outPath, svg);
+      bytes += Buffer.byteLength(svg);
+    }
+  }
+
+  console.log(`imported: ${slugs.length} inverted, ${bytes} bytes total`);
+  return slugs.map((slug) => ({ slug, ext: "svg" }));
+}
+
+async function main() {
+  const force = process.argv.includes("--force");
+
+  await mkdir(OUT_DIR, { recursive: true });
+  await mkdir(SRC_DIR, { recursive: true });
+
+  const frames = [...(await buildRendered(force)), ...(await buildImported())];
+
+  if (!frames.length) throw new Error(`no masters in ${SRC_DIR}`);
+
+  const duplicates = frames
+    .map(({ slug }) => slug)
+    .filter((slug, i, all) => all.indexOf(slug) !== i);
+  if (duplicates.length) {
+    throw new Error(`${duplicates[0]} has masters in both media directories`);
+  }
+
   // Anything left over belongs to an exercise that is no longer in the catalog.
-  const keep = new Set(slugs.flatMap((s) => [`${s}-start.webp`, `${s}-end.webp`]));
+  const keep = new Set(
+    frames.flatMap(({ slug, ext }) => [
+      `${slug}-start.${ext}`,
+      `${slug}-end.${ext}`,
+    ]),
+  );
   for (const file of await readdir(OUT_DIR)) {
     if (!keep.has(file)) {
       await rm(join(OUT_DIR, file));
@@ -151,8 +247,8 @@ async function main() {
     }
   }
 
-  await writeAssetModule(slugs);
-  console.log(`\n${built} built, ${skipped} up to date, ${slugs.length} total`);
+  await writeAssetModule(frames);
+  console.log(`\n${frames.length} exercises illustrated`);
 }
 
 await main();

@@ -15,6 +15,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         reps: { min: 6, max: 10 },
         benefit: "шире широчайшие, меньше работы бицепсом",
         related: ["lat_pulldown_wide", "assisted_pull_up_wide"],
+        asset: crossFade(EXERCISE_FRAMES.pull_up_wide),
         instructions: [
           "Хват чуть шире плеч, лопатки опущены до начала движения.",
           "Тяни локтями вниз, пока подбородок не окажется выше перекладины.",
@@ -45,6 +46,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         weight: { type: "positive", selfWeightPercent: 100 },
         reps: { min: 6, max: 10 },
         benefit: "мягче всего для плеча и локтя",
+        asset: crossFade(EXERCISE_FRAMES.pull_up_parallel),
         instructions: [
           "Возьмись за параллельные ручки, ладони смотрят друг на друга.",
           "Тяни себя вверх, ведя локти строго вдоль корпуса.",
@@ -169,6 +171,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 10, max: 12 },
         benefit: "сильнее включается бицепс и низ широчайших",
+        asset: crossFade(EXERCISE_FRAMES.lat_pulldown_underhand),
         instructions: [
           "Хват ладонями к себе на ширине плеч, бёдра под валиками.",
           "Тяни рукоять к низу груди, локти идут вдоль корпуса.",
@@ -183,6 +186,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 10, max: 12 },
         benefit: "длиннее амплитуда, широчайшие тянутся сильнее",
+        asset: crossFade(EXERCISE_FRAMES.lat_pulldown_close),
         instructions: [
           "Возьми V-рукоять, бёдра зафиксируй под валиками.",
           "Тяни рукоять к верху живота, локти вниз и назад.",
@@ -257,6 +261,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "barbell" },
         reps: { min: 6, max: 10 },
         benefit: "локти ближе к корпусу, больше работы широчайшим",
+        asset: crossFade(EXERCISE_FRAMES.barbell_row_underhand),
         instructions: [
           "Хват ладонями вперёд на ширине плеч, наклон около 45°.",
           "Тяни штангу к низу живота, локти скользят вдоль боков.",
@@ -299,6 +304,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "plates", sides: 1 },
         reps: { min: 8, max: 12 },
         benefit: "тяжёлая тяга с нейтральным хватом",
+        asset: crossFade(EXERCISE_FRAMES.t_bar_row),
         instructions: [
           "Встань над грифом, колени согнуты, спина прямая.",
           "Тяни рукоять к животу, локти близко к корпусу.",
@@ -313,6 +319,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 10, max: 12 },
         benefit: "ровное натяжение и никакой нагрузки на поясницу",
+        asset: crossFade(EXERCISE_FRAMES.seated_cable_row_close),
         instructions: [
           "Возьми V-рукоять, колени чуть согнуты, спина прямая.",
           "Тяни рукоять к низу живота, сводя лопатки.",
@@ -387,6 +394,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 12, max: 15 },
         benefit: "широчайшие без участия бицепса",
+        asset: crossFade(EXERCISE_FRAMES.straight_arm_pulldown),
         instructions: [
           "Встань в шаге от стойки, наклонись вперёд, руки прямые.",
           "Веди рукоять вниз к бёдрам, локти зафиксированы.",
@@ -401,6 +409,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "dumbbell", count: 1 },
         reps: { min: 10, max: 12 },
         benefit: "растягивает грудь и широчайшие одним движением",
+        asset: crossFade(EXERCISE_FRAMES.dumbbell_pullover),
         instructions: [
           "Ляг вдоль скамьи, гантель держи двумя руками над грудью.",
           "Опускай за голову до растяжения, локти чуть согнуты.",
@@ -420,6 +429,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         weight: { type: "positive", selfWeightPercent: 55 },
         reps: { min: 10, max: 12 },
         benefit: "разгибатели с нормальной прогрессией по весу",
+        asset: crossFade(EXERCISE_FRAMES.back_extension_weighted),
         instructions: [
           "Валики под бёдрами, блин прижат к груди крест-накрест.",
           "Опускайся до ощущения растяжения и поднимайся в прямую линию.",
@@ -452,6 +462,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "barbell" },
         reps: { min: 8, max: 12 },
         benefit: "главное движение на заднюю поверхность бедра",
+        asset: crossFade(EXERCISE_FRAMES.romanian_deadlift),
         instructions: [
           "Ноги на ширине таза, колени мягкие и почти не сгибаются.",
           "Веди таз назад, опуская штангу вдоль ног до растяжения бедра.",
@@ -508,6 +519,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "barbell" },
         reps: { min: 4, max: 6 },
         benefit: "самый тяжёлый вес из всего, что есть в зале",
+        asset: crossFade(EXERCISE_FRAMES.deadlift),
         instructions: [
           "Штанга над серединой стопы, хват чуть шире ног, спина прямая.",
           "Толкай пол ногами и одновременно разгибай таз.",
@@ -526,6 +538,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "dumbbell", count: 2 },
         reps: { min: 12, max: 15 },
         benefit: "руки вдоль корпуса — самая удобная траектория",
+        asset: crossFade(EXERCISE_FRAMES.dumbbell_shrug),
         instructions: [
           "Гантели по бокам, руки прямые, плечи опущены.",
           "Поднимай плечи строго вверх, к ушам.",
@@ -540,6 +553,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "barbell" },
         reps: { min: 10, max: 12 },
         benefit: "больше вес, чем с гантелями",
+        asset: crossFade(EXERCISE_FRAMES.barbell_shrug),
         instructions: [
           "Штанга в опущенных руках перед бёдрами, хват чуть шире плеч.",
           "Поднимай плечи вверх, удерживая паузу в верхней точке.",
@@ -554,6 +568,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "barbell" },
         reps: { min: 12, max: 15 },
         benefit: "можно не думать о равновесии штанги",
+        asset: crossFade(EXERCISE_FRAMES.smith_shrug),
         instructions: [
           "Встань так, чтобы гриф шёл вдоль бёдер, руки прямые.",
           "Поднимай плечи вверх, не сгибая локти.",
@@ -568,6 +583,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 12, max: 15 },
         benefit: "натяжение сохраняется в нижней точке",
+        asset: crossFade(EXERCISE_FRAMES.cable_shrug),
         instructions: [
           "Возьми прямую рукоять нижнего блока, встань ровно.",
           "Поднимай плечи вверх, удерживая корпус неподвижным.",

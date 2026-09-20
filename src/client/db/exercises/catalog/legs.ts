@@ -1,3 +1,5 @@
+import { EXERCISE_FRAMES } from "../frames.generated.ts";
+import { crossFade } from "./assets.ts";
 import type { ExerciseGroup } from "./types.ts";
 
 export const LEG_GROUPS: ExerciseGroup[] = [
@@ -12,6 +14,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         reps: { min: 6, max: 8 },
         benefit: "главное движение на ноги и самый большой вес",
         related: ["leg_press_plates"],
+        asset: crossFade(EXERCISE_FRAMES.back_squat),
         instructions: [
           "Гриф на трапециях, лопатки сведены, стопы чуть шире таза.",
           "Садись, уводя таз назад и вниз, колени идут по направлению носков.",
@@ -26,6 +29,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "barbell" },
         reps: { min: 6, max: 8 },
         benefit: "больше квадрицепса, спина стоит вертикально",
+        asset: crossFade(EXERCISE_FRAMES.front_squat),
         instructions: [
           "Гриф лежит на передних дельтах, локти высоко подняты.",
           "Садись строго вниз, держа корпус вертикально.",
@@ -40,6 +44,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "barbell" },
         reps: { min: 8, max: 12 },
         benefit: "не нужно держать равновесие, можно вынести стопы вперёд",
+        asset: crossFade(EXERCISE_FRAMES.smith_squat),
         instructions: [
           "Поставь стопы чуть впереди грифа, спина прижата к нему.",
           "Опускайся до параллели бедра с полом.",
@@ -54,6 +59,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "plates", sides: 2 },
         reps: { min: 8, max: 12 },
         benefit: "спина разгружена, квадрицепс получает всё",
+        asset: crossFade(EXERCISE_FRAMES.hack_squat),
         instructions: [
           "Спина и таз прижаты к платформе, стопы на ширине плеч.",
           "Опускайся до угла 90° в колене или ниже, если позволяет таз.",
@@ -83,6 +89,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         reps: { min: 10, max: 12 },
         benefit: "большой вес без нагрузки на спину",
         related: ["back_squat"],
+        asset: crossFade(EXERCISE_FRAMES.leg_press_plates),
         instructions: [
           "Стопы на ширине таза на середине платформы, поясница прижата.",
           "Опускай платформу до угла 90° в колене, не отрывая таз.",
@@ -143,6 +150,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "dumbbell", count: 2 },
         reps: { min: 10, max: 12 },
         benefit: "длинная амплитуда и нагрузка на ягодицы в шаге",
+        asset: crossFade(EXERCISE_FRAMES.walking_lunge),
         instructions: [
           "Гантели в опущенных руках, корпус вертикально.",
           "Шагай вперёд и опускай заднее колено почти до пола.",
@@ -157,6 +165,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "dumbbell", count: 2 },
         reps: { min: 10, max: 12 },
         benefit: "не нужно место для прохода по залу",
+        asset: crossFade(EXERCISE_FRAMES.dumbbell_lunge),
         instructions: [
           "Одна нога впереди, вес распределён на обе стопы.",
           "Опускайся вниз до угла 90° в обоих коленях.",
@@ -171,6 +180,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "barbell" },
         reps: { min: 8, max: 12 },
         benefit: "больше вес, чем с гантелями, и свободные кисти",
+        asset: crossFade(EXERCISE_FRAMES.barbell_lunge),
         instructions: [
           "Штанга на трапециях, стопы в шаге друг от друга.",
           "Опускайся вниз, удерживая корпус вертикально.",
@@ -185,6 +195,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "dumbbell", count: 2 },
         reps: { min: 10, max: 12 },
         benefit: "ягодицы включаются сильнее, чем в выпадах",
+        asset: crossFade(EXERCISE_FRAMES.step_up),
         instructions: [
           "Поставь стопу на скамью целиком, высота — до угла 90° в колене.",
           "Вставай за счёт верхней ноги, не отталкиваясь нижней.",
@@ -203,6 +214,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 12, max: 15 },
         benefit: "единственная чистая изоляция квадрицепса",
+        asset: crossFade(EXERCISE_FRAMES.leg_extension),
         instructions: [
           "Ось тренажёра на уровне колена, валик на голени над стопой.",
           "Разгибай ноги до прямых, коротко задержись вверху.",
@@ -221,6 +233,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 10, max: 12 },
         benefit: "базовая изоляция задней поверхности бедра",
+        asset: crossFade(EXERCISE_FRAMES.lying_leg_curl_stack),
         instructions: [
           "Ляг так, чтобы колени были на краю подушки, валик над пятками.",
           "Сгибай ноги до касания валиком ягодиц.",
@@ -249,6 +262,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 10, max: 12 },
         benefit: "бедро согнуто — задняя поверхность растянута сильнее",
+        asset: crossFade(EXERCISE_FRAMES.seated_leg_curl),
         instructions: [
           "Прижми бёдра валиком, спину — к спинке, валик над пятками.",
           "Сгибай ноги под себя до упора, держа таз на месте.",
@@ -263,6 +277,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 12, max: 15 },
         benefit: "каждая нога отдельно, видно отставание",
+        asset: crossFade(EXERCISE_FRAMES.standing_leg_curl),
         instructions: [
           "Встань в тренажёр, валик над пяткой рабочей ноги.",
           "Сгибай ногу, не двигая бедром и не прогибая поясницу.",
@@ -309,6 +324,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 12, max: 15 },
         benefit: "изолирует ягодицу и растягивает её в старте",
+        asset: crossFade(EXERCISE_FRAMES.cable_kickback),
         instructions: [
           "Манжета на щиколотке, держись за стойку, корпус чуть наклонён.",
           "Отводи ногу назад за счёт ягодицы, не прогибая поясницу.",
@@ -337,6 +353,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 12, max: 15 },
         benefit: "единственная нормальная нагрузка на средние ягодичные",
+        asset: crossFade(EXERCISE_FRAMES.hip_abduction),
         instructions: [
           "Сядь, прижми спину к спинке, упоры снаружи колен.",
           "Разводи колени до упора и коротко задержись.",
@@ -351,6 +368,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 12, max: 15 },
         benefit: "закрывает приводящие, которые больше нечем грузить",
+        asset: crossFade(EXERCISE_FRAMES.hip_adduction),
         instructions: [
           "Сядь, упоры с внутренней стороны колен, спина прижата.",
           "Своди колени до касания, держа паузу в конце.",
@@ -369,6 +387,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 12, max: 15 },
         benefit: "икры с прямой ногой и быстрой сменой веса",
+        asset: crossFade(EXERCISE_FRAMES.standing_calf_raise_stack),
         instructions: [
           "Носки на платформе, пятки свисают, плечи под упорами.",
           "Поднимайся максимально высоко и опускайся до растяжения.",
@@ -397,6 +416,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "plates", sides: 1 },
         reps: { min: 12, max: 15 },
         benefit: "согнутое колено переносит работу на камбаловидную",
+        asset: crossFade(EXERCISE_FRAMES.seated_calf_raise),
         instructions: [
           "Колени под валик, носки на платформе, пятки свободны.",
           "Поднимайся на носки до упора и задерживайся на секунду.",
@@ -425,6 +445,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "plates", sides: 2 },
         reps: { min: 12, max: 15 },
         benefit: "не нужно держать вес на плечах",
+        asset: crossFade(EXERCISE_FRAMES.leg_press_calf_raise),
         instructions: [
           "Поставь носки на нижний край платформы, колени слегка согнуты.",
           "Выжимай платформу стопой, полностью разгибая голеностоп.",

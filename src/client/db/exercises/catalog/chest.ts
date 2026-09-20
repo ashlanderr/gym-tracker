@@ -29,6 +29,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         load: { type: "dumbbell", count: 2 },
         reps: { min: 8, max: 12 },
         benefit: "шире амплитуда, руки работают независимо",
+        asset: crossFade(EXERCISE_FRAMES.dumbbell_bench_press),
         instructions: [
           "Ляг с гантелями у груди, подними их на прямые руки над плечами.",
           "Опускай до уровня груди, предплечья держи вертикально.",
@@ -43,6 +44,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         load: { type: "barbell" },
         reps: { min: 8, max: 12 },
         benefit: "можно работать до отказа без страхующего",
+        asset: crossFade(EXERCISE_FRAMES.smith_bench_press),
         instructions: [
           "Поставь скамью так, чтобы гриф опускался к нижней части груди.",
           "Сними гриф поворотом кисти, опускай до касания груди.",
@@ -57,6 +59,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 10, max: 12 },
         benefit: "проще всего подобрать вес и добить мышцу в конце",
+        asset: crossFade(EXERCISE_FRAMES.chest_press_stack),
         instructions: [
           "Отрегулируй сиденье: ручки на уровне середины груди.",
           "Выжимай вперёд, в конце не выключай локти полностью.",
@@ -105,6 +108,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         load: { type: "dumbbell", count: 2 },
         reps: { min: 8, max: 12 },
         benefit: "верх груди и свободная траектория разом",
+        asset: crossFade(EXERCISE_FRAMES.incline_dumbbell_press),
         instructions: [
           "Наклон 30–45°, гантели закинь на бёдра и вынеси коленями.",
           "Опускай до уровня верха груди, локти чуть вперёд от линии плеч.",
@@ -119,6 +123,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         load: { type: "barbell" },
         reps: { min: 8, max: 12 },
         benefit: "фиксированная траектория на верх груди",
+        asset: crossFade(EXERCISE_FRAMES.smith_incline_press),
         instructions: [
           "Поставь наклонную скамью так, чтобы гриф шёл к ключицам.",
           "Опускай к верху груди, не уводя гриф на шею.",
@@ -152,6 +157,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         weight: { type: "positive", selfWeightPercent: 100 },
         reps: { min: 8, max: 12 },
         benefit: "низ груди и трицепс своим весом",
+        asset: crossFade(EXERCISE_FRAMES.dips),
         instructions: [
           "Выйди на прямые руки, плечи опущены, взгляд вперёд.",
           "Наклони корпус вперёд и опускайся, пока плечо не станет параллельно полу.",
@@ -196,6 +202,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 10, max: 12 },
         benefit: "движение брусьев с любым весом, хоть совсем лёгким",
+        asset: crossFade(EXERCISE_FRAMES.dip_machine_stack),
         instructions: [
           "Сядь плотно к спинке, ручки возьми нейтральным хватом.",
           "Толкай ручки вниз до полного разгибания локтей.",
@@ -242,6 +249,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 12, max: 15 },
         benefit: "натяжение не пропадает во всей амплитуде",
+        asset: crossFade(EXERCISE_FRAMES.cable_crossover),
         instructions: [
           "Блоки вверху, шаг вперёд, корпус слегка наклонён.",
           "Своди руки перед собой на уровне низа груди.",
@@ -270,6 +278,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         load: { type: "dumbbell", count: 2 },
         reps: { min: 12, max: 15 },
         benefit: "растягивает грудь сильнее любого тренажёра",
+        asset: crossFade(EXERCISE_FRAMES.dumbbell_fly),
         instructions: [
           "Руки над плечами, локти чуть согнуты и зафиксированы.",
           "Разводи по дуге до уровня плеч, чувствуя растяжение груди.",
@@ -284,6 +293,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         load: { type: "dumbbell", count: 2 },
         reps: { min: 12, max: 15 },
         benefit: "растяжение с акцентом на верх груди",
+        asset: crossFade(EXERCISE_FRAMES.incline_dumbbell_fly),
         instructions: [
           "Наклон 30°, гантели над плечами, локти мягко согнуты.",
           "Разводи по дуге, пока плечи не дойдут до уровня скамьи.",

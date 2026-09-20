@@ -28,6 +28,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "dumbbell", count: 2 },
         reps: { min: 10, max: 12 },
         benefit: "бицепс работает из растянутого положения",
+        asset: crossFade(EXERCISE_FRAMES.incline_dumbbell_curl),
         instructions: [
           "Наклон скамьи 45–60°, руки свободно висят за линией корпуса.",
           "Сгибай руки, не двигая плечами вперёд.",
@@ -42,6 +43,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "dumbbell", count: 2 },
         reps: { min: 10, max: 12 },
         benefit: "добавляет толщину руке за счёт брахиалиса",
+        asset: crossFade(EXERCISE_FRAMES.hammer_curl),
         instructions: [
           "Ладони смотрят друг на друга и не разворачиваются.",
           "Сгибай руки, держа локти у корпуса.",
@@ -70,6 +72,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "barbell" },
         reps: { min: 8, max: 12 },
         benefit: "максимальная нагрузка на бицепс при прямом запястье",
+        asset: crossFade(EXERCISE_FRAMES.barbell_curl),
         instructions: [
           "Хват на ширине плеч, локти у корпуса, спина прямая.",
           "Поднимай штангу силой бицепса, корпус неподвижен.",
@@ -113,6 +116,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 10, max: 12 },
         benefit: "натяжение есть и в нижней точке, вес меняется мгновенно",
+        asset: crossFade(EXERCISE_FRAMES.preacher_curl_machine),
         instructions: [
           "Отрегулируй сиденье: локти на подушке, ось совпадает с локтем.",
           "Сгибай руки до верхней точки и держи паузу полсекунды.",
@@ -127,6 +131,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 12, max: 15 },
         benefit: "равномерное натяжение во всей амплитуде",
+        asset: crossFade(EXERCISE_FRAMES.cable_curl),
         instructions: [
           "Возьми прямую рукоять нижнего блока, локти у корпуса.",
           "Сгибай руки до уровня груди, корпус не двигается.",
@@ -141,6 +146,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 12, max: 15 },
         benefit: "нейтральный хват и свободные запястья",
+        asset: crossFade(EXERCISE_FRAMES.cable_rope_curl),
         instructions: [
           "Возьми канат нейтральным хватом, локти прижаты к бокам.",
           "Сгибай руки, разводя концы каната в верхней точке.",
@@ -174,6 +180,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 10, max: 12 },
         benefit: "держит больший вес, чем канат",
+        asset: crossFade(EXERCISE_FRAMES.triceps_pushdown_bar),
         instructions: [
           "Хват на ширине плеч сверху, локти у корпуса.",
           "Разгибай руки до прямых, не двигая плечами.",
@@ -188,6 +195,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 10, max: 12 },
         benefit: "компромисс между канатом и прямой рукоятью",
+        asset: crossFade(EXERCISE_FRAMES.triceps_pushdown_v_bar),
         instructions: [
           "Возьмись за изгибы рукояти, кисти чуть развёрнуты внутрь.",
           "Разгибай руки до конца, локти прижаты к бокам.",
@@ -202,6 +210,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 12, max: 15 },
         benefit: "акцент на медиальный пучок, работает каждая рука отдельно",
+        asset: crossFade(EXERCISE_FRAMES.triceps_pushdown_reverse),
         instructions: [
           "Возьми рукоять снизу ладонью вверх, локоть прижми к боку.",
           "Разгибай руку до конца, не проворачивая кисть.",
@@ -216,6 +225,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "barbell" },
         reps: { min: 8, max: 12 },
         benefit: "растягивает трицепс под нагрузкой",
+        asset: crossFade(EXERCISE_FRAMES.ez_bar_skullcrusher),
         instructions: [
           "Штанга над плечами, хват на изгибах, локти смотрят вперёд.",
           "Опускай гриф ко лбу или чуть за голову, плечи неподвижны.",
@@ -230,6 +240,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "dumbbell", count: 2 },
         reps: { min: 10, max: 12 },
         benefit: "мягче для локтей, руки работают независимо",
+        asset: crossFade(EXERCISE_FRAMES.dumbbell_skullcrusher),
         instructions: [
           "Гантели над плечами нейтральным хватом, локти вперёд.",
           "Опускай гантели к ушам, сохраняя плечи на месте.",
@@ -244,6 +255,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "dumbbell", count: 1 },
         reps: { min: 10, max: 12 },
         benefit: "длинная головка трицепса в максимальном растяжении",
+        asset: crossFade(EXERCISE_FRAMES.overhead_dumbbell_extension),
         instructions: [
           "Сядь со спинкой, гантель за головой, локоть смотрит вверх.",
           "Разгибай руку вверх, плечо остаётся вертикальным.",
@@ -272,6 +284,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 10, max: 12 },
         benefit: "локти зафиксированы, техника не ломается на усталости",
+        asset: crossFade(EXERCISE_FRAMES.triceps_extension_machine),
         instructions: [
           "Отрегулируй сиденье: локти лежат на подушке, ось совпадает с локтем.",
           "Разгибай руки до конца, не отрывая локти от опоры.",
@@ -286,6 +299,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "barbell" },
         reps: { min: 6, max: 10 },
         benefit: "самый большой вес на трицепс",
+        asset: crossFade(EXERCISE_FRAMES.close_grip_bench_press),
         instructions: [
           "Хват на ширине плеч, не уже: узкий хват грузит запястья.",
           "Опускай штангу к низу груди, локти идут вдоль корпуса.",
@@ -300,6 +314,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "barbell" },
         reps: { min: 8, max: 12 },
         benefit: "можно дожимать до отказа в одиночку",
+        asset: crossFade(EXERCISE_FRAMES.smith_close_grip_bench_press),
         instructions: [
           "Поставь скамью так, чтобы гриф шёл к низу груди.",
           "Хват на ширине плеч, локти вдоль корпуса.",

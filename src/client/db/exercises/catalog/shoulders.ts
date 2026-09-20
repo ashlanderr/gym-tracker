@@ -222,6 +222,7 @@ export const SHOULDER_GROUPS: ExerciseGroup[] = [
         load: { type: "dumbbell", count: 2 },
         reps: { min: 12, max: 15 },
         benefit: "точечно на переднюю дельту",
+        asset: crossFade(EXERCISE_FRAMES.front_raise),
         instructions: [
           "Гантели перед бёдрами, руки прямые, корпус неподвижен.",
           "Поднимай до уровня плеч, не выше.",
