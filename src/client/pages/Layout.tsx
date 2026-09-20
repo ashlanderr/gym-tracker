@@ -19,7 +19,7 @@ import { WorkoutFinish } from "./WorkoutFinish";
 import { Home } from "./Home";
 import { ModalStack, StoreProvider } from "../components";
 import { User } from "./User";
-import { ExercisePage } from "./Exercise";
+import { ExerciseCatalogPage, ExercisePage } from "./Exercise";
 import s from "./layout.module.scss";
 
 const PAGE_OFFSET = 64;
@@ -76,6 +76,11 @@ function AnimatedRoutes() {
             path="/workouts/:workoutId/finish"
             element={<WorkoutFinish />}
           />
+          {/* Reachable only by typing the address, and only while developing:
+              it is a tool for reading the catalog through, not a feature. */}
+          {import.meta.env.DEV && (
+            <Route path="/exercises" element={<ExerciseCatalogPage />} />
+          )}
           <Route path="/exercises/:exerciseId" element={<ExercisePage />} />
           <Route path="/user" element={<User />} />
         </Routes>

@@ -58,6 +58,35 @@ export function useQueryAllExercises(store: Store): Exercise[] {
   }, [changedExercises]);
 }
 
+// Browsing order, unlike the alphabetical list: the built-in catalog keeps
+// variations of one movement next to each other, which is what someone
+// flipping through the exercises one by one expects. Everything the user has
+// added goes after it, by name.
+export function useQueryCatalogExercises(store: Store): Exercise[] {
+  const changedExercises = useQueryCollection<Exercise>({
+    collection: collection(store.personal, "exercises"),
+    filter: {},
+    deps: [],
+  });
+
+  return useMemo(() => {
+    const order = Object.keys(EXERCISES);
+    const merged = new Map<string, Exercise>();
+
+    Object.values(EXERCISES).forEach((e) => merged.set(e.id, e));
+    changedExercises.forEach((e) => merged.set(e.id, e));
+
+    const isCustom = (e: Exercise) => !order.includes(e.id);
+
+    return [...merged.values()].sort((a, b) => {
+      if (isCustom(a) && isCustom(b)) return a.name.localeCompare(b.name);
+      if (isCustom(a)) return 1;
+      if (isCustom(b)) return -1;
+      return order.indexOf(a.id) - order.indexOf(b.id);
+    });
+  }, [changedExercises]);
+}
+
 export function addExercise(store: Store, entity: Exercise): Exercise {
   insertEntity(collection(store.personal, "exercises"), entity);
   return entity;

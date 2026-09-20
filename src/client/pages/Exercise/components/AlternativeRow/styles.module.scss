@@ -20,13 +20,17 @@
   text-align: left;
 }
 
+// The artwork is drawn on black and the thumbnail is square while the frames
+// are not, so the tile has to be black too: any other colour turns the
+// letterboxing into a visible crop. Clipping is on the tile because the frames
+// inside are absolutely positioned and ignore its corners otherwise.
 .thumb {
   flex: 0 0 auto;
   width: 44px;
   height: 44px;
   border-radius: 9px;
-  object-fit: cover;
-  background: #232323;
+  overflow: hidden;
+  background: #000;
 }
 
 .text {
