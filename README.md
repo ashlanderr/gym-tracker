@@ -169,10 +169,17 @@ npm test
 
 ### Adding an Exercise
 
-Exercises are illustrated by a pair of frames the app cross-fades between. The
-masters live in `media/exercise-frames/`, and `media/README.md` covers the whole
-loop: drawing the pair, building the bundled images, and wiring the exercise
-into the catalog.
+The catalog lives in `src/client/db/exercises/catalog/`, one entry per
+equipment variation, declared in groups of variations of one movement.
+
+Exercises are illustrated by a pair of frames the app cross-fades between: the
+start and the end of the movement. The masters live in `media/`, and
+`media/README.md` covers the loop — where each kind of artwork comes from,
+building the bundled images, and pointing an exercise at them.
+
+To read the catalog through rather than one exercise at a time, a dev build
+serves it at `/#/exercises`, one exercise per screen with back and forward
+buttons. It has no entry point in the UI and is not in the production bundle.
 
 ### Regenerating Icons
 
