@@ -27,15 +27,21 @@ catalog.
 
 ## How it is wired
 
-1. Import or re-import a pair:
+1. Copy a pair by hand:
 
    ```bash
-   git clone https://github.com/everkinetic/data.git ../../everkinetic-data
-   node scripts/import-everkinetic-frames.mjs
+   git clone https://github.com/everkinetic/data.git
    ```
 
-   The exercise-to-upstream-id map lives in that script and is the provenance
-   record: it says which upstream drawing every file here came from.
+   Upstream names its files `dist/svg/<number>-relaxation.svg` and
+   `<number>-tension.svg`; find the number in its `exercises.json` by name, and
+   copy the two files here as `<exercise-slug>-start.svg` and `-end.svg`. The
+   slug is the exercise id from `src/client/db/exercises/catalog/` with
+   underscores turned into dashes.
+
+   There was a script for this. It was deleted once the import was done: the
+   catalog it filled is settled, and a one-off map of sixty numbers is not
+   worth keeping alive. Adding one more pair is two `cp` commands.
 
 2. Build the bundled images:
 
@@ -56,7 +62,17 @@ catalog.
 ## Before claiming a pair, look at it
 
 Upstream numbers drawings, not exercises, and its labels are occasionally
-wrong: the "one arm preacher curl" is drawn as a concentration curl, and the
-"EZ bar curl" is drawn with a straight bar. Both were dropped. A pair belongs
-to an exercise here only if it shows the same equipment the name promises —
-this catalog splits exercises by equipment precisely so the two never disagree.
+wrong. Found so far: "one arm preacher curl" drawn as a concentration curl,
+"EZ bar curl" and "lying triceps press" drawn with a straight bar, "narrow
+parallel grip chin ups" drawn with an underhand grip, "underhand pull downs"
+drawn with a straight narrow grip. All of those were dropped or moved to the
+exercise they actually show. A pair belongs to an exercise here only if it
+shows the equipment and the grip the name promises — this catalog splits
+exercises by exactly those, so a picture that disagrees is worse than none.
+
+One picture may serve several exercises. Where a machine exists in a stack and
+a plate-loaded version, the drawing shows the movement and not where the load
+comes from, so both entries point at the same frames; the same goes for a
+bodyweight exercise and its weighted version, where the belt is the only
+difference. The leg press is the exception — the 45° plate machine and the
+seated stack one do not look alike.

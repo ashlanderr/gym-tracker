@@ -13,6 +13,11 @@ these files, shrinks them, and writes the results into
 - `exercise-frames/` — two square frames per exercise, `<slug>-start.webp` and
   `<slug>-end.webp`, at 2048px. They are the start and the end position of one
   movement, drawn from the same camera so the app can cross-fade between them.
+- `exercise-frames/replaced/` — drawn pairs the imported line art has taken
+  over. A catalog in two drawing styles reads as a mistake, so the six
+  exercises that exist in both sets now use the imported version, and their
+  renders sit here. The build ignores this folder; nothing is lost if the
+  choice is reversed.
 - `character-reference.webp` — the anatomical figure every exercise is drawn
   from. It is not used by the app and is never bundled. It exists so that new
   frames can be generated with the same body, shading, shorts and lighting as
@@ -41,8 +46,7 @@ these files, shrinks them, and writes the results into
    module is not edited by hand. Files in `assets/` that no longer have a master
    are deleted, so removing a pair here removes it from the app.
 
-3. Add the exercise to `src/client/db/exercises/constants.ts`, pointing its
-   asset at the new frames:
+3. Point the exercise in `src/client/db/exercises/catalog/` at the new frames:
 
    ```ts
    asset: crossFade(EXERCISE_FRAMES.<slug>),

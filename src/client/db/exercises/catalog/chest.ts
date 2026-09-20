@@ -59,7 +59,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 10, max: 12 },
         benefit: "проще всего подобрать вес и добить мышцу в конце",
-        asset: crossFade(EXERCISE_FRAMES.chest_press_stack),
+        asset: crossFade(EXERCISE_FRAMES.chest_press),
         instructions: [
           "Отрегулируй сиденье: ручки на уровне середины груди.",
           "Выжимай вперёд, в конце не выключай локти полностью.",
@@ -74,6 +74,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         load: { type: "plates", sides: 2 },
         reps: { min: 8, max: 12 },
         benefit: "ощущается как свободный вес, но без страховки",
+        asset: crossFade(EXERCISE_FRAMES.chest_press),
         instructions: [
           "Отрегулируй сиденье: ручки на уровне середины груди.",
           "Выжимай ручки вперёд и чуть внутрь, лопатки прижаты.",
@@ -173,6 +174,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         weight: { type: "positive", selfWeightPercent: 100 },
         reps: { min: 6, max: 10 },
         benefit: "прогрессия, когда свой вес стал лёгким",
+        asset: crossFade(EXERCISE_FRAMES.dips),
         instructions: [
           "Повесь блин на пояс и проверь, что он не бьёт по коленям.",
           "Опускайся с наклоном вперёд, контролируя нижнюю точку.",
@@ -202,7 +204,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 10, max: 12 },
         benefit: "движение брусьев с любым весом, хоть совсем лёгким",
-        asset: crossFade(EXERCISE_FRAMES.dip_machine_stack),
+        asset: crossFade(EXERCISE_FRAMES.dip_machine),
         instructions: [
           "Сядь плотно к спинке, ручки возьми нейтральным хватом.",
           "Толкай ручки вниз до полного разгибания локтей.",
@@ -217,6 +219,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         load: { type: "plates", sides: 2 },
         reps: { min: 8, max: 12 },
         benefit: "тяжёлая версия движения брусьев сидя",
+        asset: crossFade(EXERCISE_FRAMES.dip_machine),
         instructions: [
           "Отрегулируй сиденье так, чтобы ручки были на уровне груди.",
           "Толкай вниз, держа корпус прижатым к спинке.",

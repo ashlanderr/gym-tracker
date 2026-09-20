@@ -12,10 +12,8 @@ import barbell_row_underhandStart from "./assets/barbell-row-underhand-start.svg
 import barbell_row_underhandEnd from "./assets/barbell-row-underhand-end.svg";
 import barbell_shrugStart from "./assets/barbell-shrug-start.svg";
 import barbell_shrugEnd from "./assets/barbell-shrug-end.svg";
-import bench_pressStart from "./assets/bench-press-start.webp";
-import bench_pressEnd from "./assets/bench-press-end.webp";
-import biceps_curlStart from "./assets/biceps-curl-start.webp";
-import biceps_curlEnd from "./assets/biceps-curl-end.webp";
+import bench_pressStart from "./assets/bench-press-start.svg";
+import bench_pressEnd from "./assets/bench-press-end.svg";
 import cable_crossoverStart from "./assets/cable-crossover-start.svg";
 import cable_crossoverEnd from "./assets/cable-crossover-end.svg";
 import cable_curlStart from "./assets/cable-curl-start.svg";
@@ -26,18 +24,20 @@ import cable_rope_curlStart from "./assets/cable-rope-curl-start.svg";
 import cable_rope_curlEnd from "./assets/cable-rope-curl-end.svg";
 import cable_shrugStart from "./assets/cable-shrug-start.svg";
 import cable_shrugEnd from "./assets/cable-shrug-end.svg";
-import chest_press_stackStart from "./assets/chest-press-stack-start.svg";
-import chest_press_stackEnd from "./assets/chest-press-stack-end.svg";
+import chest_pressStart from "./assets/chest-press-start.svg";
+import chest_pressEnd from "./assets/chest-press-end.svg";
 import close_grip_bench_pressStart from "./assets/close-grip-bench-press-start.svg";
 import close_grip_bench_pressEnd from "./assets/close-grip-bench-press-end.svg";
 import deadliftStart from "./assets/deadlift-start.svg";
 import deadliftEnd from "./assets/deadlift-end.svg";
-import dip_machine_stackStart from "./assets/dip-machine-stack-start.svg";
-import dip_machine_stackEnd from "./assets/dip-machine-stack-end.svg";
+import dip_machineStart from "./assets/dip-machine-start.svg";
+import dip_machineEnd from "./assets/dip-machine-end.svg";
 import dipsStart from "./assets/dips-start.svg";
 import dipsEnd from "./assets/dips-end.svg";
 import dumbbell_bench_pressStart from "./assets/dumbbell-bench-press-start.svg";
 import dumbbell_bench_pressEnd from "./assets/dumbbell-bench-press-end.svg";
+import dumbbell_curlStart from "./assets/dumbbell-curl-start.svg";
+import dumbbell_curlEnd from "./assets/dumbbell-curl-end.svg";
 import dumbbell_flyStart from "./assets/dumbbell-fly-start.svg";
 import dumbbell_flyEnd from "./assets/dumbbell-fly-end.svg";
 import dumbbell_lungeStart from "./assets/dumbbell-lunge-start.svg";
@@ -48,8 +48,6 @@ import dumbbell_shrugStart from "./assets/dumbbell-shrug-start.svg";
 import dumbbell_shrugEnd from "./assets/dumbbell-shrug-end.svg";
 import dumbbell_skullcrusherStart from "./assets/dumbbell-skullcrusher-start.svg";
 import dumbbell_skullcrusherEnd from "./assets/dumbbell-skullcrusher-end.svg";
-import ez_bar_skullcrusherStart from "./assets/ez-bar-skullcrusher-start.svg";
-import ez_bar_skullcrusherEnd from "./assets/ez-bar-skullcrusher-end.svg";
 import front_raiseStart from "./assets/front-raise-start.svg";
 import front_raiseEnd from "./assets/front-raise-end.svg";
 import front_squatStart from "./assets/front-squat-start.svg";
@@ -62,8 +60,8 @@ import hip_abductionStart from "./assets/hip-abduction-start.svg";
 import hip_abductionEnd from "./assets/hip-abduction-end.svg";
 import hip_adductionStart from "./assets/hip-adduction-start.svg";
 import hip_adductionEnd from "./assets/hip-adduction-end.svg";
-import incline_bench_pressStart from "./assets/incline-bench-press-start.webp";
-import incline_bench_pressEnd from "./assets/incline-bench-press-end.webp";
+import incline_bench_pressStart from "./assets/incline-bench-press-start.svg";
+import incline_bench_pressEnd from "./assets/incline-bench-press-end.svg";
 import incline_dumbbell_curlStart from "./assets/incline-dumbbell-curl-start.svg";
 import incline_dumbbell_curlEnd from "./assets/incline-dumbbell-curl-end.svg";
 import incline_dumbbell_flyStart from "./assets/incline-dumbbell-fly-start.svg";
@@ -74,26 +72,24 @@ import lat_pulldownStart from "./assets/lat-pulldown-start.webp";
 import lat_pulldownEnd from "./assets/lat-pulldown-end.webp";
 import lat_pulldown_closeStart from "./assets/lat-pulldown-close-start.svg";
 import lat_pulldown_closeEnd from "./assets/lat-pulldown-close-end.svg";
-import lat_pulldown_underhandStart from "./assets/lat-pulldown-underhand-start.svg";
-import lat_pulldown_underhandEnd from "./assets/lat-pulldown-underhand-end.svg";
-import lateral_raiseStart from "./assets/lateral-raise-start.webp";
-import lateral_raiseEnd from "./assets/lateral-raise-end.webp";
+import lateral_raiseStart from "./assets/lateral-raise-start.svg";
+import lateral_raiseEnd from "./assets/lateral-raise-end.svg";
 import leg_extensionStart from "./assets/leg-extension-start.svg";
 import leg_extensionEnd from "./assets/leg-extension-end.svg";
 import leg_press_calf_raiseStart from "./assets/leg-press-calf-raise-start.svg";
 import leg_press_calf_raiseEnd from "./assets/leg-press-calf-raise-end.svg";
 import leg_press_platesStart from "./assets/leg-press-plates-start.svg";
 import leg_press_platesEnd from "./assets/leg-press-plates-end.svg";
-import lying_leg_curl_stackStart from "./assets/lying-leg-curl-stack-start.svg";
-import lying_leg_curl_stackEnd from "./assets/lying-leg-curl-stack-end.svg";
+import lying_leg_curlStart from "./assets/lying-leg-curl-start.svg";
+import lying_leg_curlEnd from "./assets/lying-leg-curl-end.svg";
 import overhead_dumbbell_extensionStart from "./assets/overhead-dumbbell-extension-start.svg";
 import overhead_dumbbell_extensionEnd from "./assets/overhead-dumbbell-extension-end.svg";
-import preacher_curlStart from "./assets/preacher-curl-start.webp";
-import preacher_curlEnd from "./assets/preacher-curl-end.webp";
+import preacher_curlStart from "./assets/preacher-curl-start.svg";
+import preacher_curlEnd from "./assets/preacher-curl-end.svg";
 import preacher_curl_machineStart from "./assets/preacher-curl-machine-start.svg";
 import preacher_curl_machineEnd from "./assets/preacher-curl-machine-end.svg";
-import pull_up_parallelStart from "./assets/pull-up-parallel-start.svg";
-import pull_up_parallelEnd from "./assets/pull-up-parallel-end.svg";
+import pull_up_underhandStart from "./assets/pull-up-underhand-start.svg";
+import pull_up_underhandEnd from "./assets/pull-up-underhand-end.svg";
 import pull_up_wideStart from "./assets/pull-up-wide-start.svg";
 import pull_up_wideEnd from "./assets/pull-up-wide-end.svg";
 import romanian_deadliftStart from "./assets/romanian-deadlift-start.svg";
@@ -114,24 +110,22 @@ import smith_shrugStart from "./assets/smith-shrug-start.svg";
 import smith_shrugEnd from "./assets/smith-shrug-end.svg";
 import smith_squatStart from "./assets/smith-squat-start.svg";
 import smith_squatEnd from "./assets/smith-squat-end.svg";
-import standing_calf_raise_stackStart from "./assets/standing-calf-raise-stack-start.svg";
-import standing_calf_raise_stackEnd from "./assets/standing-calf-raise-stack-end.svg";
+import standing_calf_raiseStart from "./assets/standing-calf-raise-start.svg";
+import standing_calf_raiseEnd from "./assets/standing-calf-raise-end.svg";
 import standing_leg_curlStart from "./assets/standing-leg-curl-start.svg";
 import standing_leg_curlEnd from "./assets/standing-leg-curl-end.svg";
-import step_upStart from "./assets/step-up-start.svg";
-import step_upEnd from "./assets/step-up-end.svg";
 import straight_arm_pulldownStart from "./assets/straight-arm-pulldown-start.svg";
 import straight_arm_pulldownEnd from "./assets/straight-arm-pulldown-end.svg";
 import t_bar_rowStart from "./assets/t-bar-row-start.svg";
 import t_bar_rowEnd from "./assets/t-bar-row-end.svg";
 import triceps_extension_machineStart from "./assets/triceps-extension-machine-start.svg";
 import triceps_extension_machineEnd from "./assets/triceps-extension-machine-end.svg";
-import triceps_pushdownStart from "./assets/triceps-pushdown-start.webp";
-import triceps_pushdownEnd from "./assets/triceps-pushdown-end.webp";
 import triceps_pushdown_barStart from "./assets/triceps-pushdown-bar-start.svg";
 import triceps_pushdown_barEnd from "./assets/triceps-pushdown-bar-end.svg";
 import triceps_pushdown_reverseStart from "./assets/triceps-pushdown-reverse-start.svg";
 import triceps_pushdown_reverseEnd from "./assets/triceps-pushdown-reverse-end.svg";
+import triceps_pushdown_ropeStart from "./assets/triceps-pushdown-rope-start.svg";
+import triceps_pushdown_ropeEnd from "./assets/triceps-pushdown-rope-end.svg";
 import triceps_pushdown_v_barStart from "./assets/triceps-pushdown-v-bar-start.svg";
 import triceps_pushdown_v_barEnd from "./assets/triceps-pushdown-v-bar-end.svg";
 import walking_lungeStart from "./assets/walking-lunge-start.svg";
@@ -145,24 +139,23 @@ export const EXERCISE_FRAMES = {
   barbell_row_underhand: { start: barbell_row_underhandStart, end: barbell_row_underhandEnd },
   barbell_shrug: { start: barbell_shrugStart, end: barbell_shrugEnd },
   bench_press: { start: bench_pressStart, end: bench_pressEnd },
-  biceps_curl: { start: biceps_curlStart, end: biceps_curlEnd },
   cable_crossover: { start: cable_crossoverStart, end: cable_crossoverEnd },
   cable_curl: { start: cable_curlStart, end: cable_curlEnd },
   cable_kickback: { start: cable_kickbackStart, end: cable_kickbackEnd },
   cable_rope_curl: { start: cable_rope_curlStart, end: cable_rope_curlEnd },
   cable_shrug: { start: cable_shrugStart, end: cable_shrugEnd },
-  chest_press_stack: { start: chest_press_stackStart, end: chest_press_stackEnd },
+  chest_press: { start: chest_pressStart, end: chest_pressEnd },
   close_grip_bench_press: { start: close_grip_bench_pressStart, end: close_grip_bench_pressEnd },
   deadlift: { start: deadliftStart, end: deadliftEnd },
-  dip_machine_stack: { start: dip_machine_stackStart, end: dip_machine_stackEnd },
+  dip_machine: { start: dip_machineStart, end: dip_machineEnd },
   dips: { start: dipsStart, end: dipsEnd },
   dumbbell_bench_press: { start: dumbbell_bench_pressStart, end: dumbbell_bench_pressEnd },
+  dumbbell_curl: { start: dumbbell_curlStart, end: dumbbell_curlEnd },
   dumbbell_fly: { start: dumbbell_flyStart, end: dumbbell_flyEnd },
   dumbbell_lunge: { start: dumbbell_lungeStart, end: dumbbell_lungeEnd },
   dumbbell_pullover: { start: dumbbell_pulloverStart, end: dumbbell_pulloverEnd },
   dumbbell_shrug: { start: dumbbell_shrugStart, end: dumbbell_shrugEnd },
   dumbbell_skullcrusher: { start: dumbbell_skullcrusherStart, end: dumbbell_skullcrusherEnd },
-  ez_bar_skullcrusher: { start: ez_bar_skullcrusherStart, end: ez_bar_skullcrusherEnd },
   front_raise: { start: front_raiseStart, end: front_raiseEnd },
   front_squat: { start: front_squatStart, end: front_squatEnd },
   hack_squat: { start: hack_squatStart, end: hack_squatEnd },
@@ -175,16 +168,15 @@ export const EXERCISE_FRAMES = {
   incline_dumbbell_press: { start: incline_dumbbell_pressStart, end: incline_dumbbell_pressEnd },
   lat_pulldown: { start: lat_pulldownStart, end: lat_pulldownEnd },
   lat_pulldown_close: { start: lat_pulldown_closeStart, end: lat_pulldown_closeEnd },
-  lat_pulldown_underhand: { start: lat_pulldown_underhandStart, end: lat_pulldown_underhandEnd },
   lateral_raise: { start: lateral_raiseStart, end: lateral_raiseEnd },
   leg_extension: { start: leg_extensionStart, end: leg_extensionEnd },
   leg_press_calf_raise: { start: leg_press_calf_raiseStart, end: leg_press_calf_raiseEnd },
   leg_press_plates: { start: leg_press_platesStart, end: leg_press_platesEnd },
-  lying_leg_curl_stack: { start: lying_leg_curl_stackStart, end: lying_leg_curl_stackEnd },
+  lying_leg_curl: { start: lying_leg_curlStart, end: lying_leg_curlEnd },
   overhead_dumbbell_extension: { start: overhead_dumbbell_extensionStart, end: overhead_dumbbell_extensionEnd },
   preacher_curl: { start: preacher_curlStart, end: preacher_curlEnd },
   preacher_curl_machine: { start: preacher_curl_machineStart, end: preacher_curl_machineEnd },
-  pull_up_parallel: { start: pull_up_parallelStart, end: pull_up_parallelEnd },
+  pull_up_underhand: { start: pull_up_underhandStart, end: pull_up_underhandEnd },
   pull_up_wide: { start: pull_up_wideStart, end: pull_up_wideEnd },
   romanian_deadlift: { start: romanian_deadliftStart, end: romanian_deadliftEnd },
   seated_cable_row_close: { start: seated_cable_row_closeStart, end: seated_cable_row_closeEnd },
@@ -195,15 +187,14 @@ export const EXERCISE_FRAMES = {
   smith_incline_press: { start: smith_incline_pressStart, end: smith_incline_pressEnd },
   smith_shrug: { start: smith_shrugStart, end: smith_shrugEnd },
   smith_squat: { start: smith_squatStart, end: smith_squatEnd },
-  standing_calf_raise_stack: { start: standing_calf_raise_stackStart, end: standing_calf_raise_stackEnd },
+  standing_calf_raise: { start: standing_calf_raiseStart, end: standing_calf_raiseEnd },
   standing_leg_curl: { start: standing_leg_curlStart, end: standing_leg_curlEnd },
-  step_up: { start: step_upStart, end: step_upEnd },
   straight_arm_pulldown: { start: straight_arm_pulldownStart, end: straight_arm_pulldownEnd },
   t_bar_row: { start: t_bar_rowStart, end: t_bar_rowEnd },
   triceps_extension_machine: { start: triceps_extension_machineStart, end: triceps_extension_machineEnd },
-  triceps_pushdown: { start: triceps_pushdownStart, end: triceps_pushdownEnd },
   triceps_pushdown_bar: { start: triceps_pushdown_barStart, end: triceps_pushdown_barEnd },
   triceps_pushdown_reverse: { start: triceps_pushdown_reverseStart, end: triceps_pushdown_reverseEnd },
+  triceps_pushdown_rope: { start: triceps_pushdown_ropeStart, end: triceps_pushdown_ropeEnd },
   triceps_pushdown_v_bar: { start: triceps_pushdown_v_barStart, end: triceps_pushdown_v_barEnd },
   walking_lunge: { start: walking_lungeStart, end: walking_lungeEnd },
 };

@@ -195,7 +195,6 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "dumbbell", count: 2 },
         reps: { min: 10, max: 12 },
         benefit: "ягодицы включаются сильнее, чем в выпадах",
-        asset: crossFade(EXERCISE_FRAMES.step_up),
         instructions: [
           "Поставь стопу на скамью целиком, высота — до угла 90° в колене.",
           "Вставай за счёт верхней ноги, не отталкиваясь нижней.",
@@ -233,7 +232,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 10, max: 12 },
         benefit: "базовая изоляция задней поверхности бедра",
-        asset: crossFade(EXERCISE_FRAMES.lying_leg_curl_stack),
+        asset: crossFade(EXERCISE_FRAMES.lying_leg_curl),
         instructions: [
           "Ляг так, чтобы колени были на краю подушки, валик над пятками.",
           "Сгибай ноги до касания валиком ягодиц.",
@@ -248,6 +247,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "plates", sides: 1 },
         reps: { min: 10, max: 12 },
         benefit: "жёстче нагрузка в верхней точке",
+        asset: crossFade(EXERCISE_FRAMES.lying_leg_curl),
         instructions: [
           "Выстави упор так, чтобы колени свисали с края подушки.",
           "Сгибай ноги подконтрольно, без рывка от блинов.",
@@ -387,7 +387,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 12, max: 15 },
         benefit: "икры с прямой ногой и быстрой сменой веса",
-        asset: crossFade(EXERCISE_FRAMES.standing_calf_raise_stack),
+        asset: crossFade(EXERCISE_FRAMES.standing_calf_raise),
         instructions: [
           "Носки на платформе, пятки свисают, плечи под упорами.",
           "Поднимайся максимально высоко и опускайся до растяжения.",
@@ -402,14 +402,15 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         load: { type: "plates", sides: 2 },
         reps: { min: 12, max: 15 },
         benefit: "икры любят большой вес, а блинов можно навесить много",
+        asset: crossFade(EXERCISE_FRAMES.standing_calf_raise),
         instructions: [
           "Встань носками на платформу, упоры плотно на плечах.",
           "Работай полной амплитудой: вниз до растяжения, вверх на носок.",
           "Держи темп ровным, без подпрыгиваний.",
         ],
       },
-      seated_calf_raise: {
-        name: "Подъёмы на носки сидя в тренажёре",
+      seated_calf_raise_plates: {
+        name: "Подъёмы на носки сидя в тренажёре с блинами",
         primaryMuscles: ["calves"],
         secondaryMuscles: [],
         equipment: ["machine"],
@@ -438,7 +439,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         ],
       },
       leg_press_calf_raise: {
-        name: "Подъёмы на носки в жиме ногами",
+        name: "Подъёмы на носки в жиме ногами с блинами",
         primaryMuscles: ["calves"],
         secondaryMuscles: [],
         equipment: ["machine"],

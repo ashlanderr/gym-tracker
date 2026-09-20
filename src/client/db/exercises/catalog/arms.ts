@@ -13,7 +13,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "dumbbell", count: 2 },
         reps: { min: 10, max: 12 },
         benefit: "базовый вариант, всегда есть свободные гантели",
-        asset: crossFade(EXERCISE_FRAMES.biceps_curl),
+        asset: crossFade(EXERCISE_FRAMES.dumbbell_curl),
         instructions: [
           "Локти прижаты к корпусу и остаются на месте всё движение.",
           "Поднимай гантели за счёт бицепса, не подкидывая их корпусом.",
@@ -165,7 +165,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 10, max: 12 },
         benefit: "свободные запястья и полное сокращение внизу",
-        asset: crossFade(EXERCISE_FRAMES.triceps_pushdown),
+        asset: crossFade(EXERCISE_FRAMES.triceps_pushdown_rope),
         instructions: [
           "Локти прижаты к бокам и не двигаются вперёд-назад.",
           "Разгибай руки до конца, в нижней точке коротко напряги трицепс.",
@@ -225,7 +225,6 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         load: { type: "barbell" },
         reps: { min: 8, max: 12 },
         benefit: "растягивает трицепс под нагрузкой",
-        asset: crossFade(EXERCISE_FRAMES.ez_bar_skullcrusher),
         instructions: [
           "Штанга над плечами, хват на изгибах, локти смотрят вперёд.",
           "Опускай гриф ко лбу или чуть за голову, плечи неподвижны.",

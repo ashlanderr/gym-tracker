@@ -31,6 +31,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         weight: { type: "positive", selfWeightPercent: 100 },
         reps: { min: 6, max: 10 },
         benefit: "сильнее бицепс, обычно выходит больше повторов",
+        asset: crossFade(EXERCISE_FRAMES.pull_up_underhand),
         instructions: [
           "Хват на ширине плеч ладонями к себе.",
           "Тяни локти вниз и назад, грудь веди к перекладине.",
@@ -46,7 +47,6 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         weight: { type: "positive", selfWeightPercent: 100 },
         reps: { min: 6, max: 10 },
         benefit: "мягче всего для плеча и локтя",
-        asset: crossFade(EXERCISE_FRAMES.pull_up_parallel),
         instructions: [
           "Возьмись за параллельные ручки, ладони смотрят друг на друга.",
           "Тяни себя вверх, ведя локти строго вдоль корпуса.",
@@ -62,6 +62,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         weight: { type: "positive", selfWeightPercent: 100 },
         reps: { min: 5, max: 8 },
         benefit: "прогрессия, когда свой вес стал лёгким",
+        asset: crossFade(EXERCISE_FRAMES.pull_up_wide),
         instructions: [
           "Повесь блин на пояс, проверь, что он не мешает ногам.",
           "Работай в той же технике, но без рывков в старте.",
@@ -77,6 +78,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         weight: { type: "positive", selfWeightPercent: 100 },
         reps: { min: 5, max: 8 },
         benefit: "самый тяжёлый вес из всех подтягиваний",
+        asset: crossFade(EXERCISE_FRAMES.pull_up_underhand),
         instructions: [
           "Повесь блин на пояс, хват ладонями к себе на ширине плеч.",
           "Тяни грудью к перекладине, локти идут вниз и назад.",
@@ -171,7 +173,6 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "stack" },
         reps: { min: 10, max: 12 },
         benefit: "сильнее включается бицепс и низ широчайших",
-        asset: crossFade(EXERCISE_FRAMES.lat_pulldown_underhand),
         instructions: [
           "Хват ладонями к себе на ширине плеч, бёдра под валиками.",
           "Тяни рукоять к низу груди, локти идут вдоль корпуса.",
