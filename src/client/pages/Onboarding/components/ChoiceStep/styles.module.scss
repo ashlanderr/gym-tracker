@@ -1,0 +1,63 @@
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  padding: 18px;
+  border: 1px solid #2e2e2e;
+  border-radius: 16px;
+  background: #0f0f0f;
+  color: #ddd;
+  text-align: left;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.label {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.note {
+  font-size: 13px;
+  line-height: 1.35;
+  color: #7a7a7a;
+  transition: color 0.2s;
+}
+
+// Two answers are a pair of equal tiles, sized by the row rather than by a
+// number: whatever the screen is, each takes half of it.
+.pair {
+  flex-direction: row;
+
+  .option {
+    flex: 1 1 0;
+    min-width: 0;
+    aspect-ratio: 1 / 1;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .label {
+    font-size: 18px;
+  }
+}
+
+.selected {
+  border-color: #06f;
+  background: #06f;
+  color: #fff;
+
+  .note {
+    color: rgba(255, 255, 255, 0.72);
+  }
+}

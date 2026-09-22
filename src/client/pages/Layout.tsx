@@ -19,6 +19,7 @@ import { WorkoutFinish } from "./WorkoutFinish";
 import { Home } from "./Home";
 import { ModalStack, StoreProvider } from "../components";
 import { User } from "./User";
+import { Onboarding } from "./Onboarding";
 import { ExerciseCatalogPage, ExercisePage } from "./Exercise";
 import s from "./layout.module.scss";
 
@@ -81,6 +82,10 @@ function AnimatedRoutes() {
           {import.meta.env.DEV && (
             <Route path="/exercises" element={<ExerciseCatalogPage />} />
           )}
+          {/* Reachable but not yet reached: `Profile` does not exist in the
+              store, so nothing sends anybody here and the answers go
+              nowhere. The screens themselves are finished. */}
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/exercises/:exerciseId" element={<ExercisePage />} />
           <Route path="/user" element={<User />} />
         </Routes>

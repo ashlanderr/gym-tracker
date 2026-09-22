@@ -1,0 +1,69 @@
+// Must match ITEM_HEIGHT and VISIBLE_ROWS in constants.ts: the scroll maths
+// reads a value out of the same row height this draws.
+$item: 44px;
+$rows: 5;
+
+.root {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scroller {
+  height: $item * $rows;
+  overflow-y: auto;
+  scrollbar-width: none;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior-y: contain;
+  // The rows away from the middle fade out instead of being cut off, which
+  // is what makes the column read as a wheel rather than as a list.
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 34%,
+    #000 66%,
+    transparent
+  );
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.dragging {
+  scroll-snap-type: none;
+  cursor: grabbing;
+}
+
+// Half the wheel above the first value and below the last one, so either end
+// can still stand in the middle.
+.list {
+  padding-block: $item * ($rows - 1) * 0.5;
+}
+
+.item {
+  height: $item;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  scroll-snap-align: center;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: #6f6f6f;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.current {
+  color: #fff;
+  font-weight: 600;
+}
+
+.units {
+  font-size: 15px;
+  font-weight: 500;
+  color: #8d8d8d;
+}

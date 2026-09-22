@@ -1,0 +1,150 @@
+.stage {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  text-align: center;
+  overflow-y: auto;
+}
+
+.icon {
+  width: 88px;
+  height: 88px;
+  margin-bottom: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #2e2e2e;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #1c1c1c, #0a0a0a 70%);
+  color: #fff;
+  font-size: 40px;
+}
+
+.question {
+  max-width: 320px;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.24;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.note {
+  max-width: 300px;
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #7a7a7a;
+  text-wrap: pretty;
+}
+
+.text {
+  max-width: 290px;
+  margin-top: 16px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #6d6d6d;
+  text-wrap: pretty;
+}
+
+.gap {
+  flex: 0 0 auto;
+  align-self: stretch;
+}
+
+.body {
+  align-self: stretch;
+  padding-top: 38px;
+}
+
+.tail {
+  flex: 0 0 auto;
+}
+
+// The question keeps the same place on every screen — it is the one thing
+// that must not jump while the flow moves — and the answer sits in the middle
+// of what is left, held there by two bands of equal weight. The answer may
+// grow into them, which is why the picture on a lift step is as large as the
+// screen can spare rather than a fixed size.
+.withBody {
+  justify-content: flex-start;
+  padding-top: 26px;
+
+  .gap,
+  .tail {
+    flex: 1 1 0;
+  }
+
+  // A column, so that a step whose answer can give up height — the picture on
+  // a lift step — is a flex item that actually shrinks instead of overflowing
+  // a box that shrank without it.
+  .body {
+    flex: 0 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    // The floor on either side, for when the bands are squeezed to nothing.
+    margin-block: 20px;
+    padding-top: 0;
+  }
+}
+
+@media (max-height: 720px) {
+  .body {
+    padding-top: 24px;
+  }
+
+  .icon {
+    width: 72px;
+    height: 72px;
+    margin-bottom: 18px;
+    font-size: 34px;
+  }
+}
+
+.action {
+  flex: 0 0 auto;
+  padding: 0 24px 12px;
+}
+
+.hint {
+  padding: 0 0 12px;
+  text-align: center;
+  font-size: 12px;
+  color: #6d6d6d;
+}
+
+.primary {
+  width: 100%;
+  padding: 22px;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  background: #06f;
+  color: #fff;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.2;
+  transition:
+    background-color 0.2s,
+    opacity 0.2s;
+
+  &:disabled {
+    background: #1a1a1a;
+    color: #5f5f5f;
+  }
+}
+
+// Skipping is a real answer on the lift steps, not an escape hatch, so the
+// word is given a hit area and a size that admit it.
+.secondary {
+  width: 100%;
+  padding: 16px 0 6px;
+  border: none;
+  background: transparent;
+  color: #8a8a8a;
+  font-size: 15px;
+}
