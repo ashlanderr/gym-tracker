@@ -13,7 +13,6 @@ export interface StepLayoutProps {
   why?: string;
   text?: string;
   children?: ReactNode;
-  hint?: string;
   action?: StepAction;
   secondary?: StepAction;
 }

@@ -14,7 +14,6 @@ export function StepLayout({
   why,
   text,
   children,
-  hint,
   action,
   secondary,
 }: StepLayoutProps) {
@@ -38,7 +37,6 @@ export function StepLayout({
         <div className={s.tail} />
       </div>
       <div className={s.action}>
-        {hint && <div className={s.hint}>{hint}</div>}
         {action && (
           <button
             className={s.primary}
