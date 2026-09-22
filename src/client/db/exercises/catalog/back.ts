@@ -518,7 +518,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         secondaryMuscles: ["upper_back", "quadriceps", "forearms"],
         equipment: ["barbell"],
         load: { type: "barbell" },
-        reps: { min: 4, max: 6 },
+        reps: { min: 6, max: 8 },
         benefit: "самый тяжёлый вес из всего, что есть в зале",
         asset: crossFade(EXERCISE_FRAMES.deadlift),
         instructions: [
