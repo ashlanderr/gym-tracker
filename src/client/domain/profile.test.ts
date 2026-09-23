@@ -1,7 +1,7 @@
 import * as Y from "yjs";
 import { addMeasurement, queryProfile, type Store } from "../db";
 import { queryLiftStrength } from "./levels";
-import { completeOnboarding } from "./profile.ts";
+import { changeAnchorSet, completeOnboarding } from "./profile.ts";
 
 function createStore(): Store {
   return { documentId: "test", personal: new Y.Doc() };
@@ -36,4 +36,26 @@ test("an onboarding pullup is read with the body weight given beside it", () => 
   expect(queryLiftStrength(store, profile, "pullup", 2000).oneRepMax).toBe(
     90 * (1 + 5 / 30),
   );
+});
+
+test("a corrected lift is dated now and forgetting it drops the answer", () => {
+  const store = createStore();
+  completeOnboarding(
+    store,
+    "user",
+    {
+      sex: "male",
+      heightCm: 180,
+      weightKg: 80,
+      anchors: { squat: { weight: 100, reps: 5 } },
+    },
+    1000,
+  );
+
+  changeAnchorSet(store, "bench", { weight: 70, reps: 6 }, 2000);
+  changeAnchorSet(store, "squat", null, 2000);
+
+  expect(queryProfile(store)!.anchors).toEqual({
+    bench: { weight: 70, reps: 6, createdAt: 2000 },
+  });
 });

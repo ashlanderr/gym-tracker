@@ -1,0 +1,6 @@
+// The figures fill whatever height the row has, and a sheet has to leave
+// the page above it in view.
+.picker {
+  height: min(42vh, 300px);
+  padding: 0 16px 16px;
+}

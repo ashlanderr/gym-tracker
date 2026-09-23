@@ -1,0 +1,28 @@
+// Only as wide as the wheels, so the band spans them and not the container.
+.root {
+  position: relative;
+  flex: 0 0 auto;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+// The row the wheels deliver their value to, drawn once for both of them.
+.band {
+  position: absolute;
+  left: -8px;
+  right: -8px;
+  top: 50%;
+  height: 46px;
+  transform: translateY(-50%);
+  border-radius: 12px;
+  background: #ffffff0a;
+  pointer-events: none;
+}
+
+.times {
+  font-size: 20px;
+  color: #484848;
+}

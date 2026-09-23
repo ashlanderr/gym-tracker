@@ -18,10 +18,11 @@ import { WorkoutFocus } from "./WorkoutFocus";
 import { WorkoutFinish } from "./WorkoutFinish";
 import { Home } from "./Home";
 import { ModalStack, StoreProvider } from "../components";
-import { User } from "./User";
 import { Onboarding } from "./Onboarding";
 import { ExerciseCatalogPage, ExercisePage } from "./Exercise";
-import { Profile } from "./Profile";
+import { MeasurementPage, ProfilePage } from "./Profile";
+import { Settings } from "./Settings";
+import { TAB_PATHS, Tabs } from "./Tabs";
 import s from "./layout.module.scss";
 
 const PAGE_OFFSET = 64;
@@ -54,6 +55,8 @@ export function Layout() {
 
 // Keyed by path: a modal changes only the history state, so the page stays.
 // Pages move along one axis: forward slides in from the right, back returns.
+// The tabs share one key: switching them swaps the content under a bar that
+// stays put, rather than sliding a whole page in.
 function AnimatedRoutes() {
   const location = useLocation();
   const direction = useNavigationType() === NavigationType.Pop ? -1 : 1;
@@ -61,7 +64,7 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence initial={false} custom={direction}>
       <motion.div
-        key={location.pathname}
+        key={TAB_PATHS.includes(location.pathname) ? "tabs" : location.pathname}
         className={s.page}
         custom={direction}
         variants={PAGE_VARIANTS}
@@ -71,7 +74,12 @@ function AnimatedRoutes() {
         transition={PAGE_TRANSITION}
       >
         <Routes location={location}>
-          <Route path="/" element={<Home />} />
+          <Route element={<Tabs />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+          <Route path="/profile/:type" element={<MeasurementPage />} />
           <Route path="/workouts/:workoutId" element={<WorkoutFocus />} />
           <Route path="/workouts/:workoutId/all" element={<Workout />} />
           <Route
@@ -85,8 +93,6 @@ function AnimatedRoutes() {
           )}
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/exercises/:exerciseId" element={<ExercisePage />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/user" element={<User />} />
         </Routes>
       </motion.div>
     </AnimatePresence>

@@ -1,1 +1,1 @@
-export * from "./Profile";
+export { ProfilePage, MeasurementPage } from "./pages";

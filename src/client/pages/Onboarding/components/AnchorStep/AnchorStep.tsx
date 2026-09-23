@@ -1,12 +1,11 @@
 import s from "./styles.module.scss";
 import { useState } from "react";
-import { ExerciseCrossFade, useStore } from "../../../../components";
+import { ExerciseCrossFade, SetPicker, useStore } from "../../../../components";
 import { useQueryExerciseById } from "../../../../db";
 import { DEFAULT_ANCHOR_REPS, REPS_RANGE } from "../../constants.ts";
 import { QUESTIONS } from "../../questions.ts";
 import { anchorWeightUnits, formatAnchorWeight } from "../../utils.ts";
 import { StepLayout } from "../StepLayout";
-import { Wheel } from "../Wheel";
 import type { AnchorStepProps } from "./types.ts";
 
 // One lift per screen: with a picture and a picker there is nothing left
@@ -47,26 +46,16 @@ export function AnchorStep({
             endUrl={exercise.asset.endUrl}
           />
         )}
-        {/* Two columns of one picker, the way an hour and a minute are: the
-            set is a single answer, so both halves of it spin in one place. */}
-        <div className={s.picker}>
-          <div className={s.band} />
-          <Wheel
-            {...anchor.weight}
-            value={weightKg}
-            units={anchorWeightUnits(anchor.id)}
-            format={(value) => formatAnchorWeight(anchor.id, value)}
-            onChange={setWeightKg}
-          />
-          <div className={s.times}>×</div>
-          <Wheel
-            {...REPS_RANGE}
-            value={reps}
-            units="раз"
-            format={String}
-            onChange={setReps}
-          />
-        </div>
+        <SetPicker
+          weightRange={anchor.weight}
+          repsRange={REPS_RANGE}
+          weight={weightKg}
+          reps={reps}
+          weightUnits={anchorWeightUnits(anchor.id)}
+          formatWeight={(value) => formatAnchorWeight(anchor.id, value)}
+          onWeightChange={setWeightKg}
+          onRepsChange={setReps}
+        />
       </div>
     </StepLayout>
   );

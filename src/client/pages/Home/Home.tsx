@@ -7,15 +7,7 @@ import {
 import { buildTime, useTimer } from "../hooks.ts";
 import s from "./styles.module.scss";
 import { APP_VERSION, DATE_FORMATTER } from "./constants.ts";
-import {
-  MdAdd,
-  MdClose,
-  MdDelete,
-  MdEdit,
-  MdPerson,
-  MdPlayArrow,
-  MdSettings,
-} from "react-icons/md";
+import { MdAdd, MdClose, MdDelete, MdEdit, MdPlayArrow } from "react-icons/md";
 import { Navigate, useNavigate } from "react-router";
 import { useState } from "react";
 import { clsx } from "clsx";
@@ -81,17 +73,6 @@ export function Home() {
 
   return (
     <div className={s.body} ref={scrollRef}>
-      <div className={s.user}>
-        <div className={s.userImage}>
-          <MdPerson />
-        </div>
-        <div className={s.userInfo}>
-          <div className={s.userName}>Анонимный пользователь</div>
-        </div>
-        <button className={s.userSettings} onClick={() => navigate("/profile")}>
-          <MdSettings />
-        </button>
-      </div>
       <div className={s.workouts}>
         {activeWorkout ? (
           <div className={s.workout}>

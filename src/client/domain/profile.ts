@@ -4,6 +4,7 @@ import {
   type AnchorSet,
   generateId,
   type Profile,
+  queryProfile,
   saveProfile,
   type Sex,
   type Store,
@@ -45,4 +46,29 @@ export function completeOnboarding(
   }
 
   return saveProfile(store, { user, sex, anchors: dated, createdAt: now });
+}
+
+export function changeSex(store: Store, sex: Sex) {
+  const profile = queryProfile(store);
+  if (profile) saveProfile(store, { ...profile, sex });
+}
+
+// A corrected answer is dated now, so a pullup meets today's body weight.
+// No set means "не помню": the lift goes back to its default.
+export function changeAnchorSet(
+  store: Store,
+  anchor: AnchorId,
+  set: Omit<AnchorSet, "createdAt"> | null,
+  now: number = Date.now(),
+) {
+  const profile = queryProfile(store);
+  if (!profile) return;
+
+  const anchors = { ...profile.anchors };
+  if (set) {
+    anchors[anchor] = { ...set, createdAt: now };
+  } else {
+    delete anchors[anchor];
+  }
+  saveProfile(store, { ...profile, anchors });
 }

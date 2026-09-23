@@ -1,0 +1,30 @@
+.list {
+  padding: 4px 14px;
+  border-radius: 12px;
+  background: #111;
+  text-align: left;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #1d1d1d;
+  font-variant-numeric: tabular-nums;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  b {
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+.keep {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #6d6d6d;
+}

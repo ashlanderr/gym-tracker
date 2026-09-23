@@ -8,13 +8,8 @@ import type {
   Sex,
 } from "./types.ts";
 
-// The cards answer "какой пол", the recap lists who the person is, and the
-// two need different words for it.
-export const SEX_OPTIONS: ChoiceOption<Sex>[] = [
-  { value: "male", label: "Мужской" },
-  { value: "female", label: "Женский" },
-];
-
+// The recap lists who the person is, in words of its own rather than the
+// labels of the cards that asked.
 export const SEX_SUMMARY: Record<Sex, string> = {
   male: "Мужчина",
   female: "Женщина",

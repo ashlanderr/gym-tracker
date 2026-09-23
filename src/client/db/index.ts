@@ -8,3 +8,4 @@ export * from "./sets.ts";
 export * from "./workouts.ts";
 export * from "./gyms.ts";
 export * from "./profiles.ts";
+export * from "./data.ts";

@@ -1,5 +1,7 @@
+import { useMemo } from "react";
 import {
   collection,
+  deleteEntity,
   insertEntity,
   maxBy,
   minBy,
@@ -62,4 +64,24 @@ function selectMeasurement(
 export function addMeasurement(store: Store, entity: Measurement): Measurement {
   insertEntity(collection(store.personal, "measurements"), entity);
   return entity;
+}
+
+// Newest first: the history reads down from today.
+export function useQueryMeasurements(
+  store: Store,
+  type: MeasurementType,
+): Measurement[] {
+  const entities = useQueryCollection<Measurement>({
+    collection: collection(store.personal, "measurements"),
+    filter: { type: { eq: type } },
+    deps: [type],
+  });
+  return useMemo(
+    () => [...entities].sort((a, b) => b.createdAt - a.createdAt),
+    [entities],
+  );
+}
+
+export function deleteMeasurement(store: Store, entity: Measurement) {
+  deleteEntity(collection(store.personal, "measurements"), entity);
 }
