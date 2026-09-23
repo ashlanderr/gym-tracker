@@ -32,7 +32,9 @@ export function AnchorStep({
   return (
     <StepLayout
       question={exercise.name}
-      note={QUESTIONS.anchor.note}
+      note={
+        anchor.id === "pullup" ? QUESTIONS.pullup.note : QUESTIONS.anchor.note
+      }
       why={isFirst ? QUESTIONS.anchor.why : undefined}
       action={{ label: "Дальше", onClick: () => onSubmit({ weightKg, reps }) }}
       secondary={{ label: "Не помню", onClick: onSkip }}

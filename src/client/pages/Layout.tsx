@@ -86,9 +86,6 @@ function AnimatedRoutes() {
           {import.meta.env.DEV && (
             <Route path="/mockups/profile" element={<ProfileMockups />} />
           )}
-          {/* Reachable but not yet reached: `Profile` does not exist in the
-              store, so nothing sends anybody here and the answers go
-              nowhere. The screens themselves are finished. */}
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/exercises/:exerciseId" element={<ExercisePage />} />
           <Route path="/user" element={<User />} />

@@ -13,17 +13,22 @@ export interface Store {
   personal: Y.Doc;
 }
 
+export interface LocalStore {
+  store: Store;
+  // Resolves once the document saved on the device is read back. Before that
+  // an empty document cannot tell "nothing yet" from "nothing ever".
+  loaded: Promise<unknown>;
+}
+
 // The app is local-first: the document exists and accepts writes before there
 // is a network or an account. Sync is attached later, once there is a session.
-export function initStore(documentId: string): Store {
+export function initStore(documentId: string): LocalStore {
   const doc = new Y.Doc();
-
   const idbProvider = new IndexeddbPersistence(`user/${documentId}`, doc);
-  idbProvider.on("synced", () => {
-    console.log(`idbProvider [${documentId}]: synced`);
-  });
-
-  return { documentId, personal: doc };
+  return {
+    store: { documentId, personal: doc },
+    loaded: idbProvider.whenSynced,
+  };
 }
 
 export function connectStore(

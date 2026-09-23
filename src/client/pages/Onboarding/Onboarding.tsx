@@ -9,6 +9,10 @@ import {
 } from "react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { MdArrowBack } from "react-icons/md";
+import { useAccountId } from "../../account";
+import { useStore } from "../../components";
+import { useQueryProfile } from "../../db";
+import { completeOnboarding } from "../../domain";
 import {
   AnchorStep,
   ChoiceStep,
@@ -42,6 +46,9 @@ import type {
 export function Onboarding() {
   const navigate = useNavigate();
   const location = useLocation();
+  const store = useStore();
+  const accountId = useAccountId();
+  const profile = useQueryProfile(store);
   const [draft, setDraft] = useState<OnboardingDraft>({ anchors: {} });
 
   // The step is a history entry, the way a modal is one in `ModalStack`: the
@@ -58,6 +65,15 @@ export function Onboarding() {
   const timerRef = useRef<number>(undefined);
 
   useEffect(() => () => window.clearTimeout(timerRef.current), []);
+
+  // Somebody with a profile has nothing to answer here. Checked on every
+  // history move rather than once: the page transition hands a returning
+  // path the same instance that is still leaving, so a one-off redirect
+  // would have fired already.
+  const isOpen = location.pathname === "/onboarding";
+  useEffect(() => {
+    if (profile && isOpen) navigate("/", { replace: true });
+  }, [profile, isOpen, location.key, navigate]);
 
   const steps = buildSteps(draft.experience);
   const sex = draft.sex ?? "male";
@@ -101,12 +117,31 @@ export function Onboarding() {
     nextHandler();
   };
 
+  // The answers shown on the last step are the ones saved, defaults
+  // included. Leaving walks history back over every step to the entry the
+  // flow opened on, so the back button on the home screen does not walk into
+  // the questions again; that entry turns into home once there is a profile.
+  const finishHandler = () => {
+    completeOnboarding(store, accountId, {
+      sex,
+      heightCm: draft.heightCm ?? DEFAULT_HEIGHT_CM[sex],
+      weightKg: draft.weightKg ?? DEFAULT_WEIGHT_KG[sex],
+      anchors: Object.fromEntries(
+        Object.entries(draft.anchors).map(([id, entry]) => [
+          id,
+          { weight: entry.weightKg, reps: entry.reps },
+        ]),
+      ),
+    });
+    navigate(-steps.indexOf("done"));
+  };
+
+  if (profile) return null;
+
   const renderStep = () => {
     switch (step) {
       case "welcome":
-        return (
-          <WelcomeStep onStart={nextHandler} onSkip={() => navigate("/")} />
-        );
+        return <WelcomeStep onStart={nextHandler} />;
 
       case "sex":
         return (
@@ -153,7 +188,7 @@ export function Onboarding() {
         );
 
       case "done":
-        return <DoneStep draft={draft} onFinish={() => navigate("/")} />;
+        return <DoneStep draft={draft} onFinish={finishHandler} />;
 
       default: {
         const anchor = ANCHORS.find(({ id }) => id === step)!;

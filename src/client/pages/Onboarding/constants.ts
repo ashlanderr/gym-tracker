@@ -1,6 +1,6 @@
 import type { Transition, Variants } from "motion/react";
+import { ANCHOR_EXERCISES } from "../../domain";
 import type {
-  AnchorId,
   AnchorSpec,
   ChoiceOption,
   Experience,
@@ -105,7 +105,7 @@ const BARBELL_RANGE: MeasureRange = {
 export const ANCHORS: AnchorSpec[] = [
   {
     id: "bench",
-    exercise: "bench_press",
+    exercise: ANCHOR_EXERCISES.bench,
     weight: BARBELL_RANGE,
     // 22 / 1.2 is 18.3 for a woman, lighter than the bar itself — the same
     // result starting-weights.md records as "не проходит". The scale cannot
@@ -114,27 +114,26 @@ export const ANCHORS: AnchorSpec[] = [
   },
   {
     id: "squat",
-    exercise: "back_squat",
+    exercise: ANCHOR_EXERCISES.squat,
     weight: BARBELL_RANGE,
     start: { male: 50, female: 25 },
   },
   {
     id: "deadlift",
-    exercise: "deadlift",
+    exercise: ANCHOR_EXERCISES.deadlift,
     weight: BARBELL_RANGE,
     start: { male: 62.5, female: 32.5 },
   },
   {
     // The weight here is what hangs on the belt, and for almost everybody
-    // that is nothing — so the scale starts at zero and says so in words.
+    // that is nothing — so the scale opens at zero and says so in words.
+    // Below zero is what an assisted pullup machine takes off.
     id: "pullup",
-    exercise: "pull_up_wide",
-    weight: { min: 0, max: 60, step: 2.5, majorEvery: 4 },
+    exercise: ANCHOR_EXERCISES.pullup,
+    weight: { min: -60, max: 60, step: 2.5, majorEvery: 4 },
     start: { male: 0, female: 0 },
   },
 ];
-
-export const ANCHOR_IDS: AnchorId[] = ANCHORS.map((anchor) => anchor.id);
 
 // The pair the picker opens on is one guess, not two: the weight beside it is
 // the novice one-rep max from starting-weights.md carried down to this many

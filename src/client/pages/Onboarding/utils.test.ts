@@ -45,6 +45,10 @@ test("a pullup with nothing on the belt is still an answer", () => {
   expect(formatAnchorEntry("pullup", { weightKg: 5, reps: 5 })).toBe(
     "+5 кг × 5",
   );
+  // Help from the machine is the same scale below zero.
+  expect(formatAnchorEntry("pullup", { weightKg: -17.5, reps: 8 })).toBe(
+    "−17.5 кг × 8",
+  );
 
   // Halves are worth showing; whole kilograms are not worth a trailing zero.
   expect(formatAnchorEntry("bench", { weightKg: 62.5, reps: 6 })).toBe(

@@ -1,6 +1,5 @@
-// The shapes the questions collect. They mirror `Profile` from
-// docs/recommendations/README.md, but nothing is stored yet: the collection
-// does not exist, so the flow keeps the answers in its own state.
+// The shapes the questions collect. The flow keeps them in its own state and
+// writes them all at once on the last step.
 import type { AnchorId, Sex } from "../../db";
 
 export type { AnchorId, Sex };

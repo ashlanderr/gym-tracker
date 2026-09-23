@@ -1,6 +1,7 @@
 import {
   useQueryActiveWorkouts,
   useQueryCompletedWorkouts,
+  useQueryProfile,
   type Workout,
 } from "../../db";
 import { buildTime, useTimer } from "../hooks.ts";
@@ -15,7 +16,7 @@ import {
   MdPlayArrow,
   MdSettings,
 } from "react-icons/md";
-import { useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import { useState } from "react";
 import { clsx } from "clsx";
 import { useAccountId } from "../../account";
@@ -41,6 +42,7 @@ export function Home() {
   const [workoutActions, setWorkoutActions] = useState<Workout | null>(null);
   const activeTimer = useTimer(activeWorkout?.startedAt ?? null, null);
   const { scrollRef } = useScrollRestoration();
+  const profile = useQueryProfile(store);
 
   const openWorkoutHandler = (workout: Workout | null) => {
     if (!workout) return;
@@ -74,6 +76,8 @@ export function Home() {
       setWorkoutActions(null);
     }
   };
+
+  if (!profile) return <Navigate to="/onboarding" replace />;
 
   return (
     <div className={s.body} ref={scrollRef}>

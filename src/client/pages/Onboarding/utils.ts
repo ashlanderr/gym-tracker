@@ -1,4 +1,4 @@
-import { ANCHOR_IDS } from "./constants.ts";
+import { ANCHOR_IDS } from "../../domain";
 import type { AnchorEntry, AnchorId, Experience, StepId } from "./types.ts";
 
 export function formatNumber(value: number, decimals = 0): string {
@@ -32,11 +32,14 @@ export function isStepId(value: unknown): value is StepId {
 }
 
 // Pullups carry the body along, so nothing on the belt is still an answer
-// rather than an empty field — and it reads as words, not as a zero. That
-// column carries its own unit, because half of its rows are not kilograms.
+// rather than an empty field — and it reads as words, not as a zero. Help
+// from a machine is the same scale below zero. That column carries its own
+// unit, because some of its rows are not kilograms.
 export function formatAnchorWeight(anchor: AnchorId, weightKg: number): string {
   if (anchor !== "pullup") return formatKg(weightKg);
-  return weightKg === 0 ? "свой вес" : `+${formatKg(weightKg)} кг`;
+  if (weightKg === 0) return "свой вес";
+  const sign = weightKg > 0 ? "+" : "−";
+  return `${sign}${formatKg(Math.abs(weightKg))} кг`;
 }
 
 export function anchorWeightUnits(anchor: AnchorId): string | undefined {
