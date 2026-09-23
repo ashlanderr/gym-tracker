@@ -138,6 +138,15 @@ function selectPreviousPerformance(
   );
 }
 
+export function queryPerformancesByExercise(
+  store: Store,
+  exercise: string,
+): Performance[] {
+  return queryCollection(collection(store.personal, "performances"), {
+    exercise: { eq: exercise },
+  });
+}
+
 export function useQueryPerformancesByExercise(
   store: Store,
   exercise: string,
