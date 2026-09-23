@@ -64,8 +64,8 @@ test("history has one point per workout from working sets", () => {
 
   expect(points).toHaveLength(1);
   expect(points[0].maxWeight).toBe(60);
-  expect(points[0].bestRepMax).toBeCloseTo(74.5, 1);
-  expect(points[0].averageRepMax).toBeCloseTo(63.9, 1);
+  expect(points[0].bestRepMax).toBeCloseTo(76, 1);
+  expect(points[0].averageRepMax).toBeCloseTo(64.7, 1);
 
   expect(buildHistory(sessions, "all", (w) => w, NOW)).toHaveLength(2);
 });
