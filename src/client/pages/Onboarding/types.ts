@@ -1,11 +1,11 @@
 // The shapes the questions collect. They mirror `Profile` from
 // docs/recommendations/README.md, but nothing is stored yet: the collection
 // does not exist, so the flow keeps the answers in its own state.
-export type Sex = "male" | "female";
+import type { AnchorId, Sex } from "../../db";
+
+export type { AnchorId, Sex };
 
 export type Experience = "none" | "past" | "current";
-
-export type AnchorId = "bench" | "squat" | "deadlift" | "pullup";
 
 // Every lift is a step of its own, so its id is a step id too.
 export type StepId =
