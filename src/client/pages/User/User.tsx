@@ -15,7 +15,8 @@ export function User() {
   const store = useStore();
   const accountId = useAccountId();
   const navigate = useNavigate();
-  const measurement = useQueryLatestMeasurement(store, null);
+  const weight = useQueryLatestMeasurement(store, "weight", null)?.value;
+  const height = useQueryLatestMeasurement(store, "height", null)?.value;
   const me = trpc.me.useQuery();
 
   const [weightInput, setWeightInput] = useState<string | null>(null);
@@ -32,32 +33,34 @@ export function User() {
 
   const weightBlurHandler = () => {
     if (weightInput !== null) {
-      setWeightInput(
-        parseValue(weightInput, measurement?.weight ?? 0).toFixed(1),
-      );
+      setWeightInput(parseValue(weightInput, weight ?? 0).toFixed(1));
     }
   };
 
   const heightBlurHandler = () => {
     if (heightInput !== null) {
-      setHeightInput(
-        parseValue(heightInput, measurement?.height ?? 0).toFixed(0),
-      );
+      setHeightInput(parseValue(heightInput, height ?? 0).toFixed(0));
     }
   };
 
   const saveHandler = () => {
-    if (weightInput !== null || heightInput !== null) {
+    const createdAt = Date.now();
+    const inputs = [
+      { type: "weight", input: weightInput, value: weight },
+      { type: "height", input: heightInput, value: height },
+    ] as const;
+    for (const { type, input, value } of inputs) {
+      if (input === null) continue;
       addMeasurement(store, {
         id: generateId(),
         user: accountId,
-        weight: parseValue(weightInput, measurement?.weight ?? 0),
-        height: parseValue(heightInput, measurement?.height ?? 0),
-        createdAt: Date.now(),
+        type,
+        value: parseValue(input, value ?? 0),
+        createdAt,
       });
-      setWeightInput(null);
-      setHeightInput(null);
     }
+    setWeightInput(null);
+    setHeightInput(null);
   };
 
   return (
@@ -83,7 +86,7 @@ export function User() {
           <label className={s.fieldLabel}>Масса тела</label>
           <input
             className={s.fieldInput}
-            value={weightInput ?? measurement?.weight?.toFixed(1) ?? ""}
+            value={weightInput ?? weight?.toFixed(1) ?? ""}
             placeholder="0.0"
             onChange={(e) => setWeightInput(e.target.value)}
             onBlur={weightBlurHandler}
@@ -94,7 +97,7 @@ export function User() {
           <label className={s.fieldLabel}>Рост</label>
           <input
             className={s.fieldInput}
-            value={heightInput ?? measurement?.height?.toFixed(0) ?? ""}
+            value={heightInput ?? height?.toFixed(0) ?? ""}
             placeholder="0"
             onChange={(e) => setHeightInput(e.target.value)}
             onBlur={heightBlurHandler}

@@ -8,46 +8,53 @@ import {
 } from "./db.ts";
 import type { Store } from "./doc.ts";
 
+// Weight in kilograms, height in centimetres. A new kind of measurement is a
+// new type, not a new collection.
+export type MeasurementType = "weight" | "height";
+
 export interface Measurement {
   id: string;
   user: string;
+  type: MeasurementType;
+  value: number;
   createdAt: number;
-  weight: number;
-  height: number;
 }
 
-// The latest measurement before the date, or the earliest one when the body
-// was measured only later.
+// The latest measurement at the date, or the earliest one when the body was
+// measured only later. A measurement taken at the very moment counts: the
+// onboarding writes body weight and a remembered set together.
 export function queryLatestMeasurement(
   store: Store,
-  beforeDate: number | null,
+  type: MeasurementType,
+  atDate: number | null,
 ): Measurement | null {
   const entities = queryCollection<Measurement>(
     collection(store.personal, "measurements"),
-    {},
+    { type: { eq: type } },
   );
-  return selectMeasurement(entities, beforeDate);
+  return selectMeasurement(entities, atDate);
 }
 
 export function useQueryLatestMeasurement(
   store: Store,
-  beforeDate: number | null,
+  type: MeasurementType,
+  atDate: number | null,
 ): Measurement | null {
   const entities = useQueryCollection<Measurement>({
     collection: collection(store.personal, "measurements"),
-    filter: {},
-    deps: [],
+    filter: { type: { eq: type } },
+    deps: [type],
   });
-  return selectMeasurement(entities, beforeDate);
+  return selectMeasurement(entities, atDate);
 }
 
 function selectMeasurement(
   measurements: Measurement[],
-  beforeDate: number | null,
+  atDate: number | null,
 ): Measurement | null {
   const byDate = (a: Measurement, b: Measurement) => a.createdAt - b.createdAt;
   const before = measurements.filter(
-    (m) => m.createdAt < (beforeDate ?? Infinity),
+    (m) => m.createdAt <= (atDate ?? Infinity),
   );
   return maxBy(before, byDate) ?? minBy(measurements, byDate);
 }

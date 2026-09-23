@@ -37,8 +37,11 @@ export function updateRecords(store: Store, set: Set) {
   const exercise = queryExerciseById(store, set.exercise);
   if (!exercise) return;
 
-  const measurement = queryLatestMeasurement(store, performance.startedAt);
-  const selfWeight = measurement?.weight;
+  const selfWeight = queryLatestMeasurement(
+    store,
+    "weight",
+    performance.startedAt,
+  )?.value;
 
   const fullWeight = (set: CompletedSet) =>
     addSelfWeight(exercise.weight, selfWeight, set.weight);

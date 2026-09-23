@@ -10,7 +10,6 @@ import {
   useQueryExerciseById,
   useQueryPreviousPerformance,
   type Performance,
-  type Measurement,
   useQueryLatestMeasurement,
   useQueryCurrentGym,
   type Gym,
@@ -32,7 +31,11 @@ export function Performance({ performance, currentSet }: PerformanceProps) {
   const { pushModal } = useModalStack();
   const exercise = useQueryExerciseById(store, performance.exercise);
   const sets = useQuerySetsByPerformance(store, performance.id);
-  const measurement = useQueryLatestMeasurement(store, performance.startedAt);
+  const bodyWeight = useQueryLatestMeasurement(
+    store,
+    "weight",
+    performance.startedAt,
+  );
   const gym = useQueryCurrentGym(store, performance.user);
 
   const prevPerformance = useQueryPreviousPerformance(
@@ -86,7 +89,7 @@ export function Performance({ performance, currentSet }: PerformanceProps) {
             sets,
             performance,
             exercise,
-            measurement,
+            selfWeight: bodyWeight?.value,
             gym,
             currentSet,
           })}
@@ -105,7 +108,7 @@ function buildSets({
   sets,
   performance,
   exercise,
-  measurement,
+  selfWeight,
   gym,
   currentSet,
 }: {
@@ -113,7 +116,7 @@ function buildSets({
   sets: Set[];
   performance: Performance;
   exercise: Exercise;
-  measurement: Measurement | null;
+  selfWeight: number | undefined;
   gym: Gym;
   currentSet: string | undefined;
 }): ReactNode[] {
@@ -125,7 +128,7 @@ function buildSets({
     exercise,
     gym,
     reps: performance.reps,
-    selfWeight: measurement?.weight,
+    selfWeight,
   });
 
   const result: ReactNode[] = [];

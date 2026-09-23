@@ -38,12 +38,12 @@ export function ProgressTab({ exercise }: ProgressTabProps) {
   const performances = useQueryPerformancesByExercise(store, exercise.id);
   const sets = useQuerySetsByExercise(store, exercise.id);
   const records = useQueryRecordsByExercise(store, exercise.id);
-  const measurement = useQueryLatestMeasurement(store, null);
+  const bodyWeight = useQueryLatestMeasurement(store, "weight", null);
   const [metric, setMetric] = useState<ChartMetric>("averageRepMax");
   const [period, setPeriod] = useState<ChartPeriod>("three_months");
   const [now] = useState(() => Date.now());
 
-  const selfWeight = measurement?.weight;
+  const selfWeight = bodyWeight?.value;
   const points = useMemo(
     () =>
       buildHistory(

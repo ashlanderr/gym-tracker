@@ -37,7 +37,11 @@ export function useStepPlan(step: WorkoutStep): StepPlan | null {
   const { performance } = step;
   const exercise = useQueryExerciseById(store, performance.exercise);
   const gym = useQueryCurrentGym(store, performance.user);
-  const measurement = useQueryLatestMeasurement(store, performance.startedAt);
+  const bodyWeight = useQueryLatestMeasurement(
+    store,
+    "weight",
+    performance.startedAt,
+  );
   const sets = useQuerySetsByPerformance(store, performance.id);
   const previous = useQueryPreviousPerformance(
     store,
@@ -61,7 +65,7 @@ export function useStepPlan(step: WorkoutStep): StepPlan | null {
     exercise,
     gym,
     reps: performance.reps,
-    selfWeight: measurement?.weight,
+    selfWeight: bodyWeight?.value,
   });
   const recommendation = recommendations[sets.indexOf(set)];
   const previousSet = previousSets.filter((s) => s.type === set.type)[
