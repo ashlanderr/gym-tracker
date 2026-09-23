@@ -21,6 +21,7 @@ import { ModalStack, StoreProvider } from "../components";
 import { User } from "./User";
 import { Onboarding } from "./Onboarding";
 import { ExerciseCatalogPage, ExercisePage } from "./Exercise";
+import { ProfileMockups } from "./ProfileMockups";
 import s from "./layout.module.scss";
 
 const PAGE_OFFSET = 64;
@@ -81,6 +82,9 @@ function AnimatedRoutes() {
               it is a tool for reading the catalog through, not a feature. */}
           {import.meta.env.DEV && (
             <Route path="/exercises" element={<ExerciseCatalogPage />} />
+          )}
+          {import.meta.env.DEV && (
+            <Route path="/mockups/profile" element={<ProfileMockups />} />
           )}
           {/* Reachable but not yet reached: `Profile` does not exist in the
               store, so nothing sends anybody here and the answers go
