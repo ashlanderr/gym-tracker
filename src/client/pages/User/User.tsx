@@ -66,10 +66,7 @@ export function User() {
   return (
     <div className={s.root}>
       <div className={s.toolbar}>
-        <button
-          className={s.backButton}
-          onClick={() => navigate("/", { replace: true })}
-        >
+        <button className={s.backButton} onClick={() => navigate(-1)}>
           <MdArrowBack />
         </button>
         <div className={s.pageTitle}>Пользователь</div>

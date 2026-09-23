@@ -21,7 +21,7 @@ import { ModalStack, StoreProvider } from "../components";
 import { User } from "./User";
 import { Onboarding } from "./Onboarding";
 import { ExerciseCatalogPage, ExercisePage } from "./Exercise";
-import { ProfileMockups } from "./ProfileMockups";
+import { Profile } from "./Profile";
 import s from "./layout.module.scss";
 
 const PAGE_OFFSET = 64;
@@ -83,11 +83,9 @@ function AnimatedRoutes() {
           {import.meta.env.DEV && (
             <Route path="/exercises" element={<ExerciseCatalogPage />} />
           )}
-          {import.meta.env.DEV && (
-            <Route path="/mockups/profile" element={<ProfileMockups />} />
-          )}
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/exercises/:exerciseId" element={<ExercisePage />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/user" element={<User />} />
         </Routes>
       </motion.div>

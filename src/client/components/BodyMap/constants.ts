@@ -1,5 +1,5 @@
 import type { Muscle } from "react-body-highlighter";
-import type { MuscleType } from "../../../../db";
+import type { MuscleType } from "../../db";
 
 export const BODY_COLOR = "#232323";
 

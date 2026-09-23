@@ -88,7 +88,7 @@ export function Home() {
         <div className={s.userInfo}>
           <div className={s.userName}>Анонимный пользователь</div>
         </div>
-        <button className={s.userSettings} onClick={() => navigate("/user")}>
+        <button className={s.userSettings} onClick={() => navigate("/profile")}>
           <MdSettings />
         </button>
       </div>

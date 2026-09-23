@@ -5,3 +5,4 @@ export * from "./PageModal";
 export * from "./ModalStack";
 export * from "./ScrollRestoration";
 export * from "./ExerciseCrossFade";
+export * from "./BodyMap";

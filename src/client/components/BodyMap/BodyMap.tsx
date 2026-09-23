@@ -1,7 +1,7 @@
 import s from "./styles.module.scss";
 import Model, { type IExerciseData } from "react-body-highlighter";
-import type { MuscleType } from "../../../../db";
-import type { MuscleLevel } from "../../../../domain";
+import type { MuscleType } from "../../db";
+import type { MuscleLevel } from "../../domain";
 import { BODY_COLOR, LEVEL_COLORS, MODEL_MUSCLES, VIEWS } from "./constants.ts";
 import type { BodyMapProps } from "./types.ts";
 

@@ -1,10 +1,46 @@
-import type { Exercise, MuscleType } from "../db";
+import {
+  type Exercise,
+  type MuscleType,
+  queryExerciseById,
+  queryPerformancesSince,
+  querySetsByPerformance,
+  type Store,
+} from "../db";
 
 export type MuscleLevel = 1 | 2 | 3;
 
 export interface MuscleWork {
   exercise: Exercise;
   sets: number;
+}
+
+export interface RecentMuscleWork {
+  work: MuscleWork[];
+  // Workouts with at least one working set done.
+  workouts: number;
+}
+
+export const MUSCLE_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+
+// Counted on the fly: a month is about a hundred performances, and the only
+// slow part is the collection scan every query already does.
+export function queryRecentMuscleWork(
+  store: Store,
+  now: number,
+): RecentMuscleWork {
+  const workouts = new Set<string>();
+  const work = queryPerformancesSince(store, now - MUSCLE_WINDOW_MS).flatMap(
+    (performance) => {
+      const exercise = queryExerciseById(store, performance.exercise);
+      const sets = querySetsByPerformance(store, performance.id).filter(
+        (s) => s.completed && s.type !== "warm-up",
+      ).length;
+      if (!exercise || sets === 0) return [];
+      workouts.add(performance.workout);
+      return [{ exercise, sets }];
+    },
+  );
+  return { work, workouts: workouts.size };
 }
 
 const PRIMARY_SHARE = 1;

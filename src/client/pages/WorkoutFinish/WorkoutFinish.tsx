@@ -13,7 +13,7 @@ import {
   useQuerySetsByWorkout,
   useQueryWorkoutById,
 } from "../../db";
-import { useStore } from "../../components";
+import { BodyMap, useStore } from "../../components";
 import {
   completeWorkout,
   computeMuscleLevels,
@@ -24,7 +24,6 @@ import { usePageParams } from "../hooks.ts";
 import { UNITS_SHORT } from "../constants.ts";
 import type { WorkoutParams } from "../Workout/types.ts";
 import { formatExerciseWeight, useClock } from "../WorkoutFocus/hooks.ts";
-import { BodyMap } from "./components";
 import { buildFinishSummary, formatDurationWords } from "./utils.ts";
 
 const SKIPPED_FORMS: [string, string, string] = [
