@@ -12,6 +12,7 @@ python -m http.server 8901 --directory design
 | `workout-screen.html` | Основной макет: экран подхода, отдых, шторки веса и повторов, страница тренировки |
 | `exercise-page.html` | Страница упражнения — техника, прогресс, история |
 | `workout-finish.html` | Завершение тренировки, три состояния |
+| `profile-settings.html` | Вкладки, замеры веса и роста, правка анкеты, настройки и опасная зона |
 | `weights-variants.html` | Снаряды: стиль, единицы, тонкая настройка стека |
 | `difficulty-variants.html`, `difficulty-weight.html` | Поиск формы вопроса о тяжести подхода |
 | `workout-title.html` | Центрирование названия и размер видео |

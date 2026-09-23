@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Profile and settings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300..800&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font: inherit; }
+  html { font-family: Manrope, "Segoe UI", "Helvetica Neue", sans-serif; background:#111; color:#fff; -webkit-font-smoothing:antialiased; }
+  body { padding:24px; display:flex; flex-wrap:wrap; gap:20px; max-width:2140px; align-items:flex-start; }
+  button { cursor:pointer; }
+  svg.i { width:1em; height:1em; fill:currentColor; display:block; }
+
+  .col { display:flex; flex-direction:column; gap:10px; width:393px; flex:0 0 auto; }
+  .caption { font-size:12px; color:#8b9299; line-height:1.5; min-height:92px; }
+  .caption b { color:#fff; font-weight:600; display:block; font-size:13px; margin-bottom:3px; }
+  .caption em { color:#ffb340; font-style:normal; }
+  .rowTitle { width:100%; font-size:12px; color:#5f6a72; letter-spacing:.14em; text-transform:uppercase; padding:18px 0 0; border-top:1px solid #222; }
+  .rowTitle:first-child { border-top:none; padding-top:0; }
+
+  .phone { width:393px; height:800px; background:#000; border-radius:26px; overflow:hidden;
+           display:flex; flex-direction:column; border:1px solid #2a2a2a; position:relative; }
+
+  /* ---------- shared page parts, copied from Profile / WorkoutFocus ---------- */
+  .top { flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:10px 8px; min-height:60px; }
+  .rootTop { flex:0 0 auto; height:24px; }
+  .icon { width:40px; height:40px; display:flex; align-items:center; justify-content:center; border:none; background:transparent; color:#6d6d6d; font-size:22px; }
+  .content { flex:1 1 0; min-height:0; overflow:hidden; padding:0 16px 24px; }
+  .title { font-size:22px; font-weight:700; }
+  .summary { margin-top:4px; font-size:14px; color:#a8a8a8; font-variant-numeric:tabular-nums; }
+  .section { padding-top:26px; }
+  .sectionTitle { font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:#5f6a72; }
+  .note { margin-top:10px; text-align:center; font-size:12px; color:#6d6d6d; }
+
+  /* ---------- tab bar ---------- */
+  .tabs { flex:0 0 auto; display:flex; border-top:1px solid #1a1a1a; padding:6px 0 10px; }
+  .tab { flex:1 1 0; display:flex; flex-direction:column; align-items:center; gap:4px; padding:6px 0;
+         border:none; background:transparent; color:#5f5f5f; font-size:11px; font-weight:600; }
+  .tab svg.i { font-size:22px; }
+  .tab.cur { color:#fff; }
+
+  /* ---------- body rows (weight / height) ---------- */
+  .bodyRows { margin-top:12px; display:flex; flex-direction:column; gap:8px; }
+  .bodyRow { display:flex; align-items:center; gap:12px; padding:14px; border:1px solid #1f1f1f; border-radius:14px; background:#0b0b0b; }
+  .bodyMain { flex:1 1 auto; min-width:0; }
+  .bodyLabel { font-size:12px; color:#6d6d6d; }
+  .bodyValue { margin-top:3px; font-size:20px; font-weight:600; font-variant-numeric:tabular-nums; }
+  .bodyValue span { font-size:13px; font-weight:500; color:#8d8d8d; margin-left:3px; }
+  .bodyMeta { margin-top:3px; font-size:12px; color:#6d6d6d; font-variant-numeric:tabular-nums; }
+  .bodyMeta .down { color:#a8a8a8; }
+  .spark { flex:0 0 auto; }
+  .chev { color:#4a4a4a; font-size:22px; line-height:1; }
+  .plus { flex:0 0 auto; width:38px; height:38px; border-radius:50%; border:1px solid #2e2e2e; background:transparent; color:#ddd; font-size:20px; display:flex; align-items:center; justify-content:center; }
+
+
+  /* ---------- lift ladder, copied from LiftLadder ---------- */
+  .ladder { display:flex; flex-direction:column; gap:18px; margin-top:12px; }
+  .lHead { display:flex; align-items:baseline; gap:12px; }
+  .lName { flex:1 1 auto; font-size:15px; font-weight:600; }
+  .lLevel { font-size:13px; font-weight:600; color:#ffb340; }
+  .bar { display:flex; gap:3px; margin-top:8px; }
+  .seg { flex:1 1 0; height:6px; border-radius:3px; background:#242424; overflow:hidden; }
+  .seg i { display:block; height:100%; background:#ffb340; }
+  .lFoot { display:flex; align-items:baseline; gap:8px; margin-top:7px; font-size:12px; color:#6d6d6d; font-variant-numeric:tabular-nums; }
+  .lVal { color:#d0d0d0; }
+  .lTag { color:#6d8ba8; }
+  .lTag.edit { border-bottom:1px dashed #3d5670; padding-bottom:1px; }
+  .lNext { margin-left:auto; }
+
+  /* ---------- bottom sheet ---------- */
+  .dim { position:absolute; inset:0; background:rgba(0,0,0,.6); }
+  .sheet { position:absolute; left:0; right:0; bottom:0; background:#1a1a1a; border-radius:20px 20px 0 0; padding:10px 0 14px; }
+  .grab { width:36px; height:4px; border-radius:2px; background:#3a3a3a; margin:0 auto 14px; }
+  .sheetTitle { text-align:center; font-size:19px; font-weight:700; padding:0 24px; }
+  .sheetNote { text-align:center; font-size:13px; line-height:1.45; color:#7a7a7a; margin-top:6px; padding:0 28px; text-wrap:pretty; }
+  .sheetAct { padding:18px 24px 0; }
+  .primary { width:100%; padding:20px; border:none; border-radius:16px; background:#06f; color:#fff; font-size:18px; font-weight:700; }
+  .secondary { width:100%; padding:14px 0 4px; border:none; background:transparent; color:#8a8a8a; font-size:14px; }
+
+  /* ---------- ruler + big number, as on MeasureStep ---------- */
+  .measure { text-align:center; margin-top:22px; font-size:56px; font-weight:600; letter-spacing:-.03em; font-variant-numeric:tabular-nums; }
+  .measure span { font-size:20px; font-weight:500; color:#8d8d8d; letter-spacing:0; margin-left:5px; }
+  .ruler { position:relative; height:76px; margin-top:14px;
+           -webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent); }
+  .ruler .ticks { position:absolute; left:0; right:0; top:0; height:30px;
+    background:
+      repeating-linear-gradient(90deg, #5a5a5a 0 1px, transparent 1px 100px) 46px 0 / 100% 30px no-repeat,
+      repeating-linear-gradient(90deg, #333 0 1px, transparent 1px 10px) 6px 0 / 100% 18px no-repeat; }
+  .ruler .marks { position:absolute; left:0; right:0; top:38px; font-size:12px; color:#6d6d6d; }
+  .ruler .marks b { position:absolute; transform:translateX(-50%); font-weight:400; }
+  .ruler .needle { position:absolute; left:50%; top:-4px; width:2px; height:38px; margin-left:-1px; background:#06f; border-radius:1px; }
+  .dateChip { display:flex; justify-content:center; margin-top:4px; }
+  .dateChip span { font-size:13px; color:#a8a8a8; border-bottom:1px dashed #3a3a3a; padding-bottom:2px; }
+
+  /* ---------- wheels, as on AnchorStep ---------- */
+  .picker { position:relative; display:flex; align-items:center; justify-content:center; gap:14px; margin-top:18px; }
+  .band { position:absolute; left:40px; right:40px; top:50%; height:46px; transform:translateY(-50%); border-radius:12px; background:#ffffff0a; }
+  .wheel { display:flex; align-items:center; gap:6px; }
+  .wheelCol { display:flex; flex-direction:column; align-items:flex-end;
+              -webkit-mask-image:linear-gradient(to bottom,transparent,#000 34%,#000 66%,transparent); }
+  .wheelCol div { height:44px; display:flex; align-items:center; font-size:26px; font-variant-numeric:tabular-nums; color:#6d6d6d; }
+  .wheelCol div.on { color:#fff; font-weight:600; }
+  .wheelUnits { font-size:15px; color:#8d8d8d; }
+  .times { font-size:20px; color:#484848; }
+
+  /* ---------- history page ---------- */
+  .chart { margin-top:16px; }
+  .hList { margin-top:8px; }
+  .hRow { display:flex; align-items:baseline; padding:13px 0; border-bottom:1px solid #151515; font-variant-numeric:tabular-nums; }
+  .hDate { flex:1 1 auto; font-size:14px; color:#a8a8a8; }
+  .hVal { font-size:15px; font-weight:600; }
+  .hDelta { width:64px; text-align:right; font-size:12px; color:#6d6d6d; }
+  .hRow.swiped { position:relative; transform:translateX(-84px); }
+  .hRow.swiped::after { content:"Удалить"; position:absolute; right:-84px; top:0; bottom:0; width:84px;
+                        display:flex; align-items:center; justify-content:center; background:#7a1f1f; color:#fff; font-size:13px; font-weight:600; }
+  .pageAct { flex:0 0 auto; padding:0 24px 12px; }
+
+  /* ---------- settings ---------- */
+  .group { margin-top:10px; border-radius:14px; background:#0b0b0b; border:1px solid #1a1a1a; overflow:hidden; }
+  .item { display:flex; align-items:center; gap:12px; padding:12px 14px; border-bottom:1px solid #161616; }
+  .item:last-child { border-bottom:none; }
+  .itemMain { flex:1 1 auto; min-width:0; }
+  .itemLabel { font-size:15px; }
+  .itemSub { margin-top:3px; font-size:12px; line-height:1.4; color:#6d6d6d; text-wrap:pretty; }
+  .itemVal { font-size:14px; color:#8d8d8d; }
+  .soon { font-size:11px; color:#5a5a5a; border:1px solid #262626; border-radius:6px; padding:3px 6px; }
+  .item.off .itemLabel { color:#6d6d6d; }
+  .danger .sectionTitle { color:#a04848; }
+  .danger .group { border-color:#2a1515; background:#0d0808; }
+  .danger .itemLabel { color:#ff6b61; }
+  .danger .item { border-bottom-color:#1e1010; }
+
+  /* ---------- dialogs ---------- */
+  .dialogWrap { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:24px; }
+  .dialog { width:100%; background:#1a1a1a; border-radius:20px; padding:24px 20px 16px; text-align:center; position:relative; }
+  .dTitle { font-size:19px; font-weight:700; line-height:1.3; text-wrap:balance; }
+  .dText { margin-top:10px; font-size:14px; line-height:1.5; color:#a8a8a8; text-wrap:pretty; }
+  .dText b { color:#fff; font-weight:600; }
+  .dList { margin-top:14px; text-align:left; border-radius:12px; background:#111; padding:4px 14px; }
+  .dList div { display:flex; justify-content:space-between; gap:12px; padding:10px 0; font-size:14px; color:#a8a8a8; border-bottom:1px solid #1d1d1d; font-variant-numeric:tabular-nums; }
+  .dList div:last-child { border-bottom:none; }
+  .dList b { color:#fff; font-weight:600; }
+  .dKeep { margin-top:12px; font-size:13px; line-height:1.45; color:#6d6d6d; text-wrap:pretty; }
+  .dWarn { margin-top:12px; font-size:13px; color:#ff8a82; }
+  .dActs { display:flex; gap:8px; margin-top:20px; }
+  .dBtn { flex:1 1 0; padding:15px 0; border:none; border-radius:12px; font-size:15px; font-weight:700; background:#262626; color:#ddd; }
+  .dBtn.red { background:#c9302c; color:#fff; }
+  .dBtn.wait { background:#3a1414; color:#8a5550; font-variant-numeric:tabular-nums; }
+
+  /* ---------- sex picker, as on SexStep ---------- */
+  .sexRow { display:flex; gap:6px; margin-top:18px; padding:0 16px; }
+  .sexOpt { flex:1 1 0; display:flex; flex-direction:column; align-items:center; gap:10px; padding:12px 6px 14px; border-radius:20px; border:1px solid transparent; }
+  .sexOpt.sel { border-color:#06f; background:#06f2; }
+  .sexOpt svg { height:170px; width:auto; opacity:.45; }
+  .sexOpt.sel svg { opacity:1; }
+  .sexOpt span { font-size:16px; font-weight:600; color:#8a8a8a; }
+  .sexOpt.sel span { color:#fff; }
+  .editable { border-bottom:1px dashed #3a3a3a; padding-bottom:1px; }
+
+
+  /* ---------- body map placeholder ---------- */
+  .figures { display:flex; justify-content:center; gap:18px; margin-top:12px; }
+  .skin { fill:#191919; } .lv0 { fill:#232323; } .lv1 { fill:#463619; } .lv2 { fill:#a06a22; } .lv3 { fill:#ffb340; }
+</style>
+</head>
+<body>
+<script>
+const P = {
+  back: "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z",
+  cal: "M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z",
+  person: "M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z",
+  gear: "M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z",
+  plus: "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z",
+};
+const ic = (n) => `<svg class="i" viewBox="0 0 24 24"><path d="${P[n]}"/></svg>`;
+
+function tabs(cur) {
+  const t = (id, icon, label) => `<button class="tab ${cur === id ? "cur" : ""}">${ic(icon)}${label}</button>`;
+  return `<div class="tabs">${t("w", "cal", "Тренировки")}${t("p", "person", "Профиль")}${t("s", "gear", "Настройки")}</div>`;
+}
+
+function spark(points, w = 72, h = 28) {
+  const min = Math.min(...points), max = Math.max(...points);
+  const xs = points.map((_, i) => (i / (points.length - 1)) * (w - 4) + 2);
+  const ys = points.map((p) => h - 3 - ((p - min) / (max - min || 1)) * (h - 6));
+  const d = xs.map((x, i) => `${i ? "L" : "M"}${x.toFixed(1)} ${ys[i].toFixed(1)}`).join(" ");
+  return `<svg class="spark" width="${w}" height="${h}"><path d="${d}" fill="none" stroke="#6d8ba8" stroke-width="1.5" stroke-linejoin="round"/>
+    <circle cx="${xs.at(-1)}" cy="${ys.at(-1)}" r="2.5" fill="#fff"/></svg>`;
+}
+
+const WEIGHTS = [84.2, 84.0, 83.6, 83.9, 83.4, 83.1, 83.3, 82.8, 82.9, 82.5];
+
+// Four levels, as LEVEL_LABELS: Новичок · Средний · Про · Элита.
+function ladderRow(name, level, levelIdx, progress, foot) {
+  const segs = [0, 1, 2, 3].map((i) =>
+    `<div class="seg"><i style="width:${i < levelIdx ? 100 : i === levelIdx ? Math.max(progress, 4) : 0}%"></i></div>`).join("");
+  return `<div><div class="lHead"><div class="lName">${name}</div><div class="lLevel">${level}</div></div>
+    <div class="bar">${segs}</div><div class="lFoot">${foot}</div></div>`;
+}
+
+const LADDER = `<div class="ladder">
+  ${ladderRow("Жим лёжа", "Средний", 1, 40, `<span class="lVal">1ПМ 95 кг</span><span class="lNext">до «Про» 22 кг</span>`)}
+  ${ladderRow("Присед", "Средний", 1, 15, `<span class="lVal">1ПМ 117 кг</span><span class="lTag edit">по анкете</span><span class="lNext">до «Про» 38 кг</span>`)}
+  ${ladderRow("Становая тяга", "Новичок", 0, 60, `<span class="lVal">1ПМ 120 кг</span><span class="lTag edit">оценка</span><span class="lNext">до «Средний» 20 кг</span>`)}
+  ${ladderRow("Подтягивания", "Новичок", 0, 70, `<span class="lVal">1ПМ 82,5 кг</span><span class="lTag edit">оценка</span><span class="lNext">до «Средний» 12 кг</span>`)}
+</div>`;
+
+function figures() {
+  const f = `<svg width="84" height="154" viewBox="0 0 100 185"><circle cx="50" cy="15" r="9" class="skin"/>
+    <ellipse cx="27" cy="43" rx="9" ry="8" class="lv2"/><ellipse cx="73" cy="43" rx="9" ry="8" class="lv2"/>
+    <rect x="35" y="36" width="14" height="20" rx="5" class="lv3"/><rect x="51" y="36" width="14" height="20" rx="5" class="lv3"/>
+    <rect x="35" y="88" width="13" height="40" rx="6" class="lv2"/><rect x="52" y="88" width="13" height="40" rx="6" class="lv2"/></svg>`;
+  const b = `<svg width="84" height="154" viewBox="0 0 100 185"><circle cx="50" cy="15" r="9" class="skin"/>
+    <rect x="34" y="41" width="15" height="25" rx="5" class="lv3"/><rect x="51" y="41" width="15" height="25" rx="5" class="lv3"/>
+    <rect x="35" y="106" width="13" height="26" rx="6" class="lv1"/><rect x="52" y="106" width="13" height="26" rx="6" class="lv1"/></svg>`;
+  return `<div class="figures">${f}${b}</div>`;
+}
+
+function bodyRows(weightMeta) {
+  return `<div class="bodyRows">
+  <div class="bodyRow">
+    <div class="bodyMain"><div class="bodyLabel">Вес</div><div class="bodyValue">82,5<span>кг</span></div>
+      <div class="bodyMeta">${weightMeta}</div></div>
+    ${spark(WEIGHTS)}<button class="plus">${ic("plus")}</button>
+  </div>
+  <div class="bodyRow">
+    <div class="bodyMain"><div class="bodyLabel">Рост</div><div class="bodyValue">180<span>см</span></div>
+      <div class="bodyMeta">12 июня</div></div>
+    <button class="plus">${ic("plus")}</button>
+  </div>
+</div>`;
+}
+
+function profileInner(weightMeta = "4 дня назад") {
+  return `<div class="rootTop"></div>
+    <div class="content">
+      <div class="title">Анонимный пользователь</div>
+      <div class="summary"><span class="editable">Мужчина</span></div>
+      <div class="section"><div class="sectionTitle">Тело</div>${bodyRows(weightMeta)}</div>
+      <div class="section"><div class="sectionTitle">Уровень силы</div>${LADDER}</div>
+      <div class="section"><div class="sectionTitle">Мышцы за 30 дней</div>${figures()}</div>
+    </div>
+    ${tabs("p")}`;
+}
+const profile = (meta) => `<div class="phone">${profileInner(meta)}</div>`;
+const over = (layer, meta) => `<div class="phone">${profileInner(meta)}<div class="dim"></div>${layer}</div>`;
+
+function settingsInner() {
+  return `<div class="rootTop"></div>
+    <div class="content">
+      <div class="title">Настройки</div>
+      <div class="section" style="padding-top:18px"><div class="sectionTitle">Тренировки</div><div class="group">
+        <div class="item off"><div class="itemMain"><div class="itemLabel">Программа</div></div><span class="soon">скоро</span></div>
+        <div class="item off"><div class="itemMain"><div class="itemLabel">Зал и снаряды</div><div class="itemSub">Гриф, блины, гантели, тренажёры</div></div><span class="soon">скоро</span></div>
+      </div></div>
+      <div class="section" style="padding-top:18px"><div class="sectionTitle">Аккаунт</div><div class="group">
+        <div class="item off"><div class="itemMain"><div class="itemLabel">Войти через VK ID</div><div class="itemSub">Чтобы не потерять данные при смене телефона</div></div><span class="soon">скоро</span></div>
+      </div></div>
+      <div class="section" style="padding-top:18px"><div class="group">
+        <div class="item"><div class="itemMain"><div class="itemLabel">О приложении</div></div><div class="itemVal">1.4.0</div><div class="chev">›</div></div>
+      </div></div>
+      <div class="section danger" style="padding-top:26px"><div class="sectionTitle">Опасная зона</div><div class="group">
+        <div class="item"><div class="itemMain"><div class="itemLabel">Сбросить рекорды</div><div class="itemSub">37 рекордов. Тренировки останутся</div></div></div>
+        <div class="item"><div class="itemMain"><div class="itemLabel">Удалить историю тренировок</div><div class="itemSub">143 тренировки. Профиль и замеры останутся</div></div></div>
+        <div class="item"><div class="itemMain"><div class="itemLabel">Удалить все данные</div><div class="itemSub">Приложение начнётся с анкеты</div></div></div>
+      </div></div>
+    </div>
+    ${tabs("s")}`;
+}
+const settingsOver = (layer) => `<div class="phone">${settingsInner()}<div class="dim"></div>${layer}</div>`;
+
+function ruler(value, start) {
+  const marks = [0, 1, 2, 3].map((i) => `<b style="left:${46 + i * 100}px">${start + i}</b>`).join("");
+  return `<div class="measure">${value}<span>кг</span></div>
+    <div class="ruler"><div class="ticks"></div><div class="marks">${marks}</div><div class="needle"></div></div>`;
+}
+
+function wheelCol(values, on, units) {
+  return `<div class="wheel"><div class="wheelCol">${values.map((v) => `<div class="${v === on ? "on" : ""}">${v}</div>`).join("")}</div>
+    ${units ? `<div class="wheelUnits">${units}</div>` : ""}</div>`;
+}
+
+function figure(female) {
+  const hips = female ? 30 : 24, shoulders = female ? 26 : 34;
+  return `<svg viewBox="0 0 100 200"><g fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="50" cy="22" r="12"/>
+    <path d="M${50 - shoulders} 48 Q50 40 ${50 + shoulders} 48 L${50 + hips} 110 L${50 - hips} 110 Z"/>
+    <path d="M${50 - shoulders} 48 L${50 - shoulders - 8} 108 M${50 + shoulders} 48 L${50 + shoulders + 8} 108"/>
+    <path d="M${50 - hips + 6} 110 L42 188 M${50 + hips - 6} 110 L58 188"/></g></svg>`;
+}
+
+const cols = [];
+const row = (t) => cols.push(`<div class="rowTitle">${t}</div>`);
+const col = (title, text, html) => cols.push(`<div class="col"><div class="caption"><b>${title}</b>${text}</div>${html}</div>`);
+
+/* ================= Profile ================= */
+row("1 · Профиль");
+
+col("Профиль",
+  "Под именем остаётся только пол. Рост и вес живут в карточках блока «Тело». Под значением одно поле — дата последней записи. Направление показывает линия графика, точные числа — в истории.",
+  profile("4 дня назад"));
+
+col("Шторка «Пол»",
+  "Тап по пунктиру под именем. Те же две фигуры, что в онбординге. Выбор сразу применяется и закрывает шторку, как в онбординге ответ сам ведёт дальше. Меняются стартовые веса у упражнений «оценка» и нормативы уровня.",
+  over(`<div class="sheet"><div class="grab"></div>
+      <div class="sheetTitle">Пол</div>
+      <div class="sheetNote">Стартовые веса и нормативы силы у мужчин и женщин разные</div>
+      <div class="sexRow">
+        <div class="sexOpt sel">${figure(false)}<span>Мужской</span></div>
+        <div class="sexOpt">${figure(true)}<span>Женский</span></div>
+      </div>
+      <div style="height:18px"></div>
+    </div>`));
+
+/* ================= Measurements ================= */
+row("2 · Вес и рост: новая запись в истории");
+
+col("Шторка «Записать вес»",
+  "«+» на карточке. Линейка из онбординга: те же 35–180 кг с шагом 0,5, открывается на последнем значении. Запись ставится на сегодня.",
+  over(`<div class="sheet"><div class="grab"></div>
+      <div class="sheetTitle">Вес</div>
+      <div class="sheetNote">Прошлые записи останутся в истории</div>
+      ${ruler("82,5", 81)}
+      <div class="sheetAct"><button class="primary">Записать</button></div>
+    </div>`));
+
+col("История веса",
+  "Тап по карточке. Здесь уже есть место для обоих чисел: дата каждой записи и разница с предыдущей, с единицами. Тап по записи предлагает её удалить — это единственная правка, которая нужна замерам. Первая запись помечена «из анкеты».",
+  `<div class="phone">
+    <div class="top"><button class="icon">${ic("back")}</button></div>
+    <div class="content" style="padding-top:0">
+      <div class="title">Вес</div>
+      <div class="summary">82,5 кг · −2,1 кг с 12 июня</div>
+      <div class="chart">${spark([84.6, ...WEIGHTS], 361, 150)}</div>
+      <div class="hList">
+        <div class="hRow"><div class="hDate">19 сентября</div><div class="hVal">82,5 кг</div><div class="hDelta">−0,4 кг</div></div>
+        <div class="hRow"><div class="hDate">5 сентября</div><div class="hVal">92,9 кг</div><div class="hDelta">+10,1 кг</div></div>
+        <div class="hRow"><div class="hDate">29 августа</div><div class="hVal">82,8 кг</div><div class="hDelta">−0,5 кг</div></div>
+        <div class="hRow"><div class="hDate">15 августа</div><div class="hVal">83,3 кг</div><div class="hDelta">+0,2 кг</div></div>
+        <div class="hRow"><div class="hDate">1 августа</div><div class="hVal">83,1 кг</div><div class="hDelta">−1,5 кг</div></div>
+        <div class="hRow"><div class="hDate">12 июня · из анкеты</div><div class="hVal">84,6 кг</div><div class="hDelta"></div></div>
+      </div>
+    </div>
+    <div class="pageAct"><button class="primary">Записать вес</button></div>
+  </div>`);
+
+/* ================= Anchor lifts ================= */
+row("3 · Рабочий подход из анкеты: правится только там, где он ещё что-то значит");
+
+col("Присед «по анкете»",
+  "Как на шаге онбординга: спрашиваем обычный рабочий подход, а не 1ПМ, и открываем на сохранённом ответе (100 × 5). Картинки нет: в шторке ей не хватит места, а название упражнения человек только что нажал. «Не помню» стирает ответ — строка вернётся к «оценка».",
+  over(`<div class="sheet"><div class="grab"></div>
+      <div class="sheetTitle">Присед</div>
+      <div class="sheetNote">Подойдёт обычный рабочий подход</div>
+      <div class="picker"><div class="band"></div>
+        ${wheelCol(["95", "97,5", "100", "102,5", "105"], "100", "кг")}<div class="times">×</div>${wheelCol([3, 4, 5, 6, 7], 5, "раз")}
+      </div>
+      <div class="sheetAct"><button class="primary">Сохранить</button><button class="secondary">Не помню</button></div>
+    </div>`));
+
+col("Подтягивания «оценка»",
+  "Ответа нет — колёса открываются там же, где в онбординге: «свой вес» × 6. Вес со знаком, без отдельной колонки единиц, подсказка про гравитрон та же. Кнопки «Не помню» нет, стирать нечего. У упражнений со своей историей пунктира нет: тап ведёт на страницу упражнения.",
+  over(`<div class="sheet"><div class="grab"></div>
+      <div class="sheetTitle">Подтягивания</div>
+      <div class="sheetNote">В гравитроне — вес помощи, со знаком минус</div>
+      <div class="picker"><div class="band"></div>
+        ${wheelCol(["−5 кг", "−2,5 кг", "свой вес", "+2,5 кг", "+5 кг"], "свой вес")}<div class="times">×</div>${wheelCol([4, 5, 6, 7, 8], 6, "раз")}
+      </div>
+      <div class="sheetAct"><button class="primary">Сохранить</button></div>
+    </div>`));
+
+/* ================= Settings ================= */
+row("4 · Настройки: то, что не про человека");
+
+col("Настройки",
+  "Программа, зал, вход через VK, «О приложении» и опасная зона. Ничего о теле и поле. У каждого пункта опасной зоны подпись с масштабом — видно ещё до тапа.",
+  `<div class="phone">${settingsInner()}</div>`);
+
+/* ================= Confirmations ================= */
+row("5 · Подтверждение: сколько пропадёт и что останется");
+
+col("Сбросить рекорды",
+  "Числа в таблице. Отдельно сказано, что останется, и что будет дальше: первые подходы после сброса снова станут рекордами. Это и есть «с чистого листа».",
+  settingsOver(`<div class="dialogWrap"><div class="dialog">
+      <div class="dTitle">Сбросить рекорды?</div>
+      <div class="dList"><div>Рекорды<b>37</b></div><div>В упражнениях<b>24</b></div></div>
+      <div class="dKeep">Тренировки и подходы останутся. Рекорды начнут считаться заново со следующей тренировки.</div>
+      <div class="dWarn">Отменить нельзя</div>
+      <div class="dActs"><button class="dBtn">Отмена</button><button class="dBtn red">Сбросить</button></div>
+    </div></div>`));
+
+col("Удалить историю тренировок",
+  "Сказано и следствие, которое не очевидно: без подходов уровень силы снова будет считаться по анкете. Если идёт активная тренировка, она входит в счёт.",
+  settingsOver(`<div class="dialogWrap"><div class="dialog">
+      <div class="dTitle">Удалить историю тренировок?</div>
+      <div class="dList"><div>Тренировки<b>143</b></div><div>Подходы<b>2 861</b></div><div>Рекорды<b>37</b></div></div>
+      <div class="dKeep">Профиль и замеры останутся. Уровень силы снова будет считаться по анкете.</div>
+      <div class="dWarn">Отменить нельзя</div>
+      <div class="dActs"><button class="dBtn">Отмена</button><button class="dBtn red">Удалить</button></div>
+    </div></div>`));
+
+col("Удалить все данные",
+  "Самый тяжёлый пункт получает ещё одну преграду: кнопка просыпается через 5 секунд. Хватает, чтобы прочитать список, и не требует ничего набирать.",
+  settingsOver(`<div class="dialogWrap"><div class="dialog">
+      <div class="dTitle">Удалить все данные?</div>
+      <div class="dList"><div>Тренировки<b>143</b></div><div>Подходы<b>2 861</b></div><div>Рекорды<b>37</b></div><div>Замеры веса и роста<b>28</b></div><div>Профиль и ответы анкеты<b>✓</b></div></div>
+      <div class="dKeep">Приложение станет как после установки и начнётся с анкеты.</div>
+      <div class="dWarn">Отменить нельзя</div>
+      <div class="dActs"><button class="dBtn">Отмена</button><button class="dBtn wait">Удалить · 4</button></div>
+    </div></div>`));
+
+document.body.innerHTML = cols.join("");
+</script>
+</body>
+</html>
