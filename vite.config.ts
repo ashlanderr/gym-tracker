@@ -28,6 +28,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,wasm,css,html,ico,png,svg,mp3,jpg,jpeg,webp}"],
+        importScripts: ["timer-sw.js"],
       },
     }),
   ],

@@ -2,37 +2,45 @@ import SoundDataUrl from "./sound.mp3?inline";
 import { logSound } from "../../../../utils";
 
 type Player = {
+  id: number;
   context: AudioContext;
   destination: MediaStreamAudioDestinationNode;
   element: HTMLAudioElement;
-};
-
-type Playback = {
   source: AudioBufferSourceNode | null;
-  deadline: number;
   anchorDate: number;
   anchorContextTime: number;
 };
 
-let player: Player | null = null;
-let bufferPromise: Promise<AudioBuffer> | null = null;
+type Playback = {
+  deadline: number;
+  player: Player;
+};
+
+// Decoding doesn't depend on a playback context, so the buffer survives player re-creation
+const bufferPromise = decodeSound();
+
 let current: Playback | null = null;
+let lastPlayerId = 0;
+let pageListenersAdded = false;
 
 export function scheduleSound(deadline: number) {
-  const { context, element } = getPlayer();
   stopCurrent("restart");
+  addPageListeners();
+  logSound("schedule", { delaySec: round((deadline - Date.now()) / 1000) });
 
-  const playback: Playback = {
-    source: null,
-    deadline,
-    anchorDate: Date.now(),
-    anchorContextTime: context.currentTime,
-  };
+  // A fresh player each time: after the page was frozen an old one may stay silent
+  const playback: Playback = { deadline, player: createPlayer() };
   current = playback;
-  logSound("schedule", {
-    delaySec: round((deadline - Date.now()) / 1000),
-    contextState: context.state,
-  });
+  startPlayback(playback);
+}
+
+export function cancelSound() {
+  stopCurrent("cancel");
+}
+
+function startPlayback(playback: Playback) {
+  const player = playback.player;
+  const { context, element } = player;
 
   // Both calls happen synchronously inside the tap handler to keep the user activation
   context
@@ -40,23 +48,19 @@ export function scheduleSound(deadline: number) {
     .catch((e) => logSound("resume failed", { error: String(e) }));
   element
     .play()
-    .then(() => logSound("play ok"))
+    .then(() => logSound("play ok", { player: player.id }))
     .catch((e) => logSound("play failed", { error: String(e) }));
 
-  loadBuffer(context)
+  bufferPromise
     .then((buffer) => {
-      if (current !== playback) return;
-      startSource(playback, buffer);
+      if (current !== playback || playback.player !== player) return;
+      startSource(playback, player, buffer);
     })
     .catch((e) => logSound("decode failed", { error: String(e) }));
 }
 
-export function cancelSound() {
-  stopCurrent("cancel");
-}
-
-function startSource(playback: Playback, buffer: AudioBuffer) {
-  const { context, destination, element } = getPlayer();
+function startSource(playback: Playback, player: Player, buffer: AudioBuffer) {
+  const { context, destination } = player;
   const delaySec = Math.max(0, (playback.deadline - Date.now()) / 1000);
   const startAt = context.currentTime + delaySec;
 
@@ -69,12 +73,11 @@ function startSource(playback: Playback, buffer: AudioBuffer) {
 
   source.connect(gain).connect(destination);
   source.start(startAt);
-  playback.source = source;
+  player.source = source;
 
   source.addEventListener("ended", () => {
-    gain.disconnect();
     // A stopped playback was already replaced or cancelled
-    if (current !== playback) return;
+    if (current !== playback || playback.player !== player) return;
 
     const expectedEnd = playback.deadline + buffer.duration * 1000;
     logSound("ended", {
@@ -82,8 +85,7 @@ function startSource(playback: Playback, buffer: AudioBuffer) {
       ...clockInfo(),
     });
     current = null;
-    element.pause();
-    void context.suspend();
+    closePlayer(player);
   });
 }
 
@@ -92,74 +94,111 @@ function stopCurrent(reason: string) {
   if (!playback) return;
   current = null;
   logSound("stop", { reason, remainingMs: playback.deadline - Date.now() });
-  playback.source?.stop();
-
-  if (reason === "cancel" && player) {
-    player.element.pause();
-    void player.context.suspend();
-  }
+  closePlayer(playback.player);
 }
 
-function getPlayer() {
-  if (player) return player;
+// The audio clock stops while the page is frozen, so the scheduled sound would be late or silent
+function resyncAfterPause() {
+  const playback = current;
+  if (!playback) return;
 
+  const { player } = playback;
+  const drift = driftMs(player);
+  if (Math.abs(drift) < 1000 && !player.element.paused) return;
+
+  if (playback.deadline <= Date.now()) {
+    stopCurrent("missed");
+    return;
+  }
+
+  logSound("resync", { driftMs: drift, elementPaused: player.element.paused });
+  playback.player = createPlayer();
+  closePlayer(player);
+  startPlayback(playback);
+}
+
+function createPlayer(): Player {
   const context = new AudioContext();
   const destination = context.createMediaStreamDestination();
   const element = document.createElement("audio");
   element.srcObject = destination.stream;
   document.body.appendChild(element);
-  player = { context, destination, element };
 
-  context.addEventListener("statechange", () =>
-    logSound("context state", clockInfo()),
-  );
+  const player: Player = {
+    id: ++lastPlayerId,
+    context,
+    destination,
+    element,
+    source: null,
+    anchorDate: Date.now(),
+    anchorContextTime: context.currentTime,
+  };
+
+  context.addEventListener("statechange", () => {
+    if (current?.player === player) logSound("context state", clockInfo());
+  });
   for (const event of ["pause", "playing", "stalled", "suspend"]) {
-    element.addEventListener(event, () =>
-      logSound(`element ${event}`, clockInfo()),
-    );
+    element.addEventListener(event, () => {
+      if (current?.player === player) {
+        logSound(`element ${event}`, clockInfo());
+      }
+    });
   }
-  document.addEventListener("visibilitychange", () =>
-    logSound(`page ${document.visibilityState}`, clockInfo()),
-  );
-  document.addEventListener("freeze", () => logSound("page freeze"));
-  document.addEventListener("resume", () =>
-    logSound("page resume", clockInfo()),
-  );
 
-  logSound("player created", { contextState: context.state });
+  logSound("player created", { player: player.id, contextState: context.state });
   return player;
 }
 
-function loadBuffer(context: AudioContext) {
-  if (!bufferPromise) {
-    // The sound is inlined into the bundle, so no network or service worker is involved
-    const base64 = SoundDataUrl.slice(SoundDataUrl.indexOf(",") + 1);
-    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-    bufferPromise = context.decodeAudioData(bytes.buffer);
-    bufferPromise.catch(() => {
-      bufferPromise = null;
-    });
-  }
-  return bufferPromise;
+function closePlayer(player: Player) {
+  player.source?.stop();
+  player.element.pause();
+  player.element.srcObject = null;
+  player.element.remove();
+  void player.context.close();
+}
+
+function addPageListeners() {
+  if (pageListenersAdded) return;
+  pageListenersAdded = true;
+
+  document.addEventListener("visibilitychange", () => {
+    logSound(`page ${document.visibilityState}`, clockInfo());
+    if (document.visibilityState === "visible") resyncAfterPause();
+  });
+  document.addEventListener("freeze", () => logSound("page freeze"));
+  document.addEventListener("resume", () => {
+    logSound("page resume", clockInfo());
+    resyncAfterPause();
+  });
+}
+
+async function decodeSound() {
+  // The sound is inlined into the bundle, so no network or service worker is involved
+  const base64 = SoundDataUrl.slice(SoundDataUrl.indexOf(",") + 1);
+  const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+  const context = new OfflineAudioContext(1, 1, 44100);
+  return context.decodeAudioData(bytes.buffer);
 }
 
 // driftMs > 0 means the audio clock fell behind real time (the page was throttled or frozen)
+function driftMs(player: Player) {
+  return Math.round(
+    Date.now() -
+      player.anchorDate -
+      (player.context.currentTime - player.anchorContextTime) * 1000,
+  );
+}
+
 function clockInfo() {
-  if (!player) return {};
-  const { context, element } = player;
-  const info: Record<string, unknown> = {
-    contextState: context.state,
-    elementPaused: element.paused,
+  if (!current) return {};
+  const { player, deadline } = current;
+  return {
+    player: player.id,
+    contextState: player.context.state,
+    elementPaused: player.element.paused,
+    untilDeadlineMs: deadline - Date.now(),
+    driftMs: driftMs(player),
   };
-  if (current) {
-    info.untilDeadlineMs = current.deadline - Date.now();
-    info.driftMs = Math.round(
-      Date.now() -
-        current.anchorDate -
-        (context.currentTime - current.anchorContextTime) * 1000,
-    );
-  }
-  return info;
 }
 
 function round(value: number) {
