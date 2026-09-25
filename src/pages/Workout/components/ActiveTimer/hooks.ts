@@ -1,7 +1,6 @@
 import { useAtom } from "jotai";
 import { TIMER_DEADLINE_ATOM } from "./constants.ts";
 import { cancelSound, scheduleSound } from "./sound.ts";
-import { cancelNotification, scheduleNotification } from "./notification.ts";
 
 export function useActiveTimer() {
   const [deadline, setDeadline] = useAtom(TIMER_DEADLINE_ATOM);
@@ -12,11 +11,9 @@ export function useActiveTimer() {
         const newDeadline = Date.now() + timeSeconds * 1000;
         setDeadline(newDeadline);
         scheduleSound(newDeadline);
-        scheduleNotification(newDeadline);
       } else {
         setDeadline(null);
         cancelSound();
-        cancelNotification();
       }
     },
   };

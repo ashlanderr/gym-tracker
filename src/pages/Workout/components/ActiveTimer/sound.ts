@@ -7,6 +7,7 @@ type Player = {
   destination: MediaStreamAudioDestinationNode;
   element: HTMLAudioElement;
   source: AudioBufferSourceNode | null;
+  noise: AudioBufferSourceNode;
   anchorDate: number;
   anchorContextTime: number;
 };
@@ -15,6 +16,9 @@ type Playback = {
   deadline: number;
   player: Player;
 };
+
+// Uniform noise with this amplitude has an RMS level of about -60 dBFS
+const NOISE_AMPLITUDE = 0.0017;
 
 // Decoding doesn't depend on a playback context, so the buffer survives player re-creation
 const bufferPromise = decodeSound();
@@ -74,6 +78,7 @@ function startSource(playback: Playback, player: Player, buffer: AudioBuffer) {
   source.connect(gain).connect(destination);
   source.start(startAt);
   player.source = source;
+  player.noise.stop(startAt);
 
   source.addEventListener("ended", () => {
     // A stopped playback was already replaced or cancelled
@@ -130,6 +135,7 @@ function createPlayer(): Player {
     destination,
     element,
     source: null,
+    noise: startNoise(context, destination),
     anchorDate: Date.now(),
     anchorContextTime: context.currentTime,
   };
@@ -147,6 +153,24 @@ function createPlayer(): Player {
 
   logSound("player created", { player: player.id, contextState: context.state });
   return player;
+}
+
+// Chrome freezes a hidden page after about a minute unless it is audible, and pure silence
+// doesn't count. Noise at about -60 dBFS passes Chrome's silence threshold (about -72 dBFS)
+// but can't be heard.
+function startNoise(context: AudioContext, destination: AudioNode) {
+  const buffer = context.createBuffer(1, context.sampleRate, context.sampleRate);
+  const samples = buffer.getChannelData(0);
+  for (let i = 0; i < samples.length; i++) {
+    samples[i] = (Math.random() * 2 - 1) * NOISE_AMPLITUDE;
+  }
+
+  const noise = context.createBufferSource();
+  noise.buffer = buffer;
+  noise.loop = true;
+  noise.connect(destination);
+  noise.start();
+  return noise;
 }
 
 function closePlayer(player: Player) {
