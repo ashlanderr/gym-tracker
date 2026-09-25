@@ -1,0 +1,5 @@
+# The image only needs the server; everything else stays out of the context
+*
+!server/package.json
+!server/package-lock.json
+!server/server.js

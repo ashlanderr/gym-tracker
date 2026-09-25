@@ -142,6 +142,47 @@ npm run build
 npm test
 ```
 
+### Deployment
+
+The frontend is published to GitHub Pages on every push to `legacy`
+(`.github/workflows/deploy.yml`).
+
+The sync server (`server/`, `@y/websocket-server` with LevelDB persistence behind basic auth)
+is deployed with Docker to a server shared with other projects: one `caddy-docker-proxy` instance
+(`docker-compose.proxy.yml`, compose project `proxy`) routes traffic and issues TLS certificates,
+and each app (`docker-compose.app.yml`) registers itself in it via `caddy.*` container labels.
+Basic auth is checked by the server itself, so the proxy stays untouched.
+
+`docker-compose.proxy.yml` and `deploy.sh` are shared between projects — keep them identical.
+
+```bash
+./deploy.sh prod
+```
+
+The script builds images locally, ships them to the server as a tar synced with rsync
+(only changed blocks are transferred) and runs `docker compose up` there over SSH.
+Pushes to `legacy` that touch the server files deploy via GitHub Actions
+(`.github/workflows/deploy-server.yml`, secrets `DOTENV_KEYS` — contents of `.env.keys`,
+and `DEPLOY_SSH_KEY`).
+
+Variables live in `.env.prod`, secrets are encrypted with [dotenvx](https://dotenvx.com).
+Avoid `$` in the password (dotenvx expands it) and characters that need escaping in a URL:
+
+```bash
+dotenvx set BASIC_AUTH_USER <user> -f .env.prod
+dotenvx set BASIC_AUTH_PASSWORD <password> -f .env.prod
+```
+
+Clients connect to `wss://<user>:<password>@gym-tracker.ashlanderr.dev` (the backend URL in the
+profile); the path after the host is the document name. Documents are stored in the
+`gym-tracker-legacy_yjs_data` volume; to restore a copy of the LevelDB directory:
+
+```bash
+docker stop gym-tracker-legacy-app-1
+docker run --rm -v gym-tracker-legacy_yjs_data:/data -v "$PWD/yjs:/src:ro" alpine sh -c 'rm -rf /data/* && cp -a /src/. /data/'
+docker start gym-tracker-legacy-app-1
+```
+
 ## 📱 Usage
 
 ### Starting a Workout

@@ -1,0 +1,38 @@
+name: Deploy server
+
+on:
+  push:
+    branches: [legacy]
+    paths:
+      - server/**
+      - Dockerfile
+      - .dockerignore
+      - docker-compose.*.yml
+      - deploy.sh
+      - .env.prod
+      - .github/workflows/deploy-server.yml
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create .env.keys
+        run: printf '%s\n' "${{ secrets.DOTENV_KEYS }}" > .env.keys
+
+      - name: Install dotenvx
+        run: curl -sfS https://dotenvx.sh | sh
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          DOMAIN_NAME=$(grep '^DOMAIN_NAME=' .env.prod | cut -d= -f2-)
+          ssh-keyscan -H "$DOMAIN_NAME" >> ~/.ssh/known_hosts
+
+      - name: Deploy
+        run: ./deploy.sh prod

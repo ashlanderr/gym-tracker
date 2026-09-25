@@ -1,0 +1,14 @@
+{
+  "name": "gym-tracker-server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@y/websocket-server": "0.1.1",
+    "ws": "^6.2.6",
+    "y-leveldb": "0.1.2",
+    "yjs": "^13.6.27"
+  }
+}

@@ -1,0 +1,26 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    # Forwards SIGTERM so the server stops right away instead of being killed after the timeout
+    init: true
+    environment:
+      BASIC_AUTH_USER: ${BASIC_AUTH_USER:?}
+      BASIC_AUTH_PASSWORD: ${BASIC_AUTH_PASSWORD:?}
+    volumes:
+      - yjs_data:/data
+    networks:
+      - proxy
+    labels:
+      caddy: ${DOMAIN_NAME:?}
+      caddy.reverse_proxy: "{{upstreams 1234}}"
+
+networks:
+  proxy:
+    external: true
+    name: proxy
+
+volumes:
+  yjs_data:

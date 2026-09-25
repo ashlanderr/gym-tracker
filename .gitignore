@@ -28,3 +28,9 @@ dist-ssr
 /scripts/firestore-export.json
 
 .playwright-mcp
+/android
+/src/generated
+/.env
+
+.env.keys
+.env.test
