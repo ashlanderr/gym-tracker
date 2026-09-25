@@ -30,6 +30,7 @@ import {
 import { PiMedalFill } from "react-icons/pi";
 import { addWorkout, cancelWorkout, duplicateWorkout } from "../../domain";
 import { CancelWorkoutModal } from "./components";
+import { formatSoundLog } from "../../utils";
 
 export function Home() {
   const user = useUser();
@@ -72,6 +73,15 @@ export function Home() {
     if (confirm) {
       cancelWorkout(store, workoutActions);
       setWorkoutActions(null);
+    }
+  };
+
+  const copySoundLogHandler = async () => {
+    try {
+      await navigator.clipboard.writeText(formatSoundLog());
+      alert("Лог звука таймера скопирован");
+    } catch (e) {
+      alert(`Не удалось скопировать лог: ${e}`);
     }
   };
 
@@ -177,7 +187,9 @@ export function Home() {
           </div>
         ))}
       </div>
-      <div className={s.appVersion}>App Version: {APP_VERSION}</div>
+      <div className={s.appVersion} onClick={copySoundLogHandler}>
+        App Version: {APP_VERSION}
+      </div>
       <div className={s.connectionStatus}>Network: {connection}</div>
       <BottomSheet
         isOpen={workoutActions !== null}
