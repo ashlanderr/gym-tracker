@@ -20,6 +20,7 @@
     "server:dev": "tsx watch src/server/main.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
     "db:up": "docker compose up -d postgres",
     "webview:log": "node scripts/webview-debug.mjs",
     "test:ci": "vitest run"
@@ -47,6 +48,7 @@
     "lib0": "^0.2.117",
     "motion": "^13.4.0",
     "pg": "^8.23.0",
+    "prisma": "^7.10.0",
     "react": "^19.1.0",
     "react-body-highlighter": "^2.0.5",
     "react-dom": "^19.1.0",
@@ -81,7 +83,6 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
     "prettier": "^3.6.2",
-    "prisma": "^7.10.0",
     "sass-embedded": "^1.89.2",
     "tsx": "^4.23.13",
     "typescript": "~5.8.3",

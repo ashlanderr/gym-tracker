@@ -7,3 +7,6 @@ src/client/db/exercises/assets/** filter=lfs diff=lfs merge=lfs -text
 # SVG frames are text: LFS would cost bandwidth and hide every diff, while git
 # stores and packs them perfectly well on its own.
 src/client/db/exercises/assets/*.svg !filter !diff !merge text eol=lf
+*.sh text eol=lf
+*.yml text eol=lf
+Dockerfile text eol=lf

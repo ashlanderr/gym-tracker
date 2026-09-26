@@ -1,0 +1,45 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    # Forwards SIGTERM so the server stops right away instead of being killed after the timeout
+    init: true
+    environment:
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:?}@postgres:5432/gym_tracker
+      BETTER_AUTH_URL: https://${DOMAIN_NAME:?}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - default
+      - proxy
+    labels:
+      caddy: ${DOMAIN_NAME}
+      caddy.reverse_proxy: "{{upstreams 5000}}"
+
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+      POSTGRES_DB: gym_tracker
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "gym_tracker"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - default
+
+networks:
+  proxy:
+    external: true
+    name: proxy
+
+volumes:
+  postgres_data:

@@ -161,6 +161,46 @@ The debug APK lands in `android/app/build/outputs/apk/debug/app-debug.apk`. To
 build and launch on a connected device or emulator instead, use `npm run
 android`.
 
+### Deployment
+
+Only the server is deployed: the client ships as an APK built with the server's
+address baked in (`VITE_API_URL=https://<DOMAIN_NAME>`). The server goes to
+Docker on a host shared with other projects: one `caddy-docker-proxy` instance
+(`docker-compose.proxy.yml`, compose project `proxy`) routes traffic and issues
+TLS certificates, and each app (`docker-compose.app.yml`) registers itself in it
+via `caddy.*` container labels.
+
+`docker-compose.proxy.yml` and `deploy.sh` are shared between projects — keep them identical.
+
+```bash
+./deploy.sh prod
+```
+
+The script builds images locally, ships them to the server as a tar synced with rsync
+(only changed blocks are transferred) and runs `docker compose up` there over SSH.
+Database migrations run on app container start.
+
+Variables live in `.env.prod`, secrets are encrypted with [dotenvx](https://dotenvx.com)
+using the key from `.env.keys`:
+
+```bash
+dotenvx set VK_CLIENT_SECRET <value> -f .env.prod
+```
+
+To try the image locally, run the same stack behind a local proxy; Caddy issues
+a certificate for `*.localhost` from its own local CA:
+
+```bash
+docker compose -f docker-compose.proxy.yml -p proxy up -d
+```
+
+```bash
+DOMAIN_NAME=gym-tracker.localhost POSTGRES_PASSWORD=local BETTER_AUTH_SECRET=local-secret docker compose -f docker-compose.app.yml -p gym-tracker-docker up -d --build
+```
+
+The project name differs from `gym-tracker`, which the development database in
+`docker-compose.yml` already uses.
+
 ### Running Tests
 
 ```bash

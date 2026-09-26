@@ -1,0 +1,9 @@
+# The image runs only the server: the client ships as an APK. Listing what goes
+# in keeps the Android project, media and the rest of the repo out of the context.
+*
+!package.json
+!package-lock.json
+!prisma.config.ts
+!prisma
+!src/server
+src/server/**/*.test.ts
