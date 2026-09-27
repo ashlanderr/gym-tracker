@@ -17,6 +17,7 @@ python -m http.server 8901 --directory design
 | `difficulty-variants.html`, `difficulty-weight.html` | Поиск формы вопроса о тяжести подхода |
 | `workout-title.html` | Центрирование названия и размер видео |
 | `workout-simple-mock.html`, `workout-reps-variants.html`, `workout-target-variants.html` | Ранние итерации, оставлены как история |
+| `branding/` | Поиск названия и иконки: кандидаты, отбракованное, генерации и SVG |
 
 ## Философия
 
