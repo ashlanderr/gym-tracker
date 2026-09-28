@@ -9,6 +9,12 @@ Use Read, Edit and Write for files.
 Use Grep and Glob for search.
 Use shell commands only when significantly better for the task.
 
+## Memory
+
+Don't use auto-memory. Everything worth keeping goes into project files:
+rules into this file, decisions and research into docs next to the code
+(e.g. `design/branding/README.md` for the app name).
+
 ## Tests
 
 Use mutation tests methodology:
@@ -42,6 +48,8 @@ Keep the code clean from unnecessary comments.
 - Use CSS Modules where possible.
 - Follow current component folder structure.
 - Check existing components before inventing new ones.
+- Fix exactly the reported issue. Propose related improvements instead of shipping them.
+- Build mockups and visual comparisons as pages in the repo (`src/client/pages/<Name>/`, a route, real components), not as published Artifacts. Open them and look before reporting.
 
 ## App Rewrite
 
