@@ -17,8 +17,8 @@ export default defineConfig({
           VitePWA({
             registerType: "autoUpdate",
             manifest: {
-              name: "Gym Tracker",
-              short_name: "Gym Tracker",
+              name: "Октус",
+              short_name: "Октус",
               theme_color: "#000000",
               background_color: "transparent",
               icons: [

@@ -223,8 +223,15 @@ buttons. It has no entry point in the UI and is not in the production bundle.
 
 ### Regenerating Icons
 
-`pwa-assets/logo.png` is the single source for the app's branding. After
-changing it, regenerate both sets of icons:
+`pwa-assets/logo.png` is the single source for the app's branding: a dark
+rounded tile with a white glyph on a transparent canvas. Image generators
+return the logo on an opaque white square; cut the white away first:
+
+```bash
+node scripts/cut-logo-background.mjs path/to/generated.png
+```
+
+After changing the logo, regenerate both sets of icons:
 
 ```bash
 npm run generate-pwa-assets

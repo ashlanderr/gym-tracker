@@ -7,7 +7,7 @@ const isDevApi = process.env.DEV_API === "1";
 
 const config: CapacitorConfig = {
   appId: "ru.ashlanderr.gymtracker",
-  appName: "Gym Tracker",
+  appName: "Октус",
   webDir: "dist",
   ...(isDevApi ? { android: { allowMixedContent: true } } : {}),
 };
