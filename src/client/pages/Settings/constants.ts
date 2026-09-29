@@ -1,6 +1,13 @@
 import type { DataSummary } from "../../db";
 import type { DangerAction } from "./types.ts";
 
+export const PRIVACY_URL = "https://octus.fit/privacy/";
+export const STRENGTH_LEVEL_URL =
+  "https://strengthlevel.com/strength-standards";
+export const EVERKINETIC_URL = "https://github.com/everkinetic/data";
+export const CC_BY_SA_URL =
+  "https://creativecommons.org/licenses/by-sa/4.0/deed.ru";
+
 export const WORKOUT_FORMS: [string, string, string] = [
   "тренировка",
   "тренировки",

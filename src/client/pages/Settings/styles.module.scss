@@ -48,6 +48,15 @@
   }
 }
 
+a.item {
+  text-decoration: none;
+}
+
+.note a {
+  color: inherit;
+  text-decoration: underline;
+}
+
 .main {
   flex: 1 1 auto;
   min-width: 0;

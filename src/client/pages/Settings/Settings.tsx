@@ -11,7 +11,14 @@ import { pluralize } from "../../utils";
 import { APP_VERSION } from "../Home/constants.ts";
 import { HOME_PATH, useSelectTab } from "../Tabs";
 import { DeleteDataModal } from "./components";
-import { RECORD_FORMS, WORKOUT_FORMS } from "./constants.ts";
+import {
+  CC_BY_SA_URL,
+  EVERKINETIC_URL,
+  PRIVACY_URL,
+  RECORD_FORMS,
+  STRENGTH_LEVEL_URL,
+  WORKOUT_FORMS,
+} from "./constants.ts";
 import type { DangerAction } from "./types.ts";
 
 // Everything that is not about the person: that lives in the profile.
@@ -63,12 +70,37 @@ export function Settings() {
       </div>
 
       <div className={s.section}>
+        <div className={s.sectionTitle}>О приложении</div>
         <div className={s.group}>
           <div className={s.item}>
             <div className={s.main}>
-              <div className={s.label}>О приложении</div>
+              <div className={s.label}>Версия</div>
             </div>
             <div className={s.value}>{APP_VERSION}</div>
+          </div>
+          <a className={s.item} href={PRIVACY_URL}>
+            <div className={s.main}>
+              <div className={s.label}>Политика конфиденциальности</div>
+            </div>
+          </a>
+          <a className={s.item} href={STRENGTH_LEVEL_URL}>
+            <div className={s.main}>
+              <div className={s.label}>Нормативы силы</div>
+              <div className={s.note}>
+                Уровни силы считаются по Strength Level
+              </div>
+            </div>
+          </a>
+          <div className={s.item}>
+            <div className={s.main}>
+              <div className={s.label}>Иллюстрации упражнений</div>
+              <div className={s.note}>
+                Большая часть — из набора{" "}
+                <a href={EVERKINETIC_URL}>everkinetic</a> Грега Прайди (Greg
+                Priday), лицензия <a href={CC_BY_SA_URL}>CC BY-SA 4.0</a>. Цвета
+                инвертированы.
+              </div>
+            </div>
           </div>
         </div>
       </div>
