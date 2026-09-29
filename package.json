@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "generate-pwa-assets": "pwa-assets-generator && node scripts/copy-pwa-assets.mjs",
     "generate-app-assets": "node scripts/generate-app-assets.mjs",
-    "build:app": "tsc -b && cross-env BUILD_TARGET=capacitor vite build",
+    "build:app": "tsc -b && cross-env BUILD_TARGET=capacitor vite build --mode prod",
     "sync:app": "npm run build:app && cap sync android",
     "android": "npm run sync:app && cap run android",
     "apk": "npm run sync:app && node scripts/build-apk.mjs",

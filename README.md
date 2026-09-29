@@ -164,7 +164,9 @@ android`.
 ### Deployment
 
 The server and the landing page (`landing/`) are deployed; the client ships as an
-APK built with the site's address baked in (`VITE_API_URL=https://<DOMAIN_NAME>`).
+APK built with the site's address baked in: `npm run build:app` runs Vite in
+`prod` mode, which reads `VITE_API_URL` from `.env.prod`; only `VITE_*` variables
+reach the bundle, so the encrypted secrets there stay out of it.
 Both share one domain: every server route lives under `/api`, everything else is
 the landing. They go to Docker on a host shared with other projects: one
 `caddy-docker-proxy` instance (`docker-compose.proxy.yml`, compose project
