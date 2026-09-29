@@ -23,6 +23,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:up": "docker compose up -d postgres",
     "webview:log": "node scripts/webview-debug.mjs",
+    "store:screenshots": "node scripts/store-screenshots.mjs",
     "test:ci": "vitest run"
   },
   "dependencies": {
@@ -83,6 +84,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "playwright": "^1.63.0-alpha-2026-08-31",
     "prettier": "^3.6.2",
     "sass-embedded": "^1.89.2",
     "tsx": "^4.23.13",
