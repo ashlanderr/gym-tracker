@@ -30,6 +30,5 @@ dist-ssr
 /assets
 
 # Server
-.env
 .env.keys
 src/generated

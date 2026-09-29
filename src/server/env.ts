@@ -1,5 +1,7 @@
 import { config } from "dotenv";
-config();
+// .env holds the development defaults and is committed; .env.local, ignored,
+// overrides them on one machine.
+config({ path: [".env.local", ".env"] });
 
 export const { DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL } =
   process.env;
