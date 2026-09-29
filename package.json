@@ -24,6 +24,7 @@
     "db:up": "docker compose up -d postgres",
     "webview:log": "node scripts/webview-debug.mjs",
     "store:screenshots": "node scripts/store-screenshots.mjs",
+    "rustore:publish": "tsx scripts/rustore-publish.ts",
     "test:ci": "vitest run"
   },
   "dependencies": {

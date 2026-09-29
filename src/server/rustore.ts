@@ -70,13 +70,14 @@ export function createRuStoreClient(options: {
       message?: string;
       body?: T;
     } | null;
-    if (!response.ok || json?.code !== "OK" || json.body === undefined) {
+    // Uploads and commits answer with no body at all, so only the code counts.
+    if (!response.ok || json?.code !== "OK") {
       throw new RuStoreError(
         response.status,
         json?.message ?? `RuStore ${path} answered ${response.status}`,
       );
     }
-    return json.body;
+    return json.body as T;
   }
 
   async function authToken() {
@@ -91,6 +92,13 @@ export function createRuStoreClient(options: {
     });
     token = { jwe: body.jwe, expiresAt: time.getTime() + body.ttl * 1000 };
     return token.jwe;
+  }
+
+  // Any Public API method, authorized.
+  async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+    const headers = new Headers(init.headers);
+    headers.set("Public-Token", await authToken());
+    return call<T>(path, { ...init, headers });
   }
 
   // Works only with subscriptions bought through Pay SDK. Test purchases
@@ -110,12 +118,12 @@ export function createRuStoreClient(options: {
       .map((part, index) => (index === 0 ? part : encodeURIComponent(part)))
       .join("/");
 
-    const body = await call<{
+    const body = await request<{
       startTimeMillis: string;
       expiryTimeMillis: string;
       autoRenewing: boolean;
       paymentState: number;
-    }>(path, { headers: { "Public-Token": await authToken() } });
+    }>(path);
 
     return {
       startsAt: new Date(Number(body.startTimeMillis)),
@@ -125,7 +133,7 @@ export function createRuStoreClient(options: {
     };
   }
 
-  return { getSubscription };
+  return { request, getSubscription };
 }
 
 export type RuStoreClient = ReturnType<typeof createRuStoreClient>;

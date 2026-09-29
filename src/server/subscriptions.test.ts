@@ -14,7 +14,9 @@ const alice = `${prefix}-alice`;
 const bob = `${prefix}-bob`;
 const now = new Date("2026-09-29T11:00:00Z");
 
-function rustoreExpiringAt(expiresAt: Date): RuStoreClient {
+function rustoreExpiringAt(
+  expiresAt: Date,
+): Pick<RuStoreClient, "getSubscription"> {
   return {
     getSubscription: async () => ({
       startsAt: now,

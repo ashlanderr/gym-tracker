@@ -1,0 +1,63 @@
+name: Release
+
+# Started by hand: every RuStore upload needs a new version in package.json,
+# which is a decision, not a side effect of a push.
+on:
+  workflow_dispatch:
+    inputs:
+      whats_new:
+        description: What is new in this version, shown in RuStore
+        required: true
+      publish:
+        description: Send the APK to RuStore moderation
+        type: boolean
+        default: false
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - run: npm ci
+      # tsc -b in the app build also checks the server, which needs the client.
+      - run: npm run db:generate
+
+      - name: Restore the release keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/octus-release.jks"
+          cat > android/keystore.properties <<PROPS
+          storeFile=$RUNNER_TEMP/octus-release.jks
+          storePassword=$ANDROID_KEYSTORE_PASSWORD
+          keyAlias=octus
+          keyPassword=$ANDROID_KEYSTORE_PASSWORD
+          PROPS
+
+      - run: npm run apk:release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: android/app/build/outputs/apk/release/app-release.apk
+
+      - name: Send to RuStore
+        if: inputs.publish
+        env:
+          RUSTORE_KEY_ID: ${{ secrets.RUSTORE_KEY_ID }}
+          RUSTORE_PRIVATE_KEY: ${{ secrets.RUSTORE_PRIVATE_KEY }}
+          WHATS_NEW: ${{ inputs.whats_new }}
+        run: npx tsx scripts/rustore-publish.ts "$WHATS_NEW"

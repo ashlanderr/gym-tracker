@@ -13,7 +13,7 @@ export interface SubscriptionStatus {
 // device, and remembers the answer. A purchase belongs to the account that
 // reported it first: another account sending the same id gets nothing.
 export async function verifySubscription(
-  rustore: RuStoreClient,
+  rustore: Pick<RuStoreClient, "getSubscription">,
   userId: string,
   purchase: { productId: string; purchaseId: string; sandbox: boolean },
   now = new Date(),
