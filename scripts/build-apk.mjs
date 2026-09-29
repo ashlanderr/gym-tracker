@@ -9,7 +9,7 @@
 // Usage: node scripts/build-apk.mjs [release]
 
 import { spawn } from "node:child_process";
-import { stat } from "node:fs/promises";
+import { access, stat } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -18,6 +18,19 @@ const ANDROID_DIR = join(ROOT, "android");
 
 const variant = process.argv[2] === "release" ? "release" : "debug";
 const task = variant === "release" ? "assembleRelease" : "assembleDebug";
+
+// Without the keystore Gradle still succeeds, but writes an unsigned APK under
+// another name that no phone or store accepts.
+if (variant === "release") {
+  try {
+    await access(join(ANDROID_DIR, "keystore.properties"));
+  } catch {
+    console.error(
+      "android/keystore.properties is missing, see docs/rustore/README.md#подпись",
+    );
+    process.exit(1);
+  }
+}
 
 // The wrapper ships as a shell script and a batch file; only one of them runs
 // on any given machine. The batch file goes through cmd explicitly rather than

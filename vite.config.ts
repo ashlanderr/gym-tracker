@@ -1,6 +1,7 @@
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+import { version } from "./package.json";
 
 // Capacitor serves the bundle from a local origin root and has its own
 // offline story, so the PWA service worker and the GitHub Pages base path
@@ -42,6 +43,9 @@ export default defineConfig({
           }),
         ]),
   ],
+  define: {
+    __APP_VERSION__: JSON.stringify(version),
+  },
   base: isCapacitor ? "./" : "/gym-tracker/",
   server: {
     proxy: {
