@@ -22,7 +22,10 @@
    сохраняется и для ИП. Затем письмо в support@rustore.ru с темой
    «Сохранить текущий VK ID и обновить правовой статус»: 1–2 рабочих дня,
    приложения переезжают в аккаунт ИП, новые версии выпускать не нужно.
-3. Встраиваем Pay SDK и серверную проверку.
+3. Код для подписки уже есть (Pay SDK в приложении, проверка на сервере).
+   Останется: завести продукт-подписку в консоли, вписать ID приложения
+   из консоли в `rustore_console_app_id`, выпустить ключ API, сделать
+   гейт и экран покупки.
 
 Комиссия RuStore — 15%.
 
@@ -34,12 +37,12 @@
 |---|---|---|
 | Файл | APK или AAB, до 5 ГБ, подписан | подписанный APK, см. «Подпись» |
 | Версии | та же подпись, `versionCode` больше предыдущего | из `package.json`, см. «Версия» |
-| Название | до 30 символов, уникальное, совпадает с установленным | «Октус — дневник тренировок», 26 символов; в лаунчере «Октус» — уточнить у модерации, допустимо ли |
-| Краткое описание | до 80 символов | нет |
-| Полное описание | до 4000 символов, по-русски | нет |
-| Иконка | 512×512, PNG/JPG, до 3 МБ, совпадает с иконкой лаунчера | есть исходник `pwa-assets/logo.png` |
-| Скриншоты | от 3 на тип устройства, 9:16 или 16:9, реальный интерфейс, не только сплэш или логин | нет |
-| Контакты | хотя бы один: почта, группа VK, сайт, MAX | нет |
+| Название | до 30 символов, уникальное, совпадает с установленным | «Октус — дневник тренировок», 26 символов; см. «Не проверено» |
+| Краткое описание | до 80 символов | `design/store/README.md` |
+| Полное описание | до 4000 символов, по-русски | `design/store/README.md` |
+| Иконка | 512×512, PNG/JPG, до 3 МБ, совпадает с иконкой лаунчера | `design/store/icon-512.png`, из тех же слоёв, что лаунчер |
+| Скриншоты | от 3 на тип устройства, 9:16 или 16:9, реальный интерфейс, не только сплэш или логин | `design/store/screenshots/`, 6 шт. 1080×1920 |
+| Контакты | хотя бы один: почта, группа VK, сайт, MAX | support@octus.fit — ящика пока нет; https://octus.fit |
 | Политика конфиденциальности | обязательна | https://octus.fit/privacy/ (`landing/privacy/`) |
 | Возрастной рейтинг, категория | выбрать в консоли | «Спорт» |
 
@@ -88,7 +91,7 @@ keyPassword=...
 ### R8
 
 Release собирается с `minifyEnabled` и `shrinkResources`. APK вместе с Pay
-SDK — 4,2 МБ против 4,7 МБ без SDK и без R8; dex — 1,9 МБ вместо 7.
+SDK — 4,0 МБ против 4,7 МБ без SDK и без R8; dex — 1,9 МБ вместо 7.
 Своих правил в `proguard-rules.pro` не понадобилось: Capacitor и Pay SDK
 приносят consumer rules. Проверено на эмуляторе на debuggable-сборке с
 R8: приложение стартует, синхронизируется, все методы плагина отвечают,
@@ -140,9 +143,8 @@ R8: приложение стартует, синхронизируется, в�
 - Нативный SDK — Kotlin/Java: `ru.rustore.sdk:pay` через BOM
   `ru.rustore.sdk:bom:2026.08.01`. Есть обёртки для React Native, Flutter,
   Unity и других, для Capacitor нет. Найденный
-  `maningame/capacitor-rustore-billing` построен на мёртвом BillingClient.
-  Значит, пишем свой локальный Capacitor-плагин в `android/` — тонкую
-  обёртку над `getProducts`, `getPurchases`, `purchase`.
+  `maningame/capacitor-rustore-billing` построен на мёртвом BillingClient,
+  поэтому плагин свой, см. ниже.
 - В манифест: `meta-data` с ID приложения из консоли и deep link-схема для
   возврата из оплаты. Схема нужна и для входа через VK ID — завести одну на
   оба случая.
@@ -234,4 +236,6 @@ R8: приложение стартует, синхронизируется, в�
 - [Переход с самозанятого на ИП](https://www.rustore.ru/developer/blog/self-employed)
 - [Pay SDK](https://www.rustore.ru/help/sdk/pay), [Kotlin/Java 11.1.0](https://www.rustore.ru/help/sdk/pay/kotlin-java/11-1-0)
 - [BillingClient SDK, устаревший](https://www.rustore.ru/help/sdk/payments)
-- [RuStore API](https://www.rustore.ru/help/work-with-rustore-api/), [авторизация](https://www.rustore.ru/help/work-with-rustore-api/api-authorization-process)
+- [RuStore API](https://www.rustore.ru/help/work-with-rustore-api/), [авторизация](https://www.rustore.ru/help/work-with-rustore-api/api-authorization-process), [токен](https://www.rustore.ru/help/work-with-rustore-api/api-authorization-token)
+- [Подписка v5](https://www.rustore.ru/help/work-with-rustore-api/api-subscription-payment/api-subscription-validation-v5), [платёж v2](https://www.rustore.ru/help/work-with-rustore-api/api-subscription-payment/v2-purchase-invoiceid)
+- Публикация: [черновик](https://www.rustore.ru/help/work-with-rustore-api/api-upload-publication-app/create-draft-version), [APK](https://www.rustore.ru/help/work-with-rustore-api/api-upload-publication-app/apk-file-upload/file-upload-apk), [модерация](https://www.rustore.ru/help/work-with-rustore-api/api-upload-publication-app/send-draft-app-for-moderation), [версии](https://www.rustore.ru/help/work-with-rustore-api/api-upload-publication-app/get-version-status)
