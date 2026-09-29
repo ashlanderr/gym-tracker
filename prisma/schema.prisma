@@ -20,6 +20,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   documents     Document[]
+  subscriptions Subscription[]
 
   @@unique([email])
   @@map("user")
@@ -49,6 +50,22 @@ model DocumentUpdate {
 
   @@index([documentId, id])
   @@map("document_update")
+}
+
+// A RuStore subscription as the server last saw it. The purchase id is the
+// key, so one purchase unlocks one account however many devices send it.
+model Subscription {
+  purchaseId String   @id
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId  String
+  expiresAt  DateTime
+  sandbox    Boolean
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
+  @@map("subscription")
 }
 
 model Session {

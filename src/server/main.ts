@@ -15,7 +15,10 @@ const app = express();
 // with a wildcard origin, so the allowed origins have to be named.
 app.use(cors({ origin: APP_ORIGINS, credentials: true }));
 app.all("/api/auth/{*any}", toNodeHandler(auth));
-app.use("/api/trpc", createExpressMiddleware({ router: appRouter, createContext }));
+app.use(
+  "/api/trpc",
+  createExpressMiddleware({ router: appRouter, createContext }),
+);
 app.get("/api/alive", (_req, res) => {
   res.status(200).send({});
 });

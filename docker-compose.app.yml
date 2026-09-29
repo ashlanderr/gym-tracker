@@ -10,6 +10,8 @@ services:
       DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:?}@postgres:5432/gym_tracker
       BETTER_AUTH_URL: https://${DOMAIN_NAME:?}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?}
+      RUSTORE_KEY_ID: ${RUSTORE_KEY_ID:-}
+      RUSTORE_PRIVATE_KEY: ${RUSTORE_PRIVATE_KEY:-}
     depends_on:
       postgres:
         condition: service_healthy
