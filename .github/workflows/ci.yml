@@ -46,3 +46,55 @@ jobs:
       - run: npx tsc -b
       - run: npm run test:ci
       - run: npm run build
+
+  deploy:
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    # Two pushes in a row must not run docker compose up on the host at once,
+    # and a started deploy is let finish rather than cut off halfway.
+    concurrency:
+      group: deploy
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            deployed:
+              - src/server/**
+              - prisma/**
+              - prisma.config.ts
+              - package.json
+              - package-lock.json
+              - landing/**
+              - Dockerfile
+              - .dockerignore
+              - docker-compose.*.yml
+              - deploy.sh
+              - .env.prod
+              - .github/workflows/ci.yml
+
+      - name: Create .env.keys
+        if: steps.changes.outputs.deployed == 'true'
+        run: printf '%s\n' "${{ secrets.DOTENV_KEYS }}" > .env.keys
+
+      - name: Install dotenvx
+        if: steps.changes.outputs.deployed == 'true'
+        run: curl -sfS https://dotenvx.sh | sh
+
+      - name: Set up SSH
+        if: steps.changes.outputs.deployed == 'true'
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          DOMAIN_NAME=$(grep '^DOMAIN_NAME=' .env.prod | cut -d= -f2-)
+          ssh-keyscan -H "$DOMAIN_NAME" >> ~/.ssh/known_hosts
+
+      - name: Deploy
+        if: steps.changes.outputs.deployed == 'true'
+        run: ./deploy.sh prod
