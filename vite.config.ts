@@ -45,9 +45,7 @@ export default defineConfig({
   base: isCapacitor ? "./" : "/gym-tracker/",
   server: {
     proxy: {
-      "/api": { target: "http://localhost:5000", changeOrigin: true },
-      "/trpc": { target: "http://localhost:5000", changeOrigin: true },
-      "/sync": { target: "http://localhost:5000", changeOrigin: true, ws: true },
+      "/api": { target: "http://localhost:5000", changeOrigin: true, ws: true },
     },
   },
   test: {

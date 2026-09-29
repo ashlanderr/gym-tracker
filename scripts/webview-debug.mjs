@@ -2,7 +2,7 @@
 // optionally runs an expression inside it.
 //
 //   npm run webview:log
-//   npm run webview:log -- --eval "fetch('/alive').then(r => r.status)"
+//   npm run webview:log -- --eval "fetch('/api/alive').then(r => r.status)"
 //
 // This exists because logcat is closed on some vendor builds, so the usual
 // `adb logcat | grep chromium` shows nothing. A debug build of the WebView

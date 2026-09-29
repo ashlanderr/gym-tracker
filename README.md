@@ -163,12 +163,13 @@ android`.
 
 ### Deployment
 
-Only the server is deployed: the client ships as an APK built with the server's
-address baked in (`VITE_API_URL=https://<DOMAIN_NAME>`). The server goes to
-Docker on a host shared with other projects: one `caddy-docker-proxy` instance
-(`docker-compose.proxy.yml`, compose project `proxy`) routes traffic and issues
-TLS certificates, and each app (`docker-compose.app.yml`) registers itself in it
-via `caddy.*` container labels.
+The server and the landing page (`landing/`) are deployed; the client ships as an
+APK built with the site's address baked in (`VITE_API_URL=https://<DOMAIN_NAME>`).
+Both share one domain: every server route lives under `/api`, everything else is
+the landing. They go to Docker on a host shared with other projects: one
+`caddy-docker-proxy` instance (`docker-compose.proxy.yml`, compose project
+`proxy`) routes traffic and issues TLS certificates, and each app
+(`docker-compose.app.yml`) registers itself in it via `caddy.*` container labels.
 
 `docker-compose.proxy.yml` and `deploy.sh` are shared between projects — keep them identical.
 
@@ -195,7 +196,7 @@ docker compose -f docker-compose.proxy.yml -p proxy up -d
 ```
 
 ```bash
-DOMAIN_NAME=gym-tracker.localhost POSTGRES_PASSWORD=local BETTER_AUTH_SECRET=local-secret docker compose -f docker-compose.app.yml -p gym-tracker-docker up -d --build
+DOMAIN_NAME=octus.localhost POSTGRES_PASSWORD=local BETTER_AUTH_SECRET=local-secret docker compose -f docker-compose.app.yml -p gym-tracker-docker up -d --build
 ```
 
 The project name differs from `gym-tracker`, which the development database in

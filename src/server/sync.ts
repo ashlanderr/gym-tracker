@@ -11,7 +11,7 @@ import {
   type SyncDocument,
 } from "./documents.ts";
 
-export const SYNC_PATH = "/sync/";
+export const SYNC_PATH = "/api/sync/";
 
 const DOCUMENT_ID = /^[A-Za-z0-9_-]{1,64}$/;
 

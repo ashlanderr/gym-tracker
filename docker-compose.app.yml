@@ -18,7 +18,16 @@ services:
       - proxy
     labels:
       caddy: ${DOMAIN_NAME}
-      caddy.reverse_proxy: "{{upstreams 5000}}"
+      caddy.reverse_proxy: "/api/* {{upstreams 5000}}"
+
+  landing:
+    build: landing
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      caddy: ${DOMAIN_NAME}
+      caddy.reverse_proxy: "{{upstreams 80}}"
 
   postgres:
     image: postgres:17-alpine

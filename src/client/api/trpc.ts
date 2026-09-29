@@ -13,7 +13,7 @@ export const queryClient = new QueryClient();
 export const trpcClient = trpc.createClient({
   links: [
     httpBatchLink({
-      url: `${API_URL}/trpc`,
+      url: `${API_URL}/api/trpc`,
       transformer: SuperJSON,
       headers: () => {
         const token = getAuthToken();
