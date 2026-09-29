@@ -53,8 +53,8 @@ Keep the code clean from unnecessary comments.
 
 ## Naming
 
-«Октус» is the marketing name only: store listing, launcher label, site
-(octus.fit), texts. Technical identifiers keep the technical name so a
+«Октус» is the marketing name only: store listing, launcher label, texts,
+and the domain octus.fit for the site and the API. Technical identifiers keep the technical name so a
 rebrand never touches them: package `ru.ashlanderr.gymtracker`, deep link
 scheme, keys, secrets, buckets, containers, env vars — `gym-tracker`.
 Reasons in `design/branding/README.md`.
