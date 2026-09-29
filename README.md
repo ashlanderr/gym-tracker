@@ -197,12 +197,34 @@ a certificate for `*.localhost` from its own local CA:
 docker compose -f docker-compose.proxy.yml -p proxy up -d
 ```
 
+The backup variables are required by the compose file but unused unless the
+`backup` service starts, so placeholders do:
+
 ```bash
-DOMAIN_NAME=octus.localhost POSTGRES_PASSWORD=local BETTER_AUTH_SECRET=local-secret docker compose -f docker-compose.app.yml -p gym-tracker-docker up -d --build
+DOMAIN_NAME=octus.localhost POSTGRES_PASSWORD=local BETTER_AUTH_SECRET=local-secret BACKUP_S3_ENDPOINT=- BACKUP_S3_ACCESS_KEY_ID=- BACKUP_S3_SECRET_ACCESS_KEY=- BACKUP_S3_BUCKET=- BACKUP_PASSPHRASE=- docker compose -f docker-compose.app.yml -p gym-tracker-docker up -d --build app landing
 ```
 
 The project name differs from `gym-tracker`, which the development database in
 `docker-compose.yml` already uses.
+
+### Backups
+
+The `backup` service dumps Postgres once on start and then daily at 00:00 UTC,
+encrypts the dump with `BACKUP_PASSPHRASE` and uploads it to the Reg.cloud S3
+bucket `BACKUP_S3_BUCKET` under `postgres/`. Dumps older than 30 days are
+deleted. The passphrase lives only in `.env.prod`, so losing `.env.keys` makes
+every backup unreadable.
+
+To restore the latest dump, or a given one by name, stop the server and run on
+the host:
+
+```bash
+docker stop gym-tracker-app-1 && docker exec gym-tracker-backup-1 restore.sh && docker start gym-tracker-app-1
+```
+
+```bash
+docker exec gym-tracker-backup-1 rclone lsf s3:<bucket>/postgres
+```
 
 ### Running Tests
 

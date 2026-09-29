@@ -71,6 +71,7 @@ jobs:
               - package.json
               - package-lock.json
               - landing/**
+              - backup/**
               - Dockerfile
               - .dockerignore
               - docker-compose.*.yml

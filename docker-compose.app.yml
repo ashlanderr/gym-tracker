@@ -45,6 +45,26 @@ services:
     networks:
       - default
 
+  backup:
+    build: backup
+    restart: unless-stopped
+    environment:
+      PGHOST: postgres
+      PGUSER: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD:?}
+      PGDATABASE: gym_tracker
+      RCLONE_CONFIG_S3_ENDPOINT: ${BACKUP_S3_ENDPOINT:?}
+      RCLONE_CONFIG_S3_ACCESS_KEY_ID: ${BACKUP_S3_ACCESS_KEY_ID:?}
+      RCLONE_CONFIG_S3_SECRET_ACCESS_KEY: ${BACKUP_S3_SECRET_ACCESS_KEY:?}
+      BACKUP_S3_BUCKET: ${BACKUP_S3_BUCKET:?}
+      BACKUP_PASSPHRASE: ${BACKUP_PASSPHRASE:?}
+      BACKUP_KEEP_DAYS: 30
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - default
+
 networks:
   proxy:
     external: true
