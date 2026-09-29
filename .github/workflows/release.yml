@@ -39,11 +39,11 @@ jobs:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: |
-          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/octus-release.jks"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/gym-tracker-release.jks"
           cat > android/keystore.properties <<PROPS
-          storeFile=$RUNNER_TEMP/octus-release.jks
+          storeFile=$RUNNER_TEMP/gym-tracker-release.jks
           storePassword=$ANDROID_KEYSTORE_PASSWORD
-          keyAlias=octus
+          keyAlias=gym-tracker
           keyPassword=$ANDROID_KEYSTORE_PASSWORD
           PROPS
 

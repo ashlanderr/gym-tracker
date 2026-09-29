@@ -51,6 +51,14 @@ Keep the code clean from unnecessary comments.
 - Fix exactly the reported issue. Propose related improvements instead of shipping them.
 - Build mockups and visual comparisons as pages in the repo (`src/client/pages/<Name>/`, a route, real components), not as published Artifacts. Open them and look before reporting.
 
+## Naming
+
+«Октус» is the marketing name only: store listing, launcher label, site
+(octus.fit), texts. Technical identifiers keep the technical name so a
+rebrand never touches them: package `ru.ashlanderr.gymtracker`, deep link
+scheme, keys, secrets, buckets, containers, env vars — `gym-tracker`.
+Reasons in `design/branding/README.md`.
+
 ## App Rewrite
 
 Expect large functionality and UI changes.

@@ -67,7 +67,7 @@ VK ID» встречается только в пересказах, в офиц
 
 ### Подпись
 
-Release-ключ — `octus-release.jks` (PKCS12, RSA 4096, алиас `octus`,
+Release-ключ — `gym-tracker-release.jks` (PKCS12, RSA 4096, алиас `gym-tracker`,
 действует до 2054 года). Он лежит вне репозитория, основная копия — в
 менеджере паролей. Потеря ключа означает, что обновления больше не выпустить:
 RuStore принимает новую версию только с той же подписью. Тот же ключ нужен
@@ -84,9 +84,9 @@ SHA-256 B8:E2:0D:2C:6E:69:24:F5:3D:C8:D4:0D:77:74:B0:E9:88:C2:32:C3:3A:64:4A:EF:
 Gradle читает ключ из `android/keystore.properties` (в `.gitignore`):
 
 ```properties
-storeFile=C:/path/to/octus-release.jks
+storeFile=C:/path/to/gym-tracker-release.jks
 storePassword=...
-keyAlias=octus
+keyAlias=gym-tracker
 keyPassword=...
 ```
 
@@ -132,7 +132,7 @@ R8: приложение стартует, синхронизируется, в�
 
 | Секрет | Что |
 |---|---|
-| `ANDROID_KEYSTORE_BASE64` | `base64 -w0 octus-release.jks` |
+| `ANDROID_KEYSTORE_BASE64` | `base64 -w0 gym-tracker-release.jks` |
 | `ANDROID_KEYSTORE_PASSWORD` | пароль keystore, он же пароль ключа |
 | `RUSTORE_KEY_ID` | id ключа API из консоли |
 | `RUSTORE_PRIVATE_KEY` | приватный ключ API из консоли |
