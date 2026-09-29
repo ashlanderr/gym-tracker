@@ -4,4 +4,5 @@
     <string name="title_activity_main">Октус</string>
     <string name="package_name">ru.ashlanderr.gymtracker</string>
     <string name="custom_url_scheme">ru.ashlanderr.gymtracker</string>
+    <string name="rustore_console_app_id" translatable="false"></string>
 </resources>

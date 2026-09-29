@@ -115,6 +115,29 @@ keyPassword=...
 - Песочница с тестовыми картами. Карта с балансом 1 копейка проверяет
   переход в grace/hold после триала.
 
+### Как устроено у нас
+
+- `android/.../RuStorePayPlugin.java` — плагин Capacitor на Java: модели
+  SDK — обычные классы, Kotlin не нужен. Методы: `checkAvailability`,
+  `getProducts`, `purchase` (одностадийная), `getSubscriptions`.
+  Сигнатуры сверены с `classes.jar` из AAR 11.1.0, а не только с сайтом.
+- `src/client/native/rustore-pay.ts` — типы для клиента.
+- Подписки читаются через `getPurchases(SUBSCRIPTION)`.
+  `getBillingSubscriptions` — только для подписок старого BillingClient.
+- `MainActivity` передаёт в SDK входящие intent. `BridgeActivity`
+  прогоняет стартовый intent через `onNewIntent` при каждом создании
+  Activity, а SDK нельзя показывать его повторно при пересоздании — отсюда
+  флаг `restoring`.
+- Схема deep link — `ru.ashlanderr.gymtracker` (`custom_url_scheme`), её
+  же использовать для VK ID.
+- ID приложения из консоли — `rustore_console_app_id` в
+  `res/values/strings.xml`, пока пустой. Пустой ID приложение не роняет:
+  SDK отвечает `RuStorePaymentNetworkException: Application not found`.
+- В `appUserId` покупки передаём id пользователя Better Auth: по нему
+  сервер сопоставит покупку с аккаунтом.
+- SDK тянет свою аналитику, метрики и сборщик крашей VK (`tracer`) и ходит
+  в сеть при старте. Это отражено в политике конфиденциальности.
+
 ## Сервер
 
 Статус подписки решает сервер, клиент только кэширует его на оффлайн.
