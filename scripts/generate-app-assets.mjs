@@ -7,6 +7,9 @@ import sharp from "sharp";
 const SOURCE = "pwa-assets/logo.png";
 const ASSET_DIR = "assets";
 const RES_DIR = "android/app/src/main/res";
+// RuStore wants the listing icon to match the launcher one.
+const STORE_ICON = "design/store/icon-512.png";
+const STORE_ICON_SIZE = 512;
 
 const ICON_SIZE = 1024;
 // @capacitor/assets insets both adaptive layers by 16.7%, mapping a source image
@@ -244,3 +247,14 @@ for await (const file of glob(`${RES_DIR}/**/*.png`)) {
 }
 
 console.log(`repacked PNGs, saved ${(saved / 1024).toFixed(0)} KB`);
+
+// The source images map onto the 72dp a launcher shows, so the two layers
+// stacked are the icon as a phone draws it before masking the corners.
+await mkdir(dirname(STORE_ICON), { recursive: true });
+const storeIcon = await sharp(background)
+  .composite([{ input: foreground }])
+  .toBuffer();
+await sharp(storeIcon)
+  .resize(STORE_ICON_SIZE, STORE_ICON_SIZE)
+  .png()
+  .toFile(STORE_ICON);
