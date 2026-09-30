@@ -21,6 +21,9 @@ const GLYPH_SCALE = 0.74;
 const TILE = /<rect id="tile"[^>]*\/>/;
 
 // 108dp adaptive canvas at each density's scale.
+const ADAPTIVE_DP = 108;
+// Launchers before adaptive icons (API 24-25) draw a flat 48dp image.
+const LEGACY_DP = 48;
 const ADAPTIVE_SIZES = {
   mdpi: 108,
   hdpi: 162,
@@ -144,6 +147,24 @@ for (const dir of ["mipmap-ldpi", "drawable-land-ldpi", "drawable-port-ldpi"]) {
   await rm(join(RES_DIR, dir), { recursive: true, force: true });
 }
 
+// The source images map onto the 72dp a launcher shows, so the two layers
+// stacked are the icon as a phone draws it before masking the corners.
+const stacked = await sharp(background)
+  .composite([{ input: foreground }])
+  .toBuffer();
+
+// @capacitor/assets cuts the round legacy icon out of the rounded tile, so
+// the circle clips the tile's corners into an octagon. Masking the stacked
+// layers instead gives a full circle, the same one an adaptive launcher shows.
+const circle = Buffer.from(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="${ICON_SIZE}" height="${ICON_SIZE}">` +
+    `<circle cx="50%" cy="50%" r="50%"/></svg>`,
+);
+const roundIcon = await sharp(stacked)
+  .composite([{ input: circle, blend: "dest-in" }])
+  .png()
+  .toBuffer();
+
 // @capacitor/assets sizes the adaptive layers from its legacy icon templates,
 // 48dp per density, leaving the 108dp canvas to upscale them 2.25x.
 for (const [density, size] of Object.entries(ADAPTIVE_SIZES)) {
@@ -156,6 +177,11 @@ for (const [density, size] of Object.entries(ADAPTIVE_SIZES)) {
     .resize(size, size)
     .png()
     .toFile(join(dir, "ic_launcher_foreground.png"));
+  const legacySize = (size * LEGACY_DP) / ADAPTIVE_DP;
+  await sharp(roundIcon)
+    .resize(legacySize, legacySize)
+    .png()
+    .toFile(join(dir, "ic_launcher_round.png"));
 }
 
 let saved = 0;
@@ -173,13 +199,8 @@ for await (const file of glob(`${RES_DIR}/**/*.png`)) {
 
 console.log(`repacked PNGs, saved ${(saved / 1024).toFixed(0)} KB`);
 
-// The source images map onto the 72dp a launcher shows, so the two layers
-// stacked are the icon as a phone draws it before masking the corners.
 await mkdir(dirname(STORE_ICON), { recursive: true });
-const storeIcon = await sharp(background)
-  .composite([{ input: foreground }])
-  .toBuffer();
-await sharp(storeIcon)
+await sharp(stacked)
   .resize(STORE_ICON_SIZE, STORE_ICON_SIZE)
   .png()
   .toFile(STORE_ICON);

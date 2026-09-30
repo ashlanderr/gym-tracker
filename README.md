@@ -252,8 +252,7 @@ buttons. It has no entry point in the UI and is not in the production bundle.
 rounded tile (`<rect id="tile">`) with the glyph over it on a transparent
 canvas. The Android adaptive icon takes the tile's fill for its background
 layer and everything else for the foreground. The glyph's parts carry ids
-(`loops`, `swooshes`, `bar`, `plates`), which a dev build uses at `/#/icons`
-to compare colorings.
+(`loops`, `swooshes`, `bar`, `plates`), so each can take its own color.
 
 After changing the logo, regenerate both sets of icons:
 
