@@ -30,14 +30,8 @@ export const auth = betterAuth({
   // browser, where signing in with VK happens.
   plugins: [
     anonymous({
-      onLinkAccount: ({ anonymousUser, newUser }) => {
-        console.log("linking anonymous user", {
-          anonymous: anonymousUser.user.id,
-          account: newUser.user.id,
-          session: newUser.session.id,
-        });
-        return moveUserData(anonymousUser.user.id, newUser.user.id);
-      },
+      onLinkAccount: ({ anonymousUser, newUser }) =>
+        moveUserData(anonymousUser.user.id, newUser.user.id),
     }),
     bearer(),
     oneTimeToken(),
