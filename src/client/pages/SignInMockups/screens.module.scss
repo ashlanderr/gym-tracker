@@ -1,0 +1,502 @@
+// Welcome
+
+.welcome {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 28px;
+  text-align: center;
+}
+
+.logo {
+  width: 112px;
+  height: 112px;
+  border-radius: 26px;
+}
+
+.brand {
+  margin-top: 22px;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.tagline {
+  max-width: 280px;
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: #8a8a8a;
+  text-wrap: balance;
+}
+
+.welcomeActions {
+  flex: 0 0 auto;
+  padding: 0 24px 16px;
+}
+
+.primary {
+  width: 100%;
+  padding: 20px;
+  border: none;
+  border-radius: 16px;
+  background: #06f;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.linkButton {
+  width: 100%;
+  padding: 16px 0 6px;
+  border: none;
+  background: transparent;
+  color: #8a8a8a;
+  font-size: 15px;
+
+  b {
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 20px 20px;
+}
+
+.choice {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border: 1px solid #262626;
+  border-radius: 16px;
+  background: #0d0d0d;
+  color: #fff;
+  text-align: left;
+
+  b {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+  }
+
+  span {
+    font-size: 13px;
+    color: #7a7a7a;
+  }
+
+  &:first-child {
+    border-color: #06f;
+    background: #001433;
+  }
+}
+
+.vk {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: #07f;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+
+  svg {
+    font-size: 20px;
+  }
+}
+
+// Waiting screens
+
+.center {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 28px;
+  text-align: center;
+}
+
+.hello {
+  margin-top: 20px;
+  font-size: 24px;
+  font-weight: 700;
+  text-wrap: balance;
+}
+
+.sub {
+  max-width: 280px;
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #7a7a7a;
+}
+
+.bar {
+  width: 160px;
+  height: 3px;
+  margin-top: 26px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: #1e1e1e;
+
+  i {
+    display: block;
+    width: 45%;
+    height: 100%;
+    background: #08f;
+  }
+}
+
+.hint {
+  padding: 12px 8px 4px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #5f5f5f;
+}
+
+.iconCircle {
+  width: 88px;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #2e2e2e;
+  border-radius: 50%;
+  color: #ff8a82;
+  font-size: 40px;
+}
+
+.avatar {
+  flex: 0 0 auto;
+  width: 88px;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3a5f8f, #1c2c44);
+  color: #fff;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.avatarSmall {
+  width: 36px;
+  height: 36px;
+  font-size: 15px;
+}
+
+// Browser
+
+.browser {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  background: #f2f3f5;
+  color: #000;
+}
+
+.urlBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 12px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #e1e3e6;
+  font-size: 13px;
+  color: #444;
+}
+
+.vkPage {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.vkLogo {
+  font-size: 48px;
+  color: #07f;
+}
+
+.vkTitle {
+  margin-top: 16px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.vkAccount {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #fff;
+  text-align: left;
+
+  div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  span {
+    font-size: 12px;
+    color: #818c99;
+  }
+}
+
+.vkContinue {
+  align-self: stretch;
+  margin-top: 16px;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #07f;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.vkNote {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #818c99;
+}
+
+// Onboarding
+
+.sexStub {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 220px;
+  color: #bbb;
+}
+
+// Home
+
+.home {
+  height: 100%;
+  overflow: hidden;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.newWorkout {
+  padding: 12px;
+  border-radius: 12px;
+  background: #1a1a1a;
+  font-size: 20px;
+
+  button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #06f;
+    color: #fff;
+    font-size: 15px;
+  }
+}
+
+.workout {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #0f0f0f;
+
+  span {
+    font-size: 12px;
+    color: #6d6d6d;
+  }
+}
+
+// Toast sits above the tab bar, where a thumb is not.
+
+.toastLayer {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 76px;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #1f2a1f;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #dfe;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.toastIcon {
+  flex: 0 0 auto;
+  display: flex;
+  color: #6c6;
+  font-size: 20px;
+}
+
+// Settings
+
+.groupAction {
+  padding: 4px 14px 14px;
+}
+
+.syncRow {
+  color: #6c9;
+  font-size: 18px;
+}
+
+.warn {
+  color: #f0a040;
+
+  :global(*) {
+    color: inherit;
+  }
+}
+
+// Dialogs
+
+.backdrop {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.7);
+
+  > * {
+    box-sizing: border-box;
+  }
+}
+
+.blueSubmit {
+  background: #06f;
+}
+
+.sheet {
+  margin: auto -20px -20px;
+  padding: 24px 20px 20px;
+  border-radius: 20px 20px 0 0;
+  background: #1a1a1a;
+}
+
+.sheetTitle {
+  font-size: 19px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.compare {
+  display: flex;
+  gap: 8px;
+  margin: 18px 0;
+
+  div {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #111;
+  }
+
+  span {
+    font-size: 12px;
+    color: #7a7a7a;
+  }
+
+  b {
+    font-size: 16px;
+  }
+
+  i {
+    font-size: 11px;
+    font-style: normal;
+    color: #5f5f5f;
+  }
+}
+
+// Profile
+
+.profileHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  .avatar {
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+}
+
+.backupLine {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #7a7a7a;
+  font-size: 13px;
+
+  b {
+    color: #4d9fff;
+    font-weight: 600;
+  }
+}
+
+.cardStub {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 8px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #0f0f0f;
+
+  span {
+    font-size: 12px;
+    color: #7a7a7a;
+  }
+
+  b {
+    font-size: 22px;
+  }
+}
+
+.ladderStub {
+  height: 180px;
+  margin-top: 12px;
+  border-radius: 14px;
+  background: repeating-linear-gradient(#0f0f0f 0 36px, #000 36px 46px);
+}
