@@ -1,0 +1,29 @@
+.root {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: #07f;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  transition: opacity 0.2s;
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.muted {
+  border-color: #1d3a66;
+  background: #0b1628;
+  color: #7fb2ff;
+}
+
+.icon {
+  font-size: 20px;
+}

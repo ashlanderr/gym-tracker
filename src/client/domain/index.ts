@@ -9,3 +9,4 @@ export * from "./muscles.ts";
 export * from "./levels";
 export * from "./profile.ts";
 export * from "./data.ts";
+export * from "./account.ts";

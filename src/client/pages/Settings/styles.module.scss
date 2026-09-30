@@ -89,6 +89,33 @@ a.item {
   color: #5a5a5a;
 }
 
+// The sync status is a caption to the account, not a row to tap.
+.sync {
+  padding-block: 8px;
+  color: #6d6d6d;
+  font-size: 18px;
+
+  .note {
+    margin-top: 0;
+  }
+}
+
+.saved {
+  color: #6c9;
+}
+
+.warn {
+  color: #f0a040;
+
+  .note {
+    color: inherit;
+  }
+}
+
+.action {
+  padding: 4px 14px 14px;
+}
+
 .off .label {
   color: #6d6d6d;
 }

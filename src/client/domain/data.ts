@@ -1,5 +1,4 @@
 import {
-  ALL_COLLECTIONS,
   clearCollections,
   collection,
   HISTORY_COLLECTIONS,
@@ -28,9 +27,4 @@ export function resetRecords(store: Store) {
 // The workout under way goes with the rest: it is history in the making.
 export function deleteWorkoutHistory(store: Store) {
   clearCollections(store, HISTORY_COLLECTIONS);
-}
-
-// As after installing: without a profile the app opens on the onboarding.
-export function deleteAllData(store: Store) {
-  clearCollections(store, ALL_COLLECTIONS);
 }

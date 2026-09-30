@@ -70,3 +70,7 @@ export const DANGER_TEXTS: Record<
     waitSeconds: 5,
   },
 };
+
+// With an account, "all" reaches past the phone.
+export const ACCOUNT_DELETE_KEEP =
+  "Аккаунт удалится вместе с данными. Подписку RuStore это не отменит.";

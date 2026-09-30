@@ -4,6 +4,7 @@
 export const API_URL = import.meta.env.VITE_API_URL ?? "";
 
 export const AUTH_TOKEN_STORAGE_KEY = "AUTH_TOKEN";
+export const ACCOUNT_STORAGE_KEY = "ACCOUNT";
 
 // Resolved on use, not on import: the module is pulled in by tests that have
 // no window.

@@ -8,6 +8,16 @@
   box-sizing: border-box;
 }
 
+.head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.backup {
+  margin-top: 16px;
+}
+
 .title {
   font-size: 22px;
   font-weight: 700;

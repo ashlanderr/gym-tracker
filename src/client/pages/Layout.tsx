@@ -22,7 +22,8 @@ import { Onboarding } from "./Onboarding";
 import { ExerciseCatalogPage, ExercisePage } from "./Exercise";
 import { MeasurementPage, ProfilePage } from "./Profile";
 import { Settings } from "./Settings";
-import { SignInMockups } from "./SignInMockups";
+import { SignIn } from "./SignIn";
+import { SIGN_IN_PATH } from "../session";
 import { TAB_PATHS, Tabs } from "./Tabs";
 import s from "./layout.module.scss";
 
@@ -92,10 +93,8 @@ function AnimatedRoutes() {
           {import.meta.env.DEV && (
             <Route path="/exercises" element={<ExerciseCatalogPage />} />
           )}
-          {import.meta.env.DEV && (
-            <Route path="/mockups/sign-in" element={<SignInMockups />} />
-          )}
           <Route path="/onboarding" element={<Onboarding />} />
+          <Route path={SIGN_IN_PATH} element={<SignIn />} />
           <Route path="/exercises/:exerciseId" element={<ExercisePage />} />
         </Routes>
       </motion.div>

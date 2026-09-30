@@ -11,12 +11,15 @@ import { AnimatePresence, motion } from "motion/react";
 import { MdArrowBack } from "react-icons/md";
 import { useAccountId } from "../../account";
 import { useStore } from "../../components";
+import { useSessionState } from "../../api";
+import { useSignInState } from "../../session";
 import { useQueryProfile } from "../../db";
 import { completeOnboarding } from "../../domain";
 import {
   AnchorStep,
   ChoiceStep,
   DoneStep,
+  HelloStep,
   MeasureStep,
   SexStep,
   WelcomeStep,
@@ -49,6 +52,8 @@ export function Onboarding() {
   const store = useStore();
   const accountId = useAccountId();
   const profile = useQueryProfile(store);
+  const session = useSessionState();
+  const signIn = useSignInState();
   const [draft, setDraft] = useState<OnboardingDraft>({ anchors: {} });
 
   // The step is a history entry, the way a modal is one in `ModalStack`: the
@@ -141,7 +146,11 @@ export function Onboarding() {
   const renderStep = () => {
     switch (step) {
       case "welcome":
-        return <WelcomeStep onStart={nextHandler} />;
+        return (
+          session.kind === "account" && (
+            <HelloStep account={session.account} onStart={nextHandler} />
+          )
+        );
 
       case "sex":
         return (
@@ -213,10 +222,29 @@ export function Onboarding() {
   const passed =
     step === "done" ? questions.length - 1 : questions.indexOf(step);
 
+  // The first screen is the app's own, not a question: no way back, no
+  // progress to report. With an account it greets instead, once the sign-in
+  // has found the account empty rather than while it is still asking.
+  if (
+    step === "welcome" &&
+    (session.kind === "anonymous" || signIn.step !== "idle")
+  ) {
+    return (
+      <div className={s.root}>
+        <WelcomeStep onStart={nextHandler} />
+      </div>
+    );
+  }
+
   return (
     <div className={s.root}>
       <div className={s.top}>
-        <button className={s.back} onClick={backHandler}>
+        {/* Hidden rather than gone on the greeting, so the questions after
+            it do not jump up by the height of the bar. */}
+        <button
+          className={clsx(s.back, step === "welcome" && s.hidden)}
+          onClick={backHandler}
+        >
           <MdArrowBack />
         </button>
       </div>

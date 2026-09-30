@@ -6,9 +6,10 @@ import "./index.css";
 import { Layout } from "./pages";
 import { initBackButton } from "./native";
 import { initVkSignIn, queryClient, trpc, trpcClient } from "./api";
+import { finishSignIn, startSession } from "./session";
 
 initBackButton();
-initVkSignIn();
+if (!initVkSignIn(() => void finishSignIn())) void startSession();
 
 // The onboarding has nowhere to keep its answers yet, so nothing can decide
 // on its own whether a launch is the first one. A build made with

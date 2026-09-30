@@ -6,7 +6,12 @@ import {
   useStore,
 } from "../../../../components";
 import { queryDataSummary } from "../../../../db";
-import { DANGER_ROWS, DANGER_TEXTS } from "../../constants.ts";
+import { useSessionState } from "../../../../api";
+import {
+  ACCOUNT_DELETE_KEEP,
+  DANGER_ROWS,
+  DANGER_TEXTS,
+} from "../../constants.ts";
 import type { DangerAction } from "../../types.ts";
 
 // Counted once, when the question is asked: the numbers are what the person
@@ -18,7 +23,10 @@ export function DeleteDataModal({
 }: ModalProps<DangerAction, boolean>) {
   const store = useStore();
   const [summary] = useState(() => queryDataSummary(store));
+  const session = useSessionState();
   const { title, keep, submit, waitSeconds } = DANGER_TEXTS[action];
+  const keepText =
+    action === "all" && session.kind === "account" ? ACCOUNT_DELETE_KEEP : keep;
   const rows = DANGER_ROWS[action]
     .map(({ label, count }) => ({ label, value: count(summary) }))
     .filter(({ value }) => value > 0);
@@ -41,7 +49,7 @@ export function DeleteDataModal({
           ))}
         </div>
       )}
-      <div className={s.keep}>{keep}</div>
+      <div className={s.keep}>{keepText}</div>
     </ConfirmDialog>
   );
 }

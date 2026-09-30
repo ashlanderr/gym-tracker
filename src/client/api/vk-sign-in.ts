@@ -25,7 +25,7 @@ export async function startVkSignIn() {
   window.location.href = url.href;
 }
 
-async function completeVkSignIn(returned: URL) {
+async function completeVkSignIn(returned: URL, onSignedIn: () => void) {
   const error = returned.searchParams.get("error");
   const ott = returned.searchParams.get("ott");
   if (error) console.warn("VK sign-in failed", error);
@@ -36,25 +36,29 @@ async function completeVkSignIn(returned: URL) {
     console.warn("VK sign-in token was rejected", result.error);
     return;
   }
-  authClient.$store.notify("$sessionSignal");
+  onSignedIn();
 }
 
-export function initVkSignIn() {
+// Returns whether this start is the web build coming back from VK, so the
+// caller leaves the session alone until the new one is in place.
+export function initVkSignIn(onSignedIn: () => void): boolean {
   if (Capacitor.isNativePlatform()) {
     // Retained by Capacitor until a listener comes, so a cold start through
     // the deep link is delivered here too.
     void App.addListener("appUrlOpen", ({ url }) => {
-      if (url.startsWith(NATIVE_RETURN_URL)) void completeVkSignIn(new URL(url));
+      if (url.startsWith(NATIVE_RETURN_URL))
+        void completeVkSignIn(new URL(url), onSignedIn);
     });
-    return;
+    return false;
   }
 
   const returned = new URL(window.location.href);
   if (!returned.searchParams.has("ott") && !returned.searchParams.has("error"))
-    return;
+    return false;
 
   const clean = new URL(returned);
   clean.search = "";
   window.history.replaceState(null, "", clean.href);
-  void completeVkSignIn(returned);
+  void completeVkSignIn(returned, onSignedIn);
+  return true;
 }

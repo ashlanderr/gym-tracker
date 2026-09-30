@@ -12,6 +12,7 @@ export function ConfirmDialog({
   children,
   submitLabel,
   waitSeconds = 0,
+  warning = "Отменить нельзя",
   onClose,
   onSubmit,
 }: ConfirmDialogProps) {
@@ -44,7 +45,7 @@ export function ConfirmDialog({
       >
         <div className={s.title}>{title}</div>
         <div className={s.body}>{children}</div>
-        <div className={s.warning}>Отменить нельзя</div>
+        {warning && <div className={s.warning}>{warning}</div>}
         <div className={s.actions}>
           <button className={s.cancel} onClick={onClose}>
             Отмена

@@ -1,0 +1,22 @@
+.root {
+  padding: 12px 14px 14px;
+  border: 1px solid #1a1a1a;
+  border-radius: 14px;
+  background: #0b0b0b;
+}
+
+.label {
+  font-size: 15px;
+}
+
+.note {
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #6d6d6d;
+  text-wrap: pretty;
+}
+
+.action {
+  margin-top: 12px;
+}

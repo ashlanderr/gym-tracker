@@ -1,6 +1,5 @@
 import * as Y from "yjs";
 import {
-  addMeasurement,
   collection,
   type CompletedSet,
   queryCollection,
@@ -15,7 +14,7 @@ import { addPerformance } from "./performances.ts";
 import { updateRecords } from "./records.ts";
 import { addWorkout, completeWorkout } from "./workout.ts";
 import { completeOnboarding } from "./profile.ts";
-import { deleteAllData, deleteWorkoutHistory, resetRecords } from "./data.ts";
+import { deleteWorkoutHistory, resetRecords } from "./data.ts";
 
 function createStore(): Store {
   return { documentId: "test", personal: new Y.Doc() };
@@ -88,23 +87,4 @@ test("deleting the history keeps the profile and the measurements", () => {
     measurements: 2,
   });
   expect(queryProfile(store)).not.toBeNull();
-});
-
-test("deleting everything leaves no profile to open the app on", () => {
-  const store = createStore();
-  onboard(store);
-  train(store, "bench_press", 60);
-  addMeasurement(store, {
-    id: "later",
-    user: "user",
-    type: "weight",
-    value: 79,
-    createdAt: 10,
-  });
-
-  deleteAllData(store);
-
-  expect(queryProfile(store)).toBeNull();
-  expect(queryDataSummary(store).measurements).toBe(0);
-  expect(queryDataSummary(store).workouts).toBe(0);
 });

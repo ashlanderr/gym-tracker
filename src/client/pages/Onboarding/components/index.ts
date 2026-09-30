@@ -6,3 +6,4 @@ export * from "./SexStep";
 export * from "./AnchorStep";
 export * from "./WelcomeStep";
 export * from "./DoneStep";
+export * from "./HelloStep";

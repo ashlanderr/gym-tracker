@@ -15,3 +15,6 @@ export * from "./SexFigure";
 export * from "./SexPicker";
 export * from "./FormSheet";
 export * from "./ConfirmDialog";
+export * from "./VkButton";
+export * from "./Avatar";
+export * from "./BackupCard";

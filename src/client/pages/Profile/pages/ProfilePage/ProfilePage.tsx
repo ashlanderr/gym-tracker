@@ -1,7 +1,14 @@
 import s from "./styles.module.scss";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
-import { BodyMap, useModalStack, useStore } from "../../../../components";
+import { useSessionState } from "../../../../api";
+import {
+  Avatar,
+  BackupCard,
+  BodyMap,
+  useModalStack,
+  useStore,
+} from "../../../../components";
 import {
   type MeasurementType,
   useQueryMeasurements,
@@ -21,7 +28,7 @@ import {
   MeasureSheet,
   SexSheet,
 } from "../../components";
-import { ANONYMOUS_NAME, MEASURES, WORKOUT_FORMS } from "../../constants.ts";
+import { MEASURES, WORKOUT_FORMS } from "../../constants.ts";
 import type { LiftRow } from "../../types.ts";
 import { buildLiftRows, formatAgo, formatMeasure } from "../../utils.ts";
 
@@ -30,6 +37,7 @@ export function ProfilePage() {
   const navigate = useNavigate();
   const { pushModal } = useModalStack();
   const profile = useQueryProfile(store);
+  const session = useSessionState();
   const weights = useQueryMeasurements(store, "weight");
   const heights = useQueryMeasurements(store, "height");
   const [now] = useState(() => Date.now());
@@ -69,13 +77,31 @@ export function ProfilePage() {
 
   return (
     <div className={s.root}>
-      <div className={s.title}>{ANONYMOUS_NAME}</div>
-      <button
-        className={s.sex}
-        onClick={() => pushModal(SexSheet, profile.sex)}
-      >
-        {SEX_SUMMARY[profile.sex]}
-      </button>
+      <div className={s.head}>
+        {session.kind === "account" && (
+          <Avatar
+            name={session.account.name}
+            image={session.account.image}
+            size="medium"
+          />
+        )}
+        <div>
+          <div className={s.title}>
+            {session.kind === "account" ? session.account.name : "Профиль"}
+          </div>
+          <button
+            className={s.sex}
+            onClick={() => pushModal(SexSheet, profile.sex)}
+          >
+            {SEX_SUMMARY[profile.sex]}
+          </button>
+        </div>
+      </div>
+      {session.kind === "anonymous" && (
+        <div className={s.backup}>
+          <BackupCard muted />
+        </div>
+      )}
       <div className={s.section}>
         <div className={s.sectionTitle}>Тело</div>
         <div className={s.cards}>

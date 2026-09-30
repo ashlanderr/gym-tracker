@@ -18,6 +18,8 @@ export interface LocalStore {
   // Resolves once the document saved on the device is read back. Before that
   // an empty document cannot tell "nothing yet" from "nothing ever".
   loaded: Promise<unknown>;
+  // Closes the document and removes its copy from the device.
+  erase: () => Promise<void>;
 }
 
 // The app is local-first: the document exists and accepts writes before there
@@ -28,6 +30,10 @@ export function initStore(documentId: string): LocalStore {
   return {
     store: { documentId, personal: doc },
     loaded: idbProvider.whenSynced,
+    erase: async () => {
+      await idbProvider.clearData();
+      doc.destroy();
+    },
   };
 }
 
@@ -58,4 +64,28 @@ export function connectStore(
   });
 
   return () => provider.destroy();
+}
+
+// One round with the server: resolves once the document holds everything the
+// server has, fails if that takes longer than the timeout. y-websocket
+// reconnects forever on its own, so the limit has to come from here.
+export function syncStoreOnce(
+  store: Store,
+  url: string,
+  token: string,
+  timeoutMs: number,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const timer = window.setTimeout(() => {
+      disconnect();
+      reject(new Error(`sync of ${store.documentId} timed out`));
+    }, timeoutMs);
+
+    const disconnect = connectStore(store, url, token, (status) => {
+      if (status !== "synced") return;
+      window.clearTimeout(timer);
+      disconnect();
+      resolve();
+    });
+  });
 }

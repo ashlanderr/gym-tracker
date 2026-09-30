@@ -1,18 +1,22 @@
 import s from "./styles.module.scss";
-import { useState } from "react";
 import { clsx } from "clsx";
-import { authClient, startVkSignIn } from "../../api";
-import { useModalStack, useStore } from "../../components";
-import { useQueryDataSummary } from "../../db";
+import { MdCloudDone, MdCloudOff, MdCloudSync } from "react-icons/md";
+import { useSessionState } from "../../api";
 import {
-  deleteAllData,
-  deleteWorkoutHistory,
-  resetRecords,
-} from "../../domain";
+  Avatar,
+  BackupCard,
+  useConnectionStatus,
+  useModalStack,
+  useStore,
+  VkButton,
+} from "../../components";
+import { useQueryDataSummary } from "../../db";
+import { deleteWorkoutHistory, resetRecords } from "../../domain";
+import { deleteEverything, signOutOfAccount } from "../../session";
 import { pluralize } from "../../utils";
 import { APP_VERSION } from "../Home/constants.ts";
 import { HOME_PATH, useSelectTab } from "../Tabs";
-import { DeleteDataModal } from "./components";
+import { DeleteDataModal, SignOutModal } from "./components";
 import {
   CC_BY_SA_URL,
   EVERKINETIC_URL,
@@ -29,6 +33,9 @@ export function Settings() {
   const { pushModal } = useModalStack();
   const selectTab = useSelectTab();
   const summary = useQueryDataSummary(store);
+  const session = useSessionState();
+  const synced = useConnectionStatus() === "synced";
+  const signedIn = session.kind === "account";
 
   const dangerHandler = async (action: DangerAction) => {
     const confirmed = await pushModal(DeleteDataModal, action);
@@ -42,7 +49,12 @@ export function Settings() {
         deleteWorkoutHistory(store);
         break;
       case "all":
-        deleteAllData(store);
+        try {
+          await deleteEverything();
+        } catch (error) {
+          console.warn("the account was not deleted", error);
+          return;
+        }
         // Home finds no profile and hands over to the onboarding.
         selectTab(HOME_PATH);
         break;
@@ -54,17 +66,15 @@ export function Settings() {
       <div className={s.title}>Настройки</div>
 
       <div className={s.section}>
+        <div className={s.sectionTitle}>Аккаунт</div>
+        <Account />
+      </div>
+
+      <div className={s.section}>
         <div className={s.sectionTitle}>Тренировки</div>
         <div className={s.group}>
           <Soon label="Программа" />
           <Soon label="Зал и снаряды" note="Гриф, блины, гантели, тренажёры" />
-        </div>
-      </div>
-
-      <div className={s.section}>
-        <div className={s.sectionTitle}>Аккаунт</div>
-        <div className={s.group}>
-          <Account />
         </div>
       </div>
 
@@ -135,10 +145,22 @@ export function Settings() {
               </div>
             </div>
           </button>
-          <button className={s.item} onClick={() => dangerHandler("all")}>
+          {/* With an account the server deletes first, so it takes a
+              connection. */}
+          <button
+            className={s.item}
+            disabled={signedIn && !synced}
+            onClick={() => dangerHandler("all")}
+          >
             <div className={s.main}>
               <div className={s.label}>Удалить все данные</div>
-              <div className={s.note}>Приложение начнётся с анкеты</div>
+              <div className={s.note}>
+                {!signedIn
+                  ? "Приложение начнётся с анкеты"
+                  : synced
+                    ? "И на телефоне, и в аккаунте"
+                    : "Нужен интернет"}
+              </div>
             </div>
           </button>
         </div>
@@ -147,36 +169,60 @@ export function Settings() {
   );
 }
 
+// Who is signed in and whether the data is safe there. An anonymous person
+// gets the reminder that nothing is backed up.
 function Account() {
-  const { data } = authClient.useSession();
-  const [starting, setStarting] = useState(false);
+  const session = useSessionState();
+  const status = useConnectionStatus();
+  const { pushModal } = useModalStack();
+  const selectTab = useSelectTab();
 
-  if (data && !data.user.isAnonymous) {
-    return (
-      <div className={s.item}>
-        <div className={s.main}>
-          <div className={s.label}>{data.user.name}</div>
-          <div className={s.note}>Вход через VK ID · {data.user.email}</div>
-        </div>
-      </div>
-    );
-  }
+  if (session.kind === "anonymous") return <BackupCard />;
 
-  const signIn = () => {
-    setStarting(true);
-    startVkSignIn().catch((error: unknown) => {
-      console.warn(error);
-      setStarting(false);
-    });
+  const { account, rejected } = session;
+  const saved = status === "synced";
+
+  const signOutHandler = async () => {
+    const confirmed = await pushModal(SignOutModal, saved);
+    if (!confirmed) return;
+    await signOutOfAccount();
+    // Home finds no profile and hands over to the first screen.
+    selectTab(HOME_PATH);
   };
 
   return (
-    <button className={s.item} disabled={starting} onClick={signIn}>
-      <div className={s.main}>
-        <div className={s.label}>Войти через VK ID</div>
-        <div className={s.note}>Чтобы не потерять данные при смене телефона</div>
+    <div className={s.group}>
+      <div className={s.item}>
+        <Avatar name={account.name} image={account.image} size="small" />
+        <div className={s.main}>
+          <div className={s.label}>{account.name}</div>
+          <div className={s.note}>VK ID · {account.email}</div>
+        </div>
       </div>
-    </button>
+      <div
+        className={clsx(s.item, s.sync, rejected ? s.warn : saved && s.saved)}
+      >
+        {rejected ? <MdCloudOff /> : saved ? <MdCloudDone /> : <MdCloudSync />}
+        <div className={s.note}>
+          {rejected
+            ? "Данные не сохраняются"
+            : saved
+              ? "Всё сохранено"
+              : "Нет связи с сервером"}
+        </div>
+      </div>
+      {rejected ? (
+        <div className={s.action}>
+          <VkButton label="Войти ещё раз" />
+        </div>
+      ) : (
+        <button className={s.item} onClick={() => void signOutHandler()}>
+          <div className={s.main}>
+            <div className={s.label}>Выйти</div>
+          </div>
+        </button>
+      )}
+    </div>
   );
 }
 
