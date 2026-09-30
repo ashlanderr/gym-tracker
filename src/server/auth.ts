@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { anonymous, bearer, oneTimeToken } from "better-auth/plugins";
 import { moveUserData } from "./accounts.ts";
+import { vkOptions } from "./vk-profile.ts";
 import { prisma } from "./prisma.ts";
 import {
   BETTER_AUTH_SECRET,
@@ -20,14 +21,7 @@ export const auth = betterAuth({
   trustedOrigins: APP_ORIGINS,
   socialProviders:
     VK_CLIENT_ID && VK_CLIENT_SECRET
-      ? {
-          vk: {
-            clientId: VK_CLIENT_ID,
-            clientSecret: VK_CLIENT_SECRET,
-            disableDefaultScope: true,
-            scope: ["email"],
-          },
-        }
+      ? { vk: vkOptions(VK_CLIENT_ID, VK_CLIENT_SECRET) }
       : {},
   // The Android build is served from its own local origin and talks to another
   // host, so a session cookie would be a third-party cookie inside the
