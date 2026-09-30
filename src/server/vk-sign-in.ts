@@ -3,6 +3,7 @@ import { fromNodeHeaders } from "better-auth/node";
 import { auth } from "./auth.ts";
 import { BETTER_AUTH_URL } from "./env.ts";
 import { APP_ORIGINS, APP_PACKAGE } from "./constants.ts";
+import { logVk } from "./vk-log.ts";
 
 export const VK_SIGN_IN_PATH = "/api/sign-in/vk";
 
@@ -84,9 +85,13 @@ vkSignIn.get(VK_SIGN_IN_PATH, async (req, res) => {
     });
     res.setHeader("set-cookie", headers.getSetCookie());
     await clearSessionCookies(res);
+    logVk("start", {
+      userId: session.userId,
+      returnTo: new URL(returnTo).protocol,
+    });
     res.redirect(response.url!);
   } catch (error) {
-    console.warn("VK sign-in could not start", error);
+    logVk("start failed", { error: String(error) });
     res.redirect(withParam(returnTo, "error", "start_failed"));
   }
 });
@@ -98,13 +103,18 @@ vkSignIn.get(`${VK_SIGN_IN_PATH}/finish`, async (req, res) => {
     return;
   }
   if (typeof error === "string") {
+    logVk("callback returned an error", { error });
     res.redirect(withParam(returnTo, "error", error));
     return;
   }
 
   try {
-    const { token } = await auth.api.generateOneTimeToken({
-      headers: fromNodeHeaders(req.headers),
+    const headers = fromNodeHeaders(req.headers);
+    const session = await auth.api.getSession({ headers });
+    const { token } = await auth.api.generateOneTimeToken({ headers });
+    logVk("finish", {
+      userId: session?.user.id,
+      anonymous: session?.user.isAnonymous ?? null,
     });
     res.redirect(withParam(returnTo, "ott", token));
   } catch (error) {
@@ -113,7 +123,7 @@ vkSignIn.get(`${VK_SIGN_IN_PATH}/finish`, async (req, res) => {
       .split(";")
       .map((cookie) => cookie.split("=")[0].trim())
       .filter(Boolean);
-    console.warn("VK sign-in could not finish", error, { cookies });
+    logVk("finish failed", { error: String(error), cookies });
     res.redirect(withParam(returnTo, "error", "finish_failed"));
   }
 });

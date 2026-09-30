@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { anonymous, bearer, oneTimeToken } from "better-auth/plugins";
 import { moveUserData } from "./accounts.ts";
+import { logVk } from "./vk-log.ts";
 import { vkOptions } from "./vk-profile.ts";
 import { prisma } from "./prisma.ts";
 import {
@@ -30,8 +31,13 @@ export const auth = betterAuth({
   // browser, where signing in with VK happens.
   plugins: [
     anonymous({
-      onLinkAccount: ({ anonymousUser, newUser }) =>
-        moveUserData(anonymousUser.user.id, newUser.user.id),
+      onLinkAccount: ({ anonymousUser, newUser }) => {
+        logVk("linking anonymous user", {
+          anonymous: anonymousUser.user.id,
+          account: newUser.user.id,
+        });
+        return moveUserData(anonymousUser.user.id, newUser.user.id);
+      },
     }),
     bearer(),
     oneTimeToken(),
