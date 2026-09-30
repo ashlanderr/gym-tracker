@@ -20,6 +20,17 @@ import {
   VkBrowser,
   WelcomeBrand,
 } from "./screens.tsx";
+import {
+  MERGE_DATA,
+  mergeRows,
+  mergeSentences,
+  RESTORE_DATA,
+  type MergeData,
+  type RestoreData,
+  restoreRows,
+  restoreSentences,
+} from "./summaries.ts";
+import { Cells, List, Sentences } from "./summaryBlocks.tsx";
 
 interface Step {
   caption: string;
@@ -67,6 +78,24 @@ function Flow({
     </section>
   );
 }
+
+const VARIANTS = [
+  {
+    name: "A. Две карточки",
+    restore: (d: RestoreData) => <Cells rows={restoreRows(d)} />,
+    merge: (d: MergeData) => <Cells rows={mergeRows(d)} />,
+  },
+  {
+    name: "B. Строки на всю ширину",
+    restore: (d: RestoreData) => <List rows={restoreRows(d)} />,
+    merge: (d: MergeData) => <List rows={mergeRows(d)} />,
+  },
+  {
+    name: "C. Число и предложения",
+    restore: (d: RestoreData) => <Sentences {...restoreSentences(d)} />,
+    merge: (d: MergeData) => <Sentences {...mergeSentences(d)} />,
+  },
+];
 
 // The app routes by hash, so a plain anchor would navigate away.
 const jump = (id: string) =>
@@ -185,6 +214,9 @@ export function SignInMockups() {
         <nav className={s.toc}>
           <button onClick={() => jump("first")}>1. Первый экран</button>
           <button onClick={() => jump("return")}>2. Возвращение</button>
+          <button onClick={() => jump("summaries")}>
+            Итоги на разных данных
+          </button>
           <button onClick={() => jump("empty")}>3. Пустой аккаунт</button>
           <button onClick={() => jump("merge")}>
             4. Вход, когда на телефоне есть данные
@@ -258,6 +290,38 @@ export function SignInMockups() {
         модели телефон получает от сервера id основного документа и открывает
         его.
       </Flow>
+
+      <section className={s.flow} id="summaries">
+        <h2>Итоги на разных данных</h2>
+        <div className={s.text}>
+          Даты форматирует та же функция, что в профиле: «сегодня», «вчера», «3
+          дня назад» в пределах недели, дальше число и месяц словом, а для
+          прошлых лет ещё и год. Если рекордов нет, их карточка не показывается.
+        </div>
+        {VARIANTS.map((variant) => (
+          <div key={variant.name} className={s.variant}>
+            <h3>{variant.name}</h3>
+            <div className={s.kind}>После переустановки</div>
+            <div className={s.row}>
+              {RESTORE_DATA.map((data) => (
+                <figure key={data.name} className={s.box}>
+                  <div>{variant.restore(data)}</div>
+                  <figcaption className={s.kind}>{data.name}</figcaption>
+                </figure>
+              ))}
+            </div>
+            <div className={s.kind}>После объединения</div>
+            <div className={s.row}>
+              {MERGE_DATA.map((data) => (
+                <figure key={data.name} className={s.box}>
+                  <div>{variant.merge(data)}</div>
+                  <figcaption className={s.kind}>{data.name}</figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        ))}
+      </section>
 
       <Flow
         id="empty"
@@ -421,14 +485,9 @@ export function SignInMockups() {
         title="8. Шапка профиля"
         steps={[
           {
-            caption: "Без входа, яркая кнопка",
-            note: "Вместо «Анонимный пользователь» просто «Профиль». Плашка та же, что в настройках.",
+            caption: "Без входа",
+            note: "Вместо «Анонимный пользователь» просто «Профиль». Плашка та же, что в настройках, но кнопка приглушённая: профиль открывают часто, и яркая кнопка мозолила бы глаза.",
             screen: <ProfileScreen state="anon" />,
-          },
-          {
-            caption: "Без входа, приглушённая кнопка",
-            note: "Профиль открывают часто, и яркая кнопка там будет мозолить глаза. Приглушённая заметна, но не спорит с данными.",
-            screen: <ProfileScreen state="anon" muted />,
           },
           {
             caption: "После входа",

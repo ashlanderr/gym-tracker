@@ -428,3 +428,68 @@
 .profileBackup {
   margin-top: 16px;
 }
+
+.list {
+  align-self: stretch;
+  margin-top: 28px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #111;
+  text-align: left;
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #1d1d1d;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  span {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 14px;
+    color: #ddd;
+  }
+
+  i {
+    font-size: 12px;
+    font-style: normal;
+    color: #5f5f5f;
+  }
+
+  b {
+    font-size: 24px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+}
+
+.sentences {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 24px;
+  text-align: center;
+
+  b {
+    margin-bottom: 4px;
+    font-size: 30px;
+    font-weight: 700;
+  }
+
+  span {
+    font-size: 14px;
+    line-height: 1.4;
+    color: #8a8a8a;
+    text-wrap: balance;
+  }
+}

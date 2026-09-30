@@ -574,13 +574,7 @@ export function MergedSummary() {
 
 type ProfileState = "anon" | "signed";
 
-export function ProfileScreen({
-  state,
-  muted,
-}: {
-  state: ProfileState;
-  muted?: boolean;
-}) {
+export function ProfileScreen({ state }: { state: ProfileState }) {
   return (
     <WithTabs path="/profile">
       <div className={pr.root}>
@@ -610,7 +604,7 @@ export function ProfileScreen({
               </div>
             </div>
             <div className={m.groupAction}>
-              <VkButton muted={muted} />
+              <VkButton muted />
             </div>
           </div>
         )}

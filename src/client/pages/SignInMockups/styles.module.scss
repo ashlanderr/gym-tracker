@@ -122,3 +122,34 @@
     color: #7a7a7a;
   }
 }
+
+.variant {
+  margin-top: 28px;
+
+  h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ddd;
+  }
+}
+
+.kind {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #6d6d6d;
+}
+
+.box {
+  flex: 0 0 auto;
+  width: 320px;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4px 20px 20px;
+    border: 1px solid #262626;
+    border-radius: 20px;
+    background: #000;
+  }
+}
