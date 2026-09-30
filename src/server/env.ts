@@ -11,3 +11,7 @@ export const PORT = Number(process.env.PORT ?? 5000);
 // RuStore Public API key from the console. Optional: without it the server
 // runs, only subscriptions cannot be checked.
 export const { RUSTORE_KEY_ID, RUSTORE_PRIVATE_KEY } = process.env;
+
+// VK ID application with the Web platform. Optional: without it the server
+// runs, only signing in with VK is unavailable.
+export const { VK_CLIENT_ID, VK_CLIENT_SECRET } = process.env;
