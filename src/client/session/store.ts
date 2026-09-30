@@ -1,12 +1,16 @@
 import { useSyncExternalStore } from "react";
-import * as Y from "yjs";
-import {
-  getAccountId,
-  getDocumentOwner,
-  setAccountId,
-  setDocumentOwner,
-} from "../account";
 import { initStore, type LocalStore } from "../db";
+
+const DOCUMENT_STORAGE_KEY = "DOCUMENT";
+
+// Without an account the data lives on the device alone, under this name. With
+// one it is the account's document, named after the account, and the name
+// tells whose data the device holds.
+export const LOCAL_DOCUMENT = "local";
+
+function storedDocumentId(): string {
+  return localStorage.getItem(DOCUMENT_STORAGE_KEY) ?? LOCAL_DOCUMENT;
+}
 
 // The document the app works on. It changes when a sign-in brings the
 // account's document, and when the device is wiped; whatever shows it has to
@@ -15,7 +19,7 @@ let current: LocalStore | null = null;
 const listeners = new Set<() => void>();
 
 export function currentStore(): LocalStore {
-  current ??= initStore(getAccountId());
+  current ??= initStore(storedDocumentId());
   return current;
 }
 
@@ -28,35 +32,28 @@ export function useCurrentStore(): LocalStore {
   return useSyncExternalStore(subscribe, currentStore);
 }
 
-// The previous document is erased from the device: by now it is either merged
-// into the next one or meant to go.
-export async function switchStore(next: LocalStore, owner: string | null) {
-  const previous = currentStore();
-  setAccountId(next.store.documentId);
-  setDocumentOwner(owner);
+function show(next: LocalStore) {
+  const { documentId } = next.store;
+  if (documentId === LOCAL_DOCUMENT) {
+    localStorage.removeItem(DOCUMENT_STORAGE_KEY);
+  } else {
+    localStorage.setItem(DOCUMENT_STORAGE_KEY, documentId);
+  }
   current = next;
   listeners.forEach((listener) => listener());
+}
+
+// The previous document is erased from the device: by now it is either merged
+// into the next one or meant to go.
+export async function switchStore(next: LocalStore) {
+  const previous = currentStore();
+  show(next);
   await previous.erase();
 }
 
-export function newStore(): LocalStore {
-  return initStore(crypto.randomUUID());
-}
-
-// As after installing.
-export function resetDevice() {
-  return switchStore(newStore(), null);
-}
-
-// The same data under a new id, for when the old id belongs to an account the
-// server no longer lets this device into.
-export async function moveToNewDocument() {
-  const previous = currentStore();
-  const next = newStore();
-  await Promise.all([previous.loaded, next.loaded]);
-  Y.applyUpdate(
-    next.store.personal,
-    Y.encodeStateAsUpdate(previous.store.personal),
-  );
-  await switchStore(next, getDocumentOwner());
+// As after installing. The device's own document may be the one to erase, and
+// the new one opens under the same name, so the old goes first.
+export async function resetDevice() {
+  await currentStore().erase();
+  show(initStore(LOCAL_DOCUMENT));
 }

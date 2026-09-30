@@ -9,7 +9,6 @@ import {
 } from "react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { MdArrowBack } from "react-icons/md";
-import { useAccountId } from "../../account";
 import { useStore } from "../../components";
 import { useSessionState } from "../../api";
 import { useSignInState } from "../../session";
@@ -50,7 +49,7 @@ export function Onboarding() {
   const navigate = useNavigate();
   const location = useLocation();
   const store = useStore();
-  const accountId = useAccountId();
+  const accountId = store.documentId;
   const profile = useQueryProfile(store);
   const session = useSessionState();
   const signIn = useSignInState();

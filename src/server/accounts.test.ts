@@ -1,50 +1,52 @@
 import { afterEach, beforeEach, expect, it } from "vitest";
 import { prisma } from "./prisma.ts";
-import { accountDocument, documentAccess, moveUserData } from "./accounts.ts";
+import { canSync, ensureDocument, moveUserData } from "./accounts.ts";
 
 // Talks to the development database, so `npm run db:up` has to be running.
 
 const prefix = `test-accounts-${Date.now()}`;
 const anonymous = `${prefix}-anonymous`;
 const vk = `${prefix}-vk`;
-const documentId = `${prefix}-document`;
 
 beforeEach(async () => {
   for (const id of [anonymous, vk]) {
     await prisma.user.create({ data: { id, name: "test", email: `${id}@t` } });
   }
-  await prisma.document.create({
-    data: { id: documentId, ownerId: anonymous },
-  });
 });
 
 afterEach(async () => {
   await prisma.user.deleteMany({ where: { id: { startsWith: prefix } } });
 });
 
-it("keeps the document when the anonymous user is deleted after linking", async () => {
-  await moveUserData(anonymous, vk);
-  await prisma.user.delete({ where: { id: anonymous } });
+it("syncs only an account's own document", () => {
+  expect(canSync({ id: vk, isAnonymous: false }, vk)).toBe(true);
+  expect(canSync({ id: vk, isAnonymous: false }, anonymous)).toBe(false);
+  expect(canSync({ id: anonymous, isAnonymous: true }, anonymous)).toBe(false);
+});
 
-  const document = await prisma.document.findUnique({
-    where: { id: documentId },
+it("keeps the subscription when the anonymous user is deleted after linking", async () => {
+  await prisma.subscription.create({
+    data: {
+      purchaseId: `${prefix}-purchase`,
+      userId: anonymous,
+      productId: "p",
+      expiresAt: new Date(),
+      sandbox: true,
+    },
   });
-  expect(document?.ownerId).toBe(vk);
-});
-
-it("leaves the anonymous document behind when the account already has one", async () => {
-  const own = `${prefix}-own`;
-  await prisma.document.create({ data: { id: own, ownerId: vk } });
 
   await moveUserData(anonymous, vk);
   await prisma.user.delete({ where: { id: anonymous } });
 
-  expect(await accountDocument(vk)).toBe(own);
-  expect(await prisma.document.count({ where: { ownerId: vk } })).toBe(1);
+  const subscription = await prisma.subscription.findUnique({
+    where: { purchaseId: `${prefix}-purchase` },
+  });
+  expect(subscription?.userId).toBe(vk);
 });
 
-it("tells a device whether the document it holds is its own to sync", async () => {
-  expect(await documentAccess(anonymous, documentId)).toBe("own");
-  expect(await documentAccess(vk, documentId)).toBe("taken");
-  expect(await documentAccess(vk, `${prefix}-nobody`)).toBe("free");
+it("creates the account's document once", async () => {
+  await ensureDocument(vk);
+  await ensureDocument(vk);
+
+  expect(await prisma.document.count({ where: { ownerId: vk } })).toBe(1);
 });

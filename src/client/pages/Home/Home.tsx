@@ -11,7 +11,6 @@ import { MdAdd, MdClose, MdDelete, MdEdit, MdPlayArrow } from "react-icons/md";
 import { Navigate, useNavigate } from "react-router";
 import { useState } from "react";
 import { clsx } from "clsx";
-import { useAccountId } from "../../account";
 import {
   BottomSheet,
   useConnectionStatus,
@@ -24,8 +23,8 @@ import { addWorkout, cancelWorkout, duplicateWorkout } from "../../domain";
 import { CancelWorkoutModal } from "./components";
 
 export function Home() {
-  const accountId = useAccountId();
   const store = useStore();
+  const accountId = store.documentId;
   const connection = useConnectionStatus();
   const navigate = useNavigate();
   const { pushModal } = useModalStack();

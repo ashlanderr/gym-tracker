@@ -4,8 +4,7 @@ import * as encoding from "lib0/encoding";
 import * as decoding from "lib0/decoding";
 import * as syncProtocol from "y-protocols/sync";
 import { auth } from "./auth.ts";
-import { prisma } from "./prisma.ts";
-import { accountDocument } from "./accounts.ts";
+import { canSync, ensureDocument } from "./accounts.ts";
 import {
   openDocument,
   releaseDocument,
@@ -38,23 +37,10 @@ async function authorize(url: URL): Promise<string | null> {
   });
   if (!session) return null;
 
-  const document = await prisma.document.findUnique({
-    where: { id: documentId },
-    select: { ownerId: true },
-  });
+  if (!canSync(session.user, documentId)) return null;
 
-  // The first connection claims the document: its id was generated on the
-  // device back when it had no account at all. An account that already has
-  // a document gets no second one; the device has to merge into it.
-  if (!document) {
-    if (await accountDocument(session.user.id)) return null;
-    await prisma.document.create({
-      data: { id: documentId, ownerId: session.user.id },
-    });
-    return documentId;
-  }
-
-  return document.ownerId === session.user.id ? documentId : null;
+  await ensureDocument(documentId);
+  return documentId;
 }
 
 function broadcast(

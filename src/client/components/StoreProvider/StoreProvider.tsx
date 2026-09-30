@@ -27,29 +27,31 @@ export function StoreProvider({ children }: PropsWithChildren) {
     };
   }, [store, loaded]);
 
-  // A token the server rejected would only knock on the door forever; the
-  // settings ask the person to sign in again instead. So would the device's
-  // own document while a sign-in replaces it: the account refuses a second
-  // one.
+  // Only an account's own document goes to the server: anonymous data stays
+  // on the device. A token the server rejected would only knock on the door
+  // forever, the settings ask the person to sign in again instead; and while
+  // a sign-in replaces the document, the old one has nowhere to go.
   const token = useAuthToken();
   const session = useSessionState();
   const signIn = useSignInState();
-  const paused =
-    (session.kind === "account" && session.rejected) ||
-    signIn.step === "checking" ||
-    signIn.step === "loading";
+  const syncing =
+    session.kind === "account" &&
+    session.account.id === store.documentId &&
+    !session.rejected &&
+    signIn.step !== "checking" &&
+    signIn.step !== "loading";
   useEffect(() => {
     if (!token) {
       void ensureSession();
       return;
     }
-    if (paused) return;
+    if (!syncing) return;
     const disconnect = connectStore(store, getSyncUrl(), token, setStatus);
     return () => {
       disconnect();
       setStatus("disconnected");
     };
-  }, [store, token, paused]);
+  }, [store, token, syncing]);
 
   // Keyed by the document, so pages that read it once start over when the
   // device switches to another.

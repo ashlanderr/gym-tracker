@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useAccountId } from "../../../../account";
 import {
   FormSheet,
   MeasurePicker,
@@ -18,7 +17,7 @@ export function MeasureSheet({
   onSubmit,
 }: ModalProps<MeasureSheetData, null>) {
   const store = useStore();
-  const accountId = useAccountId();
+  const accountId = store.documentId;
   const [value, setValue] = useState(initial);
   const { title, units, decimals, range } = MEASURES[type];
 
