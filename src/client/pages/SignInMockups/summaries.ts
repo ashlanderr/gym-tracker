@@ -4,16 +4,6 @@ import { formatAgo } from "../Profile/utils.ts";
 const DAY = 24 * 60 * 60 * 1000;
 const NOW = Date.now();
 
-const WORKOUT_FORMS: [string, string, string] = [
-  "тренировка",
-  "тренировки",
-  "тренировок",
-];
-const RECORD_FORMS: [string, string, string] = [
-  "рекорд",
-  "рекорда",
-  "рекордов",
-];
 const EXERCISE_FORMS: [string, string, string] = [
   "упражнении",
   "упражнениях",
@@ -92,7 +82,18 @@ export const MERGE_DATA: MergeData[] = [
   },
 ];
 
-const ago = (date: number) => formatAgo(date, NOW);
+export type DateFormat = (date: number) => string;
+
+export const wordDate: DateFormat = (date) => formatAgo(date, NOW);
+
+// Words only for the two days nobody needs a date for; anything older is a
+// number, which is shorter than any phrase and never breaks inside.
+export const numericDate: DateFormat = (date) => {
+  const days = Math.round((NOW - date) / DAY);
+  return days < 2
+    ? formatAgo(date, NOW)
+    : new Date(date).toLocaleDateString("ru");
+};
 
 export interface Row {
   label: string;
@@ -100,7 +101,7 @@ export interface Row {
   meta: string;
 }
 
-export function restoreRows(d: RestoreData): Row[] {
+export function restoreRows(d: RestoreData, ago: DateFormat): Row[] {
   const rows = [
     {
       label: "Тренировки",
@@ -118,7 +119,7 @@ export function restoreRows(d: RestoreData): Row[] {
   return rows;
 }
 
-export function mergeRows(d: MergeData): Row[] {
+export function mergeRows(d: MergeData, ago: DateFormat): Row[] {
   return [
     {
       label: "В аккаунте",
@@ -131,28 +132,4 @@ export function mergeRows(d: MergeData): Row[] {
       meta: `последняя ${ago(d.phone.last)}`,
     },
   ];
-}
-
-export function restoreSentences(d: RestoreData) {
-  return {
-    head: count(d.workouts.count, WORKOUT_FORMS),
-    lines: [
-      `Последняя ${ago(d.workouts.last)}`,
-      ...(d.records > 0
-        ? [
-            `${count(d.records, RECORD_FORMS)} в ${count(d.recordExercises, EXERCISE_FORMS)}`,
-          ]
-        : []),
-    ],
-  };
-}
-
-export function mergeSentences(d: MergeData) {
-  return {
-    head: count(d.account.count + d.phone.count, WORKOUT_FORMS),
-    lines: [
-      `${d.account.count.toLocaleString("ru")} из аккаунта, последняя ${ago(d.account.last)}`,
-      `${d.phone.count.toLocaleString("ru")} с телефона, последняя ${ago(d.phone.last)}`,
-    ],
-  };
 }

@@ -23,14 +23,12 @@ import {
 import {
   MERGE_DATA,
   mergeRows,
-  mergeSentences,
+  numericDate,
   RESTORE_DATA,
-  type MergeData,
-  type RestoreData,
   restoreRows,
-  restoreSentences,
+  wordDate,
 } from "./summaries.ts";
-import { Cells, List, Sentences } from "./summaryBlocks.tsx";
+import { Cells } from "./summaryBlocks.tsx";
 
 interface Step {
   caption: string;
@@ -80,21 +78,8 @@ function Flow({
 }
 
 const VARIANTS = [
-  {
-    name: "A. Две карточки",
-    restore: (d: RestoreData) => <Cells rows={restoreRows(d)} />,
-    merge: (d: MergeData) => <Cells rows={mergeRows(d)} />,
-  },
-  {
-    name: "B. Строки на всю ширину",
-    restore: (d: RestoreData) => <List rows={restoreRows(d)} />,
-    merge: (d: MergeData) => <List rows={mergeRows(d)} />,
-  },
-  {
-    name: "C. Число и предложения",
-    restore: (d: RestoreData) => <Sentences {...restoreSentences(d)} />,
-    merge: (d: MergeData) => <Sentences {...mergeSentences(d)} />,
-  },
+  { name: "Месяц словом", date: wordDate },
+  { name: "DD.MM.YYYY", date: numericDate },
 ];
 
 // The app routes by hash, so a plain anchor would navigate away.
@@ -294,9 +279,12 @@ export function SignInMockups() {
       <section className={s.flow} id="summaries">
         <h2>Итоги на разных данных</h2>
         <div className={s.text}>
-          Даты форматирует та же функция, что в профиле: «сегодня», «вчера», «3
-          дня назад» в пределах недели, дальше число и месяц словом, а для
-          прошлых лет ещё и год. Если рекордов нет, их карточка не показывается.
+          Сравниваются два формата. Месяц словом — как в профиле: «сегодня»,
+          «вчера», «3 дня назад» в пределах недели, дальше число и месяц, для
+          прошлых лет с годом. DD.MM.YYYY: словами только «сегодня» и «вчера».
+          Подпись под числом не переносится, так видно, помещается ли она на
+          самом узком телефоне (360px). Если рекордов нет, их карточка не
+          показывается.
         </div>
         {VARIANTS.map((variant) => (
           <div key={variant.name} className={s.variant}>
@@ -305,7 +293,9 @@ export function SignInMockups() {
             <div className={s.row}>
               {RESTORE_DATA.map((data) => (
                 <figure key={data.name} className={s.box}>
-                  <div>{variant.restore(data)}</div>
+                  <div>
+                    <Cells rows={restoreRows(data, variant.date)} />
+                  </div>
                   <figcaption className={s.kind}>{data.name}</figcaption>
                 </figure>
               ))}
@@ -314,7 +304,9 @@ export function SignInMockups() {
             <div className={s.row}>
               {MERGE_DATA.map((data) => (
                 <figure key={data.name} className={s.box}>
-                  <div>{variant.merge(data)}</div>
+                  <div>
+                    <Cells rows={mergeRows(data, variant.date)} />
+                  </div>
                   <figcaption className={s.kind}>{data.name}</figcaption>
                 </figure>
               ))}
