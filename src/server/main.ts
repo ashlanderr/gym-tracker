@@ -8,6 +8,7 @@ import { createContext } from "./trpc.ts";
 import { PORT } from "./env.ts";
 import { APP_ORIGINS } from "./constants.ts";
 import { listenForSync } from "./sync.ts";
+import { vkSignIn } from "./vk-sign-in.ts";
 
 const app = express();
 
@@ -15,6 +16,7 @@ const app = express();
 // with a wildcard origin, so the allowed origins have to be named.
 app.use(cors({ origin: APP_ORIGINS, credentials: true }));
 app.all("/api/auth/{*any}", toNodeHandler(auth));
+app.use(vkSignIn);
 app.use(
   "/api/trpc",
   createExpressMiddleware({ router: appRouter, createContext }),

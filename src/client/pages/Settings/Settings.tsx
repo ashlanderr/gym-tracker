@@ -1,5 +1,7 @@
 import s from "./styles.module.scss";
+import { useState } from "react";
 import { clsx } from "clsx";
+import { authClient, startVkSignIn } from "../../api";
 import { useModalStack, useStore } from "../../components";
 import { useQueryDataSummary } from "../../db";
 import {
@@ -62,10 +64,7 @@ export function Settings() {
       <div className={s.section}>
         <div className={s.sectionTitle}>Аккаунт</div>
         <div className={s.group}>
-          <Soon
-            label="Войти через VK ID"
-            note="Чтобы не потерять данные при смене телефона"
-          />
+          <Account />
         </div>
       </div>
 
@@ -145,6 +144,39 @@ export function Settings() {
         </div>
       </div>
     </div>
+  );
+}
+
+function Account() {
+  const { data } = authClient.useSession();
+  const [starting, setStarting] = useState(false);
+
+  if (data && !data.user.isAnonymous) {
+    return (
+      <div className={s.item}>
+        <div className={s.main}>
+          <div className={s.label}>{data.user.name}</div>
+          <div className={s.note}>Вход через VK ID · {data.user.email}</div>
+        </div>
+      </div>
+    );
+  }
+
+  const signIn = () => {
+    setStarting(true);
+    startVkSignIn().catch((error: unknown) => {
+      console.warn(error);
+      setStarting(false);
+    });
+  };
+
+  return (
+    <button className={s.item} disabled={starting} onClick={signIn}>
+      <div className={s.main}>
+        <div className={s.label}>Войти через VK ID</div>
+        <div className={s.note}>Чтобы не потерять данные при смене телефона</div>
+      </div>
+    </button>
   );
 }
 

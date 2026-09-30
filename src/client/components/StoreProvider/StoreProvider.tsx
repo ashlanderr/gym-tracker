@@ -6,7 +6,7 @@ import {
   initStore,
   type LocalStore,
 } from "../../db";
-import { ensureSession, getSyncUrl } from "../../api";
+import { ensureSession, getSyncUrl, useAuthToken } from "../../api";
 import { ConnectionContext, StoreContext } from "./constants.ts";
 
 // Pages wait for the document on the device: reading it takes a moment, and
@@ -33,20 +33,14 @@ export function StoreProvider({ children }: PropsWithChildren) {
     };
   }, [loaded]);
 
+  const token = useAuthToken();
   useEffect(() => {
-    let disconnect: (() => void) | undefined;
-    let cancelled = false;
-
-    void ensureSession().then((token) => {
-      if (cancelled || !token) return;
-      disconnect = connectStore(store, getSyncUrl(), token, setStatus);
-    });
-
-    return () => {
-      cancelled = true;
-      disconnect?.();
-    };
-  }, [store]);
+    if (!token) {
+      void ensureSession();
+      return;
+    }
+    return connectStore(store, getSyncUrl(), token, setStatus);
+  }, [store, token]);
 
   return (
     <StoreContext.Provider value={store}>

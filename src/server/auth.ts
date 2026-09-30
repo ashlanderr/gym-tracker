@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { anonymous, bearer } from "better-auth/plugins";
+import { anonymous, bearer, oneTimeToken } from "better-auth/plugins";
+import { moveUserData } from "./accounts.ts";
 import { prisma } from "./prisma.ts";
 import {
   BETTER_AUTH_SECRET,
@@ -31,7 +32,16 @@ export const auth = betterAuth({
   // The Android build is served from its own local origin and talks to another
   // host, so a session cookie would be a third-party cookie inside the
   // WebView. Sessions travel as a bearer token the client keeps itself.
-  plugins: [anonymous(), bearer()],
+  // One-time tokens carry the session between the WebView and the system
+  // browser, where signing in with VK happens.
+  plugins: [
+    anonymous({
+      onLinkAccount: ({ anonymousUser, newUser }) =>
+        moveUserData(anonymousUser.user.id, newUser.user.id),
+    }),
+    bearer(),
+    oneTimeToken(),
+  ],
 });
 
 export type Session = typeof auth.$Infer.Session;
