@@ -90,6 +90,7 @@
   span {
     font-size: 13px;
     color: #7a7a7a;
+    text-wrap: balance;
   }
 
   &:first-child {
@@ -137,6 +138,7 @@
 }
 
 .sub {
+  text-wrap: balance;
   max-width: 280px;
   margin-top: 8px;
   font-size: 14px;
@@ -161,6 +163,7 @@
 }
 
 .hint {
+  text-wrap: balance;
   padding: 12px 8px 4px;
   text-align: center;
   font-size: 12px;
@@ -343,6 +346,7 @@
 }
 
 .toast {
+  text-wrap: balance;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -435,6 +439,7 @@
 
   b {
     font-size: 16px;
+    white-space: nowrap;
   }
 
   i {

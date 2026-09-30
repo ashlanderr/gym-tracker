@@ -78,13 +78,13 @@ export function WelcomeBrand() {
         <img className={m.logo} src={LOGO} alt="" />
         <div className={m.brand}>Октус</div>
         <div className={m.tagline}>
-          Отмечай подходы — веса, разминку и отдых приложение подберёт само
+          Дневник тренировок, который сам подбирает веса
         </div>
       </div>
       <div className={m.welcomeActions}>
         <button className={m.primary}>Начать</button>
         <button className={m.linkButton}>
-          Уже занимались с Октусом? <b>Войти</b>
+          Уже есть аккаунт? <b>Войти</b>
         </button>
       </div>
     </div>
@@ -98,19 +98,19 @@ export function WelcomeChoice() {
         <img className={m.logo} src={LOGO} alt="" />
         <div className={m.brand}>Октус</div>
         <div className={m.tagline}>
-          Дневник тренировок, который подбирает веса
+          Дневник тренировок, который сам подбирает веса
         </div>
       </div>
       <div className={m.choices}>
         <button className={m.choice}>
-          <b>Я здесь впервые</b>
-          <span>Пара минут вопросов — и первая тренировка готова</span>
+          <b>Начать</b>
+          <span>Несколько вопросов о тебе</span>
         </button>
         <button className={m.choice}>
           <b>
-            <SiVk /> У меня уже есть аккаунт
+            <SiVk /> Войти через VK ID
           </b>
-          <span>Войти через VK ID, тренировки вернутся</span>
+          <span>Если уже пользовались Октусом</span>
         </button>
       </div>
     </div>
@@ -158,7 +158,9 @@ export function VkBrowser({ existing = true }: { existing?: boolean }) {
         <button className={m.vkContinue}>
           Продолжить как {existing ? FIRST_NAME : "Мария"}
         </button>
-        <div className={m.vkNote}>Октус получит имя, фото и почту</div>
+        <div className={m.vkNote}>
+          Октус получит доступ к имени, фото и почте
+        </div>
       </div>
     </div>
   );
@@ -177,7 +179,7 @@ export function Restoring() {
       </div>
       <div className={m.welcomeActions}>
         <div className={m.hint}>
-          Нужна сеть только сейчас. Дальше всё работает и без неё.
+          Интернет нужен только сейчас. Потом приложение работает и без него.
         </div>
       </div>
     </div>
@@ -191,15 +193,15 @@ export function RestoreFailed() {
         <div className={m.iconCircle}>
           <MdCloudOff />
         </div>
-        <div className={m.hello}>Не получилось загрузить</div>
+        <div className={m.hello}>Не удалось загрузить тренировки</div>
         <div className={m.sub}>
-          Вход выполнен, но тренировки не пришли: нет сети. Попробуем ещё раз,
-          как только она появится.
+          Вход выполнен, но пропал интернет. Загрузим тренировки, как только он
+          появится.
         </div>
       </div>
       <div className={m.welcomeActions}>
         <button className={m.primary}>Повторить</button>
-        <button className={m.linkButton}>Выйти и начать без аккаунта</button>
+        <button className={m.linkButton}>Начать без аккаунта</button>
       </div>
     </div>
   );
@@ -218,7 +220,7 @@ export function HelloNew() {
         <StepLayout
           icon={<Avatar letter="М" />}
           question="Привет, Мария!"
-          note="В этом аккаунте ещё нет тренировок. Ответь на несколько вопросов — и подберём веса для первой."
+          note="Аккаунт пока пустой. Ответь на несколько вопросов, и мы подберём веса для первой тренировки."
           action={{ label: "Дальше", onClick: noop }}
         />
       </div>
@@ -274,9 +276,7 @@ export function HomeRestored({ toast = true }: { toast?: boolean }) {
           ),
         )}
       </div>
-      {toast && (
-        <Toast icon={<MdCloudDone />}>48 тренировок из аккаунта на месте</Toast>
-      )}
+      {toast && <Toast icon={<MdCloudDone />}>Загрузили 48 тренировок</Toast>}
     </WithTabs>
   );
 }
@@ -291,9 +291,10 @@ function AccountGroup({ state }: { state: AccountState }) {
       <div className={st.group}>
         <div className={st.item}>
           <div className={st.main}>
-            <div className={st.label}>Данные только на этом телефоне</div>
+            <div className={st.label}>Резервной копии нет</div>
             <div className={st.note}>
-              Войди, чтобы не потерять их при смене или сбросе телефона
+              Данные хранятся только на телефоне. Войди, чтобы не потерять их
+              при смене телефона
             </div>
           </div>
         </div>
@@ -308,14 +309,14 @@ function AccountGroup({ state }: { state: AccountState }) {
     Exclude<AccountState, "anon">,
     { icon: ReactNode; text: string; warn?: boolean }
   > = {
-    signed: { icon: <MdCloudDone />, text: "Сохранено · только что" },
+    signed: { icon: <MdCloudDone />, text: "Всё сохранено" },
     offline: {
       icon: <MdCloudSync />,
-      text: "Нет сети · 3 изменения ждут отправки",
+      text: "3 изменения не сохранены",
     },
     rejected: {
       icon: <MdCloudOff />,
-      text: "Вход устарел — войди снова, чтобы продолжить сохранять",
+      text: "Данные не сохраняются",
       warn: true,
     },
   };
@@ -338,7 +339,7 @@ function AccountGroup({ state }: { state: AccountState }) {
       </div>
       {state === "rejected" ? (
         <div className={m.groupAction}>
-          <VkButton label="Войти снова" />
+          <VkButton label="Войти ещё раз" />
         </div>
       ) : (
         <button className={st.item}>
@@ -416,7 +417,7 @@ export function SettingsScreen({
                   <div className={st.note}>
                     {state === "anon"
                       ? "Приложение начнётся с анкеты"
-                      : "С телефона и из аккаунта. Приложение начнётся с начала"}
+                      : "И на телефоне, и в аккаунте"}
                   </div>
                 </div>
               </button>
@@ -471,8 +472,8 @@ function Dialog({
 export function SignOutDialog() {
   return (
     <Dialog title="Выйти из аккаунта?" submit="Выйти" red>
-      Тренировки останутся в аккаунте и вернутся после входа. С этого телефона
-      они удалятся.
+      С телефона данные удалятся, но останутся в аккаунте. Чтобы вернуть их,
+      войди снова.
     </Dialog>
   );
 }
@@ -480,8 +481,8 @@ export function SignOutDialog() {
 export function SignOutOffline() {
   return (
     <Dialog title="Выйти из аккаунта?" submit="Выйти" red disabled>
-      3 изменения ещё не отправлены. Без сети они пропадут вместе с данными на
-      телефоне — подключись к интернету и подожди пару секунд.
+      3 изменения ещё не сохранены в аккаунте. Подключись к интернету, чтобы они
+      не пропали.
     </Dialog>
   );
 }
@@ -509,8 +510,7 @@ export function DeleteAllSigned() {
         ))}
       </div>
       <div className={dd.keep}>
-        Удалятся с телефона и из аккаунта, вход через VK ID отвяжется. Подписку
-        RuStore это не отменяет.
+        Аккаунт удалится вместе с данными. Подписку RuStore это не отменит.
       </div>
     </Dialog>
   );
@@ -523,21 +523,19 @@ export function MergeSheet() {
         <div className={m.sheetTitle}>В аккаунте уже есть тренировки</div>
         <div className={m.compare}>
           <div>
-            <span>Аккаунт {FIRST_NAME}</span>
+            <span>В аккаунте</span>
             <b>48 тренировок</b>
-            <i>последняя 29 сентября</i>
+            <i>последняя вчера</i>
           </div>
           <div>
-            <span>Этот телефон</span>
+            <span>На телефоне</span>
             <b>2 тренировки</b>
             <i>последняя сегодня</i>
           </div>
         </div>
         <button className={m.primary}>Объединить</button>
-        <button className={m.linkButton}>Оставить только аккаунт</button>
-        <div className={m.hint}>
-          Профиль и ответы анкеты берутся из аккаунта
-        </div>
+        <button className={m.linkButton}>Удалить те, что на телефоне</button>
+        <div className={m.hint}>Профиль возьмём из аккаунта</div>
       </div>
     </div>
   );
@@ -549,9 +547,7 @@ export function Merging() {
       <div className={m.center}>
         <Avatar />
         <div className={m.hello}>Привет, {FIRST_NAME}</div>
-        <div className={m.sub}>
-          Загружаем аккаунт и добавляем 2 тренировки с этого телефона…
-        </div>
+        <div className={m.sub}>Добавляем тренировки с телефона…</div>
         <div className={m.bar}>
           <i />
         </div>
@@ -561,11 +557,7 @@ export function Merging() {
 }
 
 export function MergedToast() {
-  return (
-    <Toast icon={<MdCheck />}>
-      Вход выполнен. 2 тренировки с телефона добавлены к 48 в аккаунте
-    </Toast>
-  );
+  return <Toast icon={<MdCheck />}>Добавили 2 тренировки с телефона</Toast>;
 }
 
 // Profile
@@ -594,7 +586,7 @@ export function ProfileScreen({ state }: { state: ProfileState }) {
           <button className={m.backupLine}>
             <MdCloudOff />
             <span>
-              Данные только на этом телефоне · <b>Войти</b>
+              Резервной копии нет · <b>Войти</b>
             </span>
           </button>
         )}
