@@ -1,4 +1,5 @@
 import { App } from "@capacitor/app";
+import { Browser } from "@capacitor/browser";
 import { Capacitor } from "@capacitor/core";
 import { authClient, ensureSession } from "./auth.ts";
 import { API_URL } from "./constants.ts";
@@ -12,8 +13,10 @@ function returnUrl() {
   return url.href;
 }
 
-// The server takes over in the browser: on Android navigating the WebView to
-// another host opens the system browser, where VK ID can use its own session.
+// The server takes over in the browser. On Android that is a Custom Tab: it
+// shares Chrome's cookies, so VK ID finds its own session, and it opens inside
+// the app's task, so the deep link back, arriving at the singleTask activity,
+// closes it instead of leaving a browser tab behind.
 export async function startVkSignIn() {
   await ensureSession();
   const { data, error } = await authClient.oneTimeToken.generate();
@@ -22,7 +25,11 @@ export async function startVkSignIn() {
   const url = new URL("/api/sign-in/vk", API_URL || window.location.href);
   url.searchParams.set("ott", data.token);
   url.searchParams.set("returnTo", returnUrl());
-  window.location.href = url.href;
+  if (Capacitor.isNativePlatform()) {
+    await Browser.open({ url: url.href });
+  } else {
+    window.location.href = url.href;
+  }
 }
 
 async function completeVkSignIn(returned: URL, onSignedIn: () => void) {
