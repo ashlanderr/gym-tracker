@@ -5,6 +5,7 @@ import * as decoding from "lib0/decoding";
 import * as syncProtocol from "y-protocols/sync";
 import { auth } from "./auth.ts";
 import { prisma } from "./prisma.ts";
+import { accountDocument } from "./accounts.ts";
 import {
   openDocument,
   releaseDocument,
@@ -43,8 +44,10 @@ async function authorize(url: URL): Promise<string | null> {
   });
 
   // The first connection claims the document: its id was generated on the
-  // device back when it had no account at all.
+  // device back when it had no account at all. An account that already has
+  // a document gets no second one; the device has to merge into it.
   if (!document) {
+    if (await accountDocument(session.user.id)) return null;
     await prisma.document.create({
       data: { id: documentId, ownerId: session.user.id },
     });

@@ -12,6 +12,7 @@ import {
   verifySubscription,
 } from "./subscriptions.ts";
 import { protectedProcedure, router } from "./trpc.ts";
+import { accountDocument, deleteAccount } from "./accounts.ts";
 
 const rustore =
   RUSTORE_KEY_ID && RUSTORE_PRIVATE_KEY
@@ -26,6 +27,17 @@ export const appRouter = router({
     id: ctx.user.id,
     isAnonymous: ctx.user.isAnonymous ?? false,
   })),
+
+  account: router({
+    // Null until the first sync of any device claims one.
+    document: protectedProcedure.query(({ ctx }) =>
+      accountDocument(ctx.user.id),
+    ),
+
+    delete: protectedProcedure.mutation(({ ctx }) =>
+      deleteAccount(ctx.user.id),
+    ),
+  }),
 
   subscription: router({
     status: protectedProcedure.query(({ ctx }) =>
