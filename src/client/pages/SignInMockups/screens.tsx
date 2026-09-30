@@ -9,7 +9,6 @@ import type { ReactNode } from "react";
 import { clsx } from "clsx";
 import {
   MdArrowBack,
-  MdCheck,
   MdCloudDone,
   MdCloudOff,
   MdCloudSync,
@@ -26,9 +25,15 @@ const EMAIL = "a•••@gmail.com";
 const LOGO = `${import.meta.env.BASE_URL}pwa-192x192.png`;
 const noop = () => {};
 
-function VkButton({ label = "Войти через VK ID" }: { label?: string }) {
+function VkButton({
+  label = "Войти через VK ID",
+  muted,
+}: {
+  label?: string;
+  muted?: boolean;
+}) {
   return (
-    <button className={m.vk}>
+    <button className={clsx(m.vk, muted && m.vkMuted)}>
       <SiVk />
       {label}
     </button>
@@ -54,17 +59,6 @@ function WithTabs({ path, children }: { path: string; children: ReactNode }) {
   );
 }
 
-function Toast({ icon, children }: { icon: ReactNode; children: ReactNode }) {
-  return (
-    <div className={m.toastLayer}>
-      <div className={m.toast}>
-        <span className={m.toastIcon}>{icon}</span>
-        <span>{children}</span>
-      </div>
-    </div>
-  );
-}
-
 function Avatar({ letter = "А", small }: { letter?: string; small?: boolean }) {
   return <div className={clsx(m.avatar, small && m.avatarSmall)}>{letter}</div>;
 }
@@ -85,32 +79,6 @@ export function WelcomeBrand() {
         <button className={m.primary}>Начать</button>
         <button className={m.linkButton}>
           Уже есть аккаунт? <b>Войти</b>
-        </button>
-      </div>
-    </div>
-  );
-}
-
-export function WelcomeChoice() {
-  return (
-    <div className={o.root}>
-      <div className={m.welcome}>
-        <img className={m.logo} src={LOGO} alt="" />
-        <div className={m.brand}>Октус</div>
-        <div className={m.tagline}>
-          Дневник тренировок, который сам подбирает веса
-        </div>
-      </div>
-      <div className={m.choices}>
-        <button className={m.choice}>
-          <b>Начать</b>
-          <span>Несколько вопросов о тебе</span>
-        </button>
-        <button className={m.choice}>
-          <b>
-            <SiVk /> Войти через VK ID
-          </b>
-          <span>Если уже пользовались Октусом</span>
         </button>
       </div>
     </div>
@@ -259,7 +227,7 @@ export function SexStepStub() {
 
 // Home
 
-export function HomeRestored({ toast = true }: { toast?: boolean }) {
+export function HomeRestored() {
   return (
     <WithTabs path="/">
       <div className={m.home}>
@@ -276,7 +244,6 @@ export function HomeRestored({ toast = true }: { toast?: boolean }) {
           ),
         )}
       </div>
-      {toast && <Toast icon={<MdCloudDone />}>Загрузили 48 тренировок</Toast>}
     </WithTabs>
   );
 }
@@ -355,11 +322,9 @@ function AccountGroup({ state }: { state: AccountState }) {
 export function SettingsScreen({
   state,
   danger,
-  toast,
 }: {
   state: AccountState;
   danger?: boolean;
-  toast?: ReactNode;
 }) {
   return (
     <WithTabs path="/settings">
@@ -425,7 +390,6 @@ export function SettingsScreen({
           </div>
         )}
       </div>
-      {toast}
     </WithTabs>
   );
 }
@@ -480,9 +444,15 @@ export function SignOutDialog() {
 
 export function SignOutOffline() {
   return (
-    <Dialog title="Выйти из аккаунта?" submit="Выйти" red disabled>
-      3 изменения ещё не сохранены в аккаунте. Подключись к интернету, чтобы они
-      не пропали.
+    <Dialog
+      title="Выйти из аккаунта?"
+      submit="Выйти · 5"
+      red
+      disabled
+      warning="Если выйти сейчас, они пропадут"
+    >
+      3 изменения ещё не сохранены в аккаунте. Подключись к интернету, чтобы
+      сохранить их.
     </Dialog>
   );
 }
@@ -516,31 +486,6 @@ export function DeleteAllSigned() {
   );
 }
 
-export function MergeSheet() {
-  return (
-    <div className={m.backdrop}>
-      <div className={m.sheet}>
-        <div className={m.sheetTitle}>В аккаунте уже есть тренировки</div>
-        <div className={m.compare}>
-          <div>
-            <span>В аккаунте</span>
-            <b>48 тренировок</b>
-            <i>последняя вчера</i>
-          </div>
-          <div>
-            <span>На телефоне</span>
-            <b>2 тренировки</b>
-            <i>последняя сегодня</i>
-          </div>
-        </div>
-        <button className={m.primary}>Объединить</button>
-        <button className={m.linkButton}>Удалить те, что на телефоне</button>
-        <div className={m.hint}>Профиль возьмём из аккаунта</div>
-      </div>
-    </div>
-  );
-}
-
 export function Merging() {
   return (
     <div className={o.root}>
@@ -556,15 +501,86 @@ export function Merging() {
   );
 }
 
-export function MergedToast() {
-  return <Toast icon={<MdCheck />}>Добавили 2 тренировки с телефона</Toast>;
+// Summaries
+
+interface SummaryCell {
+  label: string;
+  value: string;
+  meta: string;
+}
+
+function Summary({
+  title,
+  cells,
+  note,
+  action,
+}: {
+  title: string;
+  cells: SummaryCell[];
+  note?: string;
+  action: string;
+}) {
+  return (
+    <div className={o.root}>
+      <div className={m.center}>
+        <Avatar />
+        <div className={m.hello}>{title}</div>
+        <div className={clsx(m.compare, m.summary)}>
+          {cells.map(({ label, value, meta }) => (
+            <div key={label}>
+              <span>{label}</span>
+              <b>{value}</b>
+              <i>{meta}</i>
+            </div>
+          ))}
+        </div>
+        {note && <div className={m.hint}>{note}</div>}
+      </div>
+      <div className={m.welcomeActions}>
+        <button className={m.primary}>{action}</button>
+      </div>
+    </div>
+  );
+}
+
+export function RestoredSummary() {
+  return (
+    <Summary
+      title={`С возвращением, ${FIRST_NAME}`}
+      cells={[
+        { label: "Тренировки", value: "48", meta: "последняя вчера" },
+        { label: "Рекорды", value: "12", meta: "в 9 упражнениях" },
+      ]}
+      action="К тренировкам"
+    />
+  );
+}
+
+export function MergedSummary() {
+  return (
+    <Summary
+      title="Тренировки объединены"
+      cells={[
+        { label: "В аккаунте", value: "48", meta: "последняя вчера" },
+        { label: "С телефона", value: "+2", meta: "последняя сегодня" },
+      ]}
+      note="Профиль взяли из аккаунта"
+      action="Продолжить"
+    />
+  );
 }
 
 // Profile
 
 type ProfileState = "anon" | "signed";
 
-export function ProfileScreen({ state }: { state: ProfileState }) {
+export function ProfileScreen({
+  state,
+  muted,
+}: {
+  state: ProfileState;
+  muted?: boolean;
+}) {
   return (
     <WithTabs path="/profile">
       <div className={pr.root}>
@@ -583,12 +599,20 @@ export function ProfileScreen({ state }: { state: ProfileState }) {
           </div>
         )}
         {state === "anon" && (
-          <button className={m.backupLine}>
-            <MdCloudOff />
-            <span>
-              Резервной копии нет · <b>Войти</b>
-            </span>
-          </button>
+          <div className={clsx(st.group, m.profileBackup)}>
+            <div className={st.item}>
+              <div className={st.main}>
+                <div className={st.label}>Резервной копии нет</div>
+                <div className={st.note}>
+                  Данные хранятся только на телефоне. Войди, чтобы не потерять
+                  их при смене телефона
+                </div>
+              </div>
+            </div>
+            <div className={m.groupAction}>
+              <VkButton muted={muted} />
+            </div>
+          </div>
         )}
         <div className={pr.section}>
           <div className={pr.sectionTitle}>Тело</div>

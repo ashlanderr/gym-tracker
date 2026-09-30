@@ -7,10 +7,10 @@ import {
   HelloNew,
   HomeRestored,
   Merging,
-  MergeSheet,
-  MergedToast,
+  MergedSummary,
   OldWelcome,
   ProfileScreen,
+  RestoredSummary,
   Restoring,
   RestoreFailed,
   SettingsScreen,
@@ -19,7 +19,6 @@ import {
   SignOutOffline,
   VkBrowser,
   WelcomeBrand,
-  WelcomeChoice,
 } from "./screens.tsx";
 
 interface Step {
@@ -205,14 +204,9 @@ export function SignInMockups() {
         steps={[
           { caption: "Сейчас", screen: <OldWelcome /> },
           {
-            caption: "A. Одна кнопка и ссылка «Войти» (рекомендую)",
+            caption: "Новый",
             note: "Новых людей большинство, им нужна одна кнопка. Ссылку на вход найдёт тот, кто её ищет. Стрелки «назад» нет, потому что возвращаться некуда.",
             screen: <WelcomeBrand />,
-          },
-          {
-            caption: "B. Две равноправные карточки",
-            note: "Ровно тот выбор «войти или начать заново», что в TODO. Но новому человеку придётся прочитать обе карточки и выбрать ещё до первого вопроса.",
-            screen: <WelcomeChoice />,
           },
         ]}
       >
@@ -242,8 +236,14 @@ export function SignInMockups() {
             action: "синхронизация",
           },
           {
+            caption: "Итог загрузки",
+            note: "Вместо уведомления поверх главной: человек видит, что тренировки вернулись, и сам идёт дальше.",
+            screen: <RestoredSummary />,
+            action: "К тренировкам",
+          },
+          {
             caption: "Главная без анкеты",
-            note: "Профиль пришёл из аккаунта, поэтому анкету пропускаем. Уведомление показывается один раз.",
+            note: "Профиль пришёл из аккаунта, поэтому анкету пропускаем.",
             screen: <HomeRestored />,
           },
           {
@@ -307,15 +307,14 @@ export function SignInMockups() {
             action: "готово",
           },
           {
-            caption: "A. Объединять без вопросов (рекомендую)",
-            note: "Объединение ничего не удаляет, поэтому спрашивать не о чем. Профиль остаётся из аккаунта.",
-            screen: <SettingsScreen state="signed" toast={<MergedToast />} />,
+            caption: "Итог объединения",
+            note: "Объединение ничего не удаляет, поэтому ни о чём не спрашиваем, а только показываем, что получилось.",
+            screen: <MergedSummary />,
+            action: "Продолжить",
           },
           {
-            caption: "B. Спрашивать, если тренировки есть и там, и там",
-            note: "Вторая кнопка удаляет тренировки с телефона. Заменить данные аккаунта данными телефона не предлагаем ни в каком случае.",
-            screen: <SettingsScreen state="anon" />,
-            overlay: <MergeSheet />,
+            caption: "Настройки после входа",
+            screen: <SettingsScreen state="signed" />,
           },
         ]}
       >
@@ -349,7 +348,7 @@ export function SignInMockups() {
           },
           {
             caption: "Выход без интернета",
-            note: "Кнопка неактивна, пока есть несохранённые изменения.",
+            note: "Выйти можно, но кнопка включается через 5 секунд, как при удалении данных. Этого хватит, чтобы прочитать, что изменения пропадут.",
             screen: <SettingsScreen state="offline" />,
             overlay: <SignOutOffline />,
           },
@@ -407,7 +406,7 @@ export function SignInMockups() {
           {
             caption: "Дальше как при объединении",
             note: "Изменения, сделанные за это время, попадут в документ аккаунта.",
-            screen: <SettingsScreen state="signed" toast={<MergedToast />} />,
+            screen: <MergedSummary />,
           },
         ]}
       >
@@ -422,9 +421,14 @@ export function SignInMockups() {
         title="8. Шапка профиля"
         steps={[
           {
-            caption: "Без входа",
-            note: "Вместо «Анонимный пользователь» просто «Профиль». Строка про резервную копию — вариант того напоминания, что в TODO.",
+            caption: "Без входа, яркая кнопка",
+            note: "Вместо «Анонимный пользователь» просто «Профиль». Плашка та же, что в настройках.",
             screen: <ProfileScreen state="anon" />,
+          },
+          {
+            caption: "Без входа, приглушённая кнопка",
+            note: "Профиль открывают часто, и яркая кнопка там будет мозолить глаза. Приглушённая заметна, но не спорит с данными.",
+            screen: <ProfileScreen state="anon" muted />,
           },
           {
             caption: "После входа",

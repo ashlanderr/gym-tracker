@@ -62,43 +62,6 @@
   }
 }
 
-.choices {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 0 20px 20px;
-}
-
-.choice {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 16px;
-  border: 1px solid #262626;
-  border-radius: 16px;
-  background: #0d0d0d;
-  color: #fff;
-  text-align: left;
-
-  b {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 16px;
-  }
-
-  span {
-    font-size: 13px;
-    color: #7a7a7a;
-    text-wrap: balance;
-  }
-
-  &:first-child {
-    border-color: #06f;
-    background: #001433;
-  }
-}
-
 .vk {
   width: 100%;
   display: flex;
@@ -336,36 +299,6 @@
   }
 }
 
-// Toast sits above the tab bar, where a thumb is not.
-
-.toastLayer {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 76px;
-}
-
-.toast {
-  text-wrap: balance;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: #1f2a1f;
-  font-size: 13px;
-  line-height: 1.4;
-  color: #dfe;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-}
-
-.toastIcon {
-  flex: 0 0 auto;
-  display: flex;
-  color: #6c6;
-  font-size: 20px;
-}
-
 // Settings
 
 .groupAction {
@@ -402,19 +335,6 @@
 
 .blueSubmit {
   background: #06f;
-}
-
-.sheet {
-  margin: auto -20px -20px;
-  padding: 24px 20px 20px;
-  border-radius: 20px 20px 0 0;
-  background: #1a1a1a;
-}
-
-.sheetTitle {
-  font-size: 19px;
-  font-weight: 700;
-  text-align: center;
 }
 
 .compare {
@@ -463,23 +383,6 @@
   }
 }
 
-.backupLine {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 14px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: #7a7a7a;
-  font-size: 13px;
-
-  b {
-    color: #4d9fff;
-    font-weight: 600;
-  }
-}
-
 .cardStub {
   display: flex;
   flex-direction: column;
@@ -504,4 +407,24 @@
   margin-top: 12px;
   border-radius: 14px;
   background: repeating-linear-gradient(#0f0f0f 0 36px, #000 36px 46px);
+}
+
+.summary {
+  align-self: stretch;
+  margin-top: 28px;
+  text-align: left;
+
+  b {
+    font-size: 28px;
+  }
+}
+
+.vkMuted {
+  border: 1px solid #1d3a66;
+  background: #0b1628;
+  color: #7fb2ff;
+}
+
+.profileBackup {
+  margin-top: 16px;
 }
