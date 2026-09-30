@@ -12,7 +12,7 @@ import {
   verifySubscription,
 } from "./subscriptions.ts";
 import { protectedProcedure, router } from "./trpc.ts";
-import { accountDocument, deleteAccount } from "./accounts.ts";
+import { accountDocument, deleteAccount, documentAccess } from "./accounts.ts";
 
 const rustore =
   RUSTORE_KEY_ID && RUSTORE_PRIVATE_KEY
@@ -29,10 +29,14 @@ export const appRouter = router({
   })),
 
   account: router({
-    // Null until the first sync of any device claims one.
-    document: protectedProcedure.query(({ ctx }) =>
-      accountDocument(ctx.user.id),
-    ),
+    // The account's document, null until the first sync of any device claims
+    // one, and what the server makes of the one the device holds.
+    document: protectedProcedure
+      .input(z.object({ local: z.string().min(1) }))
+      .query(async ({ ctx, input }) => ({
+        primary: await accountDocument(ctx.user.id),
+        local: await documentAccess(ctx.user.id, input.local),
+      })),
 
     delete: protectedProcedure.mutation(({ ctx }) =>
       deleteAccount(ctx.user.id),

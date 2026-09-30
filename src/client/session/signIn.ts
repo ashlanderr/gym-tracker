@@ -9,6 +9,7 @@ import {
   signOut,
   trpcClient,
 } from "../api";
+import { getDocumentOwner, setDocumentOwner } from "../account";
 import { initStore, queryProfile, syncStoreOnce } from "../db";
 import { type HistorySummary, mergeInto, summarizeHistory } from "../domain";
 import {
@@ -63,8 +64,9 @@ function showSignIn() {
 
 let running: Promise<void> | null = null;
 
-// After a sign-in, and on a start that finds the device still on a document
-// other than the account's: an interrupted sign-in picks up where it stopped.
+// After a sign-in and on every start with a network: an interrupted sign-in
+// picks up where it stopped, and a document the server gave to somebody else
+// is moved out of the way.
 export function finishSignIn(): Promise<void> {
   running ??= bringAccountDocument().finally(() => {
     running = null;
@@ -74,23 +76,49 @@ export function finishSignIn(): Promise<void> {
 
 async function bringAccountDocument() {
   setState({ step: "checking" });
-  const local = currentStore();
+  let local = currentStore();
   await local.loaded;
 
-  let primary: string | null;
+  let answer: { primary: string | null; local: string };
   try {
     if ((await checkSession()) !== "valid") throw new Error("no session");
-    primary = await trpcClient.account.document.query();
+    answer = await trpcClient.account.document.query({
+      local: local.store.documentId,
+    });
   } catch (error) {
     console.warn("sign-in could not reach the account", error);
+    // Nothing to report to an anonymous person: the next start asks again.
+    if (getSessionState().kind === "anonymous") {
+      setState({ step: "idle" });
+      return;
+    }
     setState({ step: "failed" });
     showSignIn();
     return;
   }
 
+  // The data on the device is somebody else's: another account was signed in
+  // here, and whoever signs in now must not get it merged into their own.
+  // It goes, and the device starts from the new account's document.
+  const now = getSessionState();
+  const accountId = now.kind === "account" ? (now.account.id ?? null) : null;
+  const owner = getDocumentOwner();
+  const foreign = owner !== null && accountId !== null && owner !== accountId;
+  if (foreign) {
+    await resetDevice();
+    local = currentStore();
+  } else if (answer.local === "taken") {
+    // Another user owns the id this device holds, and the server would
+    // refuse it forever. The data stays, under an id nobody has.
+    await moveToNewDocument();
+    local = currentStore();
+  }
+
   // The account has no document yet, or it is this one: the next sync claims
-  // or continues it.
-  if (!primary || primary === local.store.documentId) {
+  // or continues it. An anonymous user has nothing to merge into.
+  const { primary } = answer;
+  if (!accountId || !primary || primary === local.store.documentId) {
+    if (accountId) setDocumentOwner(accountId);
     setState({ step: "idle" });
     return;
   }
@@ -121,7 +149,7 @@ async function bringAccountDocument() {
   if (kind === "merge" || !accountProfile) {
     mergeInto(target.store, local.store);
   }
-  await switchStore(target);
+  await switchStore(target, accountId);
 
   setState(
     kind === "merge"
@@ -180,5 +208,5 @@ export async function startSession() {
     return;
   }
 
-  if (session.kind === "account") await finishSignIn();
+  await finishSignIn();
 }

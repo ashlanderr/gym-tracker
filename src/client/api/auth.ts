@@ -79,6 +79,8 @@ export function ensureSession(): Promise<string | null> {
 // the app starts without a network as often as with one, and the profile and
 // the settings must look the same either way.
 export interface Account {
+  // Missing in caches written before it was kept.
+  id?: string;
   name: string;
   email: string;
   image: string | null;
@@ -143,6 +145,7 @@ export async function checkSession(): Promise<SessionCheck> {
       : {
           kind: "account",
           account: {
+            id: data.user.id,
             name: data.user.name,
             email: data.user.email,
             image: data.user.image ?? null,

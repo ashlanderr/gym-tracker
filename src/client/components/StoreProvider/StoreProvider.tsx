@@ -37,8 +37,7 @@ export function StoreProvider({ children }: PropsWithChildren) {
   const paused =
     (session.kind === "account" && session.rejected) ||
     signIn.step === "checking" ||
-    signIn.step === "loading" ||
-    signIn.step === "failed";
+    signIn.step === "loading";
   useEffect(() => {
     if (!token) {
       void ensureSession();
