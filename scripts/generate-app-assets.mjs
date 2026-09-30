@@ -1,10 +1,10 @@
 import { spawnSync } from "node:child_process";
-import { glob, mkdir, rm, stat, writeFile } from "node:fs/promises";
+import { glob, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import sharp from "sharp";
 
-const SOURCE = "pwa-assets/logo.png";
+const SOURCE = "pwa-assets/logo.svg";
 const ASSET_DIR = "assets";
 const RES_DIR = "android/app/src/main/res";
 // RuStore wants the listing icon to match the launcher one.
@@ -16,9 +16,9 @@ const ICON_SIZE = 1024;
 // onto the 72dp visible area of the 108dp canvas. This fraction keeps the glyph
 // inside the 66dp circle every launcher mask is guaranteed to show.
 const GLYPH_SCALE = 0.74;
-// Above this the pixel is glyph; below it, the tile behind the glyph.
-const GLYPH_MIN_LUMA = 96;
-const GLYPH_FULL_LUMA = 208;
+// The logo draws the glyph over this element; the adaptive icon takes its
+// colour for the background layer and the rest for the foreground.
+const TILE = /<rect id="tile"[^>]*\/>/;
 
 // 108dp adaptive canvas at each density's scale.
 const ADAPTIVE_SIZES = {
@@ -35,87 +35,15 @@ const SPLASH_SIZE = 2732;
 const SPLASH_LOGO_SCALE = 0.25;
 const SPLASH_BACKGROUND = { r: 0, g: 0, b: 0, alpha: 1 };
 
-const luma = (r, g, b) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
-
 async function readLogo() {
-  const { data, info } = await sharp(SOURCE)
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
+  const svg = await readFile(SOURCE, "utf8");
+  const tile = svg.match(TILE)?.[0];
+  if (!tile) throw new Error(`${SOURCE} has no <rect id="tile">`);
 
-  if (info.width !== info.height) {
-    throw new Error(`${SOURCE} must be square, got ${info.width}x${info.height}`);
-  }
+  const colour = tile.match(/fill="([^"]+)"/)?.[1];
+  if (!colour) throw new Error(`The tile in ${SOURCE} has no fill`);
 
-  return { data, width: info.width, height: info.height };
-}
-
-function tileBounds({ data, width, height }) {
-  let minX = width;
-  let minY = height;
-  let maxX = -1;
-  let maxY = -1;
-
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      if (data[(y * width + x) * 4 + 3] < 128) continue;
-      if (x < minX) minX = x;
-      if (x > maxX) maxX = x;
-      if (y < minY) minY = y;
-      if (y > maxY) maxY = y;
-    }
-  }
-
-  if (maxX < 0) throw new Error(`${SOURCE} is fully transparent`);
-
-  return { minX, minY, maxX, maxY };
-}
-
-function tileColour({ data, width, height }) {
-  let r = 0;
-  let g = 0;
-  let b = 0;
-  let count = 0;
-
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const i = (y * width + x) * 4;
-      if (data[i + 3] < 250) continue;
-      if (luma(data[i], data[i + 1], data[i + 2]) >= GLYPH_MIN_LUMA) continue;
-      r += data[i];
-      g += data[i + 1];
-      b += data[i + 2];
-      count++;
-    }
-  }
-
-  if (count === 0) throw new Error(`Found no tile pixels in ${SOURCE}`);
-
-  return {
-    r: Math.round(r / count),
-    g: Math.round(g / count),
-    b: Math.round(b / count),
-    alpha: 1,
-  };
-}
-
-// Promoting brightness to opacity lifts the white glyph off its tile, so the
-// adaptive foreground carries no second tile over the background layer.
-function glyphLayer({ data, width, height }) {
-  const out = Buffer.alloc(width * height * 4);
-
-  for (let i = 0; i < width * height; i++) {
-    const o = i * 4;
-    const value = luma(data[o], data[o + 1], data[o + 2]);
-    const ramp = (value - GLYPH_MIN_LUMA) / (GLYPH_FULL_LUMA - GLYPH_MIN_LUMA);
-    const coverage = Math.min(1, Math.max(0, ramp));
-    out[o] = 255;
-    out[o + 1] = 255;
-    out[o + 2] = 255;
-    out[o + 3] = Math.round(coverage * data[o + 3]);
-  }
-
-  return sharp(out, { raw: { width, height, channels: 4 } }).png();
+  return { colour, glyph: svg.replace(TILE, "") };
 }
 
 function buildIconOnly() {
@@ -136,7 +64,9 @@ function buildIconBackground(colour) {
 }
 
 async function buildIconForeground(logo) {
-  const glyph = await glyphLayer(logo).trim().toBuffer();
+  const glyph = await sharp(Buffer.from(logo.glyph), { density: 300 })
+    .trim()
+    .toBuffer();
   const fitted = await sharp(glyph)
     .resize({
       width: Math.round(ICON_SIZE * GLYPH_SCALE),
@@ -177,15 +107,8 @@ async function buildSplash() {
 }
 
 const logo = await readLogo();
-const bounds = tileBounds(logo);
-const colour = tileColour(logo);
 
-console.log(
-  `tile ${bounds.maxX - bounds.minX + 1}x${bounds.maxY - bounds.minY + 1} ` +
-    `at ${bounds.minX},${bounds.minY} on rgb(${colour.r},${colour.g},${colour.b})`,
-);
-
-const background = await buildIconBackground(colour);
+const background = await buildIconBackground(logo.colour);
 const foreground = await buildIconForeground(logo);
 
 await rm(ASSET_DIR, { recursive: true, force: true });
@@ -238,7 +161,9 @@ for (const [density, size] of Object.entries(ADAPTIVE_SIZES)) {
 let saved = 0;
 
 for await (const file of glob(`${RES_DIR}/**/*.png`)) {
-  const packed = await sharp(file).png({ palette: true, effort: 10 }).toBuffer();
+  const packed = await sharp(file)
+    .png({ palette: true, effort: 10 })
+    .toBuffer();
   const before = (await stat(file)).size;
   if (packed.length < before) {
     await writeFile(file, packed);

@@ -248,13 +248,12 @@ buttons. It has no entry point in the UI and is not in the production bundle.
 
 ### Regenerating Icons
 
-`pwa-assets/logo.png` is the single source for the app's branding: a dark
-rounded tile with a white glyph on a transparent canvas. Image generators
-return the logo on an opaque white square; cut the white away first:
-
-```bash
-node scripts/cut-logo-background.mjs path/to/generated.png
-```
+`pwa-assets/logo.svg` is the single source for the app's branding: a dark
+rounded tile (`<rect id="tile">`) with the glyph over it on a transparent
+canvas. The Android adaptive icon takes the tile's fill for its background
+layer and everything else for the foreground. The glyph's parts carry ids
+(`loops`, `swooshes`, `bar`, `plates`), which a dev build uses at `/#/icons`
+to compare colorings.
 
 After changing the logo, regenerate both sets of icons:
 

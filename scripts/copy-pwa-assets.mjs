@@ -7,7 +7,7 @@ import { join } from "node:path";
 
 const SOURCE_DIR = "pwa-assets";
 const TARGET_DIR = "public";
-const SOURCE_IMAGE = "logo.png";
+const SOURCE_IMAGE = "logo.svg";
 
 const generated = readdirSync(SOURCE_DIR).filter((f) => f !== SOURCE_IMAGE);
 
