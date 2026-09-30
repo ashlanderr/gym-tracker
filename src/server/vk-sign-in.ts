@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { type Response, Router } from "express";
 import { fromNodeHeaders } from "better-auth/node";
 import { auth } from "./auth.ts";
 import { BETTER_AUTH_URL } from "./env.ts";
@@ -22,6 +22,29 @@ function withParam(base: string, name: string, value: string) {
   const url = new URL(base);
   url.searchParams.set(name, value);
   return url.href;
+}
+
+// The browser may still hold a session cookie from an earlier sign-in, for a
+// session the app has signed out of since. Brought to the callback, it makes
+// the anonymous plugin look it up, and Better Auth answers a dead session by
+// expiring the session cookie - in the same response that has just set the
+// new one. The browser is left with none and the finish step fails. The app
+// never uses the browser's session, so the flow starts without one.
+async function clearSessionCookies(res: Response) {
+  const { authCookies } = await auth.$context;
+  const cookies = [
+    authCookies.sessionToken,
+    authCookies.sessionData,
+    authCookies.dontRememberToken,
+  ];
+  for (const { name, attributes } of cookies) {
+    res.clearCookie(name, {
+      path: attributes.path ?? "/",
+      secure: attributes.secure,
+      httpOnly: attributes.httpOnly,
+      sameSite: attributes.sameSite?.toLowerCase() as "lax" | "strict" | "none",
+    });
+  }
 }
 
 // The Android WebView cannot keep VK ID inside itself, so the flow runs in the
@@ -60,6 +83,7 @@ vkSignIn.get(VK_SIGN_IN_PATH, async (req, res) => {
       returnHeaders: true,
     });
     res.setHeader("set-cookie", headers.getSetCookie());
+    await clearSessionCookies(res);
     res.redirect(response.url!);
   } catch (error) {
     console.warn("VK sign-in could not start", error);
