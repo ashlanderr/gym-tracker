@@ -42,7 +42,9 @@ vkSignIn.get(VK_SIGN_IN_PATH, async (req, res) => {
   }
 
   try {
-    const { session } = await auth.api.verifyOneTimeToken({ body: { token: ott } });
+    const { session } = await auth.api.verifyOneTimeToken({
+      body: { token: ott },
+    });
     const finishUrl = withParam(
       `${BETTER_AUTH_URL}${VK_SIGN_IN_PATH}/finish`,
       "returnTo",
@@ -82,7 +84,12 @@ vkSignIn.get(`${VK_SIGN_IN_PATH}/finish`, async (req, res) => {
     });
     res.redirect(withParam(returnTo, "ott", token));
   } catch (error) {
-    console.warn("VK sign-in could not finish", error);
+    // Names only: the values are session tokens.
+    const cookies = (req.headers.cookie ?? "")
+      .split(";")
+      .map((cookie) => cookie.split("=")[0].trim())
+      .filter(Boolean);
+    console.warn("VK sign-in could not finish", error, { cookies });
     res.redirect(withParam(returnTo, "error", "finish_failed"));
   }
 });
