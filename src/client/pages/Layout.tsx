@@ -22,6 +22,7 @@ import { Onboarding } from "./Onboarding";
 import { ExerciseCatalogPage, ExercisePage } from "./Exercise";
 import { MeasurementPage, ProfilePage } from "./Profile";
 import { Settings } from "./Settings";
+import { IconLab } from "./IconLab";
 import { TAB_PATHS, Tabs } from "./Tabs";
 import s from "./layout.module.scss";
 
@@ -91,6 +92,7 @@ function AnimatedRoutes() {
           {import.meta.env.DEV && (
             <Route path="/exercises" element={<ExerciseCatalogPage />} />
           )}
+          {import.meta.env.DEV && <Route path="/icons" element={<IconLab />} />}
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/exercises/:exerciseId" element={<ExercisePage />} />
         </Routes>
