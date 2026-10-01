@@ -71,20 +71,18 @@ export interface ChipRow {
 
 export function InventoryScreen({
   id,
-  step,
   title,
   text,
   rows,
 }: {
   id: string;
-  step: string;
   title: string;
   text: string;
   rows: ChipRow[];
 }) {
   return (
     <Chrome>
-      <Header id={id} line={step} />
+      <Header id={id} line="Новое упражнение" />
       <div className={s.scroll}>
         <div className={s.title}>{title}</div>
         <div className={s.text}>{text}</div>
@@ -115,38 +113,21 @@ export function InventoryScreen({
   );
 }
 
-export interface StartOption {
-  kind: "weight" | "own" | "swap";
-  title: string;
-  value?: string;
-  note?: string;
-}
-
-export interface Fact {
-  name: string;
-  value: string;
-  when: string;
-}
-
+// The same three buttons for every exercise: nothing here depends on what
+// kind of exercise it is, except the number of the lightest start.
 export function StartScreen({
   id,
-  line = "Новое упражнение",
   given,
-  safety,
-  facts,
-  options,
+  lightest,
 }: {
   id: string;
-  line?: string;
   // What is already known and taken as is: the gym, the body weight.
   given?: string;
-  safety?: { title: string; text: string };
-  facts?: Fact[];
-  options: StartOption[];
+  lightest: string;
 }) {
   return (
     <Chrome>
-      <Header id={id} line={line} />
+      <Header id={id} line="Новое упражнение" />
       <div className={s.scroll}>
         <div className={s.title}>С чего начнём?</div>
         {given && (
@@ -155,46 +136,61 @@ export function StartScreen({
             <span className={s.change}>изменить</span>
           </div>
         )}
-        {safety && (
-          <div className={s.safety}>
-            <MdOutlineShield className={s.safetyIcon} />
-            <div>
-              <div className={s.safetyTitle}>{safety.title}</div>
-              <div className={s.safetyText}>{safety.text}</div>
-            </div>
-          </div>
-        )}
-        {facts && facts.length !== 0 && (
-          <div className={s.facts}>
-            <div className={s.label}>Из твоей истории</div>
-            {facts.map((fact) => (
-              <div key={fact.name} className={s.fact}>
-                <div className={s.factName}>{fact.name}</div>
-                <div className={s.factValue}>
-                  {fact.value} · {fact.when}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
         <div className={s.options}>
-          {options.map((option) => (
-            <div key={option.title} className={s.option}>
-              {option.kind === "swap" && <MdSwapHoriz className={s.swap} />}
-              <div className={s.optionBody}>
-                <div className={s.optionTitle}>{option.title}</div>
-                {option.note && (
-                  <div className={s.optionNote}>{option.note}</div>
-                )}
+          <div className={s.option}>
+            <div className={s.optionBody}>
+              <div className={s.optionTitle}>С самого лёгкого</div>
+              <div className={s.optionNote}>
+                Дальше подберём вес по ощущениям
               </div>
-              {option.value ? (
-                <div className={s.optionValue}>{option.value}</div>
-              ) : (
-                <MdChevronRight className={s.chevron} />
-              )}
             </div>
-          ))}
+            <div className={s.optionValue}>{lightest}</div>
+          </div>
+          <div className={s.option}>
+            <div className={s.optionBody}>
+              <div className={s.optionTitle}>Знаю свой вес</div>
+              <div className={s.optionNote}>Введу сам, начнём с разминки</div>
+            </div>
+            <MdChevronRight className={s.chevron} />
+          </div>
+          <div className={s.option}>
+            <MdSwapHoriz className={s.swap} />
+            <div className={s.optionBody}>
+              <div className={s.optionTitle}>Заменить упражнение</div>
+              <div className={s.optionNote}>Выбрать другое на те же мышцы</div>
+            </div>
+            <MdChevronRight className={s.chevron} />
+          </div>
         </div>
+      </div>
+    </Chrome>
+  );
+}
+
+// Shown between the start and the first set, only for exercises one cannot
+// escape from on failure.
+export function SafetyScreen({
+  id,
+  title,
+  text,
+}: {
+  id: string;
+  title: string;
+  text: string;
+}) {
+  return (
+    <Chrome>
+      <Header id={id} line="Новое упражнение" />
+      <div className={s.scroll}>
+        <div className={s.safetyBlock}>
+          <MdOutlineShield className={s.safetyIcon} />
+          <div className={s.safetyTitle}>{title}</div>
+          <div className={s.safetyText}>{text}</div>
+        </div>
+      </div>
+      <div className={s.action}>
+        <span className={s.next}>Страховка есть, начинаю</span>
+        <span className={clsx(s.skip, s.gap)}>Заменить упражнение</span>
       </div>
     </Chrome>
   );
@@ -207,7 +203,6 @@ export function SetScreen({
   line,
   tone,
   weight,
-  under,
   reps,
   target,
   current = 0,
@@ -217,7 +212,6 @@ export function SetScreen({
   line: string;
   tone?: "pick" | "warm";
   weight: string;
-  under?: string;
   reps: number;
   target: string;
   current?: number;
@@ -246,7 +240,7 @@ export function SetScreen({
               {weight}
               <span className={s.units}>кг</span>
             </div>
-            <div className={s.under}>{under}</div>
+            <div className={s.under} />
           </div>
           <div className={s.times}>×</div>
           <div className={s.cell}>
@@ -266,7 +260,9 @@ export function SetScreen({
   );
 }
 
-const EFFORTS = ["Очень легко", "Легко", "Норм", "Тяжело", "Отказ"];
+// While the weight is being found, failure is not a possible answer for a
+// set that starts from the lightest weight, and dropping it keeps one row.
+const PICK_EFFORTS = ["Невесомо", "Легко", "Норм", "Тяжело"];
 
 export function RestScreen({
   selected,
@@ -292,7 +288,7 @@ export function RestScreen({
         </div>
         <div className={s.question}>Как прошёл подход?</div>
         <div className={s.keys}>
-          {EFFORTS.map((effort) => (
+          {PICK_EFFORTS.map((effort) => (
             <span
               key={effort}
               className={clsx(s.key, effort === selected && s.keySelected)}
@@ -313,16 +309,25 @@ export function RestScreen({
   );
 }
 
-// The existing weight sheet, opened from «Знаю свой вес»: the stepper, the
-// bar drawn by the real visualizer, and one button that starts.
+export interface Fact {
+  name: string;
+  weight: string;
+  reps: string;
+  when: string;
+}
+
+// The existing weight sheet, opened from «Знаю свой вес». Similar exercises
+// from history live here, where the number is being typed, not on the start.
 export function OwnWeightSheet({
   id,
   weightKg,
   note,
+  facts,
 }: {
   id: string;
   weightKg: number;
   note: string;
+  facts: Fact[];
 }) {
   return (
     <div className={s.sheetBackdrop}>
@@ -345,6 +350,21 @@ export function OwnWeightSheet({
           />
         </div>
         <div className={s.sheetNote}>{note}</div>
+        {facts.length !== 0 && (
+          <div className={s.facts}>
+            <div className={s.label}>Похожие упражнения</div>
+            {facts.map((fact) => (
+              <div key={fact.name} className={s.fact}>
+                <div className={s.factName}>{fact.name}</div>
+                <div className={s.factLine}>
+                  <span className={s.factWeight}>{fact.weight}</span>
+                  <span className={s.factReps}>{fact.reps}</span>
+                  <span className={s.factWhen}>{fact.when}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         <div className={s.sheetAction}>
           <span className={s.next}>Начать</span>
         </div>
@@ -353,39 +373,45 @@ export function OwnWeightSheet({
   );
 }
 
-export function TroubleScreen({
+// One list of replacements, whether it is opened before the first set or
+// from «Не выходит?» on any set.
+export function ReplaceScreen({
   id,
-  alternatives,
+  line,
+  stop,
 }: {
   id: string;
-  alternatives: { id: string; fact: string }[];
+  line: string;
+  stop?: boolean;
 }) {
   return (
     <Chrome current={0}>
-      <Header id={id} line="Подход 1 из 3" />
+      <Header id={id} line={line} />
       <div className={s.scroll}>
-        <div className={s.title}>Не выходит</div>
+        <div className={s.title}>Заменить упражнение</div>
         <div className={s.text}>
-          Слишком тяжело даже так, больно или тренажёр занят — замени
-          упражнение. Сделанные подходы сохранятся.
+          Другие упражнения на те же мышцы.
+          {stop && " Сделанные подходы сохранятся."}
         </div>
         <div className={s.options}>
-          {alternatives.map((alternative) => (
+          {exercise(id).alternatives.map((alternative) => (
             <div key={alternative.id} className={s.option}>
-              <MdSwapHoriz className={s.swap} />
               <div className={s.optionBody}>
                 <div className={s.optionTitle}>
                   {exercise(alternative.id).name}
                 </div>
-                <div className={s.optionNote}>{alternative.fact}</div>
+                <div className={s.optionNote}>{alternative.benefits}</div>
               </div>
+              <MdChevronRight className={s.chevron} />
             </div>
           ))}
         </div>
       </div>
-      <div className={s.action}>
-        <span className={s.skip}>Закончить упражнение</span>
-      </div>
+      {stop && (
+        <div className={s.action}>
+          <span className={s.skip}>Закончить упражнение</span>
+        </div>
+      )}
     </Chrome>
   );
 }
