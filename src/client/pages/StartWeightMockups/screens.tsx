@@ -7,11 +7,21 @@ import {
   MdEdit,
   MdFitnessCenter,
   MdSwapHoriz,
+  MdWarningAmber,
 } from "react-icons/md";
-import { defaultGym } from "../../db";
+import { defaultGym, type Gym } from "../../db";
 import { EXERCISES } from "../../db/exercises/constants.ts";
 import { ExerciseAnimation } from "../WorkoutFocus/components/ExerciseAnimation";
 import { WeightsVisualizer } from "../Workout/components";
+
+const MOCK_GYM: Gym = {
+  ...defaultGym("mockup"),
+  dumbbells: [{ units: "kg", min: 2, max: 30, step: 2 }],
+  stacks: {
+    preacher_curl_machine: { units: "kg", base: 10, step: 5 },
+    assisted_pull_up_wide: { units: "kg", base: 5, step: 5 },
+  },
+};
 
 const exercise = (id: string) => {
   const found = EXERCISES[id];
@@ -122,6 +132,7 @@ function Option({
   value,
   warning,
   primary,
+  disabled,
 }: {
   icon: ReactNode;
   title: string;
@@ -129,9 +140,12 @@ function Option({
   value?: string;
   warning?: string;
   primary?: boolean;
+  disabled?: boolean;
 }) {
   return (
-    <div className={clsx(s.option, primary && s.primary)}>
+    <div
+      className={clsx(s.option, primary && s.primary, disabled && s.disabled)}
+    >
       <span className={s.optionIcon}>{icon}</span>
       <div className={s.optionBody}>
         <div className={s.optionTitle}>{title}</div>
@@ -141,26 +155,32 @@ function Option({
       {value ? (
         <div className={s.optionValue}>{value}</div>
       ) : (
-        <MdChevronRight className={s.chevron} />
+        !disabled && <MdChevronRight className={s.chevron} />
       )}
     </div>
   );
 }
 
+// When the lightest the gym has is heavier than a safe start, the light
+// start is either shown switched off with the reason, or left out with the
+// reason above the rest. The default then moves to the replacement.
+export type Blocked = { mode: "disabled" | "hidden"; text: string };
+
 // The same three buttons for every exercise. Only the number on the first
-// one depends on it, and the safety line appears when that number had to be
-// raised to the lightest the gym has.
+// one depends on it.
 export function StartScreen({
   id,
   given,
   lightest,
   warning,
+  blocked,
 }: {
   id: string;
   // What is already known and taken as is: the gym, the body weight.
   given?: string;
   lightest: string;
   warning?: string;
+  blocked?: Blocked;
 }) {
   return (
     <Chrome>
@@ -172,22 +192,137 @@ export function StartScreen({
             <span className={s.change}>изменить</span>
           </div>
         )}
+        {blocked?.mode === "hidden" && (
+          <div className={s.alert}>
+            <MdWarningAmber className={s.alertIcon} />
+            <span>{blocked.text}</span>
+          </div>
+        )}
         <div className={s.options}>
+          {blocked?.mode !== "hidden" && (
+            <Option
+              primary={!blocked}
+              disabled={!!blocked}
+              icon={blocked ? <MdWarningAmber /> : <MdFitnessCenter />}
+              title="С лёгкого веса"
+              note={blocked ? blocked.text : "Подберём по ощущениям"}
+              value={lightest}
+              warning={warning}
+            />
+          )}
+          <Option icon={<MdEdit />} title="Знаю рабочий вес" note="Введу сам" />
           <Option
-            primary
-            icon={<MdFitnessCenter />}
-            title="С лёгкого веса"
-            note="Подберём по ощущениям"
-            value={lightest}
-            warning={warning}
-          />
-          <Option icon={<MdEdit />} title="Знаю свой вес" note="Введу сам" />
-          <Option
+            primary={!!blocked}
             icon={<MdSwapHoriz />}
             title="Заменить упражнение"
             note="Другое на те же мышцы"
           />
         </div>
+      </div>
+    </Chrome>
+  );
+}
+
+// Variant B: no choice of start at all. The weight sheet becomes the page,
+// set to the safe weight; everything else is a line around it.
+
+export type WeightLayout = "picture" | "compact" | "thumb";
+
+export function WeightPage({
+  id,
+  layout,
+  weightKg,
+  value,
+  under,
+  given,
+  warning,
+  warmup,
+  pick,
+  facts = [],
+}: {
+  id: string;
+  layout: WeightLayout;
+  weightKg: number;
+  value: string;
+  // What the number means where it is not obvious: a pair of dumbbells, help.
+  under?: string;
+  given?: string;
+  warning?: string;
+  warmup?: string;
+  // Said while the number is still the safe start the page opened with.
+  pick?: string;
+  facts?: Fact[];
+}) {
+  const { asset } = exercise(id);
+
+  const picture = asset?.type === "cross-fade" && (
+    <div className={s.pagePicture}>
+      <ExerciseAnimation startUrl={asset.startUrl} endUrl={asset.endUrl} />
+    </div>
+  );
+
+  const weight = (
+    <div className={s.pageWeight}>
+      <div className={s.stepper}>
+        <span className={s.stepButton}>−</span>
+        <div className={s.sheetValue}>
+          {value}
+          <span className={s.units}>кг</span>
+        </div>
+        <span className={s.stepButton}>+</span>
+      </div>
+      {under && <div className={s.pageUnder}>{under}</div>}
+      {pick && <div className={s.pagePick}>{pick}</div>}
+      <div className={s.pageVisual}>
+        <WeightsVisualizer
+          exercise={exercise(id)}
+          gym={MOCK_GYM}
+          weightKg={weightKg}
+        />
+      </div>
+    </div>
+  );
+
+  const notes = (
+    <div className={s.pageNotes}>
+      {warning && (
+        <div className={s.alert}>
+          <MdWarningAmber className={s.alertIcon} />
+          <span>{warning}</span>
+        </div>
+      )}
+      {warmup && <div className={s.pageWarmup}>{warmup}</div>}
+      {facts.length !== 0 && (
+        <div className={s.pageFacts}>
+          <div className={s.label}>Последний раз в похожих</div>
+          {facts.map((fact) => (
+            <div key={fact.name} className={s.fact}>
+              <span className={s.factName}>{fact.name}</span>
+              <span className={s.factBest}>{fact.best}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      {given && (
+        <div className={s.given}>
+          <span>{given}</span>
+          <span className={s.change}>изменить</span>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <Chrome>
+      <Header id={id} title="Первый подход" />
+      <div className={clsx(s.scroll, layout === "thumb" && s.bottomUp)}>
+        {layout === "picture" && picture}
+        {layout === "thumb" ? notes : weight}
+        {layout === "thumb" ? weight : notes}
+      </div>
+      <div className={s.action}>
+        <span className={s.next}>Начать</span>
+        <span className={s.textLink}>Заменить упражнение</span>
       </div>
     </Chrome>
   );
@@ -308,7 +443,7 @@ export interface Fact {
   best: string;
 }
 
-// The existing weight sheet, opened from «Знаю свой вес». Similar exercises
+// The existing weight sheet, opened from «Знаю рабочий вес». Similar exercises
 // show the best set of their last workout, written like the set screen.
 export function OwnWeightSheet({
   id,
@@ -337,7 +472,7 @@ export function OwnWeightSheet({
         <div className={s.visual}>
           <WeightsVisualizer
             exercise={exercise(id)}
-            gym={defaultGym("mockup")}
+            gym={MOCK_GYM}
             weightKg={weightKg}
           />
         </div>

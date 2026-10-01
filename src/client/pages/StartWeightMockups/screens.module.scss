@@ -510,3 +510,100 @@
 .sheetAction {
   padding: 16px 20px 0;
 }
+
+// Variant A: the light start switched off
+
+.disabled {
+  opacity: 0.55;
+
+  .optionIcon {
+    color: #ff8a3d;
+  }
+
+  .optionNote {
+    color: #ffb27a;
+  }
+}
+
+.alert {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid #4a2a12;
+  border-radius: 12px;
+  background: #170d05;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #ffd2a8;
+}
+
+.alertIcon {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  font-size: 18px;
+  color: #ff8a3d;
+}
+
+// Variant B: the weight sheet as the page
+
+.bottomUp {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.pagePicture {
+  display: flex;
+  justify-content: center;
+
+  > button {
+    width: 150px;
+    min-height: 0;
+    margin: 6px 0 0;
+  }
+}
+
+.pageWeight {
+  margin-top: 10px;
+}
+
+.pageUnder {
+  text-align: center;
+  font-size: 13px;
+  color: #8d8d8d;
+}
+
+.pageVisual {
+  padding-top: 18px;
+}
+
+.pageNotes {
+  margin-top: 6px;
+}
+
+.pagePick {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #08f;
+}
+
+.pageWarmup {
+  margin-top: 14px;
+  font-size: 13px;
+  color: #c9b500;
+}
+
+.pageFacts {
+  margin-top: 16px;
+}
+
+.textLink {
+  display: block;
+  padding: 14px 0 2px;
+  text-align: center;
+  font-size: 14px;
+  color: #8d8d8d;
+}
