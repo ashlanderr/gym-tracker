@@ -23,6 +23,7 @@ import { ExerciseCatalogPage, ExercisePage } from "./Exercise";
 import { MeasurementPage, ProfilePage } from "./Profile";
 import { Settings } from "./Settings";
 import { SignIn } from "./SignIn";
+import { StartWeightMockups } from "./StartWeightMockups";
 import { SIGN_IN_PATH } from "../session";
 import { TAB_PATHS, Tabs } from "./Tabs";
 import s from "./layout.module.scss";
@@ -92,6 +93,12 @@ function AnimatedRoutes() {
               it is a tool for reading the catalog through, not a feature. */}
           {import.meta.env.DEV && (
             <Route path="/exercises" element={<ExerciseCatalogPage />} />
+          )}
+          {import.meta.env.DEV && (
+            <Route
+              path="/mockups/start-weight"
+              element={<StartWeightMockups />}
+            />
           )}
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path={SIGN_IN_PATH} element={<SignIn />} />
