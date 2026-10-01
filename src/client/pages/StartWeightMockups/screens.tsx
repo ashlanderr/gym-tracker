@@ -4,7 +4,8 @@ import type { ReactNode } from "react";
 import {
   MdArrowBack,
   MdChevronRight,
-  MdOutlineShield,
+  MdEdit,
+  MdFitnessCenter,
   MdSwapHoriz,
 } from "react-icons/md";
 import { defaultGym } from "../../db";
@@ -51,11 +52,13 @@ function Chrome({
   );
 }
 
-function Header({ id, line }: { id: string; line: string }) {
+// The exercise name is context here, the question below is what the screen
+// is about, so the name steps back.
+function Header({ id, title }: { id: string; title: string }) {
   return (
     <div className={s.header}>
       <div className={s.name}>{exercise(id).name}</div>
-      <div className={s.line}>{line}</div>
+      <div className={s.title}>{title}</div>
     </div>
   );
 }
@@ -82,9 +85,8 @@ export function InventoryScreen({
 }) {
   return (
     <Chrome>
-      <Header id={id} line="Новое упражнение" />
+      <Header id={id} title={title} />
       <div className={s.scroll}>
-        <div className={s.title}>{title}</div>
         <div className={s.text}>{text}</div>
         {rows.map((row) => (
           <div key={row.label} className={s.row}>
@@ -113,23 +115,57 @@ export function InventoryScreen({
   );
 }
 
-// The same three buttons for every exercise: nothing here depends on what
-// kind of exercise it is, except the number of the lightest start.
+function Option({
+  icon,
+  title,
+  note,
+  value,
+  warning,
+  primary,
+}: {
+  icon: ReactNode;
+  title: string;
+  note: string;
+  value?: string;
+  warning?: string;
+  primary?: boolean;
+}) {
+  return (
+    <div className={clsx(s.option, primary && s.primary)}>
+      <span className={s.optionIcon}>{icon}</span>
+      <div className={s.optionBody}>
+        <div className={s.optionTitle}>{title}</div>
+        <div className={s.optionNote}>{note}</div>
+        {warning && <div className={s.optionWarning}>{warning}</div>}
+      </div>
+      {value ? (
+        <div className={s.optionValue}>{value}</div>
+      ) : (
+        <MdChevronRight className={s.chevron} />
+      )}
+    </div>
+  );
+}
+
+// The same three buttons for every exercise. Only the number on the first
+// one depends on it, and the safety line appears when that number had to be
+// raised to the lightest the gym has.
 export function StartScreen({
   id,
   given,
   lightest,
+  warning,
 }: {
   id: string;
   // What is already known and taken as is: the gym, the body weight.
   given?: string;
   lightest: string;
+  warning?: string;
 }) {
   return (
     <Chrome>
-      <Header id={id} line="Новое упражнение" />
+      <Header id={id} title="С чего начнём?" />
       <div className={s.scroll}>
-        <div className={s.title}>С чего начнём?</div>
         {given && (
           <div className={s.given}>
             <span>{given}</span>
@@ -137,60 +173,21 @@ export function StartScreen({
           </div>
         )}
         <div className={s.options}>
-          <div className={s.option}>
-            <div className={s.optionBody}>
-              <div className={s.optionTitle}>С самого лёгкого</div>
-              <div className={s.optionNote}>
-                Дальше подберём вес по ощущениям
-              </div>
-            </div>
-            <div className={s.optionValue}>{lightest}</div>
-          </div>
-          <div className={s.option}>
-            <div className={s.optionBody}>
-              <div className={s.optionTitle}>Знаю свой вес</div>
-              <div className={s.optionNote}>Введу сам, начнём с разминки</div>
-            </div>
-            <MdChevronRight className={s.chevron} />
-          </div>
-          <div className={s.option}>
-            <MdSwapHoriz className={s.swap} />
-            <div className={s.optionBody}>
-              <div className={s.optionTitle}>Заменить упражнение</div>
-              <div className={s.optionNote}>Выбрать другое на те же мышцы</div>
-            </div>
-            <MdChevronRight className={s.chevron} />
-          </div>
+          <Option
+            primary
+            icon={<MdFitnessCenter />}
+            title="С лёгкого веса"
+            note="Подберём по ощущениям"
+            value={lightest}
+            warning={warning}
+          />
+          <Option icon={<MdEdit />} title="Знаю свой вес" note="Введу сам" />
+          <Option
+            icon={<MdSwapHoriz />}
+            title="Заменить упражнение"
+            note="Другое на те же мышцы"
+          />
         </div>
-      </div>
-    </Chrome>
-  );
-}
-
-// Shown between the start and the first set, only for exercises one cannot
-// escape from on failure.
-export function SafetyScreen({
-  id,
-  title,
-  text,
-}: {
-  id: string;
-  title: string;
-  text: string;
-}) {
-  return (
-    <Chrome>
-      <Header id={id} line="Новое упражнение" />
-      <div className={s.scroll}>
-        <div className={s.safetyBlock}>
-          <MdOutlineShield className={s.safetyIcon} />
-          <div className={s.safetyTitle}>{title}</div>
-          <div className={s.safetyText}>{text}</div>
-        </div>
-      </div>
-      <div className={s.action}>
-        <span className={s.next}>Страховка есть, начинаю</span>
-        <span className={clsx(s.skip, s.gap)}>Заменить упражнение</span>
       </div>
     </Chrome>
   );
@@ -206,7 +203,6 @@ export function SetScreen({
   reps,
   target,
   current = 0,
-  trouble,
 }: {
   id: string;
   line: string;
@@ -215,7 +211,6 @@ export function SetScreen({
   reps: number;
   target: string;
   current?: number;
-  trouble?: boolean;
 }) {
   const { asset, name } = exercise(id);
   return (
@@ -251,7 +246,6 @@ export function SetScreen({
             <div className={s.under}>цель {target}</div>
           </div>
         </div>
-        {trouble && <div className={s.trouble}>Не выходит?</div>}
       </div>
       <div className={s.action}>
         <span className={s.done}>Сделал</span>
@@ -261,8 +255,8 @@ export function SetScreen({
 }
 
 // While the weight is being found, failure is not a possible answer for a
-// set that starts from the lightest weight, and dropping it keeps one row.
-const PICK_EFFORTS = ["Невесомо", "Легко", "Норм", "Тяжело"];
+// set that starts light, and dropping it keeps one row.
+const PICK_EFFORTS = ["Мало", "Легко", "Норм", "Тяжело"];
 
 export function RestScreen({
   selected,
@@ -311,13 +305,11 @@ export function RestScreen({
 
 export interface Fact {
   name: string;
-  weight: string;
-  reps: string;
-  when: string;
+  best: string;
 }
 
 // The existing weight sheet, opened from «Знаю свой вес». Similar exercises
-// from history live here, where the number is being typed, not on the start.
+// show the best set of their last workout, written like the set screen.
 export function OwnWeightSheet({
   id,
   weightKg,
@@ -352,15 +344,11 @@ export function OwnWeightSheet({
         <div className={s.sheetNote}>{note}</div>
         {facts.length !== 0 && (
           <div className={s.facts}>
-            <div className={s.label}>Похожие упражнения</div>
+            <div className={s.label}>Последний раз в похожих</div>
             {facts.map((fact) => (
               <div key={fact.name} className={s.fact}>
-                <div className={s.factName}>{fact.name}</div>
-                <div className={s.factLine}>
-                  <span className={s.factWeight}>{fact.weight}</span>
-                  <span className={s.factReps}>{fact.reps}</span>
-                  <span className={s.factWhen}>{fact.when}</span>
-                </div>
+                <span className={s.factName}>{fact.name}</span>
+                <span className={s.factBest}>{fact.best}</span>
               </div>
             ))}
           </div>
@@ -373,26 +361,12 @@ export function OwnWeightSheet({
   );
 }
 
-// One list of replacements, whether it is opened before the first set or
-// from «Не выходит?» on any set.
-export function ReplaceScreen({
-  id,
-  line,
-  stop,
-}: {
-  id: string;
-  line: string;
-  stop?: boolean;
-}) {
+export function ReplaceScreen({ id }: { id: string }) {
   return (
     <Chrome current={0}>
-      <Header id={id} line={line} />
+      <Header id={id} title="Заменить упражнение" />
       <div className={s.scroll}>
-        <div className={s.title}>Заменить упражнение</div>
-        <div className={s.text}>
-          Другие упражнения на те же мышцы.
-          {stop && " Сделанные подходы сохранятся."}
-        </div>
+        <div className={s.text}>Другие упражнения на те же мышцы.</div>
         <div className={s.options}>
           {exercise(id).alternatives.map((alternative) => (
             <div key={alternative.id} className={s.option}>
@@ -407,11 +381,6 @@ export function ReplaceScreen({
           ))}
         </div>
       </div>
-      {stop && (
-        <div className={s.action}>
-          <span className={s.skip}>Закончить упражнение</span>
-        </div>
-      )}
     </Chrome>
   );
 }
