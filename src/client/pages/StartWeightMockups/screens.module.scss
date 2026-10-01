@@ -37,10 +37,6 @@
     background: #1e1e1e;
   }
 
-  .doneSet {
-    background: #0b0;
-  }
-
   .currentSet {
     background: #08f;
   }
@@ -160,43 +156,6 @@
   font-weight: 600;
 }
 
-.given {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 10px;
-  font-size: 13px;
-  line-height: 1.4;
-  color: #8d8d8d;
-}
-
-.change {
-  flex: 0 0 auto;
-  color: #08f;
-}
-
-.facts {
-  margin: 20px 20px 0;
-}
-
-.fact {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 8px;
-  font-size: 13px;
-  line-height: 1.35;
-}
-
-.factName {
-  color: #8d8d8d;
-}
-
-.factBest {
-  flex: 0 0 auto;
-  font-weight: 600;
-}
-
 .options {
   display: flex;
   flex-direction: column;
@@ -212,27 +171,6 @@
   border: 1px solid #2e2e2e;
   border-radius: 14px;
   background: #0b0b0b;
-}
-
-.primary {
-  border-color: #06f;
-  background: #06f;
-
-  .optionNote {
-    color: #d6e6ff;
-  }
-
-  .optionIcon {
-    color: #fff;
-  }
-}
-
-.optionIcon {
-  flex: 0 0 24px;
-  display: flex;
-  justify-content: center;
-  font-size: 21px;
-  color: #08f;
 }
 
 .optionBody {
@@ -251,21 +189,6 @@
   font-size: 12px;
   line-height: 1.4;
   color: #8d8d8d;
-}
-
-.optionWarning {
-  margin-top: 6px;
-  font-size: 12px;
-  line-height: 1.35;
-  font-weight: 600;
-  color: #ffd2a8;
-}
-
-.optionValue {
-  flex: 0 0 auto;
-  font-size: 20px;
-  font-weight: 600;
-  white-space: nowrap;
 }
 
 .chevron {
@@ -297,10 +220,6 @@
   margin-top: 8px;
   font-size: 13px;
   color: #7a7a7a;
-}
-
-.warm {
-  color: #c9b500;
 }
 
 .pick {
@@ -349,236 +268,6 @@
   min-height: 17px;
   font-size: 13px;
   color: #b0b0b0;
-}
-
-// Rest screen, as in RestView
-
-.restLabel {
-  font-size: 12px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #7a7a7a;
-}
-
-.time {
-  align-self: stretch;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  margin-top: 12px;
-  font-size: 72px;
-  font-weight: 300;
-  letter-spacing: -0.03em;
-  line-height: 1;
-}
-
-.minutes {
-  text-align: right;
-}
-
-.seconds {
-  text-align: left;
-}
-
-.question {
-  margin-top: 28px;
-  font-size: 14px;
-  color: #b5b5b5;
-}
-
-.keys {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  justify-content: center;
-  margin-top: 12px;
-}
-
-.key {
-  padding: 10px 9px;
-  border: 1px solid #2e2e2e;
-  border-radius: 10px;
-  color: #bdbdbd;
-  font-size: 13px;
-  white-space: nowrap;
-}
-
-.keySelected {
-  border-color: #06f;
-  background: #06f;
-  color: #fff;
-  font-weight: 600;
-}
-
-.nextLabel {
-  margin-top: 30px;
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #5f5f5f;
-}
-
-.nextMain {
-  margin-top: 8px;
-  font-size: 24px;
-  font-weight: 600;
-}
-
-.nextSub {
-  margin-top: 5px;
-  font-size: 13px;
-  color: #7a7a7a;
-}
-
-.nextNote {
-  margin-top: 8px;
-  font-size: 13px;
-  color: #08f;
-}
-
-// Weight sheet, as in StepSheet
-
-.sheetBackdrop {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  background: #000b;
-}
-
-.sheet {
-  padding: 10px 0 12px;
-  background: #1a1a1a;
-  border-top: 1px solid #333;
-  border-radius: 20px 20px 0 0;
-}
-
-.grip {
-  width: 36px;
-  height: 4px;
-  margin: 0 auto 14px;
-  border-radius: 2px;
-  background: #444;
-}
-
-.sheetTitle {
-  text-align: center;
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #8a8a8a;
-}
-
-.stepper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  margin: 16px 0 4px;
-}
-
-.stepButton {
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  border: 1px solid #3a3a3a;
-  background: #0f0f0f;
-  font-size: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sheetValue {
-  min-width: 120px;
-  text-align: center;
-  font-size: 48px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-.visual {
-  padding: 20px 16px 0;
-}
-
-.sheetNote {
-  margin-top: 16px;
-  text-align: center;
-  font-size: 12px;
-  color: #c9b500;
-}
-
-.sheetAction {
-  padding: 16px 20px 0;
-}
-
-// Variant A: the light start switched off
-
-.disabled {
-  opacity: 0.55;
-
-  .optionIcon {
-    color: #ff8a3d;
-  }
-
-  .optionNote {
-    color: #ffb27a;
-  }
-}
-
-.alert {
-  display: flex;
-  gap: 10px;
-  margin-top: 14px;
-  padding: 12px;
-  border: 1px solid #4a2a12;
-  border-radius: 12px;
-  background: #170d05;
-  font-size: 13px;
-  line-height: 1.45;
-  color: #ffd2a8;
-}
-
-.alertIcon {
-  flex: 0 0 auto;
-  margin-top: 1px;
-  font-size: 18px;
-  color: #ff8a3d;
-}
-
-// Variant B: the number as the page
-
-.pageCenter {
-  flex: 1 1 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 0 20px 40px;
-}
-
-.pageValue {
-  min-width: 130px;
-  text-align: center;
-  font-size: 56px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-// Three lines of room are kept whatever is shown, so the number stays put.
-.pageLines {
-  min-height: 4.5em;
-  margin-top: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  text-align: center;
-  font-size: 14px;
-  line-height: 1.35;
-  color: #8d8d8d;
-}
-
-.pageWarning {
-  color: #ffb27a;
 }
 
 .secondary {

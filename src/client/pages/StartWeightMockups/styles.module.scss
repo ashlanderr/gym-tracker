@@ -122,26 +122,3 @@
     color: #7a7a7a;
   }
 }
-
-.rules {
-  margin-top: 10px;
-  border-collapse: collapse;
-  font-size: 13px;
-
-  th,
-  td {
-    padding: 6px 12px 6px 0;
-    border-bottom: 1px solid #1e1e1e;
-    text-align: left;
-    vertical-align: top;
-  }
-
-  th {
-    font-weight: 600;
-    color: #fff;
-  }
-}
-
-.warn {
-  color: #ffb27a;
-}

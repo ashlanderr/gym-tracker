@@ -3,45 +3,37 @@ import { Fragment, type ReactNode } from "react";
 import { MdArrowForward } from "react-icons/md";
 import { Phone } from "./components";
 import {
-  OwnWeightSheet,
+  InventoryScreen,
   ReplaceScreen,
-  RestScreen,
   SetScreen,
-  StartScreen,
-  WeightPage,
+  WarningListScreen,
+  WarningQuestionScreen,
 } from "./screens.tsx";
 
 interface Step {
   caption: string;
   note?: string;
   screen: ReactNode;
-  overlay?: ReactNode;
   action?: string;
 }
 
 function Flow({
-  id,
   title,
   children,
   steps,
 }: {
-  id: string;
   title: string;
   children: ReactNode;
   steps: Step[];
 }) {
   return (
-    <section className={s.flow} id={id}>
+    <section className={s.flow}>
       <h2>{title}</h2>
       <div className={s.text}>{children}</div>
       <div className={s.row}>
         {steps.map((step, index) => (
           <Fragment key={index}>
-            <Phone
-              caption={step.caption}
-              note={step.note}
-              overlay={step.overlay}
-            >
+            <Phone caption={step.caption} note={step.note}>
               {step.screen}
             </Phone>
             {step.action && (
@@ -57,362 +49,148 @@ function Flow({
   );
 }
 
-const jump = (id: string) =>
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+const BARBELL_INVENTORY = (
+  <InventoryScreen
+    id="bench_press"
+    title="Что есть в зале?"
+    text="Блины и грифы общие на весь зал, поэтому их нужно указать всего один раз."
+    rows={[
+      {
+        label: "Грифы",
+        hint: "Отметь и лёгкие, если есть: с них проще начать.",
+        options: [5, 7.5, 10, 15, 20],
+        selected: [20],
+      },
+      {
+        label: "Блины",
+        options: [1.25, 2.5, 5, 10, 15, 20, 25],
+        selected: [1.25, 2.5, 5, 10, 15, 20, 25],
+      },
+    ]}
+  />
+);
 
-const FLOWS = [
-  ["a-novice", "А: новичок"],
-  ["a-blocked", "А: гриф тяжелее безопасного"],
-  ["a-own", "А: знаю рабочий вес"],
-  ["a-dumbbells", "А: гантели"],
-  ["b-cases", "Б: сразу вес"],
-];
+const DUMBBELL_INVENTORY = (
+  <InventoryScreen
+    id="dumbbell_bench_press"
+    title="Какие гантели в зале?"
+    text="Гантели общие на весь зал, поэтому их нужно указать всего один раз."
+    rows={[
+      { label: "Самая лёгкая", options: [1, 2, 2.5, 4, 5], selected: [2] },
+      {
+        label: "Самая тяжёлая",
+        options: [10, 20, 30, 40, 50, 60],
+        selected: [30],
+      },
+      {
+        label: "Шаг",
+        hint: "Разница между соседними весами.",
+        options: [1, 2, 2.5, 5],
+        selected: [2],
+      },
+    ]}
+  />
+);
 
-const GYM_KNOWN = "Гриф 20 кг · блины 1,25–25";
-
-const BAR_TOO_HEAVY = "Пустой гриф тяжелее, чем безопасно начинать новичку";
-
-const BENCH_FACTS = [
-  { name: "Жим гантелей лёжа", best: "по 30 кг × 10" },
-  { name: "Жим лёжа в Смите", best: "70 кг × 8" },
-];
+const DUMBBELL_SET = (
+  <SetScreen id="dumbbell_bench_press" weight="4" reps={10} target="8 – 12" />
+);
 
 export function StartWeightMockups() {
   return (
     <div className={s.root}>
       <header className={s.intro}>
         <h1>Первый вес упражнения</h1>
-
         <p>
-          Когда у упражнения нет истории, вместо экрана подхода открывается
-          выбор старта. Перед ним — инвентарь, если зал или тренажёр ещё не
-          знаем. Правила — в <code>docs/recommendations/README.md</code>, раздел
-          «Первый вес», числа — в <code>safe-weights.md</code>.
-        </p>
-
-        <h3>Вариант А — три кнопки</h3>
-        <p>
-          «С лёгкого веса», «Знаю рабочий вес», «Заменить упражнение». Если
-          минимум снаряда тяжелее безопасного веса, первая кнопка выключается
-          (А1) или пропадает с объяснением над остальными (А2). По умолчанию
-          тогда становится замена: для новичка это единственный безопасный путь,
-          а опытный и так нажмёт «Знаю рабочий вес».
-        </p>
-
-        <h3>Вариант Б — сразу вес</h3>
-        <p>
-          Выбора старта нет: число, строки под ним, «Начать» и «Заменить
-          упражнение». Открывается на стартовом весе: безопасном у штанги и
-          гантелей, минимуме снаряда у тренажёров. Страница появляется только
-          там, где вес можно выбрать: у подтягиваний без отягощения её нет,
-          сразу подход.
+          Отдельной страницы старта нет. Если вес упражнения неизвестен, сразу
+          открывается обычный экран подхода на стартовом весе из
+          <code> safe-weights.md</code>, а у тренажёров — на минимуме снаряда.
+          Разминки от такого веса нет, поэтому первым человек всегда видит
+          первый рабочий подход. Опытный поправит число, новичок начнёт так.
         </p>
         <p>
-          Под числом до трёх строк, каждая со своим правилом, всегда в этом
-          порядке:
+          До подхода может быть только два экрана: инвентарь, если зал ещё не
+          знаем, и предупреждение — когда минимум снаряда тяжелее безопасного
+          веса. Предупреждение в двух вариантах: сразу со списком замен или
+          вопросом «заменить или оставить». В замены попадают только упражнения
+          без того же конфликта: другая штанга снова начнётся с пустого грифа.
         </p>
-        <table className={s.rules}>
-          <thead>
-            <tr>
-              <th>Строка</th>
-              <th>Когда</th>
-              <th>Текст</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td rowSpan={3}>Что за число</td>
-              <td>две гантели</td>
-              <td>По 8 кг в каждой руке</td>
-            </tr>
-            <tr>
-              <td>
-                <code>weight: negative</code>
-              </td>
-              <td>Помощь тренажёра</td>
-            </tr>
-            <tr>
-              <td>
-                <code>weight: positive</code> с отягощением
-              </td>
-              <td>Вес на поясе</td>
-            </tr>
-            <tr>
-              <td rowSpan={2}>Что дальше</td>
-              <td>число равно стартовому</td>
-              <td>Дальше подберём вес по ощущениям</td>
-            </tr>
-            <tr>
-              <td>число другое и разминка не пустая</td>
-              <td>Разминка: 30 и 50 кг</td>
-            </tr>
-            <tr>
-              <td>Страховка</td>
-              <td>
-                <code>spotter</code> и число выше безопасного веса для пола —
-                при любом весе выше, не только на минимуме
-              </td>
-              <td className={s.warn}>Нужен страхующий или упоры</td>
-            </tr>
-          </tbody>
-        </table>
-        <p>
-          <b>Не решено:</b> подбор у отягощения на поясе. Удвоение полного веса
-          с «+0» даёт «+80 кг», удвоение отягощения даёт снова ноль.
-        </p>
-
-        <nav className={s.toc}>
-          {FLOWS.map(([id, title]) => (
-            <button key={id} onClick={() => jump(id)}>
-              {title}
-            </button>
-          ))}
-        </nav>
       </header>
 
       <Flow
-        id="a-novice"
-        title="А: жим лёжа, новичок"
+        title="Мужчина, жим лёжа"
         steps={[
           {
-            caption: "Старт",
-            screen: (
-              <StartScreen
-                id="bench_press"
-                given={GYM_KNOWN}
-                lightest="20 кг"
-              />
-            ),
-            action: "С лёгкого веса",
+            caption: "Инвентарь",
+            note: "Только если зал ещё не знаем.",
+            screen: BARBELL_INVENTORY,
+            action: "Дальше",
           },
           {
             caption: "Подход",
+            note: "Безопасный вес — 20, это гриф. Конфликта нет.",
             screen: (
-              <SetScreen
-                id="bench_press"
-                line="Подбор веса · подход 1 из 3"
-                tone="pick"
-                weight="20"
-                reps={8}
-                target="6 – 8"
-              />
-            ),
-            action: "Сделал",
-          },
-          {
-            caption: "Отдых",
-            screen: (
-              <RestScreen
-                selected="Мало"
-                main="40 кг × 8"
-                sub="Подбор веса · подход 2 из 3"
-                note="Было мало — вес вдвое"
-              />
+              <SetScreen id="bench_press" weight="20" reps={8} target="6 – 8" />
             ),
           },
         ]}
       >
-        Обычный случай: безопасный вес мужчины в жиме — ровно гриф.
+        Обычный путь.
       </Flow>
 
       <Flow
-        id="a-blocked"
-        title="А: девушка, только гриф 20 кг"
+        title="Девушка, жим лёжа, только гриф 20 — со списком"
         steps={[
           {
-            caption: "А1. Кнопка выключена",
-            note: "Видно, чего нельзя и почему. Синей стала замена.",
-            screen: (
-              <StartScreen
-                id="bench_press"
-                given={GYM_KNOWN}
-                lightest="20 кг"
-                blocked={{ mode: "disabled", text: BAR_TOO_HEAVY }}
-              />
-            ),
+            caption: "Инвентарь",
+            screen: BARBELL_INVENTORY,
+            action: "Дальше",
           },
           {
-            caption: "А2. Кнопки нет",
-            note: "Короче, но пропажа кнопки ничего не объясняет без плашки.",
-            screen: (
-              <StartScreen
-                id="bench_press"
-                given={GYM_KNOWN}
-                lightest="20 кг"
-                blocked={{
-                  mode: "hidden",
-                  text: `${BAR_TOO_HEAVY}. Знаешь свой вес — введи его, если нет — замени упражнение.`,
-                }}
-              />
-            ),
+            caption: "Предупреждение",
+            note: "Проблема и выход на одном экране. Тап по замене — сразу на неё.",
+            screen: <WarningListScreen id="bench_press" minimum="20 кг" />,
+            action: "Жим гантелей лёжа",
           },
           {
-            caption: "А1 в приседе",
-            screen: (
-              <StartScreen
-                id="back_squat"
-                given={GYM_KNOWN}
-                lightest="20 кг"
-                blocked={{ mode: "disabled", text: BAR_TOO_HEAVY }}
-              />
-            ),
+            caption: "Инвентарь гантелей",
+            note: "Гантелей зал ещё не знает.",
+            screen: DUMBBELL_INVENTORY,
+            action: "Дальше",
+          },
+          {
+            caption: "Подход",
+            note: "Безопасный вес — по 3, гантели с шагом 2: по 2. Пара — 4.",
+            screen: DUMBBELL_SET,
           },
         ]}
       >
-        Только у жимов лёжа и приседов: у остальных упражнений из-под штанги
-        выбраться можно, и гриф тяжелее безопасного веса не опасен.
+        Список сразу: на один тап короче, но экран длиннее.
       </Flow>
 
       <Flow
-        id="a-own"
-        title="А: знаю рабочий вес"
+        title="Девушка, жим лёжа, только гриф 20 — вопросом"
         steps={[
           {
-            caption: "Старт",
-            screen: (
-              <StartScreen
-                id="bench_press"
-                given={GYM_KNOWN}
-                lightest="20 кг"
-              />
-            ),
-            action: "Знаю рабочий вес",
+            caption: "Предупреждение",
+            note: "Один вопрос, два ответа.",
+            screen: <WarningQuestionScreen id="bench_press" minimum="20 кг" />,
+            action: "Заменить",
           },
           {
-            caption: "Шторка веса",
-            screen: (
-              <StartScreen
-                id="bench_press"
-                given={GYM_KNOWN}
-                lightest="20 кг"
-              />
-            ),
-            overlay: (
-              <OwnWeightSheet
-                id="bench_press"
-                weightKg={60}
-                note="Сначала разминка: 30 и 50 кг"
-                facts={BENCH_FACTS}
-              />
-            ),
+            caption: "Замена",
+            screen: <ReplaceScreen id="bench_press" />,
+            action: "Жим гантелей лёжа",
+          },
+          {
+            caption: "Подход",
+            note: "Через инвентарь гантелей, если его нет.",
+            screen: DUMBBELL_SET,
           },
         ]}
       >
-        Два экрана подряд: выбор, потом шторка.
+        Вопрос чище, но замена — лишний экран.
       </Flow>
-
-      <Flow
-        id="a-dumbbells"
-        title="А: гантели"
-        steps={[
-          {
-            caption: "Без «по»",
-            note: "Влезает в строку, но на экране подхода будет «16 кг».",
-            screen: (
-              <StartScreen
-                id="dumbbell_bench_press"
-                given="Гантели 2–30 кг, шаг 2"
-                lightest="8 кг"
-              />
-            ),
-          },
-        ]}
-      >
-        «Подберём по ощущениям» больше не переносится.
-      </Flow>
-
-      <Flow
-        id="b-cases"
-        title="Б: сразу вес"
-        steps={[
-          {
-            caption: "Мужчина, старт",
-            screen: (
-              <WeightPage
-                id="bench_press"
-                value="20"
-                next="Дальше подберём вес по ощущениям"
-              />
-            ),
-          },
-          {
-            caption: "Мужчина поднял до 60",
-            screen: (
-              <WeightPage
-                id="bench_press"
-                value="60"
-                next="Разминка: 30 и 50 кг"
-                warning="Нужен страхующий или упоры"
-              />
-            ),
-          },
-          {
-            caption: "Девушка, только гриф 20",
-            screen: (
-              <WeightPage
-                id="bench_press"
-                value="20"
-                next="Дальше подберём вес по ощущениям"
-                warning="Нужен страхующий или упоры"
-              />
-            ),
-          },
-          {
-            caption: "Девушка подняла до 30",
-            screen: (
-              <WeightPage
-                id="bench_press"
-                value="30"
-                next="Разминка: 25 кг"
-                warning="Нужен страхующий или упоры"
-              />
-            ),
-          },
-          {
-            caption: "Гантели, старт",
-            screen: (
-              <WeightPage
-                id="dumbbell_bench_press"
-                value="16"
-                meaning="По 8 кг в каждой руке"
-                next="Дальше подберём вес по ощущениям"
-              />
-            ),
-          },
-          {
-            caption: "Гравитрон, сменил на −40",
-            screen: (
-              <WeightPage
-                id="assisted_pull_up_wide"
-                value="−40"
-                meaning="Помощь тренажёра"
-                next="Разминка: −60 и −50 кг"
-              />
-            ),
-          },
-          {
-            caption: "Тренажёр, старт",
-            screen: (
-              <WeightPage
-                id="preacher_curl_machine"
-                value="10"
-                next="Дальше подберём вес по ощущениям"
-              />
-            ),
-          },
-        ]}
-      >
-        Те же правила на разных людях, снарядах и весах.
-      </Flow>
-
-      <section className={s.flow}>
-        <h2>Для сравнения: замена</h2>
-        <div className={s.row}>
-          <Phone caption="Замена" note="Одна и та же в А и Б.">
-            <ReplaceScreen id="bench_press" />
-          </Phone>
-        </div>
-      </section>
     </div>
   );
 }
