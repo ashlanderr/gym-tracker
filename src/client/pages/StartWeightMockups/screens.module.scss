@@ -564,12 +564,16 @@
   letter-spacing: -0.02em;
 }
 
-.pageLine {
-  min-height: 2.9em;
+// Three lines of room are kept whatever is shown, so the number stays put.
+.pageLines {
+  min-height: 4.5em;
   margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   text-align: center;
   font-size: 14px;
-  line-height: 1.45;
+  line-height: 1.35;
   color: #8d8d8d;
 }
 
@@ -577,10 +581,8 @@
   color: #ffb27a;
 }
 
-.textLink {
-  display: block;
-  padding: 14px 0 2px;
-  text-align: center;
-  font-size: 14px;
-  color: #8d8d8d;
+.secondary {
+  margin-top: 8px;
+  padding: 16px;
+  font-size: 16px;
 }

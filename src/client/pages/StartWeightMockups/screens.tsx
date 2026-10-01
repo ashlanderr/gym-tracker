@@ -223,18 +223,24 @@ export function StartScreen({
   );
 }
 
-// Variant B: no choice of start. The page is the number, one line saying
-// where it comes from, and the button.
+// Variant B: no choice of start. Under the number up to three lines, each
+// with its own job and always in this order:
+// - what the number means, where it is not obvious (a pair, assistance);
+// - what happens next: weight finding at the start weight, warm-ups above it;
+// - the spotter warning, on exercises one cannot escape from, above the safe
+//   start, at any weight up from there.
 export function WeightPage({
   id,
   value,
-  line,
+  meaning,
+  next,
   warning,
 }: {
   id: string;
   value: string;
-  line: string;
-  warning?: boolean;
+  meaning?: string;
+  next?: string;
+  warning?: string;
 }) {
   return (
     <Chrome>
@@ -248,11 +254,15 @@ export function WeightPage({
           </div>
           <span className={s.stepButton}>+</span>
         </div>
-        <div className={clsx(s.pageLine, warning && s.pageWarning)}>{line}</div>
+        <div className={s.pageLines}>
+          {meaning && <div>{meaning}</div>}
+          {next && <div>{next}</div>}
+          {warning && <div className={s.pageWarning}>{warning}</div>}
+        </div>
       </div>
       <div className={s.action}>
         <span className={s.next}>Начать</span>
-        <span className={s.textLink}>Заменить упражнение</span>
+        <span className={clsx(s.skip, s.secondary)}>Заменить упражнение</span>
       </div>
     </Chrome>
   );
