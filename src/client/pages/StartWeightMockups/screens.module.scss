@@ -289,22 +289,23 @@
 }
 
 .warningSign {
-  width: 72px;
-  height: 72px;
+  width: 88px;
+  height: 88px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   background: #24140a;
-  font-size: 36px;
-  color: #ff8a3d;
+  font-size: 44px;
+  color: #ff9a55;
 }
 
 .warningTitle {
-  margin-top: 22px;
+  margin-top: 18px;
   font-size: 24px;
   font-weight: 700;
   line-height: 1.2;
+  text-wrap: balance;
 }
 
 .warningWeight {
@@ -322,15 +323,17 @@
   letter-spacing: 0;
 }
 
-.warningCaption {
-  margin-top: 10px;
-  font-size: 15px;
-  color: #b0b0b0;
-}
-
+// One sentence to a line of its own, so a short first sentence never pulls
+// the start of the second one up; inside a sentence lines are balanced so
+// no word is left alone, whatever the width.
 .warningText {
-  margin-top: 14px;
+  max-width: 300px;
+  margin-top: 10px;
   font-size: 15px;
   line-height: 1.45;
   color: #8d8d8d;
+
+  p {
+    text-wrap: balance;
+  }
 }

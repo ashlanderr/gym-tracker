@@ -95,6 +95,12 @@ const DUMBBELL_SET = (
   <SetScreen id="dumbbell_bench_press" weight="4" reps={10} target="8 – 12" />
 );
 
+const SIZES = [
+  { width: 320, height: 640 },
+  { width: 360, height: 780 },
+  { width: 412, height: 915 },
+];
+
 export function StartWeightMockups() {
   return (
     <div className={s.root}>
@@ -146,18 +152,9 @@ export function StartWeightMockups() {
             action: "Дальше",
           },
           {
-            caption: "Предупреждение: знак",
-            note: "Как пустое состояние: знак, заголовок, объяснение.",
-            screen: (
-              <WarningScreen id="bench_press" minimum={20} accent="sign" />
-            ),
-          },
-          {
-            caption: "Предупреждение: вес",
-            note: "Акцент на том, о чём речь, — на весе.",
-            screen: (
-              <WarningScreen id="bench_press" minimum={20} accent="weight" />
-            ),
+            caption: "Предупреждение",
+            note: "Вес — о чём речь, заголовок — что это значит, текст — что делать.",
+            screen: <WarningScreen id="bench_press" minimum={20} />,
             action: "Заменить",
           },
           {
@@ -179,8 +176,55 @@ export function StartWeightMockups() {
           },
         ]}
       >
-        Два вида акцента на одном и том же вопросе «заменить или оставить».
+        Перед подходом — вопрос «заменить или оставить».
       </Flow>
+
+      <Flow
+        title="Подтягивания, новичок"
+        steps={[
+          {
+            caption: "Предупреждение",
+            note: "Внешнего веса нет — вместо «+0 кг» знак и другая причина.",
+            screen: <WarningScreen id="pull_up_wide" minimum={0} />,
+            action: "Заменить",
+          },
+          {
+            caption: "Замена",
+            screen: <ReplaceScreen id="pull_up_wide" />,
+          },
+        ]}
+      >
+        Тот же экран, когда минимум — свой вес.
+      </Flow>
+
+      <section className={s.flow}>
+        <h2>Переносы на разных экранах</h2>
+        <div className={s.text}>
+          Маленький, обычный и большой Android. Текст выровнен по строкам (
+          <code>text-wrap: balance</code>), поэтому ни на одной ширине не
+          остаётся слова в одиночку.
+        </div>
+        <div className={s.row}>
+          {SIZES.map((size) => (
+            <Phone
+              key={size.width}
+              caption={`${size.width} × ${size.height}`}
+              size={size}
+            >
+              <WarningScreen id="bench_press" minimum={20} />
+            </Phone>
+          ))}
+          {SIZES.map((size) => (
+            <Phone
+              key={`pull-up-${size.width}`}
+              caption={`${size.width} × ${size.height}`}
+              size={size}
+            >
+              <WarningScreen id="pull_up_wide" minimum={0} />
+            </Phone>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

@@ -5,4 +5,6 @@ export interface PhoneProps {
   note?: string;
   children: ReactNode;
   overlay?: ReactNode;
+  // Screen size in CSS pixels, to see the same page on another phone.
+  size?: { width: number; height: number };
 }

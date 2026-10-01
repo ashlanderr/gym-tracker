@@ -114,16 +114,15 @@ export function InventoryScreen({
 }
 
 // The warning as one question; the list of replacements comes after
-// «Заменить». The accent is either a sign, as in an empty state, or the
-// weight itself, since the weight is what the warning is about.
+// «Заменить». The weight leads, since it is what the warning is about; with
+// nothing added to the body there is no number worth showing, and the reason
+// is the body weight itself.
 export function WarningScreen({
   id,
   minimum,
-  accent,
 }: {
   id: string;
   minimum: number;
-  accent: "sign" | "weight";
 }) {
   return (
     <Chrome>
@@ -131,30 +130,25 @@ export function WarningScreen({
         <div className={s.name}>{exercise(id).name}</div>
       </div>
       <div className={s.warning}>
-        {accent === "sign" ? (
-          <>
-            <span className={s.warningSign}>
-              <MdWarningAmber />
-            </span>
-            <div className={s.warningTitle}>Может быть тяжело</div>
-            <div className={s.warningText}>
-              Меньше {minimum} кг здесь не поставить. Если ты только начинаешь,
-              лучше заменить упражнение.
-            </div>
-          </>
+        {minimum === 0 ? (
+          <span className={s.warningSign}>
+            <MdWarningAmber />
+          </span>
         ) : (
-          <>
-            <div className={s.warningWeight}>
-              {minimum}
-              <span className={s.warningUnits}>кг</span>
-            </div>
-            <div className={s.warningCaption}>меньше здесь не поставить</div>
-            <div className={s.warningText}>
-              Если ты только начинаешь, это может быть тяжело. Лучше заменить
-              упражнение.
-            </div>
-          </>
+          <div className={s.warningWeight}>
+            {minimum}
+            <span className={s.warningUnits}>кг</span>
+          </div>
         )}
+        <div className={s.warningTitle}>Может быть тяжело</div>
+        <div className={s.warningText}>
+          <p>
+            {minimum === 0
+              ? "Здесь поднимаешь весь свой вес."
+              : "Меньше здесь не поставить."}
+          </p>
+          <p>Если ты только начинаешь, лучше заменить упражнение.</p>
+        </div>
       </div>
       <div className={s.action}>
         <span className={s.next}>Заменить</span>
