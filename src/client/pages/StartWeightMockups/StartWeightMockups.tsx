@@ -6,8 +6,7 @@ import {
   InventoryScreen,
   ReplaceScreen,
   SetScreen,
-  WarningListScreen,
-  WarningQuestionScreen,
+  WarningScreen,
 } from "./screens.tsx";
 
 interface Step {
@@ -111,9 +110,9 @@ export function StartWeightMockups() {
         <p>
           До подхода может быть только два экрана: инвентарь, если зал ещё не
           знаем, и предупреждение — когда минимум снаряда тяжелее безопасного
-          веса. Предупреждение в двух вариантах: сразу со списком замен или
-          вопросом «заменить или оставить». В замены попадают только упражнения
-          без того же конфликта: другая штанга снова начнётся с пустого грифа.
+          веса. Предупреждение — вопрос «заменить или оставить», список замен на
+          следующем экране. В замены попадают только упражнения без того же
+          конфликта: другая штанга снова начнётся с пустого грифа.
         </p>
       </header>
 
@@ -139,7 +138,7 @@ export function StartWeightMockups() {
       </Flow>
 
       <Flow
-        title="Девушка, жим лёжа, только гриф 20 — со списком"
+        title="Девушка, жим лёжа, только гриф 20"
         steps={[
           {
             caption: "Инвентарь",
@@ -147,14 +146,29 @@ export function StartWeightMockups() {
             action: "Дальше",
           },
           {
-            caption: "Предупреждение",
-            note: "Проблема и выход на одном экране. Тап по замене — сразу на неё.",
-            screen: <WarningListScreen id="bench_press" minimum="20 кг" />,
+            caption: "Предупреждение: знак",
+            note: "Как пустое состояние: знак, заголовок, объяснение.",
+            screen: (
+              <WarningScreen id="bench_press" minimum={20} accent="sign" />
+            ),
+          },
+          {
+            caption: "Предупреждение: вес",
+            note: "Акцент на том, о чём речь, — на весе.",
+            screen: (
+              <WarningScreen id="bench_press" minimum={20} accent="weight" />
+            ),
+            action: "Заменить",
+          },
+          {
+            caption: "Замена",
+            note: "Только альтернативы без того же конфликта.",
+            screen: <ReplaceScreen id="bench_press" />,
             action: "Жим гантелей лёжа",
           },
           {
             caption: "Инвентарь гантелей",
-            note: "Гантелей зал ещё не знает.",
+            note: "Если гантелей зал ещё не знает.",
             screen: DUMBBELL_INVENTORY,
             action: "Дальше",
           },
@@ -165,31 +179,7 @@ export function StartWeightMockups() {
           },
         ]}
       >
-        Список сразу: на один тап короче, но экран длиннее.
-      </Flow>
-
-      <Flow
-        title="Девушка, жим лёжа, только гриф 20 — вопросом"
-        steps={[
-          {
-            caption: "Предупреждение",
-            note: "Один вопрос, два ответа.",
-            screen: <WarningQuestionScreen id="bench_press" minimum="20 кг" />,
-            action: "Заменить",
-          },
-          {
-            caption: "Замена",
-            screen: <ReplaceScreen id="bench_press" />,
-            action: "Жим гантелей лёжа",
-          },
-          {
-            caption: "Подход",
-            note: "Через инвентарь гантелей, если его нет.",
-            screen: DUMBBELL_SET,
-          },
-        ]}
-      >
-        Вопрос чище, но замена — лишний экран.
+        Два вида акцента на одном и том же вопросе «заменить или оставить».
       </Flow>
     </div>
   );

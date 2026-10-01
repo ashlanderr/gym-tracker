@@ -52,6 +52,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 20px;
+  border: 1px solid transparent;
   border-radius: 16px;
   text-align: center;
   font-size: 18px;
@@ -74,7 +75,7 @@
 
 .skip {
   @extend %bigButton;
-  border: 1px solid #2e2e2e;
+  border-color: #2e2e2e;
   color: #bdbdbd;
   font-weight: 600;
 }
@@ -272,6 +273,64 @@
 
 .secondary {
   margin-top: 8px;
-  padding: 16px;
-  font-size: 16px;
+}
+
+// Warning before the first set
+
+.warning {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 28px 24px;
+  text-align: center;
+}
+
+.warningSign {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #24140a;
+  font-size: 36px;
+  color: #ff8a3d;
+}
+
+.warningTitle {
+  margin-top: 22px;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.warningWeight {
+  font-size: 88px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: #ff9a55;
+}
+
+.warningUnits {
+  margin-left: 6px;
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.warningCaption {
+  margin-top: 10px;
+  font-size: 15px;
+  color: #b0b0b0;
+}
+
+.warningText {
+  margin-top: 14px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: #8d8d8d;
 }

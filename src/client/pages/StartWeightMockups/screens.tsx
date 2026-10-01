@@ -1,7 +1,7 @@
 import s from "./screens.module.scss";
 import { clsx } from "clsx";
 import type { ReactNode } from "react";
-import { MdArrowBack, MdChevronRight } from "react-icons/md";
+import { MdArrowBack, MdChevronRight, MdWarningAmber } from "react-icons/md";
 import { EXERCISES } from "../../db/exercises/constants.ts";
 import { ExerciseAnimation } from "../WorkoutFocus/components/ExerciseAnimation";
 
@@ -113,47 +113,48 @@ export function InventoryScreen({
   );
 }
 
-// The warning says what the problem is and offers the way out at once.
-export function WarningListScreen({
+// The warning as one question; the list of replacements comes after
+// «Заменить». The accent is either a sign, as in an empty state, or the
+// weight itself, since the weight is what the warning is about.
+export function WarningScreen({
   id,
   minimum,
+  accent,
 }: {
   id: string;
-  minimum: string;
+  minimum: number;
+  accent: "sign" | "weight";
 }) {
   return (
     <Chrome>
-      <Header id={id} title="Может быть тяжело" />
-      <div className={s.scroll}>
-        <div className={s.text}>
-          Меньше {minimum} здесь не поставить. Если ты только начинаешь, лучше
-          начать с другого упражнения:
-        </div>
-        <Alternatives id={id} />
+      <div className={s.header}>
+        <div className={s.name}>{exercise(id).name}</div>
       </div>
-      <div className={s.action}>
-        <span className={s.skip}>Оставить это упражнение</span>
-      </div>
-    </Chrome>
-  );
-}
-
-// The warning as one question; the list comes after «Заменить».
-export function WarningQuestionScreen({
-  id,
-  minimum,
-}: {
-  id: string;
-  minimum: string;
-}) {
-  return (
-    <Chrome>
-      <Header id={id} title="Заменить упражнение?" />
-      <div className={s.scroll}>
-        <div className={s.text}>
-          Меньше {minimum} здесь не поставить. Если ты только начинаешь, это
-          может быть тяжело.
-        </div>
+      <div className={s.warning}>
+        {accent === "sign" ? (
+          <>
+            <span className={s.warningSign}>
+              <MdWarningAmber />
+            </span>
+            <div className={s.warningTitle}>Может быть тяжело</div>
+            <div className={s.warningText}>
+              Меньше {minimum} кг здесь не поставить. Если ты только начинаешь,
+              лучше заменить упражнение.
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={s.warningWeight}>
+              {minimum}
+              <span className={s.warningUnits}>кг</span>
+            </div>
+            <div className={s.warningCaption}>меньше здесь не поставить</div>
+            <div className={s.warningText}>
+              Если ты только начинаешь, это может быть тяжело. Лучше заменить
+              упражнение.
+            </div>
+          </>
+        )}
       </div>
       <div className={s.action}>
         <span className={s.next}>Заменить</span>
