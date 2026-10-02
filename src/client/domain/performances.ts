@@ -14,11 +14,14 @@ import {
   deleteRecord,
   deleteSet,
   queryWorkoutById,
-  updatePerformance,
 } from "../db";
-import { addNextSet, duplicateSet } from "./sets.ts";
+import { addNextSet, duplicateSet, insertWarmUps } from "./sets.ts";
 
 const DEFAULT_REPS: RepRange = { min: 8, max: 12 };
+
+// Enough sets for weight finding to show itself on a new exercise. The real
+// number comes with the programs.
+const NEW_EXERCISE_SETS = 3;
 
 export function addPerformance(
   store: Store,
@@ -26,6 +29,11 @@ export function addPerformance(
   exercise: string,
 ): Performance {
   return createPerformance(store, workout, exercise, generateId(), null);
+}
+
+function nextPerformanceOrder(store: Store, workout: string): number {
+  const performances = queryPerformancesByWorkout(store, workout);
+  return Math.max(-1, ...performances.map((p) => p.order)) + 1;
 }
 
 // Copies a performance into another workout keeping its slot, so the slot
@@ -50,11 +58,8 @@ function createPerformance(
   exercise: string,
   slot: string,
   template: Performance | null,
+  order: number = nextPerformanceOrder(store, workout.id),
 ): Performance {
-  const workoutPerformances = queryPerformancesByWorkout(store, workout.id);
-  const nextOrder =
-    Math.max(-1, ...workoutPerformances.map((s) => s.order)) + 1;
-
   const prevPerformance = queryPreviousPerformance(
     store,
     slot,
@@ -72,14 +77,18 @@ function createPerformance(
     workout: workout.id,
     exercise,
     slot,
-    order: nextOrder,
+    order,
     startedAt: workout.startedAt,
     reps,
     timer: source?.timer,
   });
 
+  // Warm-ups are never copied: whether they are needed is decided anew,
+  // since it depends on the weight and on the exercises before this one.
   const prevSets = prevPerformance
-    ? querySetsByPerformance(store, prevPerformance.id)
+    ? querySetsByPerformance(store, prevPerformance.id).filter(
+        (s) => s.type !== "warm-up",
+      )
     : [];
 
   if (prevSets.length !== 0) {
@@ -87,8 +96,10 @@ function createPerformance(
       duplicateSet(store, performance, oldSet);
     }
   } else {
-    addNextSet(store, performance);
+    for (let i = 0; i < NEW_EXERCISE_SETS; ++i) addNextSet(store, performance);
   }
+
+  insertWarmUps(store, performance);
 
   return performance;
 }
@@ -112,10 +123,12 @@ export function replacePerformance(
 
   deletePerformance(store, oldPerformance);
 
-  const newPerformance = addPerformance(store, workout, newExercise);
-
-  return updatePerformance(store, {
-    ...newPerformance,
-    order: oldPerformance.order,
-  });
+  return createPerformance(
+    store,
+    workout,
+    newExercise,
+    generateId(),
+    null,
+    oldPerformance.order,
+  );
 }

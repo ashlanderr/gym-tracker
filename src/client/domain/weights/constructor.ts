@@ -48,6 +48,48 @@ export function computeWeights(
   }
 }
 
+// The lightest and the heaviest weight the inventory assembles; plates make
+// no upper limit. Null while the inventory is unknown.
+export function weightLimitsKg(
+  exercise: Exercise,
+  gym: Gym,
+): { min: number; max?: number } | null {
+  const { load } = exercise;
+
+  switch (load.type) {
+    case "none":
+      return { min: 0, max: 0 };
+
+    case "barbell": {
+      if (!gym.bars || !gym.plates || gym.bars.items.length === 0) return null;
+      const { units, items } = gym.bars;
+      return { min: unitsToKg(Math.min(...items), units) };
+    }
+
+    case "plates":
+      return gym.plates ? { min: 0 } : null;
+
+    case "dumbbell": {
+      if (!gym.dumbbells || gym.dumbbells.length === 0) return null;
+      const kg = (weight: number, units: WeightUnits) =>
+        unitsToKg(weight, units) * load.count;
+      return {
+        min: Math.min(...gym.dumbbells.map((set) => kg(set.min, set.units))),
+        max: Math.max(...gym.dumbbells.map((set) => kg(set.max, set.units))),
+      };
+    }
+
+    case "stack": {
+      const stack = gym.stacks[exercise.id];
+      if (!stack) return null;
+      return {
+        min: unitsToKg(stack.base, stack.units),
+        max: unitsToKg(stack.max, stack.units),
+      };
+    }
+  }
+}
+
 export function snapWeightKg(
   exercise: Exercise,
   gym: Gym,

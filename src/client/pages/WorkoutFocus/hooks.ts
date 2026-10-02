@@ -2,26 +2,24 @@ import { useEffect, useState } from "react";
 import {
   type Exercise,
   type Gym,
+  type Performance,
   type RepRange,
   type Set,
-  useQueryCurrentGym,
-  useQueryExerciseById,
-  useQueryLatestMeasurement,
-  useQueryPreviousPerformance,
-  useQuerySetsByPerformance,
   type WeightUnits,
 } from "../../db";
-import { useStore } from "../../components";
 import {
-  buildRecommendations,
+  type FindingReason,
   getWeightUnits,
   kgToUnits,
+  type PerformanceData,
   type WorkoutStep,
 } from "../../domain";
+import { usePerformanceRecommendations } from "../Workout/hooks.ts";
 import { UNITS_SHORT, WEIGHT_SIGNS } from "../constants.ts";
 
 export interface StepPlan {
   set: Set;
+  sets: Set[];
   exercise: Exercise;
   gym: Gym;
   units: WeightUnits;
@@ -30,61 +28,67 @@ export interface StepPlan {
   previousWeightKg: number | undefined;
   reps: number;
   target: RepRange | undefined;
+  isFinding: boolean;
+  reason: FindingReason | undefined;
+  // The working weight a warm-up leads to.
+  workingWeightKg: number | undefined;
+  data: PerformanceData;
 }
 
 export function useStepPlan(step: WorkoutStep): StepPlan | null {
-  const store = useStore();
-  const { performance } = step;
-  const exercise = useQueryExerciseById(store, performance.exercise);
-  const gym = useQueryCurrentGym(store, performance.user);
-  const bodyWeight = useQueryLatestMeasurement(
-    store,
-    "weight",
-    performance.startedAt,
-  );
-  const sets = useQuerySetsByPerformance(store, performance.id);
-  const previous = useQueryPreviousPerformance(
-    store,
-    performance.slot,
-    performance.exercise,
-    performance.startedAt,
-  );
-  const previousSets = useQuerySetsByPerformance(
-    store,
-    previous?.id ?? "",
-  ).filter((s) => s.completed);
+  const plan = usePerformanceRecommendations(step.performance);
+  if (!plan) return null;
 
-  if (!exercise) return null;
-
-  const set = sets.find((s) => s.id === step.set.id) ?? step.set;
+  const { sets, recommendations, data } = plan;
+  const { exercise, gym, performance } = data;
+  const index = sets.findIndex((s) => s.id === step.set.id);
+  const set = sets[index] ?? step.set;
+  const recommendation = recommendations[index];
   const isWarmUp = set.type === "warm-up";
 
-  const recommendations = buildRecommendations({
-    currentSets: sets,
-    previousSets,
-    exercise,
-    gym,
-    reps: performance.reps,
-    selfWeight: bodyWeight?.value,
-  });
-  const recommendation = recommendations[sets.indexOf(set)];
-  const previousSet = previousSets.filter((s) => s.type === set.type)[
-    step.number - 1
-  ];
+  const firstWorking = sets.findIndex((s) => s.type !== "warm-up");
+  const workingWeightKg =
+    firstWorking < 0
+      ? undefined
+      : (sets[firstWorking].weight ?? recommendations[firstWorking]?.weight);
 
-  const bodyWeightOnly = exercise.load.type === "none" ? 0 : undefined;
+  // The same set of the previous performance, for the change under the weight.
+  const previous = previousPerformance(data);
+  const previousSet = data.exerciseSets
+    .filter(
+      (s) =>
+        s.performance === previous?.id && s.completed && s.type === set.type,
+    )
+    .sort((a, b) => a.order - b.order)[step.number - 1];
 
   return {
     set,
+    sets,
     exercise,
     gym,
     units: getWeightUnits(exercise, gym),
-    weightKg: set.weight ?? recommendation?.weight ?? bodyWeightOnly,
+    weightKg: set.weight ?? recommendation?.weight,
     isSuggestedWeight: set.weight === undefined,
     previousWeightKg: isWarmUp ? undefined : previousSet?.weight,
     reps: set.reps ?? recommendation?.reps?.max ?? performance.reps.max,
     target: isWarmUp ? undefined : performance.reps,
+    isFinding: recommendation?.isFinding ?? false,
+    reason: recommendation?.reason,
+    workingWeightKg: isWarmUp ? workingWeightKg : undefined,
+    data,
   };
+}
+
+// The latest performance of the slot, or of the exercise in general when the
+// slot has no history yet.
+function previousPerformance({
+  performance,
+  exercisePerformances,
+}: PerformanceData): Performance | undefined {
+  const earlier = exercisePerformances
+    .filter((p) => p.startedAt < performance.startedAt)
+    .sort((a, b) => b.startedAt - a.startedAt);
+  return earlier.find((p) => p.slot === performance.slot) ?? earlier[0];
 }
 
 export interface FormattedWeight {

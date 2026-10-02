@@ -1,70 +1,84 @@
-import type {
-  CompletedSetData,
-  DraftSetData,
-  RecommendationParams,
-  RecSetData,
-} from "./types.ts";
-import { WARM_UP_SETS } from "./constants.ts";
-import { addSelfWeight, snapWeightKg, subtractSelfWeight } from "../weights";
+import {
+  advanceFinding,
+  type FindingState,
+  INITIAL_FINDING,
+} from "./finding.ts";
+import { startWeightKg } from "./start.ts";
+import { planWarmUps } from "./warm-up.ts";
+import type { RecommendationParams, RecSetData } from "./types.ts";
 
-// A stub until the real algorithm is designed: working sets repeat the weight
-// of the same set last time, warm-ups follow the working weight.
+// The first weight of an exercise without history is the start weight; while
+// the weight is being found it follows the ratings from set to set; after
+// that the last weight repeats.
+// TODO: progression. Steps forward and back, decay after a break and a
+// stopped exercise are described in docs/recommendations/README.md but not
+// settled yet.
 export function buildRecommendations(
   params: RecommendationParams,
 ): RecSetData[] {
-  const { currentSets, previousSets, reps } = params;
+  const { currentSets, previousSets, exercise, gym, reps } = params;
+  const context = { exercise, gym, reps, selfWeight: params.selfWeight };
+  const canFind = exercise.load.type !== "none";
+  const start = startWeightKg(exercise, gym, params.sex);
 
-  const currWorkingSets = currentSets.filter((s) => s.type !== "warm-up");
-  const prevWorkingSets = previousSets.filter((s) => s.type !== "warm-up");
-  const warmUpCount = currentSets.length - currWorkingSets.length;
-  let warmUpIndex = 0;
-  let workingIndex = 0;
-
-  return currentSets.map((set) => {
-    if (set.type !== "warm-up") {
-      const previous =
-        prevWorkingSets.at(workingIndex) ?? prevWorkingSets.at(-1);
-      workingIndex += 1;
-      return { type: set.type, weight: previous?.weight, reps };
-    }
-
-    const warmUp = computeWarmUpSet(
-      params,
-      currWorkingSets.at(0),
-      prevWorkingSets.at(0),
-      warmUpCount,
-      warmUpIndex,
-    );
-    warmUpIndex += 1;
-    return warmUp;
-  });
-}
-
-function computeWarmUpSet(
-  params: RecommendationParams,
-  currentWorking: DraftSetData | undefined,
-  previousWorking: CompletedSetData | undefined,
-  count: number,
-  index: number,
-): RecSetData {
-  const { exercise, gym, selfWeight } = params;
-  const workingWeight = currentWorking?.weight ?? previousWorking?.weight;
-  const template = WARM_UP_SETS.at(count - 1)?.at(index);
-
-  if (workingWeight === undefined || !template) {
-    return { type: "warm-up", weight: undefined, reps: undefined };
+  let state: FindingState = INITIAL_FINDING;
+  for (const set of previousSets) {
+    if (set.type === "working") state = advanceFinding(state, set, context);
   }
 
-  const fullWeight = addSelfWeight(exercise.weight, selfWeight, workingWeight);
-  const weight = subtractSelfWeight(
-    exercise.weight,
-    selfWeight,
-    fullWeight * template.weight,
-  );
+  let isReasonShown = false;
+  const working = currentSets.map((set): RecSetData | null => {
+    if (set.type === "warm-up") return null;
 
-  return {
-    type: "warm-up",
-    weight: snapWeightKg(exercise, gym, weight),
-    reps: { min: template.reps, max: template.reps },
-  };
+    const recommendation: RecSetData = {
+      type: set.type,
+      weight: state.next ?? start,
+      reps,
+      isFinding: canFind && state.isFinding,
+      reason: !set.completed && !isReasonShown ? state.reason : undefined,
+    };
+
+    if (!set.completed) isReasonShown = true;
+
+    if (set.completed && set.weight !== undefined && set.reps !== undefined) {
+      state = advanceFinding(
+        state,
+        { weight: set.weight, reps: set.reps, effort: set.effort },
+        context,
+      );
+    }
+
+    return recommendation;
+  });
+
+  const firstWorking = currentSets.findIndex((s) => s.type !== "warm-up");
+  const workingWeight =
+    firstWorking < 0
+      ? undefined
+      : (currentSets[firstWorking].weight ?? working[firstWorking]?.weight);
+  const warmUps =
+    workingWeight === undefined
+      ? []
+      : planWarmUps({
+          exercise,
+          gym,
+          selfWeight: params.selfWeight,
+          workingWeight,
+          isFirstOfMovement: params.isFirstOfMovement,
+        });
+
+  let warmUpIndex = 0;
+  return currentSets.map((_, index) => {
+    const recommendation = working[index];
+    if (recommendation) return recommendation;
+
+    const warmUp = warmUps.at(warmUpIndex);
+    warmUpIndex += 1;
+    return {
+      type: "warm-up",
+      weight: warmUp?.weight,
+      reps: warmUp?.reps,
+      isFinding: false,
+    };
+  });
 }

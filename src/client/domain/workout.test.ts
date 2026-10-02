@@ -31,6 +31,10 @@ function completeSets(store: Store, performance: string, weight: number) {
   }
 }
 
+function setTypes(store: Store, performance: string) {
+  return querySetsByPerformance(store, performance).map((s) => s.type);
+}
+
 test("duplicated workout continues the history of each slot", () => {
   const store = createStore();
   const first = startWorkout(store, 1);
@@ -47,8 +51,21 @@ test("duplicated workout continues the history of each slot", () => {
 
   expect(newHeavy.slot).toBe(heavy.slot);
   expect(newLight.slot).toBe(light.slot);
-  expect(querySetsByPerformance(store, newHeavy.id)).toHaveLength(2);
-  expect(querySetsByPerformance(store, newLight.id)).toHaveLength(1);
+  // Working sets are copied; the warm-up is decided anew and only the first
+  // press of the workout gets one.
+  expect(setTypes(store, newHeavy.id)).toEqual([
+    "warm-up",
+    "warm-up",
+    "working",
+    "working",
+    "working",
+    "working",
+  ]);
+  expect(setTypes(store, newLight.id)).toEqual([
+    "working",
+    "working",
+    "working",
+  ]);
 
   const previous = queryPreviousPerformance(
     store,

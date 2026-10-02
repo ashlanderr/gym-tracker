@@ -10,7 +10,6 @@ import {
   useQueryExerciseById,
   useQueryPreviousPerformance,
   type Performance,
-  useQueryLatestMeasurement,
   useQueryCurrentGym,
   type Gym,
 } from "../../../../db";
@@ -21,22 +20,18 @@ import { PerformanceTimer } from "../PerformanceTimer";
 import { assertNever } from "../../../../utils";
 import {
   addNextSet,
-  buildRecommendations,
   getWeightUnits,
+  type RecSetData,
 } from "../../../../domain";
+import { usePerformanceRecommendations } from "../../hooks.ts";
 import { PerformanceActions } from "../PerformanceActions";
 
 export function Performance({ performance, currentSet }: PerformanceProps) {
   const store = useStore();
   const { pushModal } = useModalStack();
   const exercise = useQueryExerciseById(store, performance.exercise);
-  const sets = useQuerySetsByPerformance(store, performance.id);
-  const bodyWeight = useQueryLatestMeasurement(
-    store,
-    "weight",
-    performance.startedAt,
-  );
   const gym = useQueryCurrentGym(store, performance.user);
+  const plan = usePerformanceRecommendations(performance);
 
   const prevPerformance = useQueryPreviousPerformance(
     store,
@@ -50,7 +45,7 @@ export function Performance({ performance, currentSet }: PerformanceProps) {
     prevPerformance?.id ?? "",
   ).filter((s) => s.completed);
 
-  if (!exercise) return null;
+  if (!exercise || !plan) return null;
 
   const units = getWeightUnits(exercise, gym);
   const unitsText = UNITS_TRANSLATION[units];
@@ -86,10 +81,10 @@ export function Performance({ performance, currentSet }: PerformanceProps) {
         <tbody>
           {buildSets({
             prevSets,
-            sets,
+            sets: plan.sets,
+            recommendations: plan.recommendations,
             performance,
             exercise,
-            selfWeight: bodyWeight?.value,
             gym,
             currentSet,
           })}
@@ -106,30 +101,22 @@ export function Performance({ performance, currentSet }: PerformanceProps) {
 function buildSets({
   prevSets,
   sets,
+  recommendations,
   performance,
   exercise,
-  selfWeight,
   gym,
   currentSet,
 }: {
   prevSets: CompletedSet[];
   sets: Set[];
+  recommendations: RecSetData[];
   performance: Performance;
   exercise: Exercise;
-  selfWeight: number | undefined;
   gym: Gym;
   currentSet: string | undefined;
 }): ReactNode[] {
   const prevWarmUp = prevSets.filter((s) => s.type === "warm-up");
   const prevWorking = prevSets.filter((s) => s.type !== "warm-up");
-  const recommendations = buildRecommendations({
-    currentSets: sets,
-    previousSets: prevSets,
-    exercise,
-    gym,
-    reps: performance.reps,
-    selfWeight,
-  });
 
   const result: ReactNode[] = [];
   let warmUpIndex = 0;

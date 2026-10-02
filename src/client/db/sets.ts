@@ -11,7 +11,9 @@ export type SetType = "warm-up" | "working";
 
 export type Set = DraftSet | CompletedSet;
 
-export type Effort = "easy" | "normal" | "hard" | "failure";
+// "light" is asked only while the weight is being found: a set so easy that
+// the next one doubles.
+export type Effort = "light" | "easy" | "normal" | "hard" | "failure";
 
 export interface DraftSet {
   id: string;
@@ -80,6 +82,12 @@ export function useQuerySetsByPerformance(
     deps: [performance],
   });
   return [...sets].sort((a, b) => a.order - b.order);
+}
+
+export function querySetsByExercise(store: Store, exercise: string): Set[] {
+  return queryCollection(collection(store.personal, "sets"), {
+    exercise: { eq: exercise },
+  });
 }
 
 export function useQuerySetsByExercise(store: Store, exercise: string): Set[] {
