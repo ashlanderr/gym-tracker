@@ -49,7 +49,7 @@ test("barbell takes the heaviest bar that fits", () => {
 });
 
 test("plates are assembled from any denominations", () => {
-  const machine = exercise({ type: "plates", sides: 2 });
+  const machine = exercise({ type: "plates", sides: 2, base: 20 });
   const plates = gym({ plates: { units: "kg", items: [20, 15] } });
 
   expect(computeWeights(machine, plates, 60)).toMatchObject({
@@ -84,7 +84,13 @@ test("stack is configured per exercise", () => {
   const machine = exercise({ type: "stack" });
   const stack = gym({
     stacks: {
-      [machine.id]: { units: "kg", base: 0, step: 10, additional: 2.5 },
+      [machine.id]: {
+        units: "kg",
+        base: 0,
+        step: 10,
+        max: 200,
+        additional: 2.5,
+      },
     },
   });
 
@@ -102,7 +108,9 @@ test("stack is configured per exercise", () => {
 test("fine adjustment covers every fraction of the main step", () => {
   const machine = exercise({ type: "stack" });
   const stack = gym({
-    stacks: { [machine.id]: { units: "kg", base: 0, step: 20, additional: 5 } },
+    stacks: {
+      [machine.id]: { units: "kg", base: 0, step: 20, max: 200, additional: 5 },
+    },
   });
 
   expect(computeWeights(machine, stack, 54)).toMatchObject({
@@ -115,12 +123,33 @@ test("fine adjustment covers every fraction of the main step", () => {
 test("stack in pounds converts back to kilograms", () => {
   const machine = exercise({ type: "stack" });
   const stack = gym({
-    stacks: { [machine.id]: { units: "lb", base: 10, step: 15 } },
+    stacks: { [machine.id]: { units: "lb", base: 10, step: 15, max: 250 } },
   });
 
   const result = computeWeights(machine, stack, 114 * 0.454);
   expect(result).toMatchObject({ stack: 115, additional: 0 });
   expect(result?.totalKg).toBeCloseTo(115 * 0.454);
+});
+
+test("stack stops at its heaviest weight", () => {
+  const machine = exercise({ type: "stack" });
+  const stack = gym({
+    stacks: { [machine.id]: { units: "lb", base: 10, step: 10, max: 200 } },
+  });
+
+  expect(snapWeightKg(machine, stack, 250 * 0.454)).toBeCloseTo(200 * 0.454);
+  expect(stepWeightKg(machine, stack, 200 * 0.454, 1, 1)).toBeCloseTo(
+    200 * 0.454,
+  );
+});
+
+test("unknown inventory assembles nothing", () => {
+  const empty = gym({});
+
+  expect(computeWeights(exercise({ type: "barbell" }), empty, 60)).toBeNull();
+  expect(
+    computeWeights(exercise({ type: "dumbbell", count: 2 }), empty, 20),
+  ).toBeNull();
 });
 
 test("weight steps to the next assemblable value", () => {
@@ -141,7 +170,13 @@ test("weight stays at the edge of the inventory", () => {
   const machine = exercise({ type: "stack" });
   const stack = gym({
     stacks: {
-      [machine.id]: { units: "kg", base: 5, step: 5, additional: 2.5 },
+      [machine.id]: {
+        units: "kg",
+        base: 5,
+        step: 5,
+        max: 100,
+        additional: 2.5,
+      },
     },
   });
 

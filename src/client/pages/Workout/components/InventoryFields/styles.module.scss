@@ -1,0 +1,43 @@
+.row {
+  margin-top: 20px;
+}
+
+.label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6d6d6d;
+}
+
+.hint {
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #6d6d6d;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.chip {
+  min-width: 40px;
+  padding: 9px;
+  border: 1px solid #2e2e2e;
+  border-radius: 10px;
+  background: transparent;
+  text-align: center;
+  font: inherit;
+  font-size: 13px;
+  color: #bdbdbd;
+}
+
+.selected {
+  border-color: #06f;
+  background: #06f;
+  color: #fff;
+  font-weight: 600;
+}

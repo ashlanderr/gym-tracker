@@ -4,3 +4,4 @@ export * from "./CompleteWorkoutModal";
 export * from "./ActiveTimer";
 export * from "./WeightsVisualizer";
 export * from "./WeightsSelector";
+export * from "./InventoryFields";

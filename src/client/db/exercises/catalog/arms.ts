@@ -4,6 +4,7 @@ import type { ExerciseGroup } from "./types.ts";
 
 export const ARM_GROUPS: ExerciseGroup[] = [
   {
+    movement: "pull",
     exercises: {
       dumbbell_curl: {
         name: "Подъём гантелей на бицепс стоя",
@@ -12,6 +13,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 10, max: 12 },
+        safeStart: { male: 6, female: 2 },
         benefit: "базовый вариант, всегда есть свободные гантели",
         asset: crossFade(EXERCISE_FRAMES.dumbbell_curl),
         instructions: [
@@ -27,6 +29,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell", "bench"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 10, max: 12 },
+        safeStart: { male: 6, female: 2 },
         benefit: "бицепс работает из растянутого положения",
         asset: crossFade(EXERCISE_FRAMES.incline_dumbbell_curl),
         instructions: [
@@ -42,6 +45,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 10, max: 12 },
+        safeStart: { male: 8, female: 4 },
         benefit: "добавляет толщину руке за счёт брахиалиса",
         asset: crossFade(EXERCISE_FRAMES.hammer_curl),
         instructions: [
@@ -57,6 +61,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell"],
         load: { type: "barbell" },
         reps: { min: 8, max: 12 },
+        safeStart: { male: 7.5, female: 2.5 },
         benefit: "больше вес, чем с гантелями, и мягче для запястий",
         instructions: [
           "Хват на изгибах грифа, локти прижаты к бокам.",
@@ -71,6 +76,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell"],
         load: { type: "barbell" },
         reps: { min: 8, max: 12 },
+        safeStart: { male: 7.5, female: 2.5 },
         benefit: "максимальная нагрузка на бицепс при прямом запястье",
         asset: crossFade(EXERCISE_FRAMES.barbell_curl),
         instructions: [
@@ -86,6 +92,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell", "bench"],
         load: { type: "barbell" },
         reps: { min: 10, max: 12 },
+        safeStart: { male: 5, female: 2.5 },
         benefit: "исключает раскачку корпусом",
         asset: crossFade(EXERCISE_FRAMES.preacher_curl),
         instructions: [
@@ -101,6 +108,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell", "bench"],
         load: { type: "dumbbell", count: 1 },
         reps: { min: 10, max: 12 },
+        safeStart: { male: 3, female: 1 },
         benefit: "видно разницу между руками и можно её добрать",
         instructions: [
           "Положи плечо на пюпитр, гантель в опущенной руке.",
@@ -156,6 +164,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "push",
     exercises: {
       triceps_pushdown_rope: {
         name: "Разгибание рук на верхнем блоке с канатом",
@@ -224,6 +233,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell", "bench"],
         load: { type: "barbell" },
         reps: { min: 8, max: 12 },
+        safeStart: { male: 7.5, female: 2.5 },
         benefit: "растягивает трицепс под нагрузкой",
         instructions: [
           "Штанга над плечами, хват на изгибах, локти смотрят вперёд.",
@@ -238,6 +248,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell", "bench"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 10, max: 12 },
+        safeStart: { male: 6, female: 2 },
         benefit: "мягче для локтей, руки работают независимо",
         asset: crossFade(EXERCISE_FRAMES.dumbbell_skullcrusher),
         instructions: [
@@ -253,6 +264,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell", "bench"],
         load: { type: "dumbbell", count: 1 },
         reps: { min: 10, max: 12 },
+        safeStart: { male: 3, female: 2 },
         benefit: "длинная головка трицепса в максимальном растяжении",
         asset: crossFade(EXERCISE_FRAMES.overhead_dumbbell_extension),
         instructions: [
@@ -297,6 +309,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell", "bench"],
         load: { type: "barbell" },
         reps: { min: 6, max: 10 },
+        safeStart: { male: 15, female: 7.5 },
         benefit: "самый большой вес на трицепс",
         asset: crossFade(EXERCISE_FRAMES.close_grip_bench_press),
         instructions: [
@@ -310,7 +323,7 @@ export const ARM_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["triceps"],
         secondaryMuscles: ["chest", "shoulders"],
         equipment: ["smith", "bench"],
-        load: { type: "barbell" },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 8, max: 12 },
         benefit: "можно дожимать до отказа в одиночку",
         asset: crossFade(EXERCISE_FRAMES.smith_close_grip_bench_press),

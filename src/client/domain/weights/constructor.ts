@@ -27,13 +27,19 @@ export function computeWeights(
       return null;
 
     case "barbell":
-      return barbellWeights(gym.bars, gym.plates, weightKg, rounding);
+      return gym.bars && gym.plates
+        ? barbellWeights(gym.bars, gym.plates, weightKg, rounding)
+        : null;
 
     case "plates":
-      return platesWeights(gym.plates, load.sides, weightKg, rounding);
+      return gym.plates
+        ? platesWeights(gym.plates, load.sides, weightKg, rounding)
+        : null;
 
     case "dumbbell":
-      return dumbbellWeights(gym.dumbbells, load.count, weightKg, rounding);
+      return gym.dumbbells
+        ? dumbbellWeights(gym.dumbbells, load.count, weightKg, rounding)
+        : null;
 
     case "stack": {
       const stack = gym.stacks[exercise.id];
@@ -82,10 +88,10 @@ export function getWeightUnits(exercise: Exercise, gym: Gym): WeightUnits {
 
     case "barbell":
     case "plates":
-      return gym.plates.units;
+      return gym.plates?.units ?? DEFAULT_WEIGHT_UNITS;
 
     case "dumbbell":
-      return gym.dumbbells.at(0)?.units ?? DEFAULT_WEIGHT_UNITS;
+      return gym.dumbbells?.at(0)?.units ?? DEFAULT_WEIGHT_UNITS;
 
     case "stack":
       return gym.stacks[exercise.id]?.units ?? DEFAULT_WEIGHT_UNITS;
@@ -177,7 +183,7 @@ function stackWeights(
   weightKg: number,
   rounding: RoundingMode,
 ): WeightsConstructor {
-  const { units, base, step } = stack;
+  const { units, base, step, max } = stack;
   const offsets = fineOffsets(step, stack.additional);
   const target = kgToUnits(weightKg, units);
   const maxSteps =
@@ -187,7 +193,9 @@ function stackWeights(
   for (let i = 0; i <= maxSteps; ++i) {
     const weight = roundPrecise(base + i * step);
     for (const additional of offsets) {
-      candidates.push({ stack: weight, additional });
+      if (weight + additional <= max + EPSILON) {
+        candidates.push({ stack: weight, additional });
+      }
     }
   }
 

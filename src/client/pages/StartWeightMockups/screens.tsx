@@ -7,7 +7,11 @@ import { EXERCISES } from "../../db/exercises/constants.ts";
 import { WeightsVisualizer } from "../Workout/components";
 import { ExerciseAnimation } from "../WorkoutFocus/components/ExerciseAnimation";
 
-const MOCK_GYM = defaultGym("mockup");
+const MOCK_GYM = {
+  ...defaultGym("mockup"),
+  plates: { units: "kg" as const, items: [25, 20, 15, 10, 5, 2.5, 1.25] },
+  bars: { units: "kg" as const, items: [20] },
+};
 
 const exercise = (id: string) => {
   const found = EXERCISES[id];

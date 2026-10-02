@@ -27,14 +27,24 @@ export type EquipmentTag =
   | "bodyweight";
 
 // How the weight of the exercise is assembled from the gym inventory.
-// Plate-loaded machines rarely have the sled weight written on them,
-// so for `plates` only the plates are counted.
+// Plate-loaded machines and the Smith machine rarely have the sled or the bar
+// weight written on them, so the recorded weight is only the plates. `base`
+// is an estimate of the rest: never shown or recorded, it only lets the
+// inner calculations scale an empty machine.
 export type ExerciseLoad =
   | { type: "none" }
   | { type: "barbell" }
   | { type: "dumbbell"; count: 1 | 2 }
   | { type: "stack" }
-  | { type: "plates"; sides: 1 | 2 };
+  | { type: "plates"; sides: 1 | 2; base: number };
+
+// Movement group for the warm-up: only the first exercise of a group in a
+// workout is warmed up. Core goes without a warm-up.
+export type Movement = "push" | "pull" | "squat" | "hinge" | "core";
+
+// Safe first weight for a novice, by sex: the recorded weight for barbells
+// and dumbbells, the full weight with the body for pull-ups and dips.
+export type SafeStart = Record<"male" | "female", number>;
 
 // A cross-fade is two stills of the same shot — the start and the end of the
 // movement — that the UI fades between.
@@ -60,6 +70,9 @@ export interface Exercise {
   load: ExerciseLoad;
   weight: ExerciseWeight;
   reps: RepRange;
+  // Custom exercises have no movement group and go without a warm-up.
+  movement?: Movement;
+  safeStart?: SafeStart;
   asset?: ExerciseAsset;
   alternatives: ExerciseAlternative[];
   instructions: string[];

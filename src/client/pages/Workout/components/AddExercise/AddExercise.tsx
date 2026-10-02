@@ -32,6 +32,10 @@ import {
 
 const DEFAULT_LOAD: ExerciseLoad = { type: "none" };
 
+// Nobody knows the sled weight of their own machine either, so a custom
+// plate-loaded exercise gets the estimate of a typical one.
+const CUSTOM_PLATES_BASE = 20;
+
 const COUNTS = [1, 2] as const;
 
 export function AddExercise({
@@ -118,7 +122,7 @@ export function AddExercise({
         break;
 
       case "plates":
-        setLoad({ type, sides: 2 });
+        setLoad({ type, sides: 2, base: CUSTOM_PLATES_BASE });
         break;
 
       default:

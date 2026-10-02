@@ -41,6 +41,8 @@ export function buildExercises(
         load: definition.load,
         weight: definition.weight ?? DEFAULT_EXERCISE_WEIGHT,
         reps: definition.reps,
+        movement: definition.movement ?? group.movement,
+        safeStart: definition.safeStart,
         asset: definition.asset,
         instructions: definition.instructions,
         alternatives,

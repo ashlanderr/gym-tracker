@@ -1,8 +1,15 @@
-import type { Exercise, MuscleType, ExerciseWeight } from "../types.ts";
+import type {
+  Exercise,
+  ExerciseWeight,
+  Movement,
+  MuscleType,
+} from "../types.ts";
 
 // One movement done with different equipment or grip. Members of a group are
-// each other's alternatives, so the links are never written twice.
+// each other's alternatives, so the links are never written twice. The
+// movement group is shared too, unless a member sets its own.
 export interface ExerciseGroup {
+  movement: Movement;
   exercises: Record<string, ExerciseDefinition>;
 }
 

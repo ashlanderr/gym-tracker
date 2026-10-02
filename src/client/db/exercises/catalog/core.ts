@@ -2,6 +2,7 @@ import type { ExerciseGroup } from "./types.ts";
 
 export const CORE_GROUPS: ExerciseGroup[] = [
   {
+    movement: "core",
     exercises: {
       cable_crunch: {
         name: "Скручивания на верхнем блоке стоя на коленях",
@@ -36,7 +37,7 @@ export const CORE_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["abs"],
         secondaryMuscles: [],
         equipment: ["machine"],
-        load: { type: "plates", sides: 2 },
+        load: { type: "plates", sides: 2, base: 10 },
         reps: { min: 10, max: 15 },
         benefit: "тяжёлая версия, когда стека уже не хватает",
         instructions: [
@@ -48,6 +49,7 @@ export const CORE_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "core",
     exercises: {
       hanging_leg_raise: {
         name: "Подъём ног в висе на турнике",

@@ -21,7 +21,7 @@ export function WeightsVisualizer({
   const ctor = computeWeights(exercise, gym, weightKg);
   if (!ctor) return null;
 
-  const rackHeight = plateHeight(Math.max(0, ...gym.plates.items));
+  const rackHeight = plateHeight(Math.max(0, ...(gym.plates?.items ?? [])));
 
   switch (ctor.type) {
     case "barbell":

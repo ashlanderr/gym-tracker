@@ -5,14 +5,17 @@ export interface Gym {
   id: string;
   user: string;
 
+  // Inventory the person has not told us about stays unset, which is what
+  // opens the inventory page before the first set.
+
   // Номиналы блинов, пар любого номинала считаем сколько угодно.
-  plates: WeightList;
+  plates?: WeightList;
 
   // Все грифы зала. Берётся самый тяжёлый, который не больше нужного веса.
-  bars: WeightList;
+  bars?: WeightList;
 
   // Несколько наборов гантелей, например 1–10 с шагом 1 и 12–48 с шагом 2.
-  dumbbells: DumbbellSet[];
+  dumbbells?: DumbbellSet[];
 
   // Exercise.id -> стек тренажёра. Стеки в разных тренажёрах отличаются,
   // поэтому настраиваются для каждого упражнения отдельно.
@@ -35,6 +38,9 @@ export interface StackWeights {
   units: WeightUnits;
   base: number;
   step: number;
+  // The heaviest weight the stack assembles. Suggested weights stop there,
+  // and an assisting machine starts from it.
+  max: number;
   // Fine adjustment step: an add-on weight or a dial. Every multiple of it
   // below the main step is available.
   additional?: number;
@@ -51,9 +57,6 @@ export function defaultGym(user: string): Gym {
   return {
     id: CURRENT_GYM_ID,
     user,
-    plates: { units: "kg", items: [25, 20, 15, 10, 5, 2.5, 1.25] },
-    bars: { units: "kg", items: [20] },
-    dumbbells: [],
     stacks: {},
   };
 }

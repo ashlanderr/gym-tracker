@@ -4,6 +4,7 @@ import type { ExerciseGroup } from "./types.ts";
 
 export const CHEST_GROUPS: ExerciseGroup[] = [
   {
+    movement: "push",
     exercises: {
       bench_press: {
         name: "Жим штанги лёжа",
@@ -12,6 +13,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell", "bench"],
         load: { type: "barbell" },
         reps: { min: 6, max: 8 },
+        safeStart: { male: 20, female: 10 },
         benefit: "больше рабочий вес",
         related: ["incline_bench_press"],
         asset: crossFade(EXERCISE_FRAMES.bench_press),
@@ -28,6 +30,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell", "bench"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 8, max: 12 },
+        safeStart: { male: 16, female: 6 },
         benefit: "шире амплитуда, руки работают независимо",
         asset: crossFade(EXERCISE_FRAMES.dumbbell_bench_press),
         instructions: [
@@ -41,7 +44,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["chest"],
         secondaryMuscles: ["triceps", "shoulders"],
         equipment: ["smith", "bench"],
-        load: { type: "barbell" },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 8, max: 12 },
         benefit: "можно работать до отказа без страхующего",
         asset: crossFade(EXERCISE_FRAMES.smith_bench_press),
@@ -71,7 +74,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["chest"],
         secondaryMuscles: ["triceps", "shoulders"],
         equipment: ["machine"],
-        load: { type: "plates", sides: 2 },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 8, max: 12 },
         benefit: "ощущается как свободный вес, но без страховки",
         asset: crossFade(EXERCISE_FRAMES.chest_press),
@@ -84,6 +87,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "push",
     exercises: {
       incline_bench_press: {
         name: "Жим штанги на наклонной скамье",
@@ -92,6 +96,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell", "bench"],
         load: { type: "barbell" },
         reps: { min: 6, max: 8 },
+        safeStart: { male: 17.5, female: 7.5 },
         benefit: "больше нагрузки на верх груди",
         related: ["bench_press"],
         asset: crossFade(EXERCISE_FRAMES.incline_bench_press),
@@ -108,6 +113,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell", "bench"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 8, max: 12 },
+        safeStart: { male: 12, female: 6 },
         benefit: "верх груди и свободная траектория разом",
         asset: crossFade(EXERCISE_FRAMES.incline_dumbbell_press),
         instructions: [
@@ -121,7 +127,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["chest"],
         secondaryMuscles: ["shoulders", "triceps"],
         equipment: ["smith", "bench"],
-        load: { type: "barbell" },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 8, max: 12 },
         benefit: "фиксированная траектория на верх груди",
         asset: crossFade(EXERCISE_FRAMES.smith_incline_press),
@@ -136,7 +142,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["chest"],
         secondaryMuscles: ["shoulders", "triceps"],
         equipment: ["machine"],
-        load: { type: "plates", sides: 2 },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 8, max: 12 },
         benefit: "верх груди без контроля траектории",
         instructions: [
@@ -148,6 +154,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "push",
     exercises: {
       dips: {
         name: "Отжимания на брусьях",
@@ -157,6 +164,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         load: { type: "none" },
         weight: { type: "positive", selfWeightPercent: 100 },
         reps: { min: 8, max: 12 },
+        safeStart: { male: 30, female: 20 },
         benefit: "низ груди и трицепс своим весом",
         asset: crossFade(EXERCISE_FRAMES.dips),
         instructions: [
@@ -170,9 +178,10 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["chest", "triceps"],
         secondaryMuscles: ["shoulders"],
         equipment: ["bodyweight"],
-        load: { type: "plates", sides: 1 },
+        load: { type: "plates", sides: 1, base: 0 },
         weight: { type: "positive", selfWeightPercent: 100 },
         reps: { min: 6, max: 10 },
+        safeStart: { male: 30, female: 20 },
         benefit: "прогрессия, когда свой вес стал лёгким",
         asset: crossFade(EXERCISE_FRAMES.dips),
         instructions: [
@@ -216,7 +225,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["chest", "triceps"],
         secondaryMuscles: ["shoulders"],
         equipment: ["machine"],
-        load: { type: "plates", sides: 2 },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 8, max: 12 },
         benefit: "тяжёлая версия движения брусьев сидя",
         asset: crossFade(EXERCISE_FRAMES.dip_machine),
@@ -229,6 +238,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "push",
     exercises: {
       pec_deck: {
         name: "Сведение рук в тренажёре «бабочка»",
@@ -280,6 +290,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell", "bench"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 12, max: 15 },
+        safeStart: { male: 8, female: 4 },
         benefit: "растягивает грудь сильнее любого тренажёра",
         asset: crossFade(EXERCISE_FRAMES.dumbbell_fly),
         instructions: [
@@ -295,6 +306,7 @@ export const CHEST_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell", "bench"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 12, max: 15 },
+        safeStart: { male: 8, female: 2 },
         benefit: "растяжение с акцентом на верх груди",
         asset: crossFade(EXERCISE_FRAMES.incline_dumbbell_fly),
         instructions: [

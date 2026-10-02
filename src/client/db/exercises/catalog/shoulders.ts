@@ -4,6 +4,7 @@ import type { ExerciseGroup } from "./types.ts";
 
 export const SHOULDER_GROUPS: ExerciseGroup[] = [
   {
+    movement: "push",
     exercises: {
       overhead_press: {
         name: "Жим штанги стоя",
@@ -12,6 +13,7 @@ export const SHOULDER_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell"],
         load: { type: "barbell" },
         reps: { min: 6, max: 8 },
+        safeStart: { male: 12.5, female: 5 },
         benefit: "больше рабочий вес, работает всё тело",
         instructions: [
           "Штанга на передних дельтах, локти чуть впереди грифа.",
@@ -26,6 +28,7 @@ export const SHOULDER_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell", "bench"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 8, max: 12 },
+        safeStart: { male: 10, female: 4 },
         benefit: "спинка снимает нагрузку с поясницы",
         instructions: [
           "Сядь, прижми поясницу к спинке, гантели на уровне ушей.",
@@ -38,7 +41,7 @@ export const SHOULDER_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["shoulders"],
         secondaryMuscles: ["triceps"],
         equipment: ["smith", "bench"],
-        load: { type: "barbell" },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 8, max: 12 },
         benefit: "можно дожимать до отказа без страхующего",
         instructions: [
@@ -66,7 +69,7 @@ export const SHOULDER_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["shoulders"],
         secondaryMuscles: ["triceps"],
         equipment: ["machine"],
-        load: { type: "plates", sides: 2 },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 8, max: 12 },
         benefit: "тяжёлый жим с фиксированной спиной",
         instructions: [
@@ -78,6 +81,7 @@ export const SHOULDER_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "push",
     exercises: {
       lateral_raise: {
         name: "Махи гантелями в стороны стоя",
@@ -86,6 +90,7 @@ export const SHOULDER_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 12, max: 15 },
+        safeStart: { male: 4, female: 4 },
         benefit: "основное движение на среднюю дельту",
         asset: crossFade(EXERCISE_FRAMES.lateral_raise),
         instructions: [
@@ -101,6 +106,7 @@ export const SHOULDER_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell", "bench"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 12, max: 15 },
+        safeStart: { male: 4, female: 4 },
         benefit: "корпус выключен, читинг невозможен",
         instructions: [
           "Сядь на край скамьи, гантели по бокам, спина прямая.",
@@ -153,6 +159,7 @@ export const SHOULDER_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "pull",
     exercises: {
       reverse_pec_deck: {
         name: "Разведения на задние дельты в тренажёре",
@@ -175,6 +182,7 @@ export const SHOULDER_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 12, max: 15 },
+        safeStart: { male: 4, female: 2 },
         benefit: "не нужен свободный тренажёр",
         instructions: [
           "Наклонись почти параллельно полу, спина прямая.",
@@ -213,6 +221,7 @@ export const SHOULDER_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "push",
     exercises: {
       front_raise: {
         name: "Подъём гантелей перед собой",
@@ -221,6 +230,7 @@ export const SHOULDER_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 12, max: 15 },
+        safeStart: { male: 4, female: 2 },
         benefit: "точечно на переднюю дельту",
         asset: crossFade(EXERCISE_FRAMES.front_raise),
         instructions: [

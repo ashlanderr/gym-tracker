@@ -4,6 +4,7 @@ import type { ExerciseGroup } from "./types.ts";
 
 export const LEG_GROUPS: ExerciseGroup[] = [
   {
+    movement: "squat",
     exercises: {
       back_squat: {
         name: "Приседания со штангой на спине",
@@ -12,6 +13,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell"],
         load: { type: "barbell" },
         reps: { min: 6, max: 8 },
+        safeStart: { male: 25, female: 12.5 },
         benefit: "главное движение на ноги и самый большой вес",
         related: ["leg_press_plates"],
         asset: crossFade(EXERCISE_FRAMES.back_squat),
@@ -28,6 +30,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell"],
         load: { type: "barbell" },
         reps: { min: 6, max: 8 },
+        safeStart: { male: 20, female: 10 },
         benefit: "больше квадрицепса, спина стоит вертикально",
         asset: crossFade(EXERCISE_FRAMES.front_squat),
         instructions: [
@@ -41,7 +44,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["quadriceps", "glutes"],
         secondaryMuscles: ["hamstrings"],
         equipment: ["smith"],
-        load: { type: "barbell" },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 8, max: 12 },
         benefit: "не нужно держать равновесие, можно вынести стопы вперёд",
         asset: crossFade(EXERCISE_FRAMES.smith_squat),
@@ -56,7 +59,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["quadriceps"],
         secondaryMuscles: ["glutes"],
         equipment: ["machine"],
-        load: { type: "plates", sides: 2 },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 8, max: 12 },
         benefit: "спина разгружена, квадрицепс получает всё",
         asset: crossFade(EXERCISE_FRAMES.hack_squat),
@@ -73,6 +76,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell"],
         load: { type: "dumbbell", count: 1 },
         reps: { min: 10, max: 12 },
+        safeStart: { male: 6, female: 3 },
         benefit: "проще всего держать спину прямой, не нужна стойка",
         instructions: [
           "Держи гантель вертикально у груди, локти вниз.",
@@ -85,7 +89,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["quadriceps", "glutes"],
         secondaryMuscles: ["hamstrings"],
         equipment: ["machine"],
-        load: { type: "plates", sides: 2 },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 10, max: 12 },
         benefit: "большой вес без нагрузки на спину",
         related: ["back_squat"],
@@ -113,6 +117,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "squat",
     exercises: {
       bulgarian_split_squat: {
         name: "Болгарские сплит-приседания с гантелями",
@@ -121,6 +126,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell", "bench"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 8, max: 12 },
+        safeStart: { male: 8, female: 4 },
         benefit: "грузит ногу поодиночке и растягивает ягодицу",
         instructions: [
           "Задняя нога на скамье, передняя в шаге впереди.",
@@ -133,7 +139,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["quadriceps", "glutes"],
         secondaryMuscles: ["hamstrings"],
         equipment: ["smith", "bench"],
-        load: { type: "barbell" },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 8, max: 12 },
         benefit: "равновесие держать не нужно — можно брать больше вес",
         instructions: [
@@ -149,6 +155,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 10, max: 12 },
+        safeStart: { male: 8, female: 4 },
         benefit: "длинная амплитуда и нагрузка на ягодицы в шаге",
         asset: crossFade(EXERCISE_FRAMES.walking_lunge),
         instructions: [
@@ -164,6 +171,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 10, max: 12 },
+        safeStart: { male: 8, female: 4 },
         benefit: "не нужно место для прохода по залу",
         asset: crossFade(EXERCISE_FRAMES.dumbbell_lunge),
         instructions: [
@@ -179,6 +187,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell"],
         load: { type: "barbell" },
         reps: { min: 8, max: 12 },
+        safeStart: { male: 10, female: 5 },
         benefit: "больше вес, чем с гантелями, и свободные кисти",
         asset: crossFade(EXERCISE_FRAMES.barbell_lunge),
         instructions: [
@@ -194,6 +203,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell", "bench"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 10, max: 12 },
+        safeStart: { male: 6, female: 4 },
         benefit: "ягодицы включаются сильнее, чем в выпадах",
         instructions: [
           "Поставь стопу на скамью целиком, высота — до угла 90° в колене.",
@@ -204,6 +214,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "squat",
     exercises: {
       leg_extension: {
         name: "Разгибание ног в тренажёре",
@@ -223,6 +234,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "hinge",
     exercises: {
       lying_leg_curl_stack: {
         name: "Сгибание ног лёжа в тренажёре с блоком",
@@ -244,7 +256,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["hamstrings"],
         secondaryMuscles: ["calves"],
         equipment: ["machine"],
-        load: { type: "plates", sides: 1 },
+        load: { type: "plates", sides: 1, base: 10 },
         reps: { min: 10, max: 12 },
         benefit: "жёстче нагрузка в верхней точке",
         asset: crossFade(EXERCISE_FRAMES.lying_leg_curl),
@@ -287,6 +299,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "hinge",
     exercises: {
       barbell_hip_thrust: {
         name: "Ягодичный мостик со штангой",
@@ -295,6 +308,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell", "bench"],
         load: { type: "barbell" },
         reps: { min: 8, max: 12 },
+        safeStart: { male: 25, female: 12.5 },
         benefit: "самая тяжёлая нагрузка именно на ягодицы",
         instructions: [
           "Лопатки на скамье, штанга на складке бёдер через мягкую подкладку.",
@@ -307,7 +321,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["glutes"],
         secondaryMuscles: ["hamstrings"],
         equipment: ["machine"],
-        load: { type: "plates", sides: 2 },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 10, max: 12 },
         benefit: "не нужно заряжать штангу на себя",
         instructions: [
@@ -352,6 +366,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         equipment: ["machine"],
         load: { type: "stack" },
         reps: { min: 12, max: 15 },
+        movement: "squat",
         benefit: "единственная нормальная нагрузка на средние ягодичные",
         asset: crossFade(EXERCISE_FRAMES.hip_abduction),
         instructions: [
@@ -367,6 +382,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         equipment: ["machine"],
         load: { type: "stack" },
         reps: { min: 12, max: 15 },
+        movement: "squat",
         benefit: "закрывает приводящие, которые больше нечем грузить",
         asset: crossFade(EXERCISE_FRAMES.hip_adduction),
         instructions: [
@@ -378,6 +394,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "squat",
     exercises: {
       standing_calf_raise_stack: {
         name: "Подъёмы на носки стоя в тренажёре с блоком",
@@ -399,7 +416,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["calves"],
         secondaryMuscles: [],
         equipment: ["machine"],
-        load: { type: "plates", sides: 2 },
+        load: { type: "plates", sides: 2, base: 10 },
         reps: { min: 12, max: 15 },
         benefit: "икры любят большой вес, а блинов можно навесить много",
         asset: crossFade(EXERCISE_FRAMES.standing_calf_raise),
@@ -414,7 +431,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["calves"],
         secondaryMuscles: [],
         equipment: ["machine"],
-        load: { type: "plates", sides: 1 },
+        load: { type: "plates", sides: 1, base: 10 },
         reps: { min: 12, max: 15 },
         benefit: "согнутое колено переносит работу на камбаловидную",
         asset: crossFade(EXERCISE_FRAMES.seated_calf_raise),
@@ -429,7 +446,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["calves"],
         secondaryMuscles: [],
         equipment: ["smith"],
-        load: { type: "barbell" },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 12, max: 15 },
         benefit: "если тренажёр на икры занят",
         instructions: [
@@ -443,7 +460,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["calves"],
         secondaryMuscles: [],
         equipment: ["machine"],
-        load: { type: "plates", sides: 2 },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 12, max: 15 },
         benefit: "не нужно держать вес на плечах",
         asset: crossFade(EXERCISE_FRAMES.leg_press_calf_raise),
@@ -460,6 +477,7 @@ export const LEG_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 15, max: 20 },
+        safeStart: { male: 10, female: 4 },
         benefit: "работает где угодно, нужен только блин под носки",
         instructions: [
           "Встань носками на блин или степ, гантели в опущенных руках.",

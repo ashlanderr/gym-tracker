@@ -4,6 +4,7 @@ import type { ExerciseGroup } from "./types.ts";
 
 export const BACK_GROUPS: ExerciseGroup[] = [
   {
+    movement: "pull",
     exercises: {
       pull_up_wide: {
         name: "Подтягивания широким хватом",
@@ -13,6 +14,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "none" },
         weight: { type: "positive", selfWeightPercent: 100 },
         reps: { min: 6, max: 10 },
+        safeStart: { male: 30, female: 20 },
         benefit: "шире широчайшие, меньше работы бицепсом",
         related: ["lat_pulldown_wide", "assisted_pull_up_wide"],
         asset: crossFade(EXERCISE_FRAMES.pull_up_wide),
@@ -30,6 +32,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "none" },
         weight: { type: "positive", selfWeightPercent: 100 },
         reps: { min: 6, max: 10 },
+        safeStart: { male: 30, female: 20 },
         benefit: "сильнее бицепс, обычно выходит больше повторов",
         asset: crossFade(EXERCISE_FRAMES.pull_up_underhand),
         instructions: [
@@ -46,6 +49,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         load: { type: "none" },
         weight: { type: "positive", selfWeightPercent: 100 },
         reps: { min: 6, max: 10 },
+        safeStart: { male: 30, female: 20 },
         benefit: "мягче всего для плеча и локтя",
         instructions: [
           "Возьмись за параллельные ручки, ладони смотрят друг на друга.",
@@ -58,9 +62,10 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["lats"],
         secondaryMuscles: ["upper_back", "biceps", "forearms"],
         equipment: ["bodyweight"],
-        load: { type: "plates", sides: 1 },
+        load: { type: "plates", sides: 1, base: 0 },
         weight: { type: "positive", selfWeightPercent: 100 },
         reps: { min: 5, max: 8 },
+        safeStart: { male: 30, female: 20 },
         benefit: "прогрессия, когда свой вес стал лёгким",
         asset: crossFade(EXERCISE_FRAMES.pull_up_wide),
         instructions: [
@@ -74,9 +79,10 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["lats"],
         secondaryMuscles: ["biceps", "upper_back", "forearms"],
         equipment: ["bodyweight"],
-        load: { type: "plates", sides: 1 },
+        load: { type: "plates", sides: 1, base: 0 },
         weight: { type: "positive", selfWeightPercent: 100 },
         reps: { min: 5, max: 8 },
+        safeStart: { male: 30, female: 20 },
         benefit: "самый тяжёлый вес из всех подтягиваний",
         asset: crossFade(EXERCISE_FRAMES.pull_up_underhand),
         instructions: [
@@ -90,9 +96,10 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["lats"],
         secondaryMuscles: ["biceps", "upper_back", "forearms"],
         equipment: ["bodyweight"],
-        load: { type: "plates", sides: 1 },
+        load: { type: "plates", sides: 1, base: 0 },
         weight: { type: "positive", selfWeightPercent: 100 },
         reps: { min: 5, max: 8 },
+        safeStart: { male: 30, female: 20 },
         benefit: "тяжёлый вес в самом щадящем для суставов хвате",
         instructions: [
           "Повесь блин на пояс и возьмись за параллельные ручки.",
@@ -148,6 +155,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "pull",
     exercises: {
       lat_pulldown_wide: {
         name: "Тяга верхнего блока к груди широким хватом",
@@ -227,7 +235,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["lats"],
         secondaryMuscles: ["upper_back", "biceps"],
         equipment: ["machine"],
-        load: { type: "plates", sides: 2 },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 8, max: 12 },
         benefit: "тяжёлая вертикальная тяга с упором в грудь",
         instructions: [
@@ -239,6 +247,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "pull",
     exercises: {
       barbell_row: {
         name: "Тяга штанги в наклоне",
@@ -247,6 +256,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell"],
         load: { type: "barbell" },
         reps: { min: 6, max: 10 },
+        safeStart: { male: 17.5, female: 10 },
         benefit: "больше рабочий вес и вся спина разом",
         instructions: [
           "Наклон корпуса 45°, спина прямая, штанга под плечами.",
@@ -261,6 +271,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell"],
         load: { type: "barbell" },
         reps: { min: 6, max: 10 },
+        safeStart: { male: 17.5, female: 10 },
         benefit: "локти ближе к корпусу, больше работы широчайшим",
         asset: crossFade(EXERCISE_FRAMES.barbell_row_underhand),
         instructions: [
@@ -274,7 +285,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["lats", "upper_back"],
         secondaryMuscles: ["biceps", "forearms"],
         equipment: ["smith"],
-        load: { type: "barbell" },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 8, max: 12 },
         benefit: "не нужно держать траекторию, спина устаёт меньше",
         instructions: [
@@ -290,6 +301,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell", "bench"],
         load: { type: "dumbbell", count: 1 },
         reps: { min: 8, max: 12 },
+        safeStart: { male: 8, female: 4 },
         benefit: "длинная амплитуда и контроль каждой стороны отдельно",
         instructions: [
           "Упрись коленом и рукой в скамью, спина параллельна полу.",
@@ -302,7 +314,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["lats", "upper_back"],
         secondaryMuscles: ["biceps", "lower_back"],
         equipment: ["barbell"],
-        load: { type: "plates", sides: 1 },
+        load: { type: "plates", sides: 1, base: 10 },
         reps: { min: 8, max: 12 },
         benefit: "тяжёлая тяга с нейтральным хватом",
         asset: crossFade(EXERCISE_FRAMES.t_bar_row),
@@ -374,7 +386,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["upper_back", "lats"],
         secondaryMuscles: ["biceps"],
         equipment: ["machine"],
-        load: { type: "plates", sides: 2 },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 8, max: 12 },
         benefit: "тяжёлая тяга без участия поясницы",
         instructions: [
@@ -386,6 +398,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "pull",
     exercises: {
       straight_arm_pulldown: {
         name: "Пуловер на верхнем блоке стоя",
@@ -409,6 +422,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell", "bench"],
         load: { type: "dumbbell", count: 1 },
         reps: { min: 10, max: 12 },
+        safeStart: { male: 6, female: 3 },
         benefit: "растягивает грудь и широчайшие одним движением",
         asset: crossFade(EXERCISE_FRAMES.dumbbell_pullover),
         instructions: [
@@ -420,13 +434,14 @@ export const BACK_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "hinge",
     exercises: {
       back_extension_weighted: {
         name: "Гиперэкстензия с блином",
         primaryMuscles: ["lower_back"],
         secondaryMuscles: ["glutes", "hamstrings"],
         equipment: ["bench"],
-        load: { type: "plates", sides: 1 },
+        load: { type: "plates", sides: 1, base: 0 },
         weight: { type: "positive", selfWeightPercent: 55 },
         reps: { min: 10, max: 12 },
         benefit: "разгибатели с нормальной прогрессией по весу",
@@ -454,6 +469,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "hinge",
     exercises: {
       romanian_deadlift: {
         name: "Румынская тяга со штангой",
@@ -462,6 +478,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell"],
         load: { type: "barbell" },
         reps: { min: 8, max: 12 },
+        safeStart: { male: 22.5, female: 12.5 },
         benefit: "главное движение на заднюю поверхность бедра",
         asset: crossFade(EXERCISE_FRAMES.romanian_deadlift),
         instructions: [
@@ -477,6 +494,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 10, max: 12 },
+        safeStart: { male: 12, female: 6 },
         benefit: "проще держать траекторию и не нужна стойка",
         instructions: [
           "Гантели у бёдер, лопатки сведены, колени мягкие.",
@@ -489,7 +507,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["hamstrings", "glutes"],
         secondaryMuscles: ["lower_back"],
         equipment: ["smith"],
-        load: { type: "barbell" },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 10, max: 12 },
         benefit: "траектория задана, можно думать только о бедре",
         instructions: [
@@ -503,7 +521,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["hamstrings", "glutes"],
         secondaryMuscles: ["lower_back"],
         equipment: ["machine"],
-        load: { type: "plates", sides: 2 },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 10, max: 12 },
         benefit: "спина разгружена, хват не ограничивает вес",
         instructions: [
@@ -519,6 +537,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell"],
         load: { type: "barbell" },
         reps: { min: 6, max: 8 },
+        safeStart: { male: 30, female: 17.5 },
         benefit: "самый тяжёлый вес из всего, что есть в зале",
         asset: crossFade(EXERCISE_FRAMES.deadlift),
         instructions: [
@@ -530,6 +549,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
     },
   },
   {
+    movement: "pull",
     exercises: {
       dumbbell_shrug: {
         name: "Шраги с гантелями",
@@ -538,6 +558,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         equipment: ["dumbbell"],
         load: { type: "dumbbell", count: 2 },
         reps: { min: 12, max: 15 },
+        safeStart: { male: 16, female: 8 },
         benefit: "руки вдоль корпуса — самая удобная траектория",
         asset: crossFade(EXERCISE_FRAMES.dumbbell_shrug),
         instructions: [
@@ -553,6 +574,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         equipment: ["barbell"],
         load: { type: "barbell" },
         reps: { min: 10, max: 12 },
+        safeStart: { male: 20, female: 12.5 },
         benefit: "больше вес, чем с гантелями",
         asset: crossFade(EXERCISE_FRAMES.barbell_shrug),
         instructions: [
@@ -566,7 +588,7 @@ export const BACK_GROUPS: ExerciseGroup[] = [
         primaryMuscles: ["traps"],
         secondaryMuscles: ["forearms"],
         equipment: ["smith"],
-        load: { type: "barbell" },
+        load: { type: "plates", sides: 2, base: 20 },
         reps: { min: 12, max: 15 },
         benefit: "можно не думать о равновесии штанги",
         asset: crossFade(EXERCISE_FRAMES.smith_shrug),
