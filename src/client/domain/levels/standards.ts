@@ -1,4 +1,5 @@
-import type { AnchorId, Sex } from "../../db";
+import type { Sex } from "../../db";
+import type { LiftId } from "./constants.ts";
 
 // Body weight, then where Intermediate, Advanced and Elite start, all in kg
 // of one-rep max. Pullups count the weight on the belt, negative when a
@@ -8,7 +9,7 @@ export type StandardRow = [number, number, number, number];
 // Strength Level, strengthlevel.com/strength-standards, taken in September
 // 2026. Its Beginner and Novice columns are left out: both sit below the
 // median and read as one level here.
-export const STANDARDS: Record<AnchorId, Record<Sex, StandardRow[]>> = {
+export const STANDARDS: Record<LiftId, Record<Sex, StandardRow[]>> = {
   bench: {
     male: [
       [50, 58, 78, 101],

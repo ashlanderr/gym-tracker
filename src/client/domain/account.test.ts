@@ -30,7 +30,7 @@ function onboard(store: Store, sex: Sex) {
   completeOnboarding(
     store,
     "user",
-    { sex, heightCm: 170, weightKg: 70, anchors: {} },
+    { sex, heightCm: 170, weightKg: 70, experience: "novice" },
     0,
   );
 }

@@ -24,7 +24,7 @@ function onboard(store: Store) {
   completeOnboarding(
     store,
     "user",
-    { sex: "male", heightCm: 180, weightKg: 80, anchors: {} },
+    { sex: "male", heightCm: 180, weightKg: 80, experience: "novice" },
     0,
   );
 }

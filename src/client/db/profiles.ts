@@ -3,28 +3,25 @@ import type { Store } from "./doc.ts";
 
 export type Sex = "male" | "female";
 
-// The four lifts that stand for somebody's strength as a whole.
-export type AnchorId = "bench" | "squat" | "deadlift" | "pullup";
+// Time in the gym says little about strength but much about knowing a bar
+// and judging for oneself: novice is under half a year, intermediate up to
+// two years, experienced more.
+export type ExperienceLevel = "novice" | "intermediate" | "experienced";
 
-// One remembered set, kept as it was answered: the one-rep max is ours to
-// derive, and the formula may change. For pullups the weight is what hangs
-// on the belt, negative when a machine helps. Each set carries its own date,
-// so a pullup meets the body weight of the day it was answered.
-export interface AnchorSet {
-  weight: number;
-  reps: number;
+// The date is kept though nothing reads it yet: half a year later a novice
+// is no longer one, unless they never went to the gym.
+export interface Experience {
+  level: ExperienceLevel;
   createdAt: number;
 }
 
-// Who the person is. Only what was answered is stored: a lift left out stays
-// out, and its default is read from the code, so a corrected default reaches
-// everybody who never answered. Height and body weight change over time and
-// live in measurements.
+// Who the person is. Height and body weight change over time and live in
+// measurements.
 export interface Profile {
   id: string;
   user: string;
   sex: Sex;
-  anchors: Partial<Record<AnchorId, AnchorSet>>;
+  experience: Experience;
   createdAt: number;
 }
 

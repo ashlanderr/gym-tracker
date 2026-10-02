@@ -10,7 +10,6 @@ export * from "./DragScroll";
 export * from "./Ruler";
 export * from "./Wheel";
 export * from "./MeasurePicker";
-export * from "./SetPicker";
 export * from "./SexFigure";
 export * from "./SexPicker";
 export * from "./FormSheet";

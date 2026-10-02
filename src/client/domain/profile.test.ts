@@ -1,61 +1,24 @@
 import * as Y from "yjs";
-import { addMeasurement, queryProfile, type Store } from "../db";
-import { queryLiftStrength } from "./levels";
-import { changeAnchorSet, completeOnboarding } from "./profile.ts";
+import { queryLatestMeasurement, queryProfile, type Store } from "../db";
+import { completeOnboarding } from "./profile.ts";
 
 function createStore(): Store {
   return { documentId: "test", personal: new Y.Doc() };
 }
 
-test("an onboarding pullup is read with the body weight given beside it", () => {
+test("onboarding dates the experience and the measurements with its end", () => {
   const store = createStore();
-  addMeasurement(store, {
-    id: "earlier",
-    user: "user",
-    type: "weight",
-    value: 100,
-    createdAt: 500,
-  });
 
   completeOnboarding(
     store,
     "user",
-    {
-      sex: "male",
-      heightCm: 180,
-      weightKg: 80,
-      anchors: { pullup: { weight: 10, reps: 5 } },
-    },
+    { sex: "female", heightCm: 165, weightKg: 60, experience: "novice" },
     1000,
   );
 
-  const profile = queryProfile(store)!;
-  expect(profile.anchors).toEqual({
-    pullup: { weight: 10, reps: 5, createdAt: 1000 },
+  expect(queryProfile(store)).toMatchObject({
+    sex: "female",
+    experience: { level: "novice", createdAt: 1000 },
   });
-  expect(queryLiftStrength(store, profile, "pullup", 2000).oneRepMax).toBe(
-    90 * (1 + 5 / 30),
-  );
-});
-
-test("a corrected lift is dated now and forgetting it drops the answer", () => {
-  const store = createStore();
-  completeOnboarding(
-    store,
-    "user",
-    {
-      sex: "male",
-      heightCm: 180,
-      weightKg: 80,
-      anchors: { squat: { weight: 100, reps: 5 } },
-    },
-    1000,
-  );
-
-  changeAnchorSet(store, "bench", { weight: 70, reps: 6 }, 2000);
-  changeAnchorSet(store, "squat", null, 2000);
-
-  expect(queryProfile(store)!.anchors).toEqual({
-    bench: { weight: 70, reps: 6, createdAt: 2000 },
-  });
+  expect(queryLatestMeasurement(store, "weight", 1000)?.value).toBe(60);
 });

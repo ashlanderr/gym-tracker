@@ -1,9 +1,6 @@
 import {
-  type AnchorId,
-  type AnchorSet,
   type CompletedSet,
   type Exercise,
-  type Profile,
   queryExerciseById,
   queryLatestMeasurement,
   queryPerformancesByExercise,
@@ -12,35 +9,30 @@ import {
 } from "../../db";
 import { addSelfWeight, volumeToOneRepMax } from "../weights";
 import {
-  ANCHOR_EXERCISES,
-  NOVICE_ONE_REP_MAX,
+  LIFT_EXERCISES,
+  type LiftId,
   STRENGTH_WINDOW_MS,
 } from "./constants.ts";
 
 // Where today's one-rep max of a lift comes from: the best set of the
-// window, the onboarding answer, its default while nothing was answered, or
-// nothing at all because the lift was done, but too long ago to say anything.
-export type LiftSource = "history" | "survey" | "default" | "stale";
+// window, or nothing, because the lift was done too long ago to say anything
+// or was never done at all.
+export type LiftSource = "history" | "stale" | "none";
 
 export type LiftStrength =
-  | {
-      anchor: AnchorId;
-      source: "history" | "survey" | "default";
-      oneRepMax: number;
-    }
-  | { anchor: AnchorId; source: "stale"; oneRepMax: null };
+  | { lift: LiftId; source: "history"; oneRepMax: number }
+  | { lift: LiftId; source: "stale" | "none"; oneRepMax: null };
 
 export function queryLiftStrength(
   store: Store,
-  profile: Profile,
-  anchor: AnchorId,
+  lift: LiftId,
   now: number,
 ): LiftStrength {
-  const exercise = queryExerciseById(store, ANCHOR_EXERCISES[anchor]);
-  if (!exercise) throw new Error(`No exercise for the ${anchor} anchor`);
+  const exercise = queryExerciseById(store, LIFT_EXERCISES[lift]);
+  if (!exercise) throw new Error(`No exercise for the ${lift} lift`);
 
-  // TODO: count the neighbouring lifts of the same anchor too, converted by
-  // their strength factor, not the anchor exercise alone.
+  // TODO: count the neighbouring lifts of the same movement too, converted
+  // by their strength factor, not the lift exercise alone.
   const done = queryPerformancesByExercise(store, exercise.id).flatMap(
     (performance) => {
       const best = bestOneRepMax(
@@ -53,31 +45,16 @@ export function queryLiftStrength(
     },
   );
 
-  if (done.length !== 0) {
-    const recent = done.filter((d) => d.startedAt >= now - STRENGTH_WINDOW_MS);
-    return recent.length === 0
-      ? { anchor, source: "stale", oneRepMax: null }
-      : {
-          anchor,
-          source: "history",
-          oneRepMax: Math.max(...recent.map((d) => d.best)),
-        };
-  }
+  if (done.length === 0) return { lift, source: "none", oneRepMax: null };
 
-  const answered = profile.anchors[anchor];
-  if (answered) {
-    return {
-      anchor,
-      source: "survey",
-      oneRepMax: setOneRepMax(store, exercise, answered, answered.createdAt),
-    };
-  }
-
-  return {
-    anchor,
-    source: "default",
-    oneRepMax: NOVICE_ONE_REP_MAX[anchor][profile.sex],
-  };
+  const recent = done.filter((d) => d.startedAt >= now - STRENGTH_WINDOW_MS);
+  return recent.length === 0
+    ? { lift, source: "stale", oneRepMax: null }
+    : {
+        lift,
+        source: "history",
+        oneRepMax: Math.max(...recent.map((d) => d.best)),
+      };
 }
 
 function bestOneRepMax(
@@ -86,21 +63,14 @@ function bestOneRepMax(
   performance: string,
   date: number,
 ): number | null {
+  const bodyWeight = queryLatestMeasurement(store, "weight", date)?.value;
   const values = querySetsByPerformance(store, performance)
     .filter((s): s is CompletedSet => s.completed && s.type !== "warm-up")
-    .map((s) => setOneRepMax(store, exercise, s, date));
+    .map((s) =>
+      volumeToOneRepMax(
+        addSelfWeight(exercise.weight, bodyWeight, s.weight),
+        s.reps,
+      ),
+    );
   return values.length === 0 ? null : Math.max(...values);
-}
-
-function setOneRepMax(
-  store: Store,
-  exercise: Exercise,
-  { weight, reps }: Pick<AnchorSet, "weight" | "reps">,
-  date: number,
-): number {
-  const bodyWeight = queryLatestMeasurement(store, "weight", date)?.value;
-  return volumeToOneRepMax(
-    addSelfWeight(exercise.weight, bodyWeight, weight),
-    reps,
-  );
 }

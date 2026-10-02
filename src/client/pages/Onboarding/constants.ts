@@ -1,12 +1,20 @@
 import type { Transition, Variants } from "motion/react";
-import { ANCHOR_EXERCISES } from "../../domain";
 import type {
-  AnchorSpec,
   ChoiceOption,
-  Experience,
+  ExperienceLevel,
   MeasureRange,
   Sex,
+  StepId,
 } from "./types.ts";
+
+export const STEPS: StepId[] = [
+  "welcome",
+  "sex",
+  "height",
+  "weight",
+  "experience",
+  "done",
+];
 
 // The recap lists who the person is, in words of its own rather than the
 // labels of the cards that asked.
@@ -15,48 +23,25 @@ export const SEX_SUMMARY: Record<Sex, string> = {
   female: "Женщина",
 };
 
-// Russian makes the past tense pick a side, and by this question we already
-// know which one. The app says "Сделал" to everyone only because nothing has
-// asked yet — here it has.
-export const EXPERIENCE_OPTIONS: Record<Sex, ChoiceOption<Experience>[]> = {
-  male: [
-    {
-      value: "none",
-      label: "Только начинаю",
-      note: "В зале не был или сходил пару раз",
-    },
-    {
-      value: "past",
-      label: "Занимался раньше",
-      note: "Сейчас перерыв, но свои веса помню",
-    },
-    {
-      value: "current",
-      label: "Занимаюсь сейчас",
-      note: "Регулярно, знаю свои рабочие веса",
-    },
-  ],
-  female: [
-    {
-      value: "none",
-      label: "Только начинаю",
-      note: "В зале не была или сходила пару раз",
-    },
-    {
-      value: "past",
-      label: "Занималась раньше",
-      note: "Сейчас перерыв, но свои веса помню",
-    },
-    {
-      value: "current",
-      label: "Занимаюсь сейчас",
-      note: "Регулярно, знаю свои рабочие веса",
-    },
-  ],
-};
+export const EXPERIENCE_OPTIONS: ChoiceOption<ExperienceLevel>[] = [
+  {
+    value: "novice",
+    label: "Только начинаю",
+    note: "В зале меньше полугода",
+  },
+  {
+    value: "intermediate",
+    label: "Есть опыт",
+    note: "От полугода до двух лет",
+  },
+  {
+    value: "experienced",
+    label: "Давно в зале",
+    note: "Больше двух лет",
+  },
+];
 
-// Body weight matches the profile the starting weights were computed for;
-// height only has to be a plausible place for the scale to open.
+// Plausible places for the scales to open.
 export const DEFAULT_HEIGHT_CM: Record<Sex, number> = {
   male: 178,
   female: 165,
@@ -80,61 +65,6 @@ export const WEIGHT_RANGE: MeasureRange = {
   step: 0.5,
   majorEvery: 10,
 };
-
-// Reps are asked on the same scale as the weight, switched by tapping the
-// number: one control, and no second kind of stepper to learn.
-export const REPS_RANGE: MeasureRange = {
-  min: 1,
-  max: 30,
-  step: 1,
-  majorEvery: 5,
-};
-
-const BARBELL_RANGE: MeasureRange = {
-  min: 20,
-  max: 300,
-  step: 2.5,
-  majorEvery: 4,
-};
-
-export const ANCHORS: AnchorSpec[] = [
-  {
-    id: "bench",
-    exercise: ANCHOR_EXERCISES.bench,
-    weight: BARBELL_RANGE,
-    // 22 / 1.2 is 18.3 for a woman, lighter than the bar itself — the same
-    // result starting-weights.md records as "не проходит". The scale cannot
-    // open below its own first value, so it opens on the empty bar.
-    start: { male: 37.5, female: 20 },
-  },
-  {
-    id: "squat",
-    exercise: ANCHOR_EXERCISES.squat,
-    weight: BARBELL_RANGE,
-    start: { male: 50, female: 25 },
-  },
-  {
-    id: "deadlift",
-    exercise: ANCHOR_EXERCISES.deadlift,
-    weight: BARBELL_RANGE,
-    start: { male: 62.5, female: 32.5 },
-  },
-  {
-    // The weight here is what hangs on the belt, and for almost everybody
-    // that is nothing — so the scale opens at zero and says so in words.
-    // Below zero is what an assisted pullup machine takes off.
-    id: "pullup",
-    exercise: ANCHOR_EXERCISES.pullup,
-    weight: { min: -60, max: 60, step: 2.5, majorEvery: 4 },
-    start: { male: 0, female: 0 },
-  },
-];
-
-// The pair the picker opens on is one guess, not two: the weight beside it is
-// the novice one-rep max from starting-weights.md carried down to this many
-// reps by Epley and rounded to the plates, downwards where it lands between
-// them — an answer nobody corrects has to miss low.
-export const DEFAULT_ANCHOR_REPS = 6;
 
 // Long enough to see the answer light up, short enough not to feel like a wait.
 export const ADVANCE_DELAY = 220;

@@ -15,7 +15,6 @@ import { useSignInState } from "../../session";
 import { useQueryProfile } from "../../db";
 import { completeOnboarding } from "../../domain";
 import {
-  AnchorStep,
   ChoiceStep,
   DoneStep,
   HelloStep,
@@ -25,25 +24,18 @@ import {
 } from "./components";
 import {
   ADVANCE_DELAY,
-  ANCHORS,
   DEFAULT_HEIGHT_CM,
   DEFAULT_WEIGHT_KG,
   EXPERIENCE_OPTIONS,
   HEIGHT_RANGE,
   STEP_TRANSITION,
   STEP_VARIANTS,
+  STEPS,
   WEIGHT_RANGE,
 } from "./constants.ts";
 import { QUESTIONS } from "./questions.ts";
-import { buildSteps, isStepId } from "./utils.ts";
-import type {
-  AnchorEntry,
-  AnchorSpec,
-  Experience,
-  OnboardingDraft,
-  Sex,
-  StepId,
-} from "./types.ts";
+import { isStepId } from "./utils.ts";
+import type { OnboardingDraft, Sex, StepId } from "./types.ts";
 
 export function Onboarding() {
   const navigate = useNavigate();
@@ -53,7 +45,7 @@ export function Onboarding() {
   const profile = useQueryProfile(store);
   const session = useSessionState();
   const signIn = useSignInState();
-  const [draft, setDraft] = useState<OnboardingDraft>({ anchors: {} });
+  const [draft, setDraft] = useState<OnboardingDraft>({});
 
   // The step is a history entry, the way a modal is one in `ModalStack`: the
   // Android back button is wired to `window.history`, so anything it should
@@ -62,10 +54,6 @@ export function Onboarding() {
   const step = isStepId(location.state) ? location.state : stepRef.current;
   stepRef.current = step;
 
-  // A chosen answer advances the step by itself, and by then the draft that
-  // decides which steps there are has already changed.
-  const draftRef = useRef(draft);
-  draftRef.current = draft;
   const timerRef = useRef<number>(undefined);
 
   useEffect(() => () => window.clearTimeout(timerRef.current), []);
@@ -79,15 +67,13 @@ export function Onboarding() {
     if (profile && isOpen) navigate("/", { replace: true });
   }, [profile, isOpen, location.key, navigate]);
 
-  const steps = buildSteps(draft.experience);
   const sex = draft.sex ?? "male";
   const direction = useNavigationType() === NavigationType.Pop ? -1 : 1;
 
   const nextHandler = () => {
-    const list = buildSteps(draftRef.current.experience);
-    const index = list.indexOf(step);
-    if (index < 0 || index === list.length - 1) return;
-    navigate(location.pathname, { state: list[index + 1] });
+    const index = STEPS.indexOf(step);
+    if (index < 0 || index === STEPS.length - 1) return;
+    navigate(location.pathname, { state: STEPS[index + 1] });
   };
 
   const backHandler = () => navigate(-1);
@@ -95,30 +81,6 @@ export function Onboarding() {
   const answerHandler = (answer: Partial<OnboardingDraft>) => {
     setDraft((draft) => ({ ...draft, ...answer }));
     timerRef.current = window.setTimeout(nextHandler, ADVANCE_DELAY);
-  };
-
-  // Answering "только начинаю" takes the lifts out of the flow, so whatever
-  // was already given for them goes too: a step nobody can reach any more
-  // must not keep sending numbers to the summary and to the profile.
-  const experienceHandler = (experience: Experience) =>
-    answerHandler(
-      experience === "none" ? { experience, anchors: {} } : { experience },
-    );
-
-  const anchorHandler = (
-    anchor: AnchorSpec,
-    entry: AnchorEntry | undefined,
-  ) => {
-    setDraft((draft) => {
-      const anchors = { ...draft.anchors };
-      if (entry) {
-        anchors[anchor.id] = entry;
-      } else {
-        delete anchors[anchor.id];
-      }
-      return { ...draft, anchors };
-    });
-    nextHandler();
   };
 
   // The answers shown on the last step are the ones saved, defaults
@@ -130,14 +92,10 @@ export function Onboarding() {
       sex,
       heightCm: draft.heightCm ?? DEFAULT_HEIGHT_CM[sex],
       weightKg: draft.weightKg ?? DEFAULT_WEIGHT_KG[sex],
-      anchors: Object.fromEntries(
-        Object.entries(draft.anchors).map(([id, entry]) => [
-          id,
-          { weight: entry.weightKg, reps: entry.reps },
-        ]),
-      ),
+      // Unanswered, the safer side is the one that warns.
+      experience: draft.experience ?? "novice",
     });
-    navigate(-steps.indexOf("done"));
+    navigate(-STEPS.indexOf("done"));
   };
 
   if (profile) return null;
@@ -189,35 +147,20 @@ export function Onboarding() {
         return (
           <ChoiceStep
             {...QUESTIONS.experience}
-            options={EXPERIENCE_OPTIONS[sex]}
+            options={EXPERIENCE_OPTIONS}
             value={draft.experience}
-            onSelect={experienceHandler}
+            onSelect={(experience) => answerHandler({ experience })}
           />
         );
 
       case "done":
         return <DoneStep draft={draft} onFinish={finishHandler} />;
-
-      default: {
-        const anchor = ANCHORS.find(({ id }) => id === step)!;
-
-        return (
-          <AnchorStep
-            anchor={anchor}
-            sex={sex}
-            entry={draft.anchors[anchor.id]}
-            isFirst={anchor === ANCHORS[0]}
-            onSubmit={(entry) => anchorHandler(anchor, entry)}
-            onSkip={() => anchorHandler(anchor, undefined)}
-          />
-        );
-      }
     }
   };
 
   // The bar counts questions, so it is empty on the welcome screen and full
-  // on the last one. It also loses segments when a novice skips the lifts.
-  const questions = steps.slice(1, -1);
+  // on the last one.
+  const questions = STEPS.slice(1, -1);
   const passed =
     step === "done" ? questions.length - 1 : questions.indexOf(step);
 

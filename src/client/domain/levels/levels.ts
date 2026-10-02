@@ -1,11 +1,12 @@
-import type { AnchorId, Sex } from "../../db";
+import type { Sex } from "../../db";
+import type { LiftId } from "./constants.ts";
 import { STANDARDS, type StandardRow } from "./standards.ts";
 
 // Novice, Intermediate, Advanced, Elite.
 export type StrengthLevel = 0 | 1 | 2 | 3;
 
 export interface StrengthLevelInput {
-  anchor: AnchorId;
+  lift: LiftId;
   sex: Sex;
   bodyWeight: number;
   // Pullups count the whole load, body weight included.
@@ -21,13 +22,13 @@ export interface StrengthLevelResult {
 }
 
 export function computeStrengthLevel({
-  anchor,
+  lift,
   sex,
   bodyWeight,
   oneRepMax,
 }: StrengthLevelInput): StrengthLevelResult {
-  const offset = anchor === "pullup" ? bodyWeight : 0;
-  const [, ...thresholds] = interpolateRow(STANDARDS[anchor][sex], bodyWeight);
+  const offset = lift === "pullup" ? bodyWeight : 0;
+  const [, ...thresholds] = interpolateRow(STANDARDS[lift][sex], bodyWeight);
   const starts = [0, ...thresholds.map((t) => t + offset)];
 
   const level = (starts.filter((start) => oneRepMax >= start).length -

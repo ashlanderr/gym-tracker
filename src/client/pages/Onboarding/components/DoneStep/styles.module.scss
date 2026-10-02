@@ -20,25 +20,3 @@
     font-weight: 600;
   }
 }
-
-.row {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  font-size: 14px;
-  line-height: 1.35;
-}
-
-.name {
-  flex: 1 1 auto;
-  min-width: 0;
-  color: #8a8a8a;
-  text-wrap: pretty;
-}
-
-.value {
-  flex: 0 0 auto;
-  color: #e6e6e6;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}

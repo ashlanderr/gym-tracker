@@ -15,19 +15,13 @@ import {
   useQueryProfile,
 } from "../../../../db";
 import {
-  ANCHOR_EXERCISES,
   computeMuscleLevels,
+  LIFT_EXERCISES,
   queryRecentMuscleWork,
 } from "../../../../domain";
 import { pluralize } from "../../../../utils";
 import { SEX_SUMMARY } from "../../../Onboarding/constants.ts";
-import {
-  AnchorSheet,
-  BodyCard,
-  LiftLadder,
-  MeasureSheet,
-  SexSheet,
-} from "../../components";
+import { BodyCard, LiftLadder, MeasureSheet, SexSheet } from "../../components";
 import { MEASURES, WORKOUT_FORMS } from "../../constants.ts";
 import type { LiftRow } from "../../types.ts";
 import { buildLiftRows, formatAgo, formatMeasure } from "../../utils.ts";
@@ -67,13 +61,8 @@ export function ProfilePage() {
       value: latest ?? MEASURES[type].fallback[profile.sex],
     });
 
-  const liftHandler = ({ anchor, source }: LiftRow) => {
-    if (source === "survey" || source === "default") {
-      void pushModal(AnchorSheet, anchor);
-    } else {
-      navigate(`/exercises/${ANCHOR_EXERCISES[anchor]}`);
-    }
-  };
+  const liftHandler = ({ lift }: LiftRow) =>
+    navigate(`/exercises/${LIFT_EXERCISES[lift]}`);
 
   return (
     <div className={s.root}>

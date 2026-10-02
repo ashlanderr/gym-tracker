@@ -5,9 +5,9 @@ import {
   type Store,
 } from "../../db";
 import {
-  ANCHOR_EXERCISES,
-  ANCHOR_IDS,
   computeStrengthLevel,
+  LIFT_EXERCISES,
+  LIFT_IDS,
   queryLiftStrength,
 } from "../../domain";
 import { pluralize } from "../../utils";
@@ -20,25 +20,19 @@ export function buildLiftRows(
   bodyWeight: number,
   now: number,
 ): LiftRow[] {
-  return ANCHOR_IDS.map((anchor) => {
-    const { source, oneRepMax } = queryLiftStrength(
-      store,
-      profile,
-      anchor,
-      now,
-    );
-    const name =
-      queryExerciseById(store, ANCHOR_EXERCISES[anchor])?.name ?? anchor;
+  return LIFT_IDS.map((lift) => {
+    const { source, oneRepMax } = queryLiftStrength(store, lift, now);
+    const name = queryExerciseById(store, LIFT_EXERCISES[lift])?.name ?? lift;
     const level =
       oneRepMax === null
         ? null
         : computeStrengthLevel({
-            anchor,
+            lift,
             sex: profile.sex,
             bodyWeight,
             oneRepMax,
           });
-    return { anchor, name, source, oneRepMax, level };
+    return { lift, name, source, oneRepMax, level };
   });
 }
 

@@ -1,9 +1,9 @@
 import type { MeasureRange } from "../Onboarding/types.ts";
-import type { AnchorId, MeasurementType, Sex } from "../../db";
-import type { LiftSource, StrengthLevelResult } from "../../domain";
+import type { MeasurementType, Sex } from "../../db";
+import type { LiftId, LiftSource, StrengthLevelResult } from "../../domain";
 
 export interface LiftRow {
-  anchor: AnchorId;
+  lift: LiftId;
   name: string;
   source: LiftSource;
   oneRepMax: number | null;
