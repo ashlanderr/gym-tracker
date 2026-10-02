@@ -15,13 +15,22 @@ const exercise = (id: string) => {
   return found;
 };
 
-// The replacements worth offering are the ones without the same conflict:
-// a free barbell starts at the empty bar again, everything else starts light.
+// Replacements leave out the known conflicts for a novice: a free barbell
+// starts at the empty bar again, a whole-body exercise lifts the whole body
+// again. The Smith machine is safe but its carriage may weigh what the bar
+// does, so it goes last.
+const isSmith = (id: string) => exercise(id).equipment.includes("smith");
+
+const hasKnownConflict = (id: string) => {
+  const { load, weight } = exercise(id);
+  if (load.type === "barbell") return !isSmith(id);
+  return weight?.type === "positive" && weight.selfWeightPercent === 100;
+};
+
 const safeAlternatives = (id: string) =>
-  exercise(id).alternatives.filter(({ id: alternative }) => {
-    const { load, equipment } = exercise(alternative);
-    return load.type !== "barbell" || equipment.includes("smith");
-  });
+  exercise(id)
+    .alternatives.filter((alternative) => !hasKnownConflict(alternative.id))
+    .sort((a, b) => Number(isSmith(a.id)) - Number(isSmith(b.id)));
 
 function Chrome({
   sets = 9,
