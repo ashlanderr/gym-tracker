@@ -2,8 +2,12 @@ import s from "./screens.module.scss";
 import { clsx } from "clsx";
 import type { ReactNode } from "react";
 import { MdArrowBack, MdChevronRight, MdWarningAmber } from "react-icons/md";
+import { defaultGym } from "../../db";
 import { EXERCISES } from "../../db/exercises/constants.ts";
+import { WeightsVisualizer } from "../Workout/components";
 import { ExerciseAnimation } from "../WorkoutFocus/components/ExerciseAnimation";
+
+const MOCK_GYM = defaultGym("mockup");
 
 const exercise = (id: string) => {
   const found = EXERCISES[id];
@@ -19,7 +23,13 @@ const safeAlternatives = (id: string) =>
     return load.type !== "barbell" || equipment.includes("smith");
   });
 
-function Chrome({ children }: { children: ReactNode }) {
+function Chrome({
+  sets = 9,
+  children,
+}: {
+  sets?: number;
+  children: ReactNode;
+}) {
   return (
     <>
       <div className={s.top}>
@@ -29,7 +39,7 @@ function Chrome({ children }: { children: ReactNode }) {
         <span className={s.clock}>0:04</span>
       </div>
       <div className={s.progress}>
-        {Array.from({ length: 9 }, (_, i) => (
+        {Array.from({ length: sets }, (_, i) => (
           <i key={i} className={clsx(i === 0 && s.currentSet)} />
         ))}
       </div>
@@ -169,36 +179,55 @@ export function ReplaceScreen({ id }: { id: string }) {
   );
 }
 
-// The set screen the app already has, on the start weight.
+export interface WarmUp {
+  number: number;
+  count: number;
+  workingKg: number;
+}
+
+// The set screen the app already has: on the start weight while the weight is
+// being found, or on a warm-up once the person has raised the weight.
 export function SetScreen({
   id,
   weight,
   reps,
   target,
+  sets,
+  warmUp,
 }: {
   id: string;
   weight: string;
   reps: number;
   target: string;
+  sets?: number;
+  warmUp?: WarmUp;
 }) {
   const { asset, name } = exercise(id);
   return (
-    <Chrome>
+    <Chrome sets={sets}>
       <div className={s.stage}>
         {asset?.type === "cross-fade" && (
           <ExerciseAnimation startUrl={asset.startUrl} endUrl={asset.endUrl} />
         )}
         <div className={s.setName}>{name}</div>
-        <div className={clsx(s.setLine, s.pick)}>
-          Подбор веса · подход 1 из 3
-        </div>
+        {warmUp ? (
+          <div className={clsx(s.setLine, s.warmUp)}>
+            Разминка {warmUp.number} из {warmUp.count}
+          </div>
+        ) : (
+          <div className={clsx(s.setLine, s.pick)}>
+            Подбор веса · подход 1 из 3
+          </div>
+        )}
         <div className={s.numbers}>
           <div className={s.cell}>
             <div className={s.big}>
               {weight}
               <span className={s.units}>кг</span>
             </div>
-            <div className={s.under} />
+            <div className={s.under}>
+              {warmUp && `перед ${warmUp.workingKg} кг`}
+            </div>
           </div>
           <div className={s.times}>×</div>
           <div className={s.cell}>
@@ -206,7 +235,7 @@ export function SetScreen({
               {reps}
               <span className={s.units}>раз</span>
             </div>
-            <div className={s.under}>цель {target}</div>
+            <div className={s.under}>{!warmUp && `цель ${target}`}</div>
           </div>
         </div>
       </div>
@@ -214,5 +243,49 @@ export function SetScreen({
         <span className={s.done}>Сделал</span>
       </div>
     </Chrome>
+  );
+}
+
+// The weight sheet the app already has. The line under the plates no longer
+// repeats what they show; it names the warm-ups the chosen weight brings, so
+// closing the sheet on a warm-up is what the person expects.
+export function WeightSheetScreen({
+  id,
+  weightKg,
+  warmUps,
+}: {
+  id: string;
+  weightKg: number;
+  warmUps: string[];
+}) {
+  return (
+    <div className={s.sheetBackdrop}>
+      <div className={s.sheet}>
+        <div className={s.grip} />
+        <div className={s.sheetTitle}>Вес</div>
+        <div className={s.stepper}>
+          <span className={s.stepButton}>−</span>
+          <div className={s.sheetValue}>
+            {weightKg}
+            <span className={s.units}>кг</span>
+          </div>
+          <span className={s.stepButton}>+</span>
+        </div>
+        <div className={s.visual}>
+          <WeightsVisualizer
+            exercise={exercise(id)}
+            gym={MOCK_GYM}
+            weightKg={weightKg}
+          />
+        </div>
+        <div className={s.sheetWarmUp}>
+          {warmUps.length !== 0 && `Сначала разминка: ${warmUps.join(", ")}`}
+        </div>
+        <div className={s.links}>
+          <span className={s.link}>Ввести вручную</span>
+          <span className={s.link}>Мой инвентарь</span>
+        </div>
+      </div>
+    </div>
   );
 }

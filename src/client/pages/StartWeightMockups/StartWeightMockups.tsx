@@ -7,12 +7,14 @@ import {
   ReplaceScreen,
   SetScreen,
   WarningScreen,
+  WeightSheetScreen,
 } from "./screens.tsx";
 
 interface Step {
   caption: string;
   note?: string;
   screen: ReactNode;
+  overlay?: ReactNode;
   action?: string;
 }
 
@@ -32,7 +34,11 @@ function Flow({
       <div className={s.row}>
         {steps.map((step, index) => (
           <Fragment key={index}>
-            <Phone caption={step.caption} note={step.note}>
+            <Phone
+              caption={step.caption}
+              note={step.note}
+              overlay={step.overlay}
+            >
               {step.screen}
             </Phone>
             {step.action && (
@@ -112,6 +118,8 @@ export function StartWeightMockups() {
           <code> safe-weights.md</code>, а у тренажёров — на минимуме снаряда.
           Разминки от такого веса нет, поэтому первым человек всегда видит
           первый рабочий подход. Опытный поправит число, новичок начнёт так.
+          Если человек поднял вес, при закрытии шторки перед подходом
+          вставляется разминка от нового веса.
         </p>
         <p>
           До подхода может быть только два экрана: инвентарь, если зал ещё не
@@ -141,6 +149,53 @@ export function StartWeightMockups() {
         ]}
       >
         Обычный путь.
+      </Flow>
+
+      <Flow
+        title="Опытный, жим лёжа"
+        steps={[
+          {
+            caption: "Подход",
+            note: "Знает, что жмёт 60, и не хочет тратить время на подбор.",
+            screen: (
+              <SetScreen id="bench_press" weight="20" reps={8} target="6 – 8" />
+            ),
+            action: "Тап по весу",
+          },
+          {
+            caption: "Шторка веса",
+            note: "Строка меняется с каждым нажатием: на 20 её нет, на 30 — «25 × 2», с 40 — оба подхода.",
+            screen: (
+              <SetScreen id="bench_press" weight="60" reps={8} target="6 – 8" />
+            ),
+            overlay: (
+              <WeightSheetScreen
+                id="bench_press"
+                weightKg={60}
+                warmUps={["30 × 8", "50 × 2"]}
+              />
+            ),
+            action: "Закрыть",
+          },
+          {
+            caption: "Разминка",
+            note: "Переход как после «Сделал». Полоска сверху длиннее на два деления.",
+            screen: (
+              <SetScreen
+                id="bench_press"
+                weight="30"
+                reps={8}
+                target="6 – 8"
+                sets={11}
+                warmUp={{ number: 1, count: 2, workingKg: 60 }}
+              />
+            ),
+          },
+        ]}
+      >
+        Разминка от стартового веса пустая: 50% и 85% легче грифа. Человек
+        поднимает вес в шторке и сразу видит, какая разминка появится; при
+        закрытии шторки подходы разминки вставляются перед рабочим.
       </Flow>
 
       <Flow
