@@ -9,16 +9,16 @@ import {
 import { type Gym, updateGym, updateSet } from "../../../../db";
 import {
   computeWeights,
+  planWarmUps,
   stepWeightKg,
   unitsToKg,
   type WorkoutStep,
 } from "../../../../domain";
 import {
-  describeWeights,
   WeightsSelector,
   WeightsVisualizer,
 } from "../../../Workout/components";
-import { formatWeight, useStepPlan } from "../../hooks.ts";
+import { formatWeight, type StepPlan, useStepPlan } from "../../hooks.ts";
 import { MANUAL_WEIGHT_STEP } from "../../constants.ts";
 import { StepSheet } from "../StepSheet";
 import { ManualWeightModal } from "../ManualWeightModal";
@@ -66,16 +66,13 @@ export function WeightSheet({
   const renderBody = () => {
     if (fits) {
       return (
-        <>
-          <div className={s.body}>
-            <WeightsVisualizer
-              exercise={exercise}
-              gym={gym}
-              weightKg={weightKg}
-            />
-          </div>
-          <div className={s.subnote}>{describeWeights(ctor)}</div>
-        </>
+        <div className={s.body}>
+          <WeightsVisualizer
+            exercise={exercise}
+            gym={gym}
+            weightKg={weightKg}
+          />
+        </div>
       );
     }
 
@@ -105,6 +102,7 @@ export function WeightSheet({
         onClose={onCancel}
       >
         {renderBody()}
+        <div className={s.warmUp}>{describeWarmUp(plan)}</div>
         <div className={s.links}>
           <button className={s.link} onClick={manualHandler}>
             Ввести вручную
@@ -128,4 +126,27 @@ export function WeightSheet({
       </PageModal>
     </>
   );
+}
+
+// Names the warm-up that closing the sheet will insert, so the jump to it is
+// no surprise. The same rule decides as on insertion.
+function describeWarmUp(plan: StepPlan): string {
+  const { data, sets, weightKg } = plan;
+  if (plan.set.type === "warm-up" || weightKg === undefined) return "";
+  if (sets.some((s) => s.completed || s.type === "warm-up")) return "";
+
+  const warmUps = planWarmUps({
+    exercise: data.exercise,
+    gym: data.gym,
+    selfWeight: data.bodyWeight,
+    workingWeight: weightKg,
+    isFirstOfMovement: plan.isFirstOfMovement,
+  });
+  if (warmUps.length === 0) return "";
+
+  const list = warmUps.map(
+    (warmUp) =>
+      `${formatWeight(plan, warmUp.weight).value} × ${warmUp.reps.max}`,
+  );
+  return `Сначала разминка: ${list.join(", ")}`;
 }

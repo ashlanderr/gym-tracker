@@ -32,6 +32,7 @@ export interface StepPlan {
   reason: FindingReason | undefined;
   // The working weight a warm-up leads to.
   workingWeightKg: number | undefined;
+  isFirstOfMovement: boolean;
   data: PerformanceData;
 }
 
@@ -75,6 +76,7 @@ export function useStepPlan(step: WorkoutStep): StepPlan | null {
     isFinding: recommendation?.isFinding ?? false,
     reason: recommendation?.reason,
     workingWeightKg: isWarmUp ? workingWeightKg : undefined,
+    isFirstOfMovement: plan.params.isFirstOfMovement,
     data,
   };
 }

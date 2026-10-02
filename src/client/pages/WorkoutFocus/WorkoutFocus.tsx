@@ -15,7 +15,7 @@ import { buildWorkoutSteps, findCurrentStep } from "../../domain";
 import { usePageParams } from "../hooks.ts";
 import type { WorkoutParams } from "../Workout/types.ts";
 import { useActiveTimer } from "../Workout/components";
-import { FocusMessage, RestView, SetView } from "./components";
+import { FocusMessage, RestView, StepGate } from "./components";
 import { useClock, useRestSeconds } from "./hooks.ts";
 import { LAST_COMPLETED_SET_ATOM, SET_FORMS } from "./constants.ts";
 import { pluralize } from "../../utils";
@@ -74,7 +74,7 @@ export function WorkoutFocus() {
     }
 
     if (current) {
-      return <SetView key={current.set.id} step={current} />;
+      return <StepGate key={current.set.id} step={current} />;
     }
 
     return (

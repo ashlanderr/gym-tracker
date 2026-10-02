@@ -64,6 +64,18 @@ export function insertWarmUps(store: Store, performance: Performance) {
   });
 }
 
+// The warm-up the weight sheet brings: only before any set of the exercise is
+// done and while it has no warm-up yet. A weight changed after the warm-up
+// is a correction, and the person goes on without a new one.
+export function warmUpAfterWeightChange(
+  store: Store,
+  performance: Performance,
+) {
+  const sets = querySetsByPerformance(store, performance.id);
+  if (sets.some((s) => s.completed || s.type === "warm-up")) return;
+  insertWarmUps(store, performance);
+}
+
 export function addNextSet(store: Store, performance: Performance): Set {
   const sets = querySetsByPerformance(store, performance.id);
   const nextOrder = Math.max(-1, ...sets.map((s) => s.order)) + 1;

@@ -1,9 +1,11 @@
 import * as Y from "yjs";
 import {
+  defaultGym,
   queryPerformancesByWorkout,
   queryPreviousPerformance,
   querySetsByPerformance,
   type Store,
+  updateGym,
   updateSet,
   updateWorkout,
   type Workout,
@@ -37,6 +39,11 @@ function setTypes(store: Store, performance: string) {
 
 test("duplicated workout continues the history of each slot", () => {
   const store = createStore();
+  updateGym(store, {
+    ...defaultGym("user"),
+    bars: { units: "kg", items: [20] },
+    plates: { units: "kg", items: [20, 10, 5, 2.5, 1.25] },
+  });
   const first = startWorkout(store, 1);
 
   const heavy = addPerformance(store, first, BENCH_PRESS);
@@ -46,6 +53,7 @@ test("duplicated workout continues the history of each slot", () => {
   const light = addPerformance(store, first, BENCH_PRESS);
   completeSets(store, light.id, 60);
 
+  vi.useFakeTimers({ now: 1000 });
   const second = duplicateWorkout(store, first);
   const [newHeavy, newLight] = queryPerformancesByWorkout(store, second.id);
 
@@ -74,6 +82,14 @@ test("duplicated workout continues the history of each slot", () => {
     second.startedAt,
   );
   expect(previous?.id).toBe(light.id);
+
+  // A workout that had a warm-up does not pass it on as extra sets.
+  completeSets(store, newHeavy.id, 100);
+  vi.setSystemTime(2000);
+  const third = duplicateWorkout(store, second);
+  vi.useRealTimers();
+  const [nextHeavy] = queryPerformancesByWorkout(store, third.id);
+  expect(setTypes(store, nextHeavy.id)).toEqual(setTypes(store, newHeavy.id));
 });
 
 test("replaced exercise gets a new slot and the exercise history", () => {

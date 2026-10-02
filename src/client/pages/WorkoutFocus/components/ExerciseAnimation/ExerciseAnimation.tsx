@@ -4,7 +4,10 @@ import { MdPause, MdPlayArrow } from "react-icons/md";
 import { ExerciseCrossFade } from "../../../../components";
 import type { ExerciseAnimationProps } from "./types.ts";
 
-export function ExerciseAnimation({ startUrl, endUrl }: ExerciseAnimationProps) {
+export function ExerciseAnimation({
+  startUrl,
+  endUrl,
+}: ExerciseAnimationProps) {
   const [isPaused, setPaused] = useState(false);
 
   return (

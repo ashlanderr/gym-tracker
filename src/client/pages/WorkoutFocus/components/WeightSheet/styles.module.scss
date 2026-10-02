@@ -2,11 +2,15 @@
   padding: 26px 16px 0;
 }
 
-.subnote {
+// Kept one line high when empty, so the buttons below do not jump as the
+// line comes and goes with the weight.
+.warmUp {
+  min-height: 17px;
   margin-top: 22px;
+  padding: 0 16px;
   text-align: center;
-  font-size: 11px;
-  color: #6d6d6d;
+  font-size: 13px;
+  color: #c9b500;
 }
 
 .warning {

@@ -1,5 +1,6 @@
 import { atom } from "jotai";
 import type { Effort } from "../../db";
+import type { FindingReason } from "../../domain";
 
 // The profile has no sex yet, so the button uses the male form until it does.
 export const DONE_LABEL = "Сделал";
@@ -26,6 +27,22 @@ export const EFFORTS: Array<{ key: Effort; label: string }> = [
   { key: "failure", label: "Отказ" },
 ];
 
+// While the weight is being found nobody gets near failure from a light
+// weight, and a set far too light needs a rating of its own.
+export const FINDING_EFFORTS: Array<{ key: Effort; label: string }> = [
+  { key: "light", label: "Мало" },
+  { key: "easy", label: "Легко" },
+  { key: "normal", label: "Норм" },
+  { key: "hard", label: "Тяжело" },
+];
+
+export const FINDING_REASONS: Record<FindingReason, string> = {
+  light: "Прошлый подход был слишком лёгким.",
+  easy: "Прошлый подход был лёгким.",
+  below: "В прошлом подходе не хватило повторов.",
+  max: "Тяжелее здесь не поставить.",
+};
+
 export const HINTS = [
   "нажми на вес — покажу, какие блины вешать",
   "нажми на повторы — если получилось иначе",
@@ -34,3 +51,7 @@ export const HINTS = [
 
 // The set the rest screen asks about. Kept in memory like the timer itself.
 export const LAST_COMPLETED_SET_ATOM = atom<string | null>(null);
+
+// Performances whose warning was answered with "Оставить". Kept in memory:
+// once a set is done the warning is not shown anyway.
+export const KEPT_PERFORMANCES_ATOM = atom<string[]>([]);

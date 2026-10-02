@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { useSetAtom } from "jotai";
 import { useModalStack, useStore } from "../../../../components";
 import { updateSet } from "../../../../db";
-import { updateRecords } from "../../../../domain";
+import { updateRecords, warmUpAfterWeightChange } from "../../../../domain";
 import { useActiveTimer } from "../../../Workout/components";
 import {
   formatRange,
@@ -15,6 +15,7 @@ import {
 import {
   DEFAULT_REST_SECONDS,
   DONE_LABEL,
+  FINDING_REASONS,
   HINTS,
   LAST_COMPLETED_SET_ATOM,
 } from "../../constants.ts";
@@ -37,11 +38,29 @@ export function SetView({ step }: SetViewProps) {
   const isWarmUp = set.type === "warm-up";
   const weight = formatWeight(plan, plan.weightKg);
 
+  const position = `${step.number} из ${step.count}`;
   const setLine = step.isLast
     ? "Последний подход тренировки"
-    : `${isWarmUp ? "Разминка" : "Подход"} ${step.number} из ${step.count}`;
+    : isWarmUp
+      ? `Разминка ${position}`
+      : plan.isFinding
+        ? `Подбор веса · подход ${position}`
+        : `Подход ${position}`;
 
-  const weightHandler = () => pushModal(WeightSheet, step);
+  const working =
+    plan.workingWeightKg !== undefined
+      ? formatWeight(plan, plan.workingWeightKg)
+      : null;
+  const underWeight = working
+    ? `перед ${working.value} ${working.units}`
+    : formatWeightChange(plan);
+
+  // The sheet writes the weight on every press, so a warm-up the new weight
+  // brings can only be inserted once it is closed.
+  const weightHandler = async () => {
+    await pushModal(WeightSheet, step);
+    warmUpAfterWeightChange(store, step.performance);
+  };
 
   const repsHandler = () => pushModal(RepsSheet, step);
 
@@ -62,6 +81,10 @@ export function SetView({ step }: SetViewProps) {
     updateSet(store, completed);
     updateRecords(store, completed);
     setLastCompleted(completed.id);
+
+    // No rest between warm-up sets: the first one comes before the first
+    // working set.
+    if (isWarmUp && step.number < step.count) return;
 
     // The current set is the first unfinished one, so the last step ends the
     // workout. A configured timer still runs, because the last set is rated
@@ -97,7 +120,15 @@ export function SetView({ step }: SetViewProps) {
           {exercise.name}
           <span className={s.chevron} />
         </button>
-        <div className={clsx(s.setLine, isWarmUp && s.warmUp)}>{setLine}</div>
+        <div
+          className={clsx(
+            s.setLine,
+            isWarmUp && s.warmUp,
+            plan.isFinding && !isWarmUp && s.finding,
+          )}
+        >
+          {setLine}
+        </div>
         <div className={s.numbers}>
           <div className={s.cell}>
             <button
@@ -107,7 +138,7 @@ export function SetView({ step }: SetViewProps) {
               {weight.value}
               {weight.units && <span className={s.units}>{weight.units}</span>}
             </button>
-            <div className={s.under}>{formatWeightChange(plan)}</div>
+            <div className={s.under}>{underWeight}</div>
           </div>
           <div className={s.times}>×</div>
           <div className={s.cell}>
@@ -119,6 +150,9 @@ export function SetView({ step }: SetViewProps) {
               {plan.target && `цель ${formatRange(plan.target)}`}
             </div>
           </div>
+        </div>
+        <div className={s.reason}>
+          {plan.reason && FINDING_REASONS[plan.reason]}
         </div>
         <div className={s.hints}>
           {HINTS.map((hint) => (

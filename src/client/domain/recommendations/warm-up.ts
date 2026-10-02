@@ -6,6 +6,7 @@ import {
   snapRecordedKg,
   toFullWeight,
 } from "./full.ts";
+import { isInventoryUnknown } from "./start.ts";
 
 const EPSILON = 1e-6;
 
@@ -24,7 +25,8 @@ export interface WarmUpParams {
 
 // The warm-up before the working weight. Only the first exercise of a
 // movement group gets one; a set lighter than the equipment allows drops out,
-// so from a light weight there is no warm-up at all.
+// so from a light weight there is no warm-up at all. Without the inventory
+// nothing can be rounded or dropped, so there is none either.
 export function planWarmUps({
   exercise,
   gym,
@@ -33,6 +35,7 @@ export function planWarmUps({
   isFirstOfMovement,
 }: WarmUpParams): WarmUpSet[] {
   if (!isFirstOfMovement || !hasWarmUp(exercise.movement)) return [];
+  if (isInventoryUnknown(exercise, gym)) return [];
 
   const full = toFullWeight(exercise, selfWeight, workingWeight);
   const rounding = lighterRounding(exercise);

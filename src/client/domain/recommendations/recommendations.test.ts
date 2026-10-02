@@ -162,6 +162,15 @@ test("warm-up is two sets from the full weight, lighter ones drop out", () => {
   expect(warmUps("bench_press", 60, false)).toEqual([]);
   // 10 kg of plates is 30 kg with the sled.
   expect(warmUps("leg_press_plates", 10)).toEqual([[5, 6]]);
+
+  const unknown = planWarmUps({
+    exercise: exercise("bench_press"),
+    gym: defaultGym("user"),
+    selfWeight: 80,
+    workingWeight: 60,
+    isFirstOfMovement: true,
+  });
+  expect(unknown).toEqual([]);
 });
 
 test("warm-up sets follow the first working weight", () => {

@@ -1,22 +1,27 @@
 import s from "./styles.module.scss";
 import { clsx } from "clsx";
 import { useStore } from "../../../../components";
-import { type Effort, updateSet } from "../../../../db";
+import {
+  type CompletedSet,
+  type Effort,
+  type Performance,
+  updateSet,
+  useQueryPerformanceById,
+} from "../../../../db";
 import { useActiveTimer } from "../../../Workout/components";
-import { EFFORTS, REST_ADJUST_SECONDS } from "../../constants.ts";
+import { usePerformanceRecommendations } from "../../../Workout/hooks.ts";
+import {
+  EFFORTS,
+  FINDING_EFFORTS,
+  REST_ADJUST_SECONDS,
+} from "../../constants.ts";
 import { NextUp } from "../NextUp";
 import type { RestViewProps } from "./types.ts";
 
 // Without a next step the rest follows the last set: the person can still
 // rate it, and the action finishes the workout instead of skipping rest.
 export function RestView({ next, seconds, lastSet, onFinish }: RestViewProps) {
-  const store = useStore();
   const { startTimer } = useActiveTimer();
-
-  const effortHandler = (effort: Effort) => {
-    if (!lastSet?.completed) return;
-    updateSet(store, { ...lastSet, effort });
-  };
 
   const finishHandler = () => {
     startTimer(undefined);
@@ -48,22 +53,7 @@ export function RestView({ next, seconds, lastSet, onFinish }: RestViewProps) {
             +{REST_ADJUST_SECONDS} сек
           </button>
         </div>
-        {lastSet?.completed && (
-          <>
-            <div className={s.question}>Как прошёл подход?</div>
-            <div className={s.keys}>
-              {EFFORTS.map(({ key, label }) => (
-                <button
-                  key={key}
-                  className={clsx(s.key, lastSet.effort === key && s.selected)}
-                  onClick={() => effortHandler(key)}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
+        {lastSet?.completed && <EffortQuestion set={lastSet} />}
         {next && <NextUp next={next} lastSet={lastSet} />}
       </div>
       <div className={s.action}>
@@ -76,6 +66,47 @@ export function RestView({ next, seconds, lastSet, onFinish }: RestViewProps) {
             Завершить тренировку
           </button>
         )}
+      </div>
+    </>
+  );
+}
+
+function EffortQuestion({ set }: { set: CompletedSet }) {
+  const store = useStore();
+  const performance = useQueryPerformanceById(store, set.performance);
+  return performance && <EffortKeys performance={performance} set={set} />;
+}
+
+// While the weight is being found the ratings move it, so they are the ones
+// weight finding reads.
+function EffortKeys({
+  performance,
+  set,
+}: {
+  performance: Performance;
+  set: CompletedSet;
+}) {
+  const store = useStore();
+  const plan = usePerformanceRecommendations(performance);
+  const index = plan?.sets.findIndex((s) => s.id === set.id) ?? -1;
+  const isFinding = plan?.recommendations[index]?.isFinding ?? false;
+
+  const effortHandler = (effort: Effort) =>
+    updateSet(store, { ...set, effort });
+
+  return (
+    <>
+      <div className={s.question}>Как прошёл подход?</div>
+      <div className={s.keys}>
+        {(isFinding ? FINDING_EFFORTS : EFFORTS).map(({ key, label }) => (
+          <button
+            key={key}
+            className={clsx(s.key, set.effort === key && s.selected)}
+            onClick={() => effortHandler(key)}
+          >
+            {label}
+          </button>
+        ))}
       </div>
     </>
   );
