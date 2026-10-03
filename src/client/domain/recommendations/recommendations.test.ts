@@ -105,6 +105,11 @@ test("a set below the range settles between it and the last good one", () => {
   expect(alone.weight).toBe(20);
 });
 
+test("sets after an entered weight repeat it until it is done", () => {
+  const [, next] = recommend("bench_press", [{ ...draft, weight: 60 }, draft]);
+  expect(next.weight).toBe(60);
+});
+
 test("without a rating the weight stays and finding goes on", () => {
   const [, next] = recommend("bench_press", [done(40, 8), draft]);
   expect(next).toMatchObject({ weight: 40, isFinding: true });
