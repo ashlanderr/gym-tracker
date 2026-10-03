@@ -23,7 +23,7 @@
 }
 
 .toolbarButton {
-  color: #FFF;
+  color: #fff;
   background: transparent;
   border: none;
   outline: none;
@@ -67,7 +67,7 @@
 
 .muscle {
   font-size: 12px;
-  color: #AAA;
+  color: #aaa;
 }
 
 .muscle:first-child {
@@ -76,7 +76,7 @@
 
 .muscle:not(:last-child)::after {
   white-space: pre;
-  content: ', ';
+  content: ", ";
 }
 
 .sheetHeader {

@@ -40,7 +40,10 @@ const isWindows = process.platform === "win32";
 const wrapper = join(ANDROID_DIR, isWindows ? "gradlew.bat" : "gradlew");
 
 const gradle = isWindows
-  ? spawn("cmd.exe", ["/c", wrapper, task], { cwd: ANDROID_DIR, stdio: "inherit" })
+  ? spawn("cmd.exe", ["/c", wrapper, task], {
+      cwd: ANDROID_DIR,
+      stdio: "inherit",
+    })
   : spawn(wrapper, [task], { cwd: ANDROID_DIR, stdio: "inherit" });
 
 gradle.on("close", async (code) => {
@@ -51,7 +54,11 @@ gradle.on("close", async (code) => {
 
   const apk = join(
     ANDROID_DIR,
-    "app", "build", "outputs", "apk", variant,
+    "app",
+    "build",
+    "outputs",
+    "apk",
+    variant,
     `app-${variant}.apk`,
   );
 

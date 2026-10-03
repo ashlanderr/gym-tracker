@@ -11,10 +11,7 @@
 import "dotenv/config";
 import { readFile } from "node:fs/promises";
 import { APP_PACKAGE } from "../src/server/constants.ts";
-import {
-  createRuStoreClient,
-  parsePrivateKey,
-} from "../src/server/rustore.ts";
+import { createRuStoreClient, parsePrivateKey } from "../src/server/rustore.ts";
 
 const APK = "android/app/build/outputs/apk/release/app-release.apk";
 const VERSIONS = `/v1/application/${APP_PACKAGE}/version`;

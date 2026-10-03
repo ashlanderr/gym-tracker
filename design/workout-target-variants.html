@@ -1,159 +1,486 @@
 <!doctype html>
 <html lang="ru">
-<head>
-<meta charset="utf-8">
-<title>Workout target variants</title>
-<style>
-  * { margin:0; padding:0; box-sizing:border-box; font: inherit; }
-  html { font-family: Montserrat, "Segoe UI", "Helvetica Neue", sans-serif; background:#111; color:#fff; -webkit-font-smoothing:antialiased; }
-  body { padding:24px; display:flex; gap:20px; align-items:flex-start; }
+  <head>
+    <meta charset="utf-8" />
+    <title>Workout target variants</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font: inherit;
+      }
+      html {
+        font-family: Montserrat, "Segoe UI", "Helvetica Neue", sans-serif;
+        background: #111;
+        color: #fff;
+        -webkit-font-smoothing: antialiased;
+      }
+      body {
+        padding: 24px;
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+      }
 
-  .col { display:flex; flex-direction:column; gap:10px; width:393px; flex:0 0 auto; }
-  .caption { font-size:12px; color:#8b9299; line-height:1.5; height:66px; }
-  .caption b { color:#fff; font-weight:600; display:block; font-size:13px; margin-bottom:3px; }
+      .col {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 393px;
+        flex: 0 0 auto;
+      }
+      .caption {
+        font-size: 12px;
+        color: #8b9299;
+        line-height: 1.5;
+        height: 66px;
+      }
+      .caption b {
+        color: #fff;
+        font-weight: 600;
+        display: block;
+        font-size: 13px;
+        margin-bottom: 3px;
+      }
 
-  .phone { width:393px; height:800px; background:#000; border-radius:26px; overflow:hidden;
-           display:flex; flex-direction:column; border:1px solid #2a2a2a; }
+      .phone {
+        width: 393px;
+        height: 800px;
+        background: #000;
+        border-radius: 26px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #2a2a2a;
+      }
 
-  .top { display:flex; align-items:center; padding:10px 8px; flex:0 0 auto; }
-  .ghostBtn { width:40px; height:40px; display:flex; align-items:center; justify-content:center;
-              border:none; background:transparent; color:#6d6d6d; font-size:19px; }
-  .progress { height:2px; display:flex; gap:3px; padding:0 16px; flex:0 0 auto; }
-  .progress i { flex:1 1 0; background:#1e1e1e; border-radius:2px; }
-  .progress i.done { background:#0B0; }
-  .progress i.cur { background:#08F; }
+      .top {
+        display: flex;
+        align-items: center;
+        padding: 10px 8px;
+        flex: 0 0 auto;
+      }
+      .ghostBtn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        color: #6d6d6d;
+        font-size: 19px;
+      }
+      .progress {
+        height: 2px;
+        display: flex;
+        gap: 3px;
+        padding: 0 16px;
+        flex: 0 0 auto;
+      }
+      .progress i {
+        flex: 1 1 0;
+        background: #1e1e1e;
+        border-radius: 2px;
+      }
+      .progress i.done {
+        background: #0b0;
+      }
+      .progress i.cur {
+        background: #08f;
+      }
 
-  .stage { flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center;
-           padding:0 24px; text-align:center; }
+      .stage {
+        flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0 24px;
+        text-align: center;
+      }
 
-  .fig { opacity:.85; margin-bottom:18px; }
-  .exName { font-size:29px; font-weight:700; line-height:1.15; letter-spacing:-.01em; }
-  .setLine { font-size:14px; color:#7a7a7a; margin-top:9px; }
+      .fig {
+        opacity: 0.85;
+        margin-bottom: 18px;
+      }
+      .exName {
+        font-size: 29px;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -0.01em;
+      }
+      .setLine {
+        font-size: 14px;
+        color: #7a7a7a;
+        margin-top: 9px;
+      }
 
-  .row { display:flex; align-items:flex-start; gap:16px; margin-top:38px; }
-  .cell { display:flex; flex-direction:column; align-items:center; }
-  .big { font-size:60px; font-weight:600; letter-spacing:-.03em; line-height:1; color:#fff;
-         background:transparent; border:none; border-bottom:1px dashed #3a3a3a; padding-bottom:8px; }
-  .big u { text-decoration:none; font-size:21px; font-weight:500; color:#8d8d8d; margin-left:5px; }
-  .times { font-size:27px; color:#484848; margin-top:20px; }
+      .row {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-top: 38px;
+      }
+      .cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .big {
+        font-size: 60px;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        color: #fff;
+        background: transparent;
+        border: none;
+        border-bottom: 1px dashed #3a3a3a;
+        padding-bottom: 8px;
+      }
+      .big u {
+        text-decoration: none;
+        font-size: 21px;
+        font-weight: 500;
+        color: #8d8d8d;
+        margin-left: 5px;
+      }
+      .times {
+        font-size: 27px;
+        color: #484848;
+        margin-top: 20px;
+      }
 
-  .under { margin-top:11px; font-size:15px; color:#b0b0b0; }
-  .under.quiet { color:#6d6d6d; }
-  .centered { margin-top:11px; font-size:17px; color:#b0b0b0; }
+      .under {
+        margin-top: 11px;
+        font-size: 15px;
+        color: #b0b0b0;
+      }
+      .under.quiet {
+        color: #6d6d6d;
+      }
+      .centered {
+        margin-top: 11px;
+        font-size: 17px;
+        color: #b0b0b0;
+      }
 
-  .hints { font-size:11px; color:#4f4f4f; line-height:1.75; margin-top:44px; }
+      .hints {
+        font-size: 11px;
+        color: #4f4f4f;
+        line-height: 1.75;
+        margin-top: 44px;
+      }
 
-  .action { flex:0 0 auto; padding:0 24px 12px; }
-  .go { width:100%; border:none; border-radius:16px; background:#0B0; color:#fff;
-        font-size:19px; font-weight:700; padding:22px; }
-  .drawer { text-align:center; font-size:11px; color:#4a4a4a; padding:10px 0 14px; flex:0 0 auto; }
-</style>
-</head>
-<body>
-
-<!-- B -->
-<div class="col">
-  <div class="caption"><b>B · Просто крупнее и ярче</b>Цель 17px по центру под всей строкой. Симметрично, но описывает будто и вес тоже.</div>
-  <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
-    <div class="stage">
-      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
-      <div class="exName">Жим лёжа</div>
-      <div class="setLine">Подход 2 из 3</div>
-      <div class="row">
-        <div class="cell"><button class="big">60<u>кг</u></button></div>
-        <div class="times">×</div>
-        <div class="cell"><button class="big">8<u>раз</u></button></div>
+      .action {
+        flex: 0 0 auto;
+        padding: 0 24px 12px;
+      }
+      .go {
+        width: 100%;
+        border: none;
+        border-radius: 16px;
+        background: #0b0;
+        color: #fff;
+        font-size: 19px;
+        font-weight: 700;
+        padding: 22px;
+      }
+      .drawer {
+        text-align: center;
+        font-size: 11px;
+        color: #4a4a4a;
+        padding: 10px 0 14px;
+        flex: 0 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- B -->
+    <div class="col">
+      <div class="caption">
+        <b>B · Просто крупнее и ярче</b>Цель 17px по центру под всей строкой.
+        Симметрично, но описывает будто и вес тоже.
       </div>
-      <div class="centered">цель 6 – 8 повторов</div>
-      <div class="hints" style="margin-top:30px">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
-    </div>
-    <div class="action"><button class="go">Готово</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
-  </div>
-</div>
-
-<!-- C -->
-<div class="col">
-  <div class="caption"><b>C · Под повторами</b>Цель привязана к своему числу. Под весом пусто — асимметрия намеренная.</div>
-  <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
-    <div class="stage">
-      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
-      <div class="exName">Жим лёжа</div>
-      <div class="setLine">Подход 2 из 3</div>
-      <div class="row">
-        <div class="cell"><button class="big">60<u>кг</u></button></div>
-        <div class="times">×</div>
-        <div class="cell">
-          <button class="big">8<u>раз</u></button>
-          <div class="under">цель 6 – 8</div>
+      <div class="phone">
+        <div class="top"><button class="ghostBtn">←</button></div>
+        <div class="progress">
+          <i class="done"></i><i class="done"></i><i class="cur"></i><i></i
+          ><i></i><i></i>
         </div>
+        <div class="stage">
+          <div class="fig">
+            <svg viewBox="0 0 120 96" width="104" height="84">
+              <g
+                stroke="#9a9a9a"
+                stroke-width="5"
+                fill="none"
+                stroke-linecap="round"
+              >
+                <line x1="30" y1="22" x2="96" y2="22" />
+                <rect
+                  x="34"
+                  y="10"
+                  width="7"
+                  height="24"
+                  rx="2"
+                  fill="#9a9a9a"
+                  stroke="none"
+                />
+                <rect
+                  x="85"
+                  y="10"
+                  width="7"
+                  height="24"
+                  rx="2"
+                  fill="#9a9a9a"
+                  stroke="none"
+                />
+                <line x1="46" y1="24" x2="50" y2="52" />
+                <line x1="80" y1="24" x2="76" y2="52" />
+                <line x1="38" y1="58" x2="86" y2="58" />
+                <circle cx="28" cy="58" r="8" />
+                <line x1="24" y1="72" x2="96" y2="72" stroke-width="6" />
+                <line x1="86" y1="58" x2="100" y2="70" />
+              </g>
+            </svg>
+          </div>
+          <div class="exName">Жим лёжа</div>
+          <div class="setLine">Подход 2 из 3</div>
+          <div class="row">
+            <div class="cell">
+              <button class="big">60<u>кг</u></button>
+            </div>
+            <div class="times">×</div>
+            <div class="cell">
+              <button class="big">8<u>раз</u></button>
+            </div>
+          </div>
+          <div class="centered">цель 6 – 8 повторов</div>
+          <div class="hints" style="margin-top: 30px">
+            нажми на вес — покажу, какие блины вешать<br />нажми на повторы —
+            если получилось иначе
+          </div>
+        </div>
+        <div class="action"><button class="go">Готово</button></div>
+        <div class="drawer">⌃&nbsp; Техника и история</div>
       </div>
-      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
     </div>
-    <div class="action"><button class="go">Готово</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
-  </div>
-</div>
 
-<!-- C + delta, rare state -->
-<div class="col">
-  <div class="caption"><b>C + подпись под весом · день прибавки</b>Симметрия восстановлена, и подпись несёт новость. Так выглядит примерно раз в несколько недель.</div>
-  <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
-    <div class="stage">
-      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
-      <div class="exName">Жим лёжа</div>
-      <div class="setLine">Подход 2 из 3</div>
-      <div class="row">
-        <div class="cell">
-          <button class="big">60<u>кг</u></button>
-          <div class="under">+2.5 кг</div>
-        </div>
-        <div class="times">×</div>
-        <div class="cell">
-          <button class="big">8<u>раз</u></button>
-          <div class="under">цель 6 – 8</div>
-        </div>
+    <!-- C -->
+    <div class="col">
+      <div class="caption">
+        <b>C · Под повторами</b>Цель привязана к своему числу. Под весом пусто —
+        асимметрия намеренная.
       </div>
-      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
-    </div>
-    <div class="action"><button class="go">Готово</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
-  </div>
-</div>
-
-<!-- C + delta, common state -->
-<div class="col">
-  <div class="caption"><b>C + подпись под весом · обычный день</b>Тот же вариант в состоянии, в котором он живёт 80% подходов. Симметрия есть, новости нет.</div>
-  <div class="phone">
-    <div class="top"><button class="ghostBtn">←</button></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
-    <div class="stage">
-      <div class="fig"><svg viewBox="0 0 120 96" width="104" height="84"><g stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"><line x1="30" y1="22" x2="96" y2="22"/><rect x="34" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><rect x="85" y="10" width="7" height="24" rx="2" fill="#9a9a9a" stroke="none"/><line x1="46" y1="24" x2="50" y2="52"/><line x1="80" y1="24" x2="76" y2="52"/><line x1="38" y1="58" x2="86" y2="58"/><circle cx="28" cy="58" r="8"/><line x1="24" y1="72" x2="96" y2="72" stroke-width="6"/><line x1="86" y1="58" x2="100" y2="70"/></g></svg></div>
-      <div class="exName">Жим лёжа</div>
-      <div class="setLine">Подход 2 из 3</div>
-      <div class="row">
-        <div class="cell">
-          <button class="big">60<u>кг</u></button>
-          <div class="under quiet">как раньше</div>
+      <div class="phone">
+        <div class="top"><button class="ghostBtn">←</button></div>
+        <div class="progress">
+          <i class="done"></i><i class="done"></i><i class="cur"></i><i></i
+          ><i></i><i></i>
         </div>
-        <div class="times">×</div>
-        <div class="cell">
-          <button class="big">8<u>раз</u></button>
-          <div class="under">цель 6 – 8</div>
+        <div class="stage">
+          <div class="fig">
+            <svg viewBox="0 0 120 96" width="104" height="84">
+              <g
+                stroke="#9a9a9a"
+                stroke-width="5"
+                fill="none"
+                stroke-linecap="round"
+              >
+                <line x1="30" y1="22" x2="96" y2="22" />
+                <rect
+                  x="34"
+                  y="10"
+                  width="7"
+                  height="24"
+                  rx="2"
+                  fill="#9a9a9a"
+                  stroke="none"
+                />
+                <rect
+                  x="85"
+                  y="10"
+                  width="7"
+                  height="24"
+                  rx="2"
+                  fill="#9a9a9a"
+                  stroke="none"
+                />
+                <line x1="46" y1="24" x2="50" y2="52" />
+                <line x1="80" y1="24" x2="76" y2="52" />
+                <line x1="38" y1="58" x2="86" y2="58" />
+                <circle cx="28" cy="58" r="8" />
+                <line x1="24" y1="72" x2="96" y2="72" stroke-width="6" />
+                <line x1="86" y1="58" x2="100" y2="70" />
+              </g>
+            </svg>
+          </div>
+          <div class="exName">Жим лёжа</div>
+          <div class="setLine">Подход 2 из 3</div>
+          <div class="row">
+            <div class="cell">
+              <button class="big">60<u>кг</u></button>
+            </div>
+            <div class="times">×</div>
+            <div class="cell">
+              <button class="big">8<u>раз</u></button>
+              <div class="under">цель 6 – 8</div>
+            </div>
+          </div>
+          <div class="hints">
+            нажми на вес — покажу, какие блины вешать<br />нажми на повторы —
+            если получилось иначе
+          </div>
         </div>
+        <div class="action"><button class="go">Готово</button></div>
+        <div class="drawer">⌃&nbsp; Техника и история</div>
       </div>
-      <div class="hints">нажми на вес — покажу, какие блины вешать<br>нажми на повторы — если получилось иначе</div>
     </div>
-    <div class="action"><button class="go">Готово</button></div>
-    <div class="drawer">⌃&nbsp; Техника и история</div>
-  </div>
-</div>
 
-</body>
+    <!-- C + delta, rare state -->
+    <div class="col">
+      <div class="caption">
+        <b>C + подпись под весом · день прибавки</b>Симметрия восстановлена, и
+        подпись несёт новость. Так выглядит примерно раз в несколько недель.
+      </div>
+      <div class="phone">
+        <div class="top"><button class="ghostBtn">←</button></div>
+        <div class="progress">
+          <i class="done"></i><i class="done"></i><i class="cur"></i><i></i
+          ><i></i><i></i>
+        </div>
+        <div class="stage">
+          <div class="fig">
+            <svg viewBox="0 0 120 96" width="104" height="84">
+              <g
+                stroke="#9a9a9a"
+                stroke-width="5"
+                fill="none"
+                stroke-linecap="round"
+              >
+                <line x1="30" y1="22" x2="96" y2="22" />
+                <rect
+                  x="34"
+                  y="10"
+                  width="7"
+                  height="24"
+                  rx="2"
+                  fill="#9a9a9a"
+                  stroke="none"
+                />
+                <rect
+                  x="85"
+                  y="10"
+                  width="7"
+                  height="24"
+                  rx="2"
+                  fill="#9a9a9a"
+                  stroke="none"
+                />
+                <line x1="46" y1="24" x2="50" y2="52" />
+                <line x1="80" y1="24" x2="76" y2="52" />
+                <line x1="38" y1="58" x2="86" y2="58" />
+                <circle cx="28" cy="58" r="8" />
+                <line x1="24" y1="72" x2="96" y2="72" stroke-width="6" />
+                <line x1="86" y1="58" x2="100" y2="70" />
+              </g>
+            </svg>
+          </div>
+          <div class="exName">Жим лёжа</div>
+          <div class="setLine">Подход 2 из 3</div>
+          <div class="row">
+            <div class="cell">
+              <button class="big">60<u>кг</u></button>
+              <div class="under">+2.5 кг</div>
+            </div>
+            <div class="times">×</div>
+            <div class="cell">
+              <button class="big">8<u>раз</u></button>
+              <div class="under">цель 6 – 8</div>
+            </div>
+          </div>
+          <div class="hints">
+            нажми на вес — покажу, какие блины вешать<br />нажми на повторы —
+            если получилось иначе
+          </div>
+        </div>
+        <div class="action"><button class="go">Готово</button></div>
+        <div class="drawer">⌃&nbsp; Техника и история</div>
+      </div>
+    </div>
+
+    <!-- C + delta, common state -->
+    <div class="col">
+      <div class="caption">
+        <b>C + подпись под весом · обычный день</b>Тот же вариант в состоянии, в
+        котором он живёт 80% подходов. Симметрия есть, новости нет.
+      </div>
+      <div class="phone">
+        <div class="top"><button class="ghostBtn">←</button></div>
+        <div class="progress">
+          <i class="done"></i><i class="done"></i><i class="cur"></i><i></i
+          ><i></i><i></i>
+        </div>
+        <div class="stage">
+          <div class="fig">
+            <svg viewBox="0 0 120 96" width="104" height="84">
+              <g
+                stroke="#9a9a9a"
+                stroke-width="5"
+                fill="none"
+                stroke-linecap="round"
+              >
+                <line x1="30" y1="22" x2="96" y2="22" />
+                <rect
+                  x="34"
+                  y="10"
+                  width="7"
+                  height="24"
+                  rx="2"
+                  fill="#9a9a9a"
+                  stroke="none"
+                />
+                <rect
+                  x="85"
+                  y="10"
+                  width="7"
+                  height="24"
+                  rx="2"
+                  fill="#9a9a9a"
+                  stroke="none"
+                />
+                <line x1="46" y1="24" x2="50" y2="52" />
+                <line x1="80" y1="24" x2="76" y2="52" />
+                <line x1="38" y1="58" x2="86" y2="58" />
+                <circle cx="28" cy="58" r="8" />
+                <line x1="24" y1="72" x2="96" y2="72" stroke-width="6" />
+                <line x1="86" y1="58" x2="100" y2="70" />
+              </g>
+            </svg>
+          </div>
+          <div class="exName">Жим лёжа</div>
+          <div class="setLine">Подход 2 из 3</div>
+          <div class="row">
+            <div class="cell">
+              <button class="big">60<u>кг</u></button>
+              <div class="under quiet">как раньше</div>
+            </div>
+            <div class="times">×</div>
+            <div class="cell">
+              <button class="big">8<u>раз</u></button>
+              <div class="under">цель 6 – 8</div>
+            </div>
+          </div>
+          <div class="hints">
+            нажми на вес — покажу, какие блины вешать<br />нажми на повторы —
+            если получилось иначе
+          </div>
+        </div>
+        <div class="action"><button class="go">Готово</button></div>
+        <div class="drawer">⌃&nbsp; Техника и история</div>
+      </div>
+    </div>
+  </body>
 </html>

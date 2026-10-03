@@ -1,40 +1,152 @@
 <!doctype html>
 <html lang="ru">
-<head>
-<meta charset="utf-8">
-<title>Workout title and video</title>
-<style>
-  * { margin:0; padding:0; box-sizing:border-box; font: inherit; }
-  html { font-family: Montserrat, "Segoe UI", "Helvetica Neue", sans-serif; background:#111; color:#fff; -webkit-font-smoothing:antialiased; }
-  body { padding:24px; display:flex; flex-wrap:wrap; gap:20px; width:2093px; align-items:flex-start; }
+  <head>
+    <meta charset="utf-8" />
+    <title>Workout title and video</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font: inherit;
+      }
+      html {
+        font-family: Montserrat, "Segoe UI", "Helvetica Neue", sans-serif;
+        background: #111;
+        color: #fff;
+        -webkit-font-smoothing: antialiased;
+      }
+      body {
+        padding: 24px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        width: 2093px;
+        align-items: flex-start;
+      }
 
-  .col { display:flex; flex-direction:column; gap:10px; width:393px; flex:0 0 auto; }
-  .caption { font-size:12px; color:#8b9299; line-height:1.5; height:78px; }
-  .caption b { color:#fff; font-weight:600; display:block; font-size:13px; margin-bottom:3px; }
-  .rowTitle { width:100%; font-size:12px; color:#5f6a72; letter-spacing:.14em; text-transform:uppercase; padding:6px 0 0; }
+      .col {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 393px;
+        flex: 0 0 auto;
+      }
+      .caption {
+        font-size: 12px;
+        color: #8b9299;
+        line-height: 1.5;
+        height: 78px;
+      }
+      .caption b {
+        color: #fff;
+        font-weight: 600;
+        display: block;
+        font-size: 13px;
+        margin-bottom: 3px;
+      }
+      .rowTitle {
+        width: 100%;
+        font-size: 12px;
+        color: #5f6a72;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 6px 0 0;
+      }
 
-  .phone { width:393px; height:800px; background:#000; border-radius:26px; overflow:hidden;
-           display:flex; flex-direction:column; border:1px solid #2a2a2a; position:relative; }
+      .phone {
+        width: 393px;
+        height: 800px;
+        background: #000;
+        border-radius: 26px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #2a2a2a;
+        position: relative;
+      }
 
-  .top { display:flex; align-items:center; padding:10px 14px 10px 8px; flex:0 0 auto; }
-  .ghostBtn { width:40px; height:40px; display:flex; align-items:center; justify-content:center;
-              border:none; background:transparent; color:#6d6d6d; font-size:19px; }
-  .clock { margin-left:auto; font-size:13px; color:#6d6d6d; font-variant-numeric:tabular-nums; }
-  .progress { height:2px; display:flex; gap:3px; padding:0 16px; flex:0 0 auto; }
-  .progress i { flex:1 1 0; background:#1e1e1e; border-radius:2px; }
-  .progress i.done { background:#0B0; }
-  .progress i.cur { background:#08F; }
+      .top {
+        display: flex;
+        align-items: center;
+        padding: 10px 14px 10px 8px;
+        flex: 0 0 auto;
+      }
+      .ghostBtn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        color: #6d6d6d;
+        font-size: 19px;
+      }
+      .clock {
+        margin-left: auto;
+        font-size: 13px;
+        color: #6d6d6d;
+        font-variant-numeric: tabular-nums;
+      }
+      .progress {
+        height: 2px;
+        display: flex;
+        gap: 3px;
+        padding: 0 16px;
+        flex: 0 0 auto;
+      }
+      .progress i {
+        flex: 1 1 0;
+        background: #1e1e1e;
+        border-radius: 2px;
+      }
+      .progress i.done {
+        background: #0b0;
+      }
+      .progress i.cur {
+        background: #08f;
+      }
 
-  .stage { flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center;
-           padding:0 24px; text-align:center; }
+      .stage {
+        flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0 24px;
+        text-align: center;
+      }
 
-  .heroWrap { position:relative; margin-bottom:14px; }
-  .hero { width:190px; height:190px; border-radius:16px; object-fit:cover; background:#000; display:block; }
-  .pauseDot { position:absolute; right:8px; bottom:8px; width:22px; height:22px; border-radius:50%;
-              background:#000a; border:1px solid #3d3d3d; display:flex; align-items:center; justify-content:center;
-              font-size:8px; color:#bbb; }
+      .heroWrap {
+        position: relative;
+        margin-bottom: 14px;
+      }
+      .hero {
+        width: 190px;
+        height: 190px;
+        border-radius: 16px;
+        object-fit: cover;
+        background: #000;
+        display: block;
+      }
+      .pauseDot {
+        position: absolute;
+        right: 8px;
+        bottom: 8px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #000a;
+        border: 1px solid #3d3d3d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 8px;
+        color: #bbb;
+      }
 
-  /* ---------------------------------------------------------------
+      /* ---------------------------------------------------------------
      The chevron hangs off the end of the TEXT, not the end of the box.
      .chev is an empty inline anchor glued to the last character with no
      whitespace before it, so it cannot wrap onto a line of its own, and
@@ -42,127 +154,300 @@
      positioned ::after. The words therefore centre as if the chevron
      were not there — on one line and on three.
      --------------------------------------------------------------- */
-  .exName { font-size:26px; font-weight:700; line-height:1.24; letter-spacing:-.01em;
-            background:transparent; border:none; color:#fff; }
-  .chev { position:relative; display:inline; }
-  .chev::after { content:'›'; position:absolute; left:7px; top:50%; transform:translateY(-52%);
-                 color:#5f5f5f; font-weight:400; font-size:23px; line-height:1; }
+      .exName {
+        font-size: 26px;
+        font-weight: 700;
+        line-height: 1.24;
+        letter-spacing: -0.01em;
+        background: transparent;
+        border: none;
+        color: #fff;
+      }
+      .chev {
+        position: relative;
+        display: inline;
+      }
+      .chev::after {
+        content: "›";
+        position: absolute;
+        left: 7px;
+        top: 50%;
+        transform: translateY(-52%);
+        color: #5f5f5f;
+        font-weight: 400;
+        font-size: 23px;
+        line-height: 1;
+      }
 
-  .setLine { font-size:14px; color:#7a7a7a; margin-top:10px; }
-  .centreMark { position:absolute; left:50%; top:0; bottom:0; width:1px; background:#a0202055; }
+      .setLine {
+        font-size: 14px;
+        color: #7a7a7a;
+        margin-top: 10px;
+      }
+      .centreMark {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: #a0202055;
+      }
 
-  .row { display:flex; align-items:flex-start; gap:16px; margin-top:26px; }
-  .cell { display:flex; flex-direction:column; align-items:center; }
-  .big { font-size:58px; font-weight:600; letter-spacing:-.03em; line-height:1; color:#fff;
-         background:transparent; border:none; border-bottom:1px dashed #3a3a3a; padding-bottom:8px; }
-  .big u { text-decoration:none; font-size:20px; font-weight:500; color:#8d8d8d; margin-left:5px; }
-  .times { font-size:26px; color:#484848; margin-top:19px; }
-  .under { margin-top:11px; font-size:15px; color:#b0b0b0; min-height:19px; }
+      .row {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-top: 26px;
+      }
+      .cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .big {
+        font-size: 58px;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        color: #fff;
+        background: transparent;
+        border: none;
+        border-bottom: 1px dashed #3a3a3a;
+        padding-bottom: 8px;
+      }
+      .big u {
+        text-decoration: none;
+        font-size: 20px;
+        font-weight: 500;
+        color: #8d8d8d;
+        margin-left: 5px;
+      }
+      .times {
+        font-size: 26px;
+        color: #484848;
+        margin-top: 19px;
+      }
+      .under {
+        margin-top: 11px;
+        font-size: 15px;
+        color: #b0b0b0;
+        min-height: 19px;
+      }
 
-  .action { flex:0 0 auto; padding:0 24px 18px; }
-  .go { width:100%; border:none; border-radius:16px; background:#0B0; color:#fff;
-        font-size:19px; font-weight:700; padding:22px; }
-</style>
-</head>
-<body>
+      .action {
+        flex: 0 0 auto;
+        padding: 0 24px 18px;
+      }
+      .go {
+        width: 100%;
+        border: none;
+        border-radius: 16px;
+        background: #0b0;
+        color: #fff;
+        font-size: 19px;
+        font-weight: 700;
+        padding: 22px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="rowTitle">
+      Видео 190px, кроп по фигуре. Красная нить — середина экрана
+    </div>
 
-<div class="rowTitle">Видео 190px, кроп по фигуре. Красная нить — середина экрана</div>
-
-<!-- 1 -->
-<div class="col">
-  <div class="caption"><b>1 · Одна строка</b>Кроп не меняет размер бокса — 190px как был, но чёрные поля ушли и фигура заняла кадр целиком.</div>
-  <div class="phone">
-    <div class="centreMark"></div>
-    <div class="top"><button class="ghostBtn">←</button><div class="clock">12:04</div></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i><i></i></div>
-    <div class="stage">
-      <div class="heroWrap">
-        <video class="hero" src="assets/bench-press-sq.mp4" autoplay loop muted playsinline></video>
-        <div class="pauseDot">❚❚</div>
+    <!-- 1 -->
+    <div class="col">
+      <div class="caption">
+        <b>1 · Одна строка</b>Кроп не меняет размер бокса — 190px как был, но
+        чёрные поля ушли и фигура заняла кадр целиком.
       </div>
-      <button class="exName" id="n1">Жим лёжа со штангой<span class="chev"></span></button>
-      <div class="setLine">Подход 2 из 3</div>
-      <div class="row">
-        <div class="cell"><button class="big">60<u>кг</u></button><div class="under"></div></div>
-        <div class="times">×</div>
-        <div class="cell"><button class="big">8<u>раз</u></button><div class="under">цель 6 – 8</div></div>
+      <div class="phone">
+        <div class="centreMark"></div>
+        <div class="top">
+          <button class="ghostBtn">←</button>
+          <div class="clock">12:04</div>
+        </div>
+        <div class="progress">
+          <i class="done"></i><i class="done"></i><i class="cur"></i><i></i
+          ><i></i><i></i>
+        </div>
+        <div class="stage">
+          <div class="heroWrap">
+            <video
+              class="hero"
+              src="assets/bench-press-sq.mp4"
+              autoplay
+              loop
+              muted
+              playsinline
+            ></video>
+            <div class="pauseDot">❚❚</div>
+          </div>
+          <button class="exName" id="n1">
+            Жим лёжа со штангой<span class="chev"></span>
+          </button>
+          <div class="setLine">Подход 2 из 3</div>
+          <div class="row">
+            <div class="cell">
+              <button class="big">60<u>кг</u></button>
+              <div class="under"></div>
+            </div>
+            <div class="times">×</div>
+            <div class="cell">
+              <button class="big">8<u>раз</u></button>
+              <div class="under">цель 6 – 8</div>
+            </div>
+          </div>
+        </div>
+        <div class="action"><button class="go">Готово</button></div>
       </div>
     </div>
-    <div class="action"><button class="go">Готово</button></div>
-  </div>
-</div>
 
-<!-- 2 -->
-<div class="col">
-  <div class="caption"><b>2 · Две строки</b>Шеврон приклеен к последнему слову, а не к правому краю кнопки. Раньше он уезжал к краю самой длинной строки.</div>
-  <div class="phone">
-    <div class="centreMark"></div>
-    <div class="top"><button class="ghostBtn">←</button><div class="clock">31:08</div></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i></div>
-    <div class="stage">
-      <div class="heroWrap">
-        <video class="hero" src="assets/bench-press-sq.mp4" autoplay loop muted playsinline></video>
-        <div class="pauseDot">❚❚</div>
+    <!-- 2 -->
+    <div class="col">
+      <div class="caption">
+        <b>2 · Две строки</b>Шеврон приклеен к последнему слову, а не к правому
+        краю кнопки. Раньше он уезжал к краю самой длинной строки.
       </div>
-      <button class="exName" id="n2">Горизонтальный жим ногами в тренажёре<span class="chev"></span></button>
-      <div class="setLine">Подход 1 из 3</div>
-      <div class="row">
-        <div class="cell"><button class="big">70<u>кг</u></button><div class="under"></div></div>
-        <div class="times">×</div>
-        <div class="cell"><button class="big">12<u>раз</u></button><div class="under">цель 10 – 12</div></div>
+      <div class="phone">
+        <div class="centreMark"></div>
+        <div class="top">
+          <button class="ghostBtn">←</button>
+          <div class="clock">31:08</div>
+        </div>
+        <div class="progress">
+          <i class="done"></i><i class="done"></i><i class="done"></i
+          ><i class="done"></i><i class="cur"></i><i></i>
+        </div>
+        <div class="stage">
+          <div class="heroWrap">
+            <video
+              class="hero"
+              src="assets/bench-press-sq.mp4"
+              autoplay
+              loop
+              muted
+              playsinline
+            ></video>
+            <div class="pauseDot">❚❚</div>
+          </div>
+          <button class="exName" id="n2">
+            Горизонтальный жим ногами в тренажёре<span class="chev"></span>
+          </button>
+          <div class="setLine">Подход 1 из 3</div>
+          <div class="row">
+            <div class="cell">
+              <button class="big">70<u>кг</u></button>
+              <div class="under"></div>
+            </div>
+            <div class="times">×</div>
+            <div class="cell">
+              <button class="big">12<u>раз</u></button>
+              <div class="under">цель 10 – 12</div>
+            </div>
+          </div>
+        </div>
+        <div class="action"><button class="go">Готово</button></div>
       </div>
     </div>
-    <div class="action"><button class="go">Готово</button></div>
-  </div>
-</div>
 
-<!-- 3 -->
-<div class="col">
-  <div class="caption"><b>3 · Короткая последняя строка</b>Худший случай для прежнего решения: последняя строка сильно короче блока, и шеврон висел бы в пустоте справа.</div>
-  <div class="phone">
-    <div class="centreMark"></div>
-    <div class="top"><button class="ghostBtn">←</button><div class="clock">08:22</div></div>
-    <div class="progress"><i class="done"></i><i class="cur"></i><i></i><i></i><i></i><i></i></div>
-    <div class="stage">
-      <div class="heroWrap">
-        <video class="hero" src="assets/bench-press-sq.mp4" autoplay loop muted playsinline></video>
-        <div class="pauseDot">❚❚</div>
+    <!-- 3 -->
+    <div class="col">
+      <div class="caption">
+        <b>3 · Короткая последняя строка</b>Худший случай для прежнего решения:
+        последняя строка сильно короче блока, и шеврон висел бы в пустоте
+        справа.
       </div>
-      <button class="exName" id="n3">Разгибание рук на верхнем блоке с канатом стоя<span class="chev"></span></button>
-      <div class="setLine">Подход 2 из 4</div>
-      <div class="row">
-        <div class="cell"><button class="big">25<u>кг</u></button><div class="under"></div></div>
-        <div class="times">×</div>
-        <div class="cell"><button class="big">14<u>раз</u></button><div class="under">цель 12 – 15</div></div>
+      <div class="phone">
+        <div class="centreMark"></div>
+        <div class="top">
+          <button class="ghostBtn">←</button>
+          <div class="clock">08:22</div>
+        </div>
+        <div class="progress">
+          <i class="done"></i><i class="cur"></i><i></i><i></i><i></i><i></i>
+        </div>
+        <div class="stage">
+          <div class="heroWrap">
+            <video
+              class="hero"
+              src="assets/bench-press-sq.mp4"
+              autoplay
+              loop
+              muted
+              playsinline
+            ></video>
+            <div class="pauseDot">❚❚</div>
+          </div>
+          <button class="exName" id="n3">
+            Разгибание рук на верхнем блоке с канатом стоя<span
+              class="chev"
+            ></span>
+          </button>
+          <div class="setLine">Подход 2 из 4</div>
+          <div class="row">
+            <div class="cell">
+              <button class="big">25<u>кг</u></button>
+              <div class="under"></div>
+            </div>
+            <div class="times">×</div>
+            <div class="cell">
+              <button class="big">14<u>раз</u></button>
+              <div class="under">цель 12 – 15</div>
+            </div>
+          </div>
+        </div>
+        <div class="action"><button class="go">Готово</button></div>
       </div>
     </div>
-    <div class="action"><button class="go">Готово</button></div>
-  </div>
-</div>
 
-<!-- 4 -->
-<div class="col">
-  <div class="caption"><b>4 · Строка впритык к краю</b>Проверка, что нулевой якорь не переносится сам по себе: последняя строка почти во всю ширину, переносить нечего, шеврон уходит за неё.</div>
-  <div class="phone">
-    <div class="centreMark"></div>
-    <div class="top"><button class="ghostBtn">←</button><div class="clock">19:40</div></div>
-    <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i><i></i></div>
-    <div class="stage">
-      <div class="heroWrap">
-        <video class="hero" src="assets/bench-press-sq.mp4" autoplay loop muted playsinline></video>
-        <div class="pauseDot">❚❚</div>
+    <!-- 4 -->
+    <div class="col">
+      <div class="caption">
+        <b>4 · Строка впритык к краю</b>Проверка, что нулевой якорь не
+        переносится сам по себе: последняя строка почти во всю ширину,
+        переносить нечего, шеврон уходит за неё.
       </div>
-      <button class="exName" id="n4">Тяга верхнего блока широким<span class="chev"></span></button>
-      <div class="setLine">Подход 3 из 3</div>
-      <div class="row">
-        <div class="cell"><button class="big">55<u>кг</u></button><div class="under"></div></div>
-        <div class="times">×</div>
-        <div class="cell"><button class="big">10<u>раз</u></button><div class="under">цель 8 – 10</div></div>
+      <div class="phone">
+        <div class="centreMark"></div>
+        <div class="top">
+          <button class="ghostBtn">←</button>
+          <div class="clock">19:40</div>
+        </div>
+        <div class="progress">
+          <i class="done"></i><i class="done"></i><i class="done"></i
+          ><i class="cur"></i><i></i><i></i>
+        </div>
+        <div class="stage">
+          <div class="heroWrap">
+            <video
+              class="hero"
+              src="assets/bench-press-sq.mp4"
+              autoplay
+              loop
+              muted
+              playsinline
+            ></video>
+            <div class="pauseDot">❚❚</div>
+          </div>
+          <button class="exName" id="n4">
+            Тяга верхнего блока широким<span class="chev"></span>
+          </button>
+          <div class="setLine">Подход 3 из 3</div>
+          <div class="row">
+            <div class="cell">
+              <button class="big">55<u>кг</u></button>
+              <div class="under"></div>
+            </div>
+            <div class="times">×</div>
+            <div class="cell">
+              <button class="big">10<u>раз</u></button>
+              <div class="under">цель 8 – 10</div>
+            </div>
+          </div>
+        </div>
+        <div class="action"><button class="go">Готово</button></div>
       </div>
     </div>
-    <div class="action"><button class="go">Готово</button></div>
-  </div>
-</div>
-
-</body>
+  </body>
 </html>

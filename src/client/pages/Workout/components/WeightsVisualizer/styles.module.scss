@@ -147,13 +147,13 @@
   color: #161616;
 
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     right: -20px;
     top: 10px;
     width: 18px;
     height: 8px;
-    background: #08F;
+    background: #08f;
     border-radius: 3px;
   }
 }

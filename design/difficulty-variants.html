@@ -1,417 +1,804 @@
 <!doctype html>
 <html lang="ru">
-<head>
-<meta charset="utf-8">
-<title>Difficulty control variants</title>
-<style>
-  * { margin:0; padding:0; box-sizing:border-box; font: inherit; }
-  html { font-family: Montserrat, "Segoe UI", "Helvetica Neue", sans-serif; background:#111; color:#fff; -webkit-font-smoothing:antialiased; }
-  body { padding:26px; display:flex; flex-wrap:wrap; gap:20px; width:1300px; align-items:flex-start; }
+  <head>
+    <meta charset="utf-8" />
+    <title>Difficulty control variants</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font: inherit;
+      }
+      html {
+        font-family: Montserrat, "Segoe UI", "Helvetica Neue", sans-serif;
+        background: #111;
+        color: #fff;
+        -webkit-font-smoothing: antialiased;
+      }
+      body {
+        padding: 26px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        width: 1300px;
+        align-items: flex-start;
+      }
 
-  .rowTitle { width:100%; font-size:12px; color:#5f6a72; letter-spacing:.14em; text-transform:uppercase; padding:8px 0 0; }
-  .card { width:393px; background:#000; border:1px solid #2a2a2a; border-radius:18px; padding:16px 0 20px; }
-  .cardHead { padding:0 16px; }
-  .cardTitle { font-size:13px; font-weight:600; margin-bottom:4px; }
-  .cardNote { font-size:11px; color:#7c848b; line-height:1.5; min-height:62px; }
-  .state { font-size:10px; color:#4f5a61; letter-spacing:.14em; text-transform:uppercase;
-           padding:0 16px; margin:20px 0 10px; }
-  .box { padding:0 16px; }
+      .rowTitle {
+        width: 100%;
+        font-size: 12px;
+        color: #5f6a72;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 8px 0 0;
+      }
+      .card {
+        width: 393px;
+        background: #000;
+        border: 1px solid #2a2a2a;
+        border-radius: 18px;
+        padding: 16px 0 20px;
+      }
+      .cardHead {
+        padding: 0 16px;
+      }
+      .cardTitle {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .cardNote {
+        font-size: 11px;
+        color: #7c848b;
+        line-height: 1.5;
+        min-height: 62px;
+      }
+      .state {
+        font-size: 10px;
+        color: #4f5a61;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 0 16px;
+        margin: 20px 0 10px;
+      }
+      .box {
+        padding: 0 16px;
+      }
 
-  .askQ { font-size:14px; color:#b5b5b5; text-align:center; }
+      .askQ {
+        font-size: 14px;
+        color: #b5b5b5;
+        text-align: center;
+      }
 
-  /* ---------- A1 · segments with dividers ---------- */
-  .seg { display:flex; width:100%; border:1px solid #333; border-radius:12px; overflow:hidden; margin-top:12px; }
-  .seg button { flex:1 1 0; background:transparent; border:none; color:#bdbdbd; font-size:12px; padding:14px 2px;
-                border-left:1px solid #333; white-space:nowrap; }
-  .seg button:first-child { border-left:none; }
-  .seg button.sel { background:#06F; color:#fff; font-weight:600; }
+      /* ---------- A1 · segments with dividers ---------- */
+      .seg {
+        display: flex;
+        width: 100%;
+        border: 1px solid #333;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-top: 12px;
+      }
+      .seg button {
+        flex: 1 1 0;
+        background: transparent;
+        border: none;
+        color: #bdbdbd;
+        font-size: 12px;
+        padding: 14px 2px;
+        border-left: 1px solid #333;
+        white-space: nowrap;
+      }
+      .seg button:first-child {
+        border-left: none;
+      }
+      .seg button.sel {
+        background: #06f;
+        color: #fff;
+        font-weight: 600;
+      }
 
-  /* ---------- A2 · one outline, no dividers, chips sized by word ---------- */
-  .seg2 { display:flex; align-items:center; width:100%; border:1px solid #333; border-radius:12px;
-          padding:4px; margin-top:12px; }
-  .seg2 button { background:transparent; border:none; color:#bdbdbd; font-size:13px;
-                 padding:11px 10px; border-radius:9px; white-space:nowrap; }
-  .seg2 button.sel { background:#06F; color:#fff; font-weight:600; }
-  /* a · natural width, spread apart */
-  .seg2.spread { justify-content:space-between; }
-  .seg2.spread button { flex:0 0 auto; }
-  /* b · fills the row, each share proportional to its word */
-  .seg2.fill button { flex:1 1 auto; }
+      /* ---------- A2 · one outline, no dividers, chips sized by word ---------- */
+      .seg2 {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        border: 1px solid #333;
+        border-radius: 12px;
+        padding: 4px;
+        margin-top: 12px;
+      }
+      .seg2 button {
+        background: transparent;
+        border: none;
+        color: #bdbdbd;
+        font-size: 13px;
+        padding: 11px 10px;
+        border-radius: 9px;
+        white-space: nowrap;
+      }
+      .seg2 button.sel {
+        background: #06f;
+        color: #fff;
+        font-weight: 600;
+      }
+      /* a · natural width, spread apart */
+      .seg2.spread {
+        justify-content: space-between;
+      }
+      .seg2.spread button {
+        flex: 0 0 auto;
+      }
+      /* b · fills the row, each share proportional to its word */
+      .seg2.fill button {
+        flex: 1 1 auto;
+      }
 
-  /* ---------- shared mark row ---------- */
-  .scale { display:flex; justify-content:center; align-items:flex-end; }
-  .hit { background:transparent; border:none; padding:10px 13px; display:flex; align-items:flex-end; justify-content:center; }
-  .bar { width:22px; border-radius:4px; border:1.5px solid #4a4a4a; background:transparent; }
-  .bar.on { background:#08F; border-color:#08F; }
-  .answer { text-align:center; font-size:16px; color:#fff; font-weight:600; min-height:20px; margin-top:10px; }
-  .answer.none { color:#3f3f3f; font-weight:400; font-size:13px; }
+      /* ---------- shared mark row ---------- */
+      .scale {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+      }
+      .hit {
+        background: transparent;
+        border: none;
+        padding: 10px 13px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+      }
+      .bar {
+        width: 22px;
+        border-radius: 4px;
+        border: 1.5px solid #4a4a4a;
+        background: transparent;
+      }
+      .bar.on {
+        background: #08f;
+        border-color: #08f;
+      }
+      .answer {
+        text-align: center;
+        font-size: 16px;
+        color: #fff;
+        font-weight: 600;
+        min-height: 20px;
+        margin-top: 10px;
+      }
+      .answer.none {
+        color: #3f3f3f;
+        font-weight: 400;
+        font-size: 13px;
+      }
 
-  /* ---------- F · anchored ends ---------- */
-  .anchored { display:flex; align-items:center; justify-content:center; gap:6px; margin-top:12px; }
-  .anchor { font-size:11px; color:#7a7a7a; white-space:nowrap; }
+      /* ---------- F · anchored ends ---------- */
+      .anchored {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 12px;
+      }
+      .anchor {
+        font-size: 11px;
+        color: #7a7a7a;
+        white-space: nowrap;
+      }
 
-  /* ---------- A3/A4 · gym shorthand, short enough for equal shares ---------- */
-  .segShort { display:flex; width:100%; border:1px solid #333; border-radius:12px; overflow:hidden; margin-top:12px; }
-  .segShort button { flex:1 1 0; background:transparent; border:none; color:#c5c5c5; font-size:15px; padding:14px 2px;
-                     border-left:1px solid #333; white-space:nowrap; }
-  .segShort button:first-child { border-left:none; }
-  .segShort button.sel { background:#06F; color:#fff; font-weight:600; }
+      /* ---------- A3/A4 · gym shorthand, short enough for equal shares ---------- */
+      .segShort {
+        display: flex;
+        width: 100%;
+        border: 1px solid #333;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-top: 12px;
+      }
+      .segShort button {
+        flex: 1 1 0;
+        background: transparent;
+        border: none;
+        color: #c5c5c5;
+        font-size: 15px;
+        padding: 14px 2px;
+        border-left: 1px solid #333;
+        white-space: nowrap;
+      }
+      .segShort button:first-child {
+        border-left: none;
+      }
+      .segShort button.sel {
+        background: #06f;
+        color: #fff;
+        font-weight: 600;
+      }
 
-  /* ---------- A5 · separate keys, no frame — same style as the reps picker ---------- */
-  .keys { display:flex; gap:6px; width:100%; margin-top:12px; }
-  .keys button { flex:1 1 0; background:#0f0f0f; border:1px solid #2e2e2e; color:#c5c5c5; font-size:15px;
-                 padding:13px 0; border-radius:10px; white-space:nowrap; }
-  .keys button.sel { background:#06F; border-color:#06F; color:#fff; font-weight:600; }
+      /* ---------- A5 · separate keys, no frame — same style as the reps picker ---------- */
+      .keys {
+        display: flex;
+        gap: 6px;
+        width: 100%;
+        margin-top: 12px;
+      }
+      .keys button {
+        flex: 1 1 0;
+        background: #0f0f0f;
+        border: 1px solid #2e2e2e;
+        color: #c5c5c5;
+        font-size: 15px;
+        padding: 13px 0;
+        border-radius: 10px;
+        white-space: nowrap;
+      }
+      .keys button.sel {
+        background: #06f;
+        border-color: #06f;
+        color: #fff;
+        font-weight: 600;
+      }
 
-  /* ---------- N · numbers: the question itself labels the scale ---------- */
-  .nums { display:flex; align-items:center; width:100%; border:1px solid #333; border-radius:12px;
-          padding:4px; margin-top:12px; }
-  .nums button { flex:1 1 0; background:transparent; border:none; color:#c5c5c5; font-size:17px;
-                 padding:13px 0; border-radius:9px; font-variant-numeric:tabular-nums; }
-  .nums button.sel { background:#06F; color:#fff; font-weight:700; }
-  .meaning { text-align:center; font-size:13px; color:#8d8d8d; margin-top:10px; min-height:18px; }
-  .legend { display:flex; justify-content:space-between; padding:0 6px; margin-top:7px; }
-  .legend span { font-size:10px; color:#6d6d6d; }
+      /* ---------- N · numbers: the question itself labels the scale ---------- */
+      .nums {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        border: 1px solid #333;
+        border-radius: 12px;
+        padding: 4px;
+        margin-top: 12px;
+      }
+      .nums button {
+        flex: 1 1 0;
+        background: transparent;
+        border: none;
+        color: #c5c5c5;
+        font-size: 17px;
+        padding: 13px 0;
+        border-radius: 9px;
+        font-variant-numeric: tabular-nums;
+      }
+      .nums button.sel {
+        background: #06f;
+        color: #fff;
+        font-weight: 700;
+      }
+      .meaning {
+        text-align: center;
+        font-size: 13px;
+        color: #8d8d8d;
+        margin-top: 10px;
+        min-height: 18px;
+      }
+      .legend {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 6px;
+        margin-top: 7px;
+      }
+      .legend span {
+        font-size: 10px;
+        color: #6d6d6d;
+      }
 
-  /* ---------- G · name above, marks below ---------- */
-  .gName { text-align:center; font-size:22px; font-weight:700; margin-top:14px; min-height:28px; }
-  .gName.none { color:#4a4a4a; font-weight:400; font-size:14px; margin-top:19px; min-height:23px; }
-  .gHint { text-align:center; font-size:12px; color:#7a7a7a; margin-top:5px; min-height:17px; }
-</style>
-</head>
-<body>
-
-<div class="rowTitle">Подписи всегда видны — слова живут в самих кнопках</div>
-
-<!-- A1 -->
-<div class="card">
-  <div class="cardHead">
-    <div class="cardTitle">A1 · Сегменты с перегородками</div>
-    <div class="cardNote">Равные доли заставляют мерить по самому длинному слову, поэтому шрифт падает до 12px, а вокруг «Легко» остаётся пустота.</div>
-  </div>
-  <div class="state">пока не ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="seg">
-      <button>Легко</button><button>Нормально</button><button>Тяжело</button><button>До отказа</button>
+      /* ---------- G · name above, marks below ---------- */
+      .gName {
+        text-align: center;
+        font-size: 22px;
+        font-weight: 700;
+        margin-top: 14px;
+        min-height: 28px;
+      }
+      .gName.none {
+        color: #4a4a4a;
+        font-weight: 400;
+        font-size: 14px;
+        margin-top: 19px;
+        min-height: 23px;
+      }
+      .gHint {
+        text-align: center;
+        font-size: 12px;
+        color: #7a7a7a;
+        margin-top: 5px;
+        min-height: 17px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="rowTitle">
+      Подписи всегда видны — слова живут в самих кнопках
     </div>
-  </div>
-  <div class="state">ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="seg">
-      <button>Легко</button><button>Нормально</button><button class="sel">Тяжело</button><button>До отказа</button>
-    </div>
-  </div>
-</div>
 
-<!-- A2a -->
-<div class="card">
-  <div class="cardHead">
-    <div class="cardTitle">A2a · Обводка есть, ширина по слову</div>
-    <div class="cardNote">Внешняя рамка на месте, перегородок нет, каждая чипса шириной под своё слово. «Легко» больше не тащит за собой пустоту до размеров «Нормально».</div>
-  </div>
-  <div class="state">пока не ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="seg2 spread">
-      <button>Легко</button><button>Нормально</button><button>Тяжело</button><button>До отказа</button>
+    <!-- A1 -->
+    <div class="card">
+      <div class="cardHead">
+        <div class="cardTitle">A1 · Сегменты с перегородками</div>
+        <div class="cardNote">
+          Равные доли заставляют мерить по самому длинному слову, поэтому шрифт
+          падает до 12px, а вокруг «Легко» остаётся пустота.
+        </div>
+      </div>
+      <div class="state">пока не ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="seg">
+          <button>Легко</button><button>Нормально</button><button>Тяжело</button
+          ><button>До отказа</button>
+        </div>
+      </div>
+      <div class="state">ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="seg">
+          <button>Легко</button><button>Нормально</button
+          ><button class="sel">Тяжело</button><button>До отказа</button>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="state">ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="seg2 spread">
-      <button>Легко</button><button>Нормально</button><button class="sel">Тяжело</button><button>До отказа</button>
-    </div>
-  </div>
-</div>
 
-<!-- A2b -->
-<div class="card">
-  <div class="cardHead">
-    <div class="cardTitle">A2b · То же, но чипсы заполняют ряд</div>
-    <div class="cardNote">Ширины всё так же неравные и пропорциональны словам, но остаток делится между ними, а не уходит в промежутки. Зона нажатия больше, пустоты внутри рамки нет.</div>
-  </div>
-  <div class="state">пока не ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="seg2 fill">
-      <button>Легко</button><button>Нормально</button><button>Тяжело</button><button>До отказа</button>
+    <!-- A2a -->
+    <div class="card">
+      <div class="cardHead">
+        <div class="cardTitle">A2a · Обводка есть, ширина по слову</div>
+        <div class="cardNote">
+          Внешняя рамка на месте, перегородок нет, каждая чипса шириной под своё
+          слово. «Легко» больше не тащит за собой пустоту до размеров
+          «Нормально».
+        </div>
+      </div>
+      <div class="state">пока не ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="seg2 spread">
+          <button>Легко</button><button>Нормально</button><button>Тяжело</button
+          ><button>До отказа</button>
+        </div>
+      </div>
+      <div class="state">ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="seg2 spread">
+          <button>Легко</button><button>Нормально</button
+          ><button class="sel">Тяжело</button><button>До отказа</button>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="state">ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="seg2 fill">
-      <button>Легко</button><button>Нормально</button><button class="sel">Тяжело</button><button>До отказа</button>
-    </div>
-  </div>
-</div>
 
-<!-- G -->
-<div class="card">
-  <div class="cardHead">
-    <div class="cardTitle">G · Имя сверху, метки снизу</div>
-    <div class="cardNote">Паттерн с твоего скриншота, но словами вместо RPE. Пока не ответил — сверху пусто, и метки внизу не значат ничего: та же «большая палочка», только крупнее.</div>
-  </div>
-  <div class="state">пока не ответили</div>
-  <div class="box">
-    <div class="gName none">Как прошёл подход?</div>
-    <div class="gHint"></div>
-    <div class="scale">
-      <button class="hit"><span class="bar" style="height:14px"></span></button>
-      <button class="hit"><span class="bar" style="height:22px"></span></button>
-      <button class="hit"><span class="bar" style="height:30px"></span></button>
-      <button class="hit"><span class="bar" style="height:38px"></span></button>
+    <!-- A2b -->
+    <div class="card">
+      <div class="cardHead">
+        <div class="cardTitle">A2b · То же, но чипсы заполняют ряд</div>
+        <div class="cardNote">
+          Ширины всё так же неравные и пропорциональны словам, но остаток
+          делится между ними, а не уходит в промежутки. Зона нажатия больше,
+          пустоты внутри рамки нет.
+        </div>
+      </div>
+      <div class="state">пока не ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="seg2 fill">
+          <button>Легко</button><button>Нормально</button><button>Тяжело</button
+          ><button>До отказа</button>
+        </div>
+      </div>
+      <div class="state">ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="seg2 fill">
+          <button>Легко</button><button>Нормально</button
+          ><button class="sel">Тяжело</button><button>До отказа</button>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="state">ответили</div>
-  <div class="box">
-    <div class="gName">Тяжело</div>
-    <div class="gHint">ещё один повтор вряд ли</div>
-    <div class="scale">
-      <button class="hit"><span class="bar on" style="height:14px"></span></button>
-      <button class="hit"><span class="bar on" style="height:22px"></span></button>
-      <button class="hit"><span class="bar on" style="height:30px"></span></button>
-      <button class="hit"><span class="bar" style="height:38px"></span></button>
-    </div>
-  </div>
-</div>
 
-<!-- A3 -->
-<div class="card">
-  <div class="cardHead">
-    <div class="cardTitle">A3 · Короткие слова, равные сегменты</div>
-    <div class="cardNote">«Норм» и «Отказ» вместо «Нормально» и «До отказа». Самое длинное слово усохло до «Тяжело», и равные доли перестали быть проблемой — шрифт вырос с 12 до 15px.</div>
-  </div>
-  <div class="state">пока не ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="segShort">
-      <button>Легко</button><button>Норм</button><button>Тяжело</button><button>Отказ</button>
+    <!-- G -->
+    <div class="card">
+      <div class="cardHead">
+        <div class="cardTitle">G · Имя сверху, метки снизу</div>
+        <div class="cardNote">
+          Паттерн с твоего скриншота, но словами вместо RPE. Пока не ответил —
+          сверху пусто, и метки внизу не значат ничего: та же «большая палочка»,
+          только крупнее.
+        </div>
+      </div>
+      <div class="state">пока не ответили</div>
+      <div class="box">
+        <div class="gName none">Как прошёл подход?</div>
+        <div class="gHint"></div>
+        <div class="scale">
+          <button class="hit">
+            <span class="bar" style="height: 14px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar" style="height: 22px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar" style="height: 30px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar" style="height: 38px"></span>
+          </button>
+        </div>
+      </div>
+      <div class="state">ответили</div>
+      <div class="box">
+        <div class="gName">Тяжело</div>
+        <div class="gHint">ещё один повтор вряд ли</div>
+        <div class="scale">
+          <button class="hit">
+            <span class="bar on" style="height: 14px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar on" style="height: 22px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar on" style="height: 30px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar" style="height: 38px"></span>
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="state">ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="segShort">
-      <button>Легко</button><button>Норм</button><button class="sel">Тяжело</button><button>Отказ</button>
-    </div>
-  </div>
-</div>
 
-<!-- A4 -->
-<div class="card">
-  <div class="cardHead">
-    <div class="cardTitle">A4 · Короткие слова, ширина по слову</div>
-    <div class="cardNote">То же сокращение, но без перегородок и с неравными долями. Разница между словами теперь мала, так что выигрыш от auto-ширины почти исчез — а это аргумент в пользу A3.</div>
-  </div>
-  <div class="state">пока не ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="seg2 fill" style="font-size:15px">
-      <button style="font-size:15px">Легко</button><button style="font-size:15px">Норм</button><button style="font-size:15px">Тяжело</button><button style="font-size:15px">Отказ</button>
+    <!-- A3 -->
+    <div class="card">
+      <div class="cardHead">
+        <div class="cardTitle">A3 · Короткие слова, равные сегменты</div>
+        <div class="cardNote">
+          «Норм» и «Отказ» вместо «Нормально» и «До отказа». Самое длинное слово
+          усохло до «Тяжело», и равные доли перестали быть проблемой — шрифт
+          вырос с 12 до 15px.
+        </div>
+      </div>
+      <div class="state">пока не ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="segShort">
+          <button>Легко</button><button>Норм</button><button>Тяжело</button
+          ><button>Отказ</button>
+        </div>
+      </div>
+      <div class="state">ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="segShort">
+          <button>Легко</button><button>Норм</button
+          ><button class="sel">Тяжело</button><button>Отказ</button>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="state">ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="seg2 fill">
-      <button style="font-size:15px">Легко</button><button style="font-size:15px">Норм</button><button class="sel" style="font-size:15px">Тяжело</button><button style="font-size:15px">Отказ</button>
-    </div>
-  </div>
-</div>
 
-<!-- A5 -->
-<div class="card">
-  <div class="cardHead">
-    <div class="cardTitle">A5 · Отдельные клавиши, рамки нет</div>
-    <div class="cardNote">У каждого слова своя подложка, общей рамки нет. Ровно тот же стиль, что у быстрого выбора повторов в шторке — то есть язык, который в приложении уже есть.</div>
-  </div>
-  <div class="state">пока не ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="keys">
-      <button>Легко</button><button>Норм</button><button>Тяжело</button><button>Отказ</button>
+    <!-- A4 -->
+    <div class="card">
+      <div class="cardHead">
+        <div class="cardTitle">A4 · Короткие слова, ширина по слову</div>
+        <div class="cardNote">
+          То же сокращение, но без перегородок и с неравными долями. Разница
+          между словами теперь мала, так что выигрыш от auto-ширины почти исчез
+          — а это аргумент в пользу A3.
+        </div>
+      </div>
+      <div class="state">пока не ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="seg2 fill" style="font-size: 15px">
+          <button style="font-size: 15px">Легко</button
+          ><button style="font-size: 15px">Норм</button
+          ><button style="font-size: 15px">Тяжело</button
+          ><button style="font-size: 15px">Отказ</button>
+        </div>
+      </div>
+      <div class="state">ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="seg2 fill">
+          <button style="font-size: 15px">Легко</button
+          ><button style="font-size: 15px">Норм</button
+          ><button class="sel" style="font-size: 15px">Тяжело</button
+          ><button style="font-size: 15px">Отказ</button>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="state">ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="keys">
-      <button>Легко</button><button>Норм</button><button class="sel">Тяжело</button><button>Отказ</button>
-    </div>
-  </div>
-</div>
 
-<div class="rowTitle">Числа — вопрос сам подписывает шкалу</div>
+    <!-- A5 -->
+    <div class="card">
+      <div class="cardHead">
+        <div class="cardTitle">A5 · Отдельные клавиши, рамки нет</div>
+        <div class="cardNote">
+          У каждого слова своя подложка, общей рамки нет. Ровно тот же стиль,
+          что у быстрого выбора повторов в шторке — то есть язык, который в
+          приложении уже есть.
+        </div>
+      </div>
+      <div class="state">пока не ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="keys">
+          <button>Легко</button><button>Норм</button><button>Тяжело</button
+          ><button>Отказ</button>
+        </div>
+      </div>
+      <div class="state">ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="keys">
+          <button>Легко</button><button>Норм</button
+          ><button class="sel">Тяжело</button><button>Отказ</button>
+        </div>
+      </div>
+    </div>
 
-<!-- N1 -->
-<div class="card">
-  <div class="cardHead">
-    <div class="cardTitle">N1 · «Сколько ещё мог?»</div>
-    <div class="cardNote">Числа ничего не значат сами по себе — их значение задаёт вопрос. Поменяли вопрос, и ряд читается без единой подписи, в обоих состояниях.</div>
-  </div>
-  <div class="state">пока не ответили</div>
-  <div class="box">
-    <div class="askQ">Сколько повторов ещё мог?</div>
-    <div class="nums">
-      <button>0</button><button>1</button><button>2</button><button>3</button><button>4+</button>
-    </div>
-  </div>
-  <div class="state">ответили</div>
-  <div class="box">
-    <div class="askQ">Сколько повторов ещё мог?</div>
-    <div class="nums">
-      <button>0</button><button>1</button><button class="sel">2</button><button>3</button><button>4+</button>
-    </div>
-  </div>
-</div>
+    <div class="rowTitle">Числа — вопрос сам подписывает шкалу</div>
 
-<!-- N2 -->
-<div class="card">
-  <div class="cardHead">
-    <div class="cardTitle">N2 · То же плюс строка смысла</div>
-    <div class="cardNote">После ответа число переводится в человеческую фразу. До ответа строка пуста, но ряд и без неё понятен — в отличие от меток.</div>
-  </div>
-  <div class="state">пока не ответили</div>
-  <div class="box">
-    <div class="askQ">Сколько повторов ещё мог?</div>
-    <div class="nums">
-      <button>0</button><button>1</button><button>2</button><button>3</button><button>4+</button>
+    <!-- N1 -->
+    <div class="card">
+      <div class="cardHead">
+        <div class="cardTitle">N1 · «Сколько ещё мог?»</div>
+        <div class="cardNote">
+          Числа ничего не значат сами по себе — их значение задаёт вопрос.
+          Поменяли вопрос, и ряд читается без единой подписи, в обоих
+          состояниях.
+        </div>
+      </div>
+      <div class="state">пока не ответили</div>
+      <div class="box">
+        <div class="askQ">Сколько повторов ещё мог?</div>
+        <div class="nums">
+          <button>0</button><button>1</button><button>2</button
+          ><button>3</button><button>4+</button>
+        </div>
+      </div>
+      <div class="state">ответили</div>
+      <div class="box">
+        <div class="askQ">Сколько повторов ещё мог?</div>
+        <div class="nums">
+          <button>0</button><button>1</button><button class="sel">2</button
+          ><button>3</button><button>4+</button>
+        </div>
+      </div>
     </div>
-    <div class="meaning">&nbsp;</div>
-  </div>
-  <div class="state">ответили</div>
-  <div class="box">
-    <div class="askQ">Сколько повторов ещё мог?</div>
-    <div class="nums">
-      <button>0</button><button>1</button><button class="sel">2</button><button>3</button><button>4+</button>
-    </div>
-    <div class="meaning">запас есть, вес можно добавить</div>
-  </div>
-</div>
 
-<!-- N3 -->
-<div class="card">
-  <div class="cardHead">
-    <div class="cardTitle">N3 · RPE, как у конкурента</div>
-    <div class="cardNote">Числа те же по форме, но шкала внешняя: 8 ничего не значит, пока не знаешь RPE. Приходится подписывать края — то есть возвращать те самые слова.</div>
-  </div>
-  <div class="state">пока не ответили</div>
-  <div class="box">
-    <div class="askQ">Оцените усилие</div>
-    <div class="nums">
-      <button>6</button><button>7</button><button>8</button><button>9</button><button>10</button>
+    <!-- N2 -->
+    <div class="card">
+      <div class="cardHead">
+        <div class="cardTitle">N2 · То же плюс строка смысла</div>
+        <div class="cardNote">
+          После ответа число переводится в человеческую фразу. До ответа строка
+          пуста, но ряд и без неё понятен — в отличие от меток.
+        </div>
+      </div>
+      <div class="state">пока не ответили</div>
+      <div class="box">
+        <div class="askQ">Сколько повторов ещё мог?</div>
+        <div class="nums">
+          <button>0</button><button>1</button><button>2</button
+          ><button>3</button><button>4+</button>
+        </div>
+        <div class="meaning">&nbsp;</div>
+      </div>
+      <div class="state">ответили</div>
+      <div class="box">
+        <div class="askQ">Сколько повторов ещё мог?</div>
+        <div class="nums">
+          <button>0</button><button>1</button><button class="sel">2</button
+          ><button>3</button><button>4+</button>
+        </div>
+        <div class="meaning">запас есть, вес можно добавить</div>
+      </div>
     </div>
-    <div class="legend"><span>легко</span><span>до отказа</span></div>
-  </div>
-  <div class="state">ответили</div>
-  <div class="box">
-    <div class="askQ">Оцените усилие</div>
-    <div class="nums">
-      <button>6</button><button>7</button><button class="sel">8</button><button>9</button><button>10</button>
-    </div>
-    <div class="legend"><span>легко</span><span>до отказа</span></div>
-  </div>
-</div>
 
-<div class="rowTitle">Подписей нет — проверка твоего возражения</div>
+    <!-- N3 -->
+    <div class="card">
+      <div class="cardHead">
+        <div class="cardTitle">N3 · RPE, как у конкурента</div>
+        <div class="cardNote">
+          Числа те же по форме, но шкала внешняя: 8 ничего не значит, пока не
+          знаешь RPE. Приходится подписывать края — то есть возвращать те самые
+          слова.
+        </div>
+      </div>
+      <div class="state">пока не ответили</div>
+      <div class="box">
+        <div class="askQ">Оцените усилие</div>
+        <div class="nums">
+          <button>6</button><button>7</button><button>8</button
+          ><button>9</button><button>10</button>
+        </div>
+        <div class="legend"><span>легко</span><span>до отказа</span></div>
+      </div>
+      <div class="state">ответили</div>
+      <div class="box">
+        <div class="askQ">Оцените усилие</div>
+        <div class="nums">
+          <button>6</button><button>7</button><button class="sel">8</button
+          ><button>9</button><button>10</button>
+        </div>
+        <div class="legend"><span>легко</span><span>до отказа</span></div>
+      </div>
+    </div>
 
-<!-- C -->
-<div class="card">
-  <div class="cardHead">
-    <div class="cardTitle">C · Голые столбики</div>
-    <div class="cardNote">Вот оно, возражение целиком: «Как прошёл подход? — Большая палочка». Направление шкалы угадывается, но что означает вторая палка — нет.</div>
-  </div>
-  <div class="state">пока не ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="scale" style="margin-top:12px">
-      <button class="hit"><span class="bar" style="height:14px"></span></button>
-      <button class="hit"><span class="bar" style="height:22px"></span></button>
-      <button class="hit"><span class="bar" style="height:30px"></span></button>
-      <button class="hit"><span class="bar" style="height:38px"></span></button>
-    </div>
-    <div class="answer none">&nbsp;</div>
-  </div>
-  <div class="state">ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="scale" style="margin-top:12px">
-      <button class="hit"><span class="bar on" style="height:14px"></span></button>
-      <button class="hit"><span class="bar on" style="height:22px"></span></button>
-      <button class="hit"><span class="bar on" style="height:30px"></span></button>
-      <button class="hit"><span class="bar" style="height:38px"></span></button>
-    </div>
-    <div class="answer">Тяжело</div>
-  </div>
-</div>
+    <div class="rowTitle">Подписей нет — проверка твоего возражения</div>
 
-<!-- F -->
-<div class="card">
-  <div class="cardHead">
-    <div class="cardTitle">F · Подписаны только края</div>
-    <div class="cardNote">Компромисс: два слова вместо четырёх задают ось, середина достраивается сама. Название появляется после тапа. Влезает свободно, но «нормально» и «тяжело» до тапа всё равно безымянные.</div>
-  </div>
-  <div class="state">пока не ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="anchored">
-      <span class="anchor">легко</span>
-      <button class="hit"><span class="bar" style="height:14px"></span></button>
-      <button class="hit"><span class="bar" style="height:22px"></span></button>
-      <button class="hit"><span class="bar" style="height:30px"></span></button>
-      <button class="hit"><span class="bar" style="height:38px"></span></button>
-      <span class="anchor">до отказа</span>
+    <!-- C -->
+    <div class="card">
+      <div class="cardHead">
+        <div class="cardTitle">C · Голые столбики</div>
+        <div class="cardNote">
+          Вот оно, возражение целиком: «Как прошёл подход? — Большая палочка».
+          Направление шкалы угадывается, но что означает вторая палка — нет.
+        </div>
+      </div>
+      <div class="state">пока не ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="scale" style="margin-top: 12px">
+          <button class="hit">
+            <span class="bar" style="height: 14px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar" style="height: 22px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar" style="height: 30px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar" style="height: 38px"></span>
+          </button>
+        </div>
+        <div class="answer none">&nbsp;</div>
+      </div>
+      <div class="state">ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="scale" style="margin-top: 12px">
+          <button class="hit">
+            <span class="bar on" style="height: 14px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar on" style="height: 22px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar on" style="height: 30px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar" style="height: 38px"></span>
+          </button>
+        </div>
+        <div class="answer">Тяжело</div>
+      </div>
     </div>
-    <div class="answer none">&nbsp;</div>
-  </div>
-  <div class="state">ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="anchored">
-      <span class="anchor">легко</span>
-      <button class="hit"><span class="bar on" style="height:14px"></span></button>
-      <button class="hit"><span class="bar on" style="height:22px"></span></button>
-      <button class="hit"><span class="bar on" style="height:30px"></span></button>
-      <button class="hit"><span class="bar" style="height:38px"></span></button>
-      <span class="anchor">до отказа</span>
-    </div>
-    <div class="answer">Тяжело</div>
-  </div>
-</div>
 
-<!-- B -->
-<div class="card">
-  <div class="cardHead">
-    <div class="cardTitle">B · Голые точки</div>
-    <div class="cardNote">Для полноты: без подписей точки читаются как «3 из 4», то есть как счёт, а не как тяжесть. Хуже столбиков ровно на то, что не кодируют направление.</div>
-  </div>
-  <div class="state">пока не ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="scale" style="margin-top:12px; align-items:center">
-      <button class="hit"><span class="bar" style="height:22px;width:22px;border-radius:50%"></span></button>
-      <button class="hit"><span class="bar" style="height:22px;width:22px;border-radius:50%"></span></button>
-      <button class="hit"><span class="bar" style="height:22px;width:22px;border-radius:50%"></span></button>
-      <button class="hit"><span class="bar" style="height:22px;width:22px;border-radius:50%"></span></button>
+    <!-- F -->
+    <div class="card">
+      <div class="cardHead">
+        <div class="cardTitle">F · Подписаны только края</div>
+        <div class="cardNote">
+          Компромисс: два слова вместо четырёх задают ось, середина
+          достраивается сама. Название появляется после тапа. Влезает свободно,
+          но «нормально» и «тяжело» до тапа всё равно безымянные.
+        </div>
+      </div>
+      <div class="state">пока не ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="anchored">
+          <span class="anchor">легко</span>
+          <button class="hit">
+            <span class="bar" style="height: 14px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar" style="height: 22px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar" style="height: 30px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar" style="height: 38px"></span>
+          </button>
+          <span class="anchor">до отказа</span>
+        </div>
+        <div class="answer none">&nbsp;</div>
+      </div>
+      <div class="state">ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="anchored">
+          <span class="anchor">легко</span>
+          <button class="hit">
+            <span class="bar on" style="height: 14px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar on" style="height: 22px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar on" style="height: 30px"></span>
+          </button>
+          <button class="hit">
+            <span class="bar" style="height: 38px"></span>
+          </button>
+          <span class="anchor">до отказа</span>
+        </div>
+        <div class="answer">Тяжело</div>
+      </div>
     </div>
-    <div class="answer none">&nbsp;</div>
-  </div>
-  <div class="state">ответили</div>
-  <div class="box">
-    <div class="askQ">Как прошёл подход?</div>
-    <div class="scale" style="margin-top:12px; align-items:center">
-      <button class="hit"><span class="bar on" style="height:22px;width:22px;border-radius:50%"></span></button>
-      <button class="hit"><span class="bar on" style="height:22px;width:22px;border-radius:50%"></span></button>
-      <button class="hit"><span class="bar on" style="height:22px;width:22px;border-radius:50%"></span></button>
-      <button class="hit"><span class="bar" style="height:22px;width:22px;border-radius:50%"></span></button>
-    </div>
-    <div class="answer">Тяжело</div>
-  </div>
-</div>
 
-</body>
+    <!-- B -->
+    <div class="card">
+      <div class="cardHead">
+        <div class="cardTitle">B · Голые точки</div>
+        <div class="cardNote">
+          Для полноты: без подписей точки читаются как «3 из 4», то есть как
+          счёт, а не как тяжесть. Хуже столбиков ровно на то, что не кодируют
+          направление.
+        </div>
+      </div>
+      <div class="state">пока не ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="scale" style="margin-top: 12px; align-items: center">
+          <button class="hit">
+            <span
+              class="bar"
+              style="height: 22px; width: 22px; border-radius: 50%"
+            ></span>
+          </button>
+          <button class="hit">
+            <span
+              class="bar"
+              style="height: 22px; width: 22px; border-radius: 50%"
+            ></span>
+          </button>
+          <button class="hit">
+            <span
+              class="bar"
+              style="height: 22px; width: 22px; border-radius: 50%"
+            ></span>
+          </button>
+          <button class="hit">
+            <span
+              class="bar"
+              style="height: 22px; width: 22px; border-radius: 50%"
+            ></span>
+          </button>
+        </div>
+        <div class="answer none">&nbsp;</div>
+      </div>
+      <div class="state">ответили</div>
+      <div class="box">
+        <div class="askQ">Как прошёл подход?</div>
+        <div class="scale" style="margin-top: 12px; align-items: center">
+          <button class="hit">
+            <span
+              class="bar on"
+              style="height: 22px; width: 22px; border-radius: 50%"
+            ></span>
+          </button>
+          <button class="hit">
+            <span
+              class="bar on"
+              style="height: 22px; width: 22px; border-radius: 50%"
+            ></span>
+          </button>
+          <button class="hit">
+            <span
+              class="bar on"
+              style="height: 22px; width: 22px; border-radius: 50%"
+            ></span>
+          </button>
+          <button class="hit">
+            <span
+              class="bar"
+              style="height: 22px; width: 22px; border-radius: 50%"
+            ></span>
+          </button>
+        </div>
+        <div class="answer">Тяжело</div>
+      </div>
+    </div>
+  </body>
 </html>

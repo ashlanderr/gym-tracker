@@ -5,6 +5,7 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
 ## 🏋️ Features
 
 ### Workout Management
+
 - **Create and track workouts** with custom names and timestamps
 - **Active workout timer** to monitor session duration
 - **Workout completion** with summary statistics
@@ -13,6 +14,7 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
 - **Workout periodization modes** (Light, Medium, Heavy) for systematic training progression
 
 ### Exercise Tracking
+
 - **Comprehensive exercise database** with 17 muscle groups:
   - Abs, Abductors, Adductors, Biceps, Calves, Chest, Forearms
   - Glutes, Hamstrings, Lats, Lower Back, Neck, Quadriceps
@@ -24,6 +26,7 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
 - **Exercise weight types**: Full weight, Self-weight percentages, and bodyweight exercises
 
 ### Performance Tracking
+
 - **Set management** with warm-up and working set types
 - **Weight and rep tracking** for each set
 - **Automatic weight suggestions** based on previous performances
@@ -33,6 +36,7 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
 - **Active rest timer** with countdown display and manual adjustment
 
 ### Progress Analytics
+
 - **Personal records tracking**:
   - One-rep max records
   - Weight records
@@ -45,15 +49,17 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
 - **Historical performance comparison**
 
 ### Advanced Training Features
+
 - **Periodization system** with automatic mode cycling (Light → Medium → Heavy)
 - **Intelligent weight recommendations** based on periodization mode:
   - Light: 10-12 reps at 65% 1RM
-  - Medium: 6-8 reps at 75% 1RM  
+  - Medium: 6-8 reps at 75% 1RM
   - Heavy: 4-6 reps at 85% 1RM
 - **Warm-up set calculations** with progressive weight increases
 - **Weight progression algorithms** for consistent strength gains
 
 ### Weights Management
+
 - **Equipment-specific weight configurations**:
   - **Barbell**: Customizable bar weight and available plates
   - **Dumbbell**: Step-based weight increments
@@ -65,12 +71,14 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
 - **Self-weight calculations** for bodyweight exercises
 
 ### Real-time Collaboration
+
 - **Multi-device synchronization** using Yjs and WebSocket
 - **Offline support** with IndexedDB persistence
 - **Real-time connection status** indicators
 - **Automatic data synchronization** when connection is restored
 
 ### User Experience
+
 - **Progressive Web App (PWA)** with offline capabilities
 - **Responsive design** optimized for mobile devices
 - **Google authentication** for secure user accounts
@@ -99,28 +107,33 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js (v18 or higher)
 - npm or yarn
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd gym-tracker
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Start the development server**
+
    ```bash
    npm run dev
    ```
 
 4. **Start the WebSocket server** (in a separate terminal)
+
    ```bash
    npm run y-websocket
    ```
@@ -267,6 +280,7 @@ launcher icons and splash screens into `android/app/src/main/res/`.
 ## 📱 Usage
 
 ### Starting a Workout
+
 1. Sign in with Google or anonymously
 2. Click "Start New Workout" on the home screen
 3. Add exercises to your workout
@@ -274,12 +288,14 @@ launcher icons and splash screens into `android/app/src/main/res/`.
 5. Complete the workout when finished
 
 ### Tracking Progress
+
 - View exercise history by tapping the chart icon on any exercise
 - Monitor personal records that are automatically tracked
 - Analyze progress trends with interactive charts
 - Compare current performance with previous workouts
 
 ### Managing Data
+
 - Duplicate successful workouts for consistent training
 - Cancel workouts if needed (all data will be cleaned up)
 - View workout statistics including total volume and sets
@@ -288,6 +304,7 @@ launcher icons and splash screens into `android/app/src/main/res/`.
 ## 🔧 Development
 
 ### Project Structure
+
 ```
 src/
 ├── components/          # Reusable UI components
@@ -301,6 +318,7 @@ src/
 ```
 
 ### Key Data Models
+
 - **Workout**: Training sessions with metadata
 - **Exercise**: Exercise definitions with muscle groups and equipment
 - **Performance**: Exercise instances within workouts
@@ -308,7 +326,9 @@ src/
 - **Record**: Personal records and achievements
 
 ### Real-time Features
+
 The app uses Yjs for real-time collaboration:
+
 - Shared data (exercises) syncs across all users
 - Personal data (workouts, performances, sets) syncs per user
 - Offline support with automatic sync when connection is restored

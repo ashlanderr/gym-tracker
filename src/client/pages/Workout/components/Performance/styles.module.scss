@@ -6,7 +6,7 @@
 
 .exerciseName {
   display: flex;
-  color: #08F;
+  color: #08f;
   font-weight: bold;
   font-size: 20px;
 }
@@ -18,7 +18,8 @@
 .sets {
   margin: 0 -16px;
 
-  th, td {
+  th,
+  td {
     padding: 12px 4px;
     vertical-align: middle;
   }

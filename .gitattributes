@@ -1,3 +1,4 @@
+* text=auto eol=lf
 android/gradlew text eol=lf
 *.mp4 filter=lfs diff=lfs merge=lfs -text
 media/**/*.webp filter=lfs diff=lfs merge=lfs -text
