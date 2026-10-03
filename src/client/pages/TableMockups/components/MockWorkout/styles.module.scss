@@ -1,0 +1,168 @@
+.root {
+  min-height: 100%;
+  background: #000;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+// The page as it is: exercises straight on black.
+.page {
+  & .list {
+    gap: 24px;
+    padding: 16px;
+  }
+}
+
+// Each exercise on its own surface edge to edge. The table already bleeds
+// past the 16 px of padding, so it keeps the full width of the screen.
+.cards {
+  & .list {
+    gap: 8px;
+    padding: 8px 0;
+  }
+
+  & .card {
+    padding: 16px;
+    background: #141414;
+  }
+
+  & .add {
+    padding: 8px 16px 0;
+  }
+}
+
+// The same surfaces with a margin around them: rounder, but 16 px narrower.
+.inset {
+  & .list {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  & .card {
+    padding: 16px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #141414;
+  }
+
+  & .add {
+    padding: 0 8px;
+  }
+}
+
+// The pills and the round check of the redesign laid onto the real table.
+// Its classes are not reachable from here, so the cells are found by their
+// place; the completed and the current rows by their class names.
+.pills {
+  & table th:nth-child(1) {
+    width: 14%;
+  }
+
+  & table th:nth-child(2) {
+    width: 27%;
+  }
+
+  & table th:nth-child(3),
+  & table th:nth-child(4) {
+    width: 19%;
+  }
+
+  & table th:nth-child(5) {
+    width: 21%;
+    padding-right: 25px;
+  }
+
+  & table td {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  & td:nth-child(3) > button,
+  & td:nth-child(4) > button {
+    height: 36px;
+    padding: 0 4px;
+    border-radius: 10px;
+    background: #1f2023;
+    font-weight: 600;
+  }
+
+  & td > button:disabled {
+    background: transparent;
+  }
+
+  & td:last-child > button {
+    box-sizing: border-box;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #3a3a3c;
+    border-radius: 50%;
+    background: transparent;
+    color: #48484a;
+    font-size: 20px;
+  }
+
+  & tr[class*="completed"] td:last-child > button {
+    border-color: #30d158;
+    background: #30d158;
+    color: #000;
+  }
+
+  & tr[class*="current"] td:last-child > button {
+    border-color: #0a84ff;
+    color: #0a84ff;
+  }
+}
+
+.between {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #0d1b2e;
+
+  .inset & {
+    border-radius: 14px;
+  }
+}
+
+.betweenText {
+  flex: 1 1 auto;
+}
+
+.betweenTitle {
+  font-weight: 600;
+}
+
+.betweenNote {
+  margin-top: 2px;
+  color: #8a8a8a;
+  font-size: 13px;
+}
+
+.betweenButton {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #06f;
+  font-weight: 600;
+}
+
+.strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: -16px -16px 12px;
+  padding: 10px 16px;
+  background: #0d1b2e;
+  color: #4d9bff;
+  font-size: 14px;
+}
+
+.stripText {
+  flex: 1 1 auto;
+}

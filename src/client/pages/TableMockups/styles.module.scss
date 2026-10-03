@@ -26,8 +26,7 @@
 }
 
 .phoneBlock {
-  flex: 0 1 375px;
-  min-width: 0;
+  flex: 0 0 auto;
 }
 
 .phoneTitle {
@@ -35,58 +34,18 @@
   font-weight: 600;
 }
 
-// A screen of a common phone, scrolled inside, so the sticky bar and the
-// rest float the way they would on the device.
+// The width under test, scrolled inside, so the sticky toolbar behaves as it
+// would on the device. Wheel scrolling still reaches it with taps off.
 .phone {
-  box-sizing: border-box;
-  height: 760px;
+  box-sizing: content-box;
+  width: 366px;
+  height: 780px;
   overflow: auto;
   border: 1px solid #2a2a2a;
   border-radius: 24px;
-  background: #000;
   scrollbar-width: none;
-}
-
-.cards {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 12px 12px 24px;
-}
-
-.addExercise {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 16px;
-  border: 1px dashed #2c2c2e;
-  border-radius: 18px;
-  color: #8e8e93;
-  font-weight: 600;
-}
-
-.thumbs {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.zoom img {
-  transform: scale(1.6);
-}
-
-.muscleTile {
-  box-sizing: border-box;
-  width: 44px;
-  height: 44px;
-  padding: 3px;
-  border: 1px solid #2a2a2a;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #000;
 
   & > * {
-    height: 100%;
+    pointer-events: none;
   }
 }
