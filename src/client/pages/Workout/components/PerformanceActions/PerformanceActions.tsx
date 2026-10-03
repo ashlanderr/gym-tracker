@@ -54,7 +54,7 @@ export function PerformanceActions({
         <div className={s.sheetActions}>
           <button className={s.sheetAction} onClick={exerciseHandler}>
             <MdInfoOutline />
-            <span>Об упражнении</span>
+            <span>Страница упражнения</span>
           </button>
           <button className={s.sheetAction} onClick={orderBeginHandler}>
             <MdSwapVert />
