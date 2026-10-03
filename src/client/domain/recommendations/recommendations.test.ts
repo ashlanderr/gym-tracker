@@ -105,9 +105,18 @@ test("a set below the range settles between it and the last good one", () => {
   expect(alone.weight).toBe(20);
 });
 
-test("without a rating the top of the range counts as easy", () => {
+test("without a rating the weight stays and finding goes on", () => {
   const [, next] = recommend("bench_press", [done(40, 8), draft]);
-  expect(next).toMatchObject({ weight: 50, reason: "easy" });
+  expect(next).toMatchObject({ weight: 40, isFinding: true });
+});
+
+test("asking for less ends finding halfway to the last weight that went", () => {
+  const [, , next] = recommend("bench_press", [
+    done(40, 8, "easy"),
+    done(50, 8, "failure"),
+    draft,
+  ]);
+  expect(next).toMatchObject({ weight: 45, isFinding: false, reason: "below" });
 });
 
 test("an empty plate-loaded machine is scaled with its hidden weight", () => {

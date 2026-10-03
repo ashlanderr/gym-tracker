@@ -1,9 +1,0 @@
-import type { Set } from "../../../../db";
-import type { WorkoutStep } from "../../../../domain";
-
-export interface RestViewProps {
-  next: WorkoutStep | undefined;
-  seconds: number;
-  lastSet: Set | undefined;
-  onFinish: () => void;
-}

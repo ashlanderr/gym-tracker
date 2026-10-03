@@ -23,7 +23,7 @@ import { isSingular, pluralize } from "../../utils";
 import { usePageParams } from "../hooks.ts";
 import { UNITS_SHORT } from "../constants.ts";
 import type { WorkoutParams } from "../Workout/types.ts";
-import { formatExerciseWeight, useClock } from "../WorkoutFocus/hooks.ts";
+import { formatExerciseWeight, useClock } from "../Workout/hooks.ts";
 import { buildFinishSummary, formatDurationWords } from "./utils.ts";
 
 const SKIPPED_FORMS: [string, string, string] = [

@@ -15,6 +15,7 @@ import {
   Performance,
   ChooseExercise,
   CompleteWorkoutModal,
+  ActiveTimer,
 } from "./components";
 import {
   PageModal,
@@ -124,6 +125,7 @@ export function Workout() {
           onSubmit={addPerformanceHandler}
         />
       </PageModal>
+      <ActiveTimer />
     </div>
   );
 }

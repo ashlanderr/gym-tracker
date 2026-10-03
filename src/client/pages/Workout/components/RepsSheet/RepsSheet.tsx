@@ -2,18 +2,14 @@ import s from "./styles.module.scss";
 import { clsx } from "clsx";
 import { type ModalProps, useStore } from "../../../../components";
 import { updateSet } from "../../../../db";
-import type { WorkoutStep } from "../../../../domain";
-import { formatRange, useStepPlan } from "../../hooks.ts";
+import { formatRange, type SetSheetData, useSetPlan } from "../../hooks.ts";
 import { StepSheet } from "../StepSheet";
 
 const OPTIONS_COUNT = 6;
 
-export function RepsSheet({
-  data: step,
-  onCancel,
-}: ModalProps<WorkoutStep, null>) {
+export function RepsSheet({ data, onCancel }: ModalProps<SetSheetData, null>) {
   const store = useStore();
-  const plan = useStepPlan(step);
+  const plan = useSetPlan(data.performance, data.setId);
 
   if (!plan) return null;
 

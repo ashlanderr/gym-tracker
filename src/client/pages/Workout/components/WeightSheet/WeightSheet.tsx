@@ -12,25 +12,27 @@ import {
   planWarmUps,
   stepWeightKg,
   unitsToKg,
-  type WorkoutStep,
 } from "../../../../domain";
+import { WeightsSelector } from "../WeightsSelector";
+import { WeightsVisualizer } from "../WeightsVisualizer";
 import {
-  WeightsSelector,
-  WeightsVisualizer,
-} from "../../../Workout/components";
-import { formatWeight, type StepPlan, useStepPlan } from "../../hooks.ts";
-import { MANUAL_WEIGHT_STEP } from "../../constants.ts";
+  formatWeight,
+  type SetPlan,
+  type SetSheetData,
+  useSetPlan,
+} from "../../hooks.ts";
+import { MANUAL_WEIGHT_STEP } from "../constants.ts";
 import { StepSheet } from "../StepSheet";
 import { ManualWeightModal } from "../ManualWeightModal";
 
 export function WeightSheet({
-  data: step,
+  data,
   onCancel,
-}: ModalProps<WorkoutStep, null>) {
+}: ModalProps<SetSheetData, null>) {
   const store = useStore();
   const { pushModal } = useModalStack();
   const [isInventoryOpen, setInventoryOpen] = useState(false);
-  const plan = useStepPlan(step);
+  const plan = useSetPlan(data.performance, data.setId);
 
   if (!plan) return null;
 
@@ -130,7 +132,7 @@ export function WeightSheet({
 
 // Names the warm-up that closing the sheet will insert, so the jump to it is
 // no surprise. The same rule decides as on insertion.
-function describeWarmUp(plan: StepPlan): string {
+function describeWarmUp(plan: SetPlan): string {
   const { data, sets, weightKg } = plan;
   if (plan.set.type === "warm-up" || weightKg === undefined) return "";
   if (sets.some((s) => s.completed || s.type === "warm-up")) return "";

@@ -1,0 +1,45 @@
+.root {
+  padding: 10px 16px 18px;
+  background: #1a1a1a;
+  border-top: 1px solid #333;
+  border-radius: 20px 20px 0 0;
+}
+
+.grip {
+  width: 36px;
+  height: 4px;
+  margin: 0 auto 14px;
+  border-radius: 2px;
+  background: #444;
+}
+
+.title {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+
+.question {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.keys {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.key {
+  padding: 16px 8px;
+  border: 1px solid #3a3a3a;
+  border-radius: 12px;
+  background: #0f0f0f;
+  color: #fff;
+  font-size: 15px;
+}

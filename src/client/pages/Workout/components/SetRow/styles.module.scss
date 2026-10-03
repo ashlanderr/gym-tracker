@@ -31,22 +31,17 @@ td.setCompletedValue {
   text-align: center;
 }
 
-.input {
-  min-width: 0;
+.value {
   width: 100%;
-  text-align: center;
+  padding: 6px 0;
   border: none;
   background: transparent;
   color: #fff;
   font: inherit;
-  outline: none;
 }
 
-.input:disabled {
-  -webkit-text-fill-color: #fff;
-  -webkit-opacity: 1;
-  color: #fff;
-  opacity: 1;
+.suggested {
+  color: #8a8a8a;
 }
 
 .setCompletedButton {

@@ -8,7 +8,8 @@ const EPSILON = 1e-6;
 
 // Where weight finding stands after the sets done so far. The weight is
 // being found until a working set lands in the range rated "Норм" or
-// "Тяжело", or falls below it; after that the last weight repeats.
+// "Тяжело", or falls below it, or is asked to go down; after that the last
+// weight repeats.
 export interface FindingState {
   isFinding: boolean;
   next: number | undefined;
@@ -37,7 +38,7 @@ export const INITIAL_FINDING: FindingState = {
   lastGood: undefined,
 };
 
-type Rating = "light" | "easy" | "hold" | "below";
+type Rating = "light" | "easy" | "keep" | "hold" | "below";
 
 export function advanceFinding(
   state: FindingState,
@@ -62,6 +63,14 @@ export function advanceFinding(
 
     case "easy":
       return raise(set.weight, full * EASY_FACTOR, "easy", context);
+
+    case "keep":
+      return {
+        ...state,
+        next: set.weight,
+        reason: undefined,
+        lastGood: set.weight,
+      };
 
     case "hold":
       return {
@@ -88,9 +97,9 @@ export function advanceFinding(
   }
 }
 
-// Without a rating the reps tell: the top of the range is easy, below the
-// bottom falls short, anything between is enough.
-function rate(set: DoneSet, { min, max }: RepRange): Rating {
+// Below the bottom of the range falls short whatever the rating. Without a
+// rating nothing is known, so the weight stays and finding goes on.
+function rate(set: DoneSet, { min }: RepRange): Rating {
   if (set.reps < min) return "below";
 
   switch (set.effort) {
@@ -100,10 +109,11 @@ function rate(set: DoneSet, { min, max }: RepRange): Rating {
       return "easy";
     case "normal":
     case "hard":
-    case "failure":
       return "hold";
+    case "failure":
+      return "below";
     case undefined:
-      return set.reps >= max ? "easy" : "hold";
+      return "keep";
   }
 }
 

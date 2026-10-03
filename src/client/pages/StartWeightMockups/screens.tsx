@@ -5,7 +5,7 @@ import { MdArrowBack, MdChevronRight, MdWarningAmber } from "react-icons/md";
 import { defaultGym } from "../../db";
 import { EXERCISES } from "../../db/exercises/constants.ts";
 import { WeightsVisualizer } from "../Workout/components";
-import { ExerciseAnimation } from "../WorkoutFocus/components/ExerciseAnimation";
+import { ExerciseAnimation } from "../Workout/components/ExerciseAnimation";
 
 const MOCK_GYM = {
   ...defaultGym("mockup"),

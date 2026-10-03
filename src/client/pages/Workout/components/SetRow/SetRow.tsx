@@ -2,9 +2,9 @@ import type { SetRowProps } from "./types.ts";
 import s from "./styles.module.scss";
 import { MdCheck } from "react-icons/md";
 import { useModalStack, useStore } from "../../../../components";
-import { useEffect, useRef, useState } from "react";
 import {
   updateSet,
+  type CompletedSet,
   type Set,
   useQueryRecordsBySet,
   type Record,
@@ -16,15 +16,17 @@ import {
   getWeightUnits,
   kgToUnits,
   MEDAL_RECORDS,
-  snapWeightKg,
-  unitsToKg,
   updateRecords,
   volumeToOneRepMax,
+  warmUpAfterWeightChange,
 } from "../../../../domain";
 import { useActiveTimer } from "../ActiveTimer";
 import { formatRepRange } from "./utils.ts";
 import { RecordsBottomSheet } from "../RecordsBottomSheet";
 import { SetActionsBottomSheet } from "../SetActionsBottomSheet";
+import { WeightSheet } from "../WeightSheet";
+import { RepsSheet } from "../RepsSheet";
+import { EffortSheet } from "../EffortSheet";
 
 export function SetRow({
   exercise,
@@ -33,13 +35,12 @@ export function SetRow({
   number,
   set,
   isCurrent,
+  isLastWorking,
   prevSet,
   recSet,
 }: SetRowProps) {
   const store = useStore();
   const { pushModal } = useModalStack();
-  const [weightInput, setWeightInput] = useState<string | null>(null);
-  const [repsInput, setRepsInput] = useState<string | null>(null);
   const records = useQueryRecordsBySet(store, set.id).filter((r) =>
     MEDAL_RECORDS.includes(r.type),
   );
@@ -62,11 +63,6 @@ export function SetRow({
       ? currOneRepMax - prevOneRepMax
       : undefined;
 
-  const updatedSet = useRef(set);
-  useEffect(() => {
-    updatedSet.current = set;
-  }, [set]);
-
   const units = getWeightUnits(exercise, gym);
 
   const convertWeight = (weightKg: number | undefined): number | undefined => {
@@ -79,69 +75,52 @@ export function SetRow({
     ? `${convertWeight(prevSet.weight)} x ${prevSet.reps}`
     : "-";
 
-  const weight = (convertWeight(set.weight) ?? "").toString();
-  const weightPlaceholder = (convertWeight(recSet?.weight) ?? "-").toString();
+  const weight = convertWeight(set.weight ?? recSet?.weight) ?? "-";
+  const reps =
+    set.reps ?? (recSet?.reps ? formatRepRange(recSet.reps) : undefined) ?? "-";
 
-  const reps = set.reps?.toString() ?? "";
-  const repsPlaceholder = recSet?.reps ? formatRepRange(recSet.reps) : "-";
+  const sheetData = { performance, setId: set.id };
 
-  const updateSetInner = (updater: (set: Set) => Set): Set => {
-    updatedSet.current = updater(updatedSet.current);
-    return updatedSet.current;
+  // The sheet writes the weight on every press, so a warm-up the new weight
+  // brings can only be inserted once it is closed.
+  const weightHandler = async () => {
+    await pushModal(WeightSheet, sheetData);
+    warmUpAfterWeightChange(store, performance);
   };
 
-  const weightBlurHandler = () => {
-    if (weightInput === null) return;
-    const newWeight = Number.parseFloat(weightInput);
-    setWeightInput(null);
-
-    let newWeightKg = !Number.isNaN(newWeight)
-      ? unitsToKg(newWeight, units)
-      : undefined;
-
-    if (newWeightKg !== undefined) {
-      newWeightKg = snapWeightKg(exercise, gym, newWeightKg);
-    }
-
-    const set = updateSetInner((set) =>
-      !set.completed ? { ...set, weight: newWeightKg } : set,
-    );
-    updateSet(store, set);
-  };
-
-  const repsBlurHandler = () => {
-    if (repsInput === null) return;
-    const newReps = Number.parseFloat(repsInput);
-    setRepsInput(null);
-
-    const newRepsValue = !Number.isNaN(newReps) ? newReps : undefined;
-
-    const set = updateSetInner((set) =>
-      !set.completed ? { ...set, reps: newRepsValue } : set,
-    );
-    updateSet(store, set);
-  };
+  const repsHandler = () => pushModal(RepsSheet, sheetData);
 
   const completeHandler = async () => {
-    if (!set.completed) {
-      const set = updateSetInner((set) => {
-        const weight = set.weight ?? recSet?.weight;
-        const reps = set.reps ?? recSet?.reps?.max;
-        if (weight !== undefined && reps !== undefined) {
-          return { ...set, weight, reps, completed: true };
-        } else {
-          return set;
-        }
-      });
-      if (set.completed) {
-        updateSet(store, set);
-        updateRecords(store, set);
-        startTimer(performance.timer);
-      }
-    } else {
-      const set = updateSetInner((set) => ({ ...set, completed: false }));
-      updateSet(store, set);
-      updateRecords(store, set);
+    if (set.completed) {
+      const draft: Set = { ...set, completed: false };
+      updateSet(store, draft);
+      updateRecords(store, draft);
+      return;
+    }
+
+    const weight = set.weight ?? recSet?.weight;
+    if (weight === undefined) {
+      await weightHandler();
+      return;
+    }
+
+    const completed: CompletedSet = {
+      ...set,
+      weight,
+      reps: set.reps ?? recSet?.reps?.max ?? performance.reps.max,
+      completed: true,
+      effort: undefined,
+    };
+    updateSet(store, completed);
+    updateRecords(store, completed);
+    startTimer(performance.timer);
+
+    // TODO: ask after the last set only when it reached the top of the range,
+    // so the next workout would raise the weight. Progression doesn't read
+    // the rating yet, see TODO.md.
+    const isFinding = recSet?.isFinding ?? false;
+    if (isFinding || isLastWorking) {
+      await pushModal(EffortSheet, { set: completed, isFinding });
     }
   };
 
@@ -160,12 +139,11 @@ export function SetRow({
 
   const copyPreviousHandler = () => {
     if (prevSet && !set.completed) {
-      const set = updateSetInner((set) => ({
+      updateSet(store, {
         ...set,
         weight: prevSet.weight,
         reps: prevSet.reps,
-      }));
-      updateSet(store, set);
+      });
     }
   };
 
@@ -178,32 +156,22 @@ export function SetRow({
         {prev}
       </td>
       <td className={s.currentWeightValue}>
-        <input
-          className={s.input}
-          value={weightInput ?? weight}
-          placeholder={weightPlaceholder}
+        <button
+          className={clsx(s.value, set.weight === undefined && s.suggested)}
           disabled={set.completed}
-          type="text"
-          inputMode="numeric"
-          onContextMenu={(e) => e.preventDefault()}
-          onChange={(e) => setWeightInput(e.target.value)}
-          onFocus={(e) => e.target.select()}
-          onBlur={weightBlurHandler}
-        />
+          onClick={weightHandler}
+        >
+          {weight}
+        </button>
       </td>
       <td className={s.currentRepsValue}>
-        <input
-          className={s.input}
-          value={repsInput ?? reps}
-          placeholder={repsPlaceholder}
+        <button
+          className={clsx(s.value, set.reps === undefined && s.suggested)}
           disabled={set.completed}
-          type="text"
-          inputMode="numeric"
-          onContextMenu={(e) => e.preventDefault()}
-          onChange={(e) => setRepsInput(e.target.value)}
-          onFocus={(e) => e.target.select()}
-          onBlur={repsBlurHandler}
-        />
+          onClick={repsHandler}
+        >
+          {reps}
+        </button>
       </td>
       <td className={s.setCompletedValue}>
         <button className={s.setCompletedButton} onClick={completeHandler}>

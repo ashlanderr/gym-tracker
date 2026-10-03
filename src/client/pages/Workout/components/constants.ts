@@ -1,4 +1,4 @@
-import type { WeightList, WeightUnits } from "../../../db";
+import type { Effort, WeightList, WeightUnits } from "../../../db";
 
 export const DEFAULT_PLATES: Record<WeightUnits, number[]> = {
   kg: [0.5, 1.25, 2.5, 5, 10, 15, 20, 25],
@@ -56,3 +56,23 @@ export const STACK_ADDITIONAL: Record<WeightUnits, number[]> = {
   kg: [1.25, 2.5, 5],
   lb: [2.5, 5],
 };
+
+// Manual step when the weight can't be assembled from the inventory.
+export const MANUAL_WEIGHT_STEP = 2.5;
+
+export const EFFORTS: Array<{ key: Effort; label: string }> = [
+  { key: "easy", label: "Легко" },
+  { key: "normal", label: "Норм" },
+  { key: "hard", label: "Тяжело" },
+  { key: "failure", label: "Отказ" },
+];
+
+// While the weight is being found the answer is what to do with it. Each is
+// stored as the rating weight finding reads: "Меньше" is a set too heavy to
+// keep, so it is a failure.
+export const FINDING_EFFORTS: Array<{ key: Effort; label: string }> = [
+  { key: "light", label: "Намного больше" },
+  { key: "easy", label: "Чуть больше" },
+  { key: "normal", label: "Оставить" },
+  { key: "failure", label: "Меньше" },
+];
