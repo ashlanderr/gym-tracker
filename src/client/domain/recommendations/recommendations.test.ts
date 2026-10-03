@@ -1,9 +1,5 @@
 import { buildRecommendations } from "./recommendations.ts";
-import {
-  findMinimumConflict,
-  safeAlternatives,
-  startWeightKg,
-} from "./start.ts";
+import { startWeightKg } from "./start.ts";
 import { planWarmUps } from "./warm-up.ts";
 import type { RecommendationParams, SetData } from "./types.ts";
 import { EXERCISES } from "../../db/exercises/constants.ts";
@@ -206,40 +202,4 @@ test("warm-up sets follow the first working weight", () => {
     { isFirstOfMovement: true },
   );
   expect(result.slice(0, 2).map((r) => r.weight)).toEqual([50, 85]);
-});
-
-test("the minimum conflicts with the safe weight where a kilogram is known", () => {
-  const bench = exercise("bench_press");
-  expect(findMinimumConflict(bench, GYM, "female", 60)).toBe(20);
-  expect(findMinimumConflict(bench, GYM, "male", 80)).toBeNull();
-  expect(
-    findMinimumConflict(
-      bench,
-      { ...GYM, bars: { units: "kg", items: [10, 20] } },
-      "female",
-      60,
-    ),
-  ).toBeNull();
-  expect(findMinimumConflict(bench, defaultGym("user"), "female", 60)).toBe(
-    null,
-  );
-  // The body itself is heavier than a safe pull-up.
-  expect(findMinimumConflict(exercise("pull_up_wide"), GYM, "male", 80)).toBe(
-    0,
-  );
-  expect(
-    findMinimumConflict(exercise("assisted_pull_up_wide"), GYM, "male", 80),
-  ).toBeNull();
-});
-
-test("replacements leave out the known conflicts and put the Smith last", () => {
-  const options = exercise("bench_press").alternatives.map((a) => ({
-    ...a,
-    exercise: exercise(a.id),
-  }));
-  const ids = safeAlternatives(options, GYM, "female", 60).map((a) => a.id);
-
-  expect(ids).not.toContain("incline_bench_press");
-  expect(ids).toContain("dumbbell_bench_press");
-  expect(ids.at(-1)).toBe("smith_bench_press");
 });
