@@ -24,6 +24,7 @@ import { Settings } from "./Settings";
 import { SignIn } from "./SignIn";
 import { SIGN_IN_PATH } from "../session";
 import { TAB_PATHS, Tabs } from "./Tabs";
+import { TableMockups } from "./TableMockups";
 import s from "./layout.module.scss";
 
 const PAGE_OFFSET = 64;
@@ -90,6 +91,9 @@ function AnimatedRoutes() {
               it is a tool for reading the catalog through, not a feature. */}
           {import.meta.env.DEV && (
             <Route path="/exercises" element={<ExerciseCatalogPage />} />
+          )}
+          {import.meta.env.DEV && (
+            <Route path="/mockups/table" element={<TableMockups />} />
           )}
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path={SIGN_IN_PATH} element={<SignIn />} />
