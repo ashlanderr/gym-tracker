@@ -4,7 +4,6 @@ import { MdCheck } from "react-icons/md";
 import { useModalStack, useStore } from "../../../../components";
 import {
   updateSet,
-  type CompletedSet,
   type Set,
   useQueryRecordsBySet,
   type Record,
@@ -13,12 +12,13 @@ import { clsx } from "clsx";
 import { PiArrowDownBold, PiArrowUpBold, PiMedalFill } from "react-icons/pi";
 import {
   addSelfWeight,
+  completeSet,
   getWeightUnits,
   kgToUnits,
   MEDAL_RECORDS,
+  rebuildWarmUps,
   updateRecords,
   volumeToOneRepMax,
-  warmUpAfterWeightChange,
 } from "../../../../domain";
 import { useActiveTimer } from "../ActiveTimer";
 import { formatRepRange } from "./utils.ts";
@@ -35,7 +35,6 @@ export function SetRow({
   number,
   set,
   isCurrent,
-  isLastWorking,
   prevSet,
   recSet,
 }: SetRowProps) {
@@ -81,11 +80,11 @@ export function SetRow({
 
   const sheetData = { performance, setId: set.id };
 
-  // The sheet writes the weight on every press, so a warm-up the new weight
-  // brings can only be inserted once it is closed.
+  // The sheet writes the weight on every press, so the warm-up follows the
+  // new weight only once it is closed.
   const weightHandler = async () => {
     await pushModal(WeightSheet, sheetData);
-    warmUpAfterWeightChange(store, performance);
+    if (set.type === "working") rebuildWarmUps(store, performance);
   };
 
   const repsHandler = () => pushModal(RepsSheet, sheetData);
@@ -98,40 +97,24 @@ export function SetRow({
       return;
     }
 
-    const weight = set.weight ?? recSet?.weight;
-    if (weight === undefined) {
+    const completion = completeSet(store, performance, set, recSet);
+    if (!completion) {
       await weightHandler();
       return;
     }
 
-    const completed: CompletedSet = {
-      ...set,
-      weight,
-      reps: set.reps ?? recSet?.reps?.max ?? performance.reps.max,
-      completed: true,
-      effort: undefined,
-    };
-    updateSet(store, completed);
-    updateRecords(store, completed);
-    startTimer(performance.timer);
-
-    // TODO: ask after the last set only when it reached the top of the range,
-    // so the next workout would raise the weight. Progression doesn't read
-    // the rating yet, see TODO.md.
-    const isFinding = recSet?.isFinding ?? false;
-    if (isFinding || isLastWorking) {
-      await pushModal(EffortSheet, { set: completed, isFinding });
+    if (completion.rest) startTimer(performance.timer);
+    if (completion.question) {
+      await pushModal(EffortSheet, {
+        set: completion.set,
+        isFinding: completion.question === "finding",
+      });
     }
   };
 
   const setInfoHandler = async () => {
     if (!set.completed) {
-      await pushModal(SetActionsBottomSheet, {
-        exercise,
-        gym,
-        set,
-        recSet,
-      });
+      await pushModal(SetActionsBottomSheet, { set });
     } else if (records.length !== 0) {
       await pushModal(RecordsBottomSheet, records);
     }

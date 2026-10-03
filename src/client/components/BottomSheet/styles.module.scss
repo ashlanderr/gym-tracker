@@ -14,6 +14,12 @@
   pointer-events: all;
 }
 
+// A sheet without a backdrop is a panel that stays while the page is used,
+// like the rest timer, so every modal opens above it.
+.panel {
+  z-index: 0;
+}
+
 .modal {
   pointer-events: all;
   display: flex;

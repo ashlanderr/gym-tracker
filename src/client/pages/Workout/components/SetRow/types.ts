@@ -16,7 +16,6 @@ export interface SetRowProps {
   number: string;
   set: Set;
   isCurrent: boolean;
-  isLastWorking: boolean;
   prevSet: CompletedSet | undefined;
   recSet: RecSetData | undefined;
 }

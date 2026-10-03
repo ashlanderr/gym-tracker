@@ -182,6 +182,17 @@ test("warm-up is two sets from the full weight, lighter ones drop out", () => {
   expect(unknown).toEqual([]);
 });
 
+test("warm-up stays on the bar of the working weight", () => {
+  const warmUps = planWarmUps({
+    exercise: exercise("bench_press"),
+    gym: { ...GYM, bars: { units: "kg", items: [20, 10] } },
+    selfWeight: 80,
+    workingWeight: 20,
+    isFirstOfMovement: true,
+  });
+  expect(warmUps).toEqual([]);
+});
+
 test("warm-up sets follow the first working weight", () => {
   const warmUp: SetData = { ...draft, type: "warm-up" };
   const result = recommend(

@@ -1,5 +1,4 @@
 import s from "./styles.module.scss";
-import { WeightsVisualizer } from "../WeightsVisualizer";
 import { clsx } from "clsx";
 import { MdDelete } from "react-icons/md";
 import { BottomSheet, type ModalProps, useStore } from "../../../../components";
@@ -12,8 +11,7 @@ export function SetActionsBottomSheet({
   onCancel,
 }: ModalProps<SetActionBottomSheetData, null>) {
   const store = useStore();
-  const { exercise, gym, set, recSet } = data;
-  const expectedWeight = set.weight ?? recSet?.weight;
+  const { set } = data;
 
   const setTypeHandler = (type: SetType) => {
     updateSet(store, { ...set, type });
@@ -29,15 +27,6 @@ export function SetActionsBottomSheet({
   return (
     <BottomSheet isOpen={true} onClose={onCancel}>
       <div className={s.sheetHeader}>Подход</div>
-      <div className={s.sheetWeights}>
-        {expectedWeight !== undefined && (
-          <WeightsVisualizer
-            exercise={exercise}
-            gym={gym}
-            weightKg={expectedWeight}
-          />
-        )}
-      </div>
       <div className={s.sheetActions}>
         <button
           className={s.sheetAction}

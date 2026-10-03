@@ -130,12 +130,13 @@ export function WeightSheet({
   );
 }
 
-// Names the warm-up that closing the sheet will insert, so the jump to it is
-// no surprise. The same rule decides as on insertion.
+// Names the warm-up that closing the sheet will build, so the change is no
+// surprise. The same rule decides as on rebuilding.
 function describeWarmUp(plan: SetPlan): string {
   const { data, sets, weightKg } = plan;
-  if (plan.set.type === "warm-up" || weightKg === undefined) return "";
-  if (sets.some((s) => s.completed || s.type === "warm-up")) return "";
+  const firstWorking = sets.find((s) => s.type === "working");
+  if (plan.set.id !== firstWorking?.id || weightKg === undefined) return "";
+  if (sets.some((s) => s.type === "working" && s.completed)) return "";
 
   const warmUps = planWarmUps({
     exercise: data.exercise,

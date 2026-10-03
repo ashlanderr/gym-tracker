@@ -118,8 +118,6 @@ function buildSets({
   const prevWarmUp = prevSets.filter((s) => s.type === "warm-up");
   const prevWorking = prevSets.filter((s) => s.type !== "warm-up");
 
-  const lastWorking = sets.map((s) => s.type).lastIndexOf("working");
-
   const result: ReactNode[] = [];
   let warmUpIndex = 0;
   let workingIndex = 0;
@@ -154,7 +152,6 @@ function buildSets({
         number={number}
         set={set}
         isCurrent={set.id === currentSet}
-        isLastWorking={index === lastWorking}
         prevSet={prevSet}
         recSet={recSet}
       />,

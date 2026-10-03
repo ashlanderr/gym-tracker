@@ -18,7 +18,7 @@ export function BottomSheet({
       {isOpen !== false && (
         <motion.div
           key="sheet"
-          className={clsx(s.root, withBackdrop && s.backdrop)}
+          className={clsx(s.root, withBackdrop ? s.backdrop : s.panel)}
           initial={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
           animate={{
             backgroundColor: withBackdrop
