@@ -37,8 +37,7 @@ export function Home() {
 
   const openWorkoutHandler = (workout: Workout | null) => {
     if (!workout) return;
-    const page = workout.completedAt ? "/all" : "";
-    navigate(`/workouts/${workout.id}${page}`);
+    navigate(`/workouts/${workout.id}`);
   };
 
   const startWorkoutHandler = () => {

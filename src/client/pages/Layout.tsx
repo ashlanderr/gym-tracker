@@ -14,7 +14,6 @@ import {
   type Variants,
 } from "motion/react";
 import { Workout } from "./Workout";
-import { WorkoutFocus } from "./WorkoutFocus";
 import { WorkoutFinish } from "./WorkoutFinish";
 import { Home } from "./Home";
 import { ModalStack, StoreProvider } from "../components";
@@ -83,8 +82,7 @@ function AnimatedRoutes() {
             <Route path="/settings" element={<Settings />} />
           </Route>
           <Route path="/profile/:type" element={<MeasurementPage />} />
-          <Route path="/workouts/:workoutId" element={<WorkoutFocus />} />
-          <Route path="/workouts/:workoutId/all" element={<Workout />} />
+          <Route path="/workouts/:workoutId" element={<Workout />} />
           <Route
             path="/workouts/:workoutId/finish"
             element={<WorkoutFinish />}

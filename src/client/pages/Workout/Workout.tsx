@@ -4,7 +4,6 @@ import {
   useQueryWorkoutById,
   useQueryPerformancesByWorkout,
   useQuerySetsByWorkout,
-  useQueryExerciseById,
   type Exercise,
 } from "../../db";
 import type { WorkoutParams } from "./types.ts";
@@ -51,10 +50,6 @@ export function Workout() {
     [performances, sets],
   );
   const current = workout?.completedAt ? undefined : findCurrentStep(steps);
-  const currentExercise = useQueryExerciseById(
-    store,
-    current?.performance.exercise ?? "",
-  );
 
   const addPerformanceHandler = (exercise: Exercise) => {
     if (!workout) return;
@@ -123,17 +118,6 @@ export function Workout() {
           Добавить упражнение
         </button>
       </div>
-      {current && currentExercise && (
-        <button className={s.backToSet} onClick={() => navigate(-1)}>
-          <MdArrowBack />
-          <span className={s.backToSetText}>
-            Вернуться к подходу · {currentExercise.name}
-          </span>
-          <span className={s.backToSetPosition}>
-            {current.number} из {current.count}
-          </span>
-        </button>
-      )}
       <PageModal isOpen={isAddPerformanceOpen}>
         <ChooseExercise
           onCancel={() => setAddPerformanceOpen(false)}
