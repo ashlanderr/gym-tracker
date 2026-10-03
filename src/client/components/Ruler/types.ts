@@ -5,5 +5,8 @@ export interface RulerProps {
   // Ticks between two labelled ones.
   majorEvery: number;
   value: number;
+  // A vertical scale fills the height of its container.
+  axis?: "x" | "y";
+  format?: (value: number) => string;
   onChange: (value: number) => void;
 }
