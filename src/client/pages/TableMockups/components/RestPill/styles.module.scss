@@ -1,0 +1,55 @@
+.root {
+  position: sticky;
+  bottom: 12px;
+  padding: 0 12px;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px 8px 12px;
+  border: 1px solid #2c2c2e;
+  border-radius: 999px;
+  background: #1c1c1e;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.ring {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  mask: radial-gradient(circle, transparent 9px, #000 10px);
+}
+
+.text {
+  flex: 1 1 auto;
+}
+
+.label {
+  color: #8e8e93;
+  font-size: 11px;
+}
+
+.time {
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.key,
+.skip {
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.key {
+  background: #2c2c2e;
+}
+
+.skip {
+  background: #06f;
+}

@@ -1,0 +1,134 @@
+.root {
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #1c1d20;
+  border-radius: 18px;
+  background: #0e0f11;
+}
+
+.collapsed {
+  padding-block: 10px;
+  opacity: 0.72;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+// The picture is a square as tall as the two lines of the title.
+.thumb {
+  flex: 0 0 auto;
+
+  & > button {
+    width: 44px;
+  }
+}
+
+.title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+// Two lines at most: the full name is on the exercise page.
+.name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  color: #f2f2f7;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.plan {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-top: 2px;
+  color: #8e8e93;
+  font-size: 13px;
+}
+
+.finding {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #2a2205;
+  color: #ffd60a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.more,
+.done {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 22px;
+}
+
+.more {
+  color: #8e8e93;
+}
+
+.done {
+  color: #30d158;
+}
+
+.inventory {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #0d1b2e;
+  color: #4d9bff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.inventoryText {
+  flex: 1 1 auto;
+}
+
+// The same grid as the sets, so each label stands over its column.
+.columns {
+  display: grid;
+  grid-template-columns: 24px 1fr 60px 10px 60px 36px;
+  column-gap: 8px;
+  margin-top: 12px;
+  padding: 0 6px 2px;
+  color: #48484a;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  & > span:nth-child(3),
+  & > span:nth-child(5) {
+    text-align: center;
+  }
+}
+
+.sets {
+  display: flex;
+  flex-direction: column;
+}
+
+.addSet {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 6px 0 0 6px;
+  padding: 6px 0;
+  color: #8e8e93;
+  font-size: 14px;
+  font-weight: 500;
+}

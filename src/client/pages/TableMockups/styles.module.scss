@@ -10,121 +10,83 @@
 }
 
 .lead {
+  max-width: 640px;
   margin: 0 16px 12px;
   color: #8a8a8a;
   font-size: 14px;
 }
 
 // Phones side by side when the window is wide, one under another on a phone.
-.variants {
+.phones {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
   gap: 24px;
   padding: 0 16px;
 }
 
-.variant {
-  flex: 1 1 340px;
-  max-width: 400px;
+.phoneBlock {
+  flex: 0 1 375px;
+  min-width: 0;
 }
 
-.variantTitle {
+.phoneTitle {
+  margin-bottom: 8px;
   font-weight: 600;
 }
 
-.variantText {
-  margin: 2px 0 8px;
-  color: #8a8a8a;
-  font-size: 13px;
+// A screen of a common phone, scrolled inside, so the sticky bar and the
+// rest float the way they would on the device.
+.phone {
+  box-sizing: border-box;
+  height: 760px;
+  overflow: auto;
+  border: 1px solid #2a2a2a;
+  border-radius: 24px;
+  background: #000;
+  scrollbar-width: none;
 }
 
-.screen {
+.cards {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 16px;
-  border: 1px solid #2a2a2a;
-  border-radius: 16px;
-  background: #000;
+  gap: 12px;
+  padding: 12px 12px 24px;
 }
 
-.invert img {
-  filter: invert(1);
+.addExercise {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 16px;
+  border: 1px dashed #2c2c2e;
+  border-radius: 18px;
+  color: #8e8e93;
+  font-weight: 600;
+}
+
+.thumbs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .zoom img {
   transform: scale(1.6);
 }
 
-.invertZoom img {
-  filter: invert(1);
-  transform: scale(1.6);
-}
-
 .muscleTile {
-  width: 52px;
-  height: 52px;
-  overflow: hidden;
-  padding: 4px;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  padding: 3px;
   border: 1px solid #2a2a2a;
   border-radius: 10px;
+  overflow: hidden;
   background: #000;
-}
 
-.between {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  column-gap: 12px;
-  padding: 14px 16px;
-  border: 1px solid #1d3a66;
-  border-radius: 14px;
-  background: #0d1b2e;
-}
-
-.betweenText {
-  font-weight: 600;
-}
-
-.betweenNote {
-  grid-row: 2;
-  color: #8a8a8a;
-  font-size: 13px;
-}
-
-.betweenButton {
-  grid-row: 1 / 3;
-  grid-column: 2;
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: #06f;
-  font-weight: 600;
-}
-
-.inside {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: #0d1b2e;
-  color: #4d9bff;
-  font-size: 14px;
-}
-
-.insideText {
-  flex: 1 1 auto;
-}
-
-.question {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border: 1px solid #1d3a66;
-  border-radius: 50%;
-  background: #0d1b2e;
-  color: #4d9bff;
-  font-weight: 700;
+  & > * {
+    height: 100%;
+  }
 }

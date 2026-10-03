@@ -1,213 +1,213 @@
 import s from "./styles.module.scss";
 import type { ReactNode } from "react";
-import { MdChevronRight, MdOutlineHelpOutline } from "react-icons/md";
+import { MdAdd } from "react-icons/md";
 import { MuscleFigure } from "../../components";
 import { EXERCISES } from "../../db/exercises/constants.ts";
-import { MockExercise, type MockSet } from "./components";
+import { ExerciseCard, type MockSet, RestPill, WorkoutBar } from "./components";
+
+const ROW_SETS: MockSet[] = [
+  { type: "warm-up", state: "done", weight: "30", reps: "12" },
+  { type: "warm-up", state: "done", weight: "50", reps: "6" },
+  { type: "working", state: "done", prev: "—", weight: "60", reps: "8" },
+  {
+    type: "working",
+    state: "current",
+    weight: "75",
+    reps: "6–8",
+    isSuggested: true,
+    reason: "Прошлый подход был лёгким — вес выше",
+  },
+  {
+    type: "working",
+    state: "next",
+    weight: "75",
+    reps: "6–8",
+    isSuggested: true,
+  },
+];
+
+const PEC_DECK_SETS: MockSet[] = [1, 2, 3].map(() => ({
+  type: "working",
+  state: "next",
+  reps: "10–15",
+  isSuggested: true,
+}));
+
+const CURL_SETS: MockSet[] = [1, 2, 3].map(() => ({
+  type: "working",
+  state: "next",
+  prev: "12 × 10",
+  weight: "12",
+  reps: "8–12",
+  isSuggested: true,
+}));
+
+const BENCH_START: MockSet[] = [
+  {
+    type: "warm-up",
+    state: "current",
+    weight: "30",
+    reps: "12",
+    isSuggested: true,
+  },
+  {
+    type: "warm-up",
+    state: "next",
+    weight: "50",
+    reps: "6",
+    isSuggested: true,
+  },
+  ...[1, 2, 3].map(
+    (): MockSet => ({
+      type: "working",
+      state: "next",
+      prev: "60 × 8",
+      weight: "62.5",
+      reps: "6–8",
+      isSuggested: true,
+    }),
+  ),
+];
 
 const THUMB_EXERCISES = [
   "bench_press",
   "back_squat",
-  "pull_up_wide",
   "barbell_curl",
   "preacher_dumbbell_curl",
   "chest_supported_row_plates",
 ];
 
-interface ThumbVariant {
-  title: string;
-  text: string;
-  className?: string;
-  isMuscles?: boolean;
-}
-
-const THUMB_VARIANTS: ThumbVariant[] = [
-  { title: "Как сейчас", text: "Кадр целиком, светлые линии на чёрном." },
-  {
-    title: "Инверсия",
-    text: "Тёмные линии на светлой плитке.",
-    className: s.invert,
-  },
-  {
-    title: "Крупнее",
-    text: "Кадр увеличен в 1.6 раза, поля обрезаны.",
-    className: s.zoom,
-  },
-  {
-    title: "Инверсия и крупнее",
-    text: "Оба приёма вместе.",
-    className: s.invertZoom,
-  },
-  {
-    title: "Только мышцы",
-    text: "Вместо кадра всегда фигура с мышцами.",
-    isMuscles: true,
-  },
-];
-
-const KNOWN: MockSet[] = [
-  { number: "1", prev: "60 x 8", weight: "60", reps: "8", done: true },
-  { number: "2", prev: "60 x 8", weight: "60", reps: "8", done: true },
-  { number: "3", prev: "60 x 8", weight: "60", reps: "6 - 8" },
-];
-
-const UNKNOWN: MockSet[] = [
-  { number: "1", prev: "-", weight: "-", reps: "10 - 15" },
-  { number: "2", prev: "-", weight: "-", reps: "10 - 15" },
-  { number: "3", prev: "-", weight: "-", reps: "10 - 15" },
-];
-
-// Variants of the workout table to compare side by side. Reachable only by
+// Variants of the workout screen to compare side by side. Reachable only by
 // typing the address while developing.
 export function TableMockups() {
   return (
     <div className={s.root}>
-      <h1 className={s.heading}>Картинка упражнения</h1>
+      <h1 className={s.heading}>Экран тренировки</h1>
       <p className={s.lead}>
-        Четыре упражнения с кадрами и два без: заглушка с мышцами спереди и
-        сзади. Два названия длинные.
+        Середина тренировки и её начало. Сделанное упражнение свёрнуто в итог,
+        текущий подход подсвечен, отдых плавает над подходами.
       </p>
-      <div className={s.variants}>
-        {THUMB_VARIANTS.map((variant) => (
-          <Variant
-            key={variant.title}
-            title={variant.title}
-            text={variant.text}
-          >
-            {THUMB_EXERCISES.map((id) => (
-              <MockExercise
-                key={id}
-                id={id}
-                sets={[]}
-                isCompact
-                thumbClassName={variant.className}
-                thumb={variant.isMuscles ? <MuscleTile id={id} /> : undefined}
-              />
-            ))}
-          </Variant>
-        ))}
+      <div className={s.phones}>
+        <Phone title="Середина, идёт отдых">
+          <WorkoutBar time="38:12" done={7} total={16} />
+          <div className={s.cards}>
+            <ExerciseCard
+              id="bench_press"
+              plan=""
+              sets={[]}
+              isCollapsed
+              summary="62.5 кг · 8, 8, 7"
+            />
+            <ExerciseCard
+              id="barbell_row"
+              plan="3 × 6–8 · отдых 2:00"
+              sets={ROW_SETS}
+              isFinding
+            />
+            <ExerciseCard
+              id="pec_deck"
+              plan="3 × 10–15 · отдых 1:30"
+              sets={PEC_DECK_SETS}
+              inventory="Укажи веса на стеке"
+            />
+            <ExerciseCard
+              id="preacher_dumbbell_curl"
+              plan="3 × 8–12 · отдых 1:30"
+              sets={CURL_SETS}
+            />
+            <AddExercise />
+          </div>
+          <RestPill time="1:24" progress={0.3} />
+        </Phone>
+
+        <Phone title="Начало">
+          <WorkoutBar time="0:42" done={0} total={14} />
+          <div className={s.cards}>
+            <ExerciseCard
+              id="bench_press"
+              plan="3 × 6–8 · отдых 2:00"
+              sets={BENCH_START}
+            />
+            <ExerciseCard
+              id="barbell_row"
+              plan="3 × 6–8 · отдых 2:00"
+              sets={[1, 2, 3].map(() => ({
+                type: "working",
+                state: "next",
+                weight: "60",
+                reps: "6–8",
+                isSuggested: true,
+              }))}
+              isFinding
+            />
+            <AddExercise />
+          </div>
+        </Phone>
       </div>
 
-      <h1 className={s.heading}>Инвентарь</h1>
+      <h1 className={s.heading}>Картинка упражнения</h1>
       <p className={s.lead}>
-        Жим лёжа уже со штангой. У «бабочки» неизвестен стек, у тяги гантели —
-        гантели зала.
+        Кадры из линий мельчат на 44 px. Без кадра — фигура с мышцами со стороны
+        главной мышцы.
       </p>
-      <div className={s.variants}>
-        <Variant
-          title="Между упражнениями"
-          text="Отдельная карточка перед упражнением."
-        >
-          <MockExercise id="bench_press" sets={KNOWN} />
-          <Between text="Какие веса на стеке «бабочки»?" />
-          <MockExercise id="pec_deck" sets={UNKNOWN} />
-          <Between text="Какие гантели есть в зале?" />
-          <MockExercise id="dumbbell_row" sets={UNKNOWN} />
-        </Variant>
-
-        <Variant
-          title="Внутри упражнения"
-          text="Строка под названием, вес пустой."
-        >
-          <MockExercise id="bench_press" sets={KNOWN} />
-          <MockExercise
-            id="pec_deck"
-            sets={UNKNOWN}
-            notice={<Inside text="Укажи веса на стеке" />}
-          />
-          <MockExercise
-            id="dumbbell_row"
-            sets={UNKNOWN}
-            notice={<Inside text="Укажи гантели в зале" />}
-          />
-        </Variant>
-
-        <Variant
-          title="Знак вопроса"
-          text="Вместо веса «?», нажатие открывает инвентарь."
-        >
-          <MockExercise id="bench_press" sets={KNOWN} />
-          <MockExercise
-            id="pec_deck"
-            sets={UNKNOWN}
-            weightCell={<Question />}
-          />
-          <MockExercise
-            id="dumbbell_row"
-            sets={UNKNOWN}
-            weightCell={<Question />}
-          />
-        </Variant>
-
-        <Variant
-          title="Внутри и знак вопроса"
-          text="Строка объясняет, «?» показывает, где не хватает."
-        >
-          <MockExercise id="bench_press" sets={KNOWN} />
-          <MockExercise
-            id="pec_deck"
-            sets={UNKNOWN}
-            notice={<Inside text="Укажи веса на стеке" />}
-            weightCell={<Question />}
-          />
-          <MockExercise
-            id="dumbbell_row"
-            sets={UNKNOWN}
-            notice={<Inside text="Укажи гантели в зале" />}
-            weightCell={<Question />}
-          />
-        </Variant>
+      <div className={s.phones}>
+        <Thumbs title="Как есть" />
+        <Thumbs title="Крупнее, поля обрезаны" className={s.zoom} />
+        <Thumbs title="Только мышцы" isMuscles />
       </div>
     </div>
   );
 }
 
-function Variant({
-  title,
-  text,
-  children,
-}: {
-  title: string;
-  text: string;
-  children: ReactNode;
-}) {
+function Phone({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className={s.variant}>
-      <div className={s.variantTitle}>{title}</div>
-      <div className={s.variantText}>{text}</div>
-      <div className={s.screen}>{children}</div>
+    <section className={s.phoneBlock}>
+      <div className={s.phoneTitle}>{title}</div>
+      <div className={s.phone}>{children}</div>
     </section>
   );
 }
 
-function MuscleTile({ id }: { id: string }) {
+function AddExercise() {
   return (
-    <div className={s.muscleTile}>
-      <MuscleFigure muscles={EXERCISES[id].primaryMuscles} />
+    <div className={s.addExercise}>
+      <MdAdd />
+      Добавить упражнение
     </div>
   );
 }
 
-function Between({ text }: { text: string }) {
+function Thumbs({
+  title,
+  className,
+  isMuscles,
+}: {
+  title: string;
+  className?: string;
+  isMuscles?: boolean;
+}) {
   return (
-    <div className={s.between}>
-      <div className={s.betweenText}>{text}</div>
-      <div className={s.betweenNote}>Без этого не подобрать вес</div>
-      <span className={s.betweenButton}>Указать</span>
-    </div>
+    <section className={s.phoneBlock}>
+      <div className={s.phoneTitle}>{title}</div>
+      <div className={s.thumbs}>
+        {THUMB_EXERCISES.map((id) => (
+          <ExerciseCard
+            key={id}
+            id={id}
+            plan="3 × 6–8 · отдых 2:00"
+            sets={[]}
+            isHeaderOnly
+            thumbClassName={className}
+            thumb={
+              isMuscles ? (
+                <div className={s.muscleTile}>
+                  <MuscleFigure muscles={EXERCISES[id].primaryMuscles} />
+                </div>
+              ) : undefined
+            }
+          />
+        ))}
+      </div>
+    </section>
   );
-}
-
-function Inside({ text }: { text: string }) {
-  return (
-    <div className={s.inside}>
-      <MdOutlineHelpOutline />
-      <span className={s.insideText}>{text}</span>
-      <MdChevronRight />
-    </div>
-  );
-}
-
-function Question() {
-  return <span className={s.question}>?</span>;
 }
