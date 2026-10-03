@@ -11,8 +11,17 @@
   font-size: 20px;
 }
 
-.timer {
-  margin: 8px 0 0 0;
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
 }
 
 .sets {

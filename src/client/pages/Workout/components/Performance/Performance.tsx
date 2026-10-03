@@ -2,6 +2,7 @@ import type { PerformanceProps } from "./types.ts";
 import s from "./styles.module.scss";
 import { MdAdd, MdCheck } from "react-icons/md";
 import { type ReactNode } from "react";
+import { useNavigate } from "react-router";
 import {
   useQuerySetsByPerformance,
   type Set,
@@ -13,7 +14,7 @@ import {
   useQueryCurrentGym,
   type Gym,
 } from "../../../../db";
-import { useModalStack, useStore } from "../../../../components";
+import { ExerciseThumb, useModalStack, useStore } from "../../../../components";
 import { SetRow } from "../SetRow";
 import { UNITS_TRANSLATION } from "../../../constants.ts";
 import { PerformanceTimer } from "../PerformanceTimer";
@@ -29,6 +30,7 @@ import { PerformanceActions } from "../PerformanceActions";
 export function Performance({ performance, currentSet }: PerformanceProps) {
   const store = useStore();
   const { pushModal } = useModalStack();
+  const navigate = useNavigate();
   const exercise = useQueryExerciseById(store, performance.exercise);
   const gym = useQueryCurrentGym(store, performance.user);
   const plan = usePerformanceRecommendations(performance);
@@ -58,13 +60,20 @@ export function Performance({ performance, currentSet }: PerformanceProps) {
     await pushModal(PerformanceActions, { performance, exercise });
   };
 
+  const exerciseHandler = () => {
+    navigate(`/exercises/${exercise.id}?performance=${performance.id}`);
+  };
+
   return (
     <div className={s.exercise}>
-      <div className={s.exerciseName} onClick={actionsHandler}>
-        {exercise.name}
-      </div>
-      <div className={s.timer}>
-        <PerformanceTimer performance={performance} />
+      <div className={s.header}>
+        <ExerciseThumb exercise={exercise} onClick={exerciseHandler} />
+        <div className={s.title}>
+          <div className={s.exerciseName} onClick={actionsHandler}>
+            {exercise.name}
+          </div>
+          <PerformanceTimer performance={performance} />
+        </div>
       </div>
       <table className={s.sets}>
         <thead>

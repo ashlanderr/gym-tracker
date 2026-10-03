@@ -6,6 +6,8 @@ export * from "./ModalStack";
 export * from "./ScrollRestoration";
 export * from "./ExerciseCrossFade";
 export * from "./BodyMap";
+export * from "./MuscleFigure";
+export * from "./ExerciseThumb";
 export * from "./DragScroll";
 export * from "./Ruler";
 export * from "./Wheel";
