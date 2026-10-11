@@ -9,7 +9,7 @@ import {
   useQuerySetsByPerformance,
 } from "../../../../db";
 import { UNITS_SHORT } from "../../../constants.ts";
-import { formatWeightUnits } from "../../hooks.ts";
+import { formatPlannedReps, formatWeightUnits } from "../../hooks.ts";
 import type { ExerciseCardProps } from "./types.ts";
 
 export function ExerciseCard({
@@ -34,9 +34,10 @@ export function ExerciseCard({
   const working = sets.filter((s) => s.type !== "warm-up");
   const done = working.filter((s) => s.completed).length;
 
-  // What the exercise is about: the first working set of the last time.
+  // What the exercise is about: the weight of the first working set of the
+  // last time, with the reps range of the exercise when it has one.
   const prevSet = prevSets.find((s) => s.completed && s.type !== "warm-up");
-  const reps = prevSet?.reps ?? "?";
+  const reps = formatPlannedReps(exercise, prevSet);
   const weight = prevSet ? formatWeightUnits(prevSet.weight, units) : "?";
 
   return (

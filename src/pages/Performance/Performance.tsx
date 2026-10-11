@@ -27,7 +27,10 @@ import {
   PerformanceActions,
   PerformanceTimer,
 } from "../Workout/components";
-import { formatWeightUnits } from "../Workout/hooks.ts";
+import {
+  formatPlannedReps,
+  formatWeightUnits,
+} from "../Workout/hooks.ts";
 import { JUST_FINISHED_ATOM } from "../Workout/constants.ts";
 import type { PerformanceParams } from "./types.ts";
 
@@ -115,7 +118,7 @@ export function Performance() {
                 {exercise?.name ?? "–"}
               </h1>
               <div className={s.spec}>
-                <b>{working.length}</b> × <b>{prevSet?.reps ?? "?"}</b> @{" "}
+                <b>{working.length}</b> × <b>{formatPlannedReps(exercise, prevSet)}</b> @{" "}
                 <b>
                   {prevSet ? formatWeightUnits(prevSet.weight, units) : "?"}
                 </b>{" "}
