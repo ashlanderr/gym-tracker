@@ -11,7 +11,7 @@ export function RecordsBottomSheet({
   onCancel,
 }: ModalProps<Record[], null>) {
   return (
-    <BottomSheet isOpen={true} onClose={onCancel}>
+    <BottomSheet onClose={onCancel}>
       <div className={s.sheetHeader}>Новый рекорд</div>
       <div className={s.sheetRecords}>
         {data.map((r) => (

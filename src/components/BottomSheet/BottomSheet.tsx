@@ -5,8 +5,6 @@ import { clsx } from "clsx";
 import { AnimatePresence, motion } from "motion/react";
 import { SHEET_TRANSITION } from "./constants.ts";
 
-// Slides in and out. Closing either flips isOpen or removes the modal from
-// the stack, whose presence propagates down here.
 export function BottomSheet({
   isOpen,
   hasBackdrop,
@@ -16,7 +14,7 @@ export function BottomSheet({
   const withBackdrop = hasBackdrop !== false;
 
   return createPortal(
-    <AnimatePresence propagate>
+    <AnimatePresence propagate={isOpen === undefined}>
       {isOpen !== false && (
         <motion.div
           key="sheet"

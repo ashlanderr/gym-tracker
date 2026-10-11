@@ -4,7 +4,6 @@ import {
   useQueryWorkoutById,
   useQueryPerformancesByWorkout,
   useQuerySetsByWorkout,
-  type Exercise,
   type MuscleType,
   type Performance,
   type Set,
@@ -36,7 +35,7 @@ import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { CSS } from "@dnd-kit/utilities";
 import { clsx } from "clsx";
 import {
-  ChooseExercise,
+  ChooseExerciseModal,
   CompleteWorkoutModal,
   ActiveTimer,
   ChooseProgramBottomSheet,
@@ -49,7 +48,6 @@ import {
   HeaderButton,
   Marquee,
   PageHeader,
-  PageModal,
   useStore,
   useModalStack,
   useScrollRestoration,
@@ -88,7 +86,6 @@ export function Workout() {
   const sets = useQuerySetsByWorkout(store, workoutId);
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
-  const [isAddPerformanceOpen, setAddPerformanceOpen] = useState(false);
   const [justFinished, setJustFinished] = useAtom(JUST_FINISHED_ATOM);
   const [highlight, setHighlight] = useState<Highlight | null>(null);
   const justDragged = useRef(false);
@@ -147,10 +144,9 @@ export function Workout() {
     return () => clearTimeout(timeout);
   }, [justFinished]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const addPerformanceHandler = (exercise: Exercise) => {
-    if (!workout) return;
-    addPerformance(store, workout, exercise.id);
-    setAddPerformanceOpen(false);
+  const addPerformanceHandler = async () => {
+    const exercise = await pushModal(ChooseExerciseModal, null);
+    if (exercise && workout) addPerformance(store, workout, exercise.id);
   };
 
   const completeHandler = async () => {
@@ -278,10 +274,7 @@ export function Workout() {
             ))}
           </SortableContext>
         </DndContext>
-        <button
-          className={s.addExerciseButton}
-          onClick={() => setAddPerformanceOpen(true)}
-        >
+        <button className={s.addExerciseButton} onClick={addPerformanceHandler}>
           <MdAdd />
           Добавить упражнение
         </button>
@@ -292,12 +285,6 @@ export function Workout() {
           </p>
         )}
       </div>
-      <PageModal isOpen={isAddPerformanceOpen}>
-        <ChooseExercise
-          onCancel={() => setAddPerformanceOpen(false)}
-          onSubmit={addPerformanceHandler}
-        />
-      </PageModal>
     </div>
   );
 }

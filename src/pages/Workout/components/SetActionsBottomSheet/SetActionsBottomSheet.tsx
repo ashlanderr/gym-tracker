@@ -27,7 +27,7 @@ export function SetActionsBottomSheet({
   };
 
   return (
-    <BottomSheet isOpen={true} onClose={onCancel}>
+    <BottomSheet onClose={onCancel}>
       <div className={s.sheetHeader}>Подход</div>
       <div className={s.sheetWeights}>
         {expectedWeight !== undefined && (

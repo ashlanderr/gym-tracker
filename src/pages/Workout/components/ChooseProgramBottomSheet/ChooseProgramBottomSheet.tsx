@@ -43,7 +43,7 @@ export function ChooseProgramBottomSheet({
   };
 
   return (
-    <BottomSheet isOpen={true} onClose={onCancel}>
+    <BottomSheet onClose={onCancel}>
       <div className={s.sheetHeader}>Выбор программы</div>
       <div className={s.options}>
         {options.map((p) => (
