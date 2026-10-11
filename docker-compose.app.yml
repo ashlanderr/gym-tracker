@@ -15,7 +15,7 @@ services:
       - proxy
     labels:
       caddy: ${DOMAIN_NAME:?}
-      caddy.reverse_proxy: "{{upstreams 1234}}"
+      caddy.reverse_proxy: "${PREFIX_NAME:?}-app-1:1234"
 
 networks:
   proxy:
