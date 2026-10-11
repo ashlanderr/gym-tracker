@@ -1,4 +1,4 @@
-import { signInAnonymously, signInWithGoogle } from "../../firebase/auth.ts";
+import { signInLocally, signInWithGoogle } from "../../firebase/auth.ts";
 import { useNavigate } from "react-router";
 import { FcGoogle } from "react-icons/fc";
 import s from "./styles.module.scss";
@@ -12,8 +12,8 @@ export function SignIn() {
     navigate("/", { replace: true });
   };
 
-  const signInAnonymouslyHandler = async () => {
-    await signInAnonymously();
+  const signInAnonymouslyHandler = () => {
+    signInLocally();
     navigate("/", { replace: true });
   };
 

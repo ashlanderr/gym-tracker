@@ -4,11 +4,11 @@ import {
   signOut as signOutInner,
   GoogleAuthProvider,
   onAuthStateChanged,
-  signInAnonymously as signInAnonymouslyInner,
   type User as FirebaseUser,
 } from "firebase/auth";
 import { firebaseApp } from "./app.ts";
 import { useEffect, useState } from "react";
+import { generateId } from "../db";
 
 export interface User {
   uid: string;
@@ -18,53 +18,83 @@ export interface User {
 
 export const firebaseAuth = getAuth(firebaseApp);
 
+const LOCAL_STORAGE_KEY = "user";
+const LOCAL_USER_KEY = "LOCAL_USER";
+const localUserListeners = new Set<() => void>();
+
 export async function signInWithGoogle() {
   const provider = new GoogleAuthProvider();
   const result = await signInWithPopup(firebaseAuth, provider);
   return result.user;
 }
 
-export async function signInAnonymously() {
-  const result = await signInAnonymouslyInner(firebaseAuth);
-  return result.user;
+export function signInLocally(): User {
+  const user: User = {
+    uid: `local-${generateId()}`,
+    photoURL: null,
+    displayName: null,
+  };
+  localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(user));
+  localUserListeners.forEach((listener) => listener());
+  return user;
 }
 
 export async function signOut() {
+  if (readLocalUser()) {
+    localStorage.removeItem(LOCAL_USER_KEY);
+    localUserListeners.forEach((listener) => listener());
+    return;
+  }
   await signOutInner(firebaseAuth);
 }
 
-const LOCAL_STORAGE_KEY = "user";
-
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(() => {
+  const [firebaseUser, setFirebaseUser] = useState<User | null>(() => {
     const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
     return localData ? JSON.parse(localData) : null;
   });
-  const [loading, setLoading] = useState(user === null);
+  const [localUser, setLocalUser] = useState(readLocalUser);
+  const [firebaseLoading, setFirebaseLoading] = useState(
+    firebaseUser === null,
+  );
 
   useEffect(() => {
+    const listener = () => setLocalUser(readLocalUser());
+    localUserListeners.add(listener);
+
     const unsub = onAuthStateChanged(firebaseAuth, (firebaseUser) => {
       if (firebaseUser) {
         const user = convertUser(firebaseUser);
-        setUser(user);
+        setFirebaseUser(user);
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(user));
       } else {
-        setUser(null);
+        setFirebaseUser(null);
         localStorage.removeItem(LOCAL_STORAGE_KEY);
       }
-      setLoading(false);
+      setFirebaseLoading(false);
     });
 
-    return () => unsub();
+    return () => {
+      localUserListeners.delete(listener);
+      unsub();
+    };
   }, []);
 
-  return { user, loading };
+  return {
+    user: localUser ?? firebaseUser,
+    loading: localUser === null && firebaseLoading,
+  };
 }
 
 export function useUser() {
   const { user } = useAuth();
   if (!user) throw new Error("User is not authenticated");
   return user;
+}
+
+function readLocalUser(): User | null {
+  const localData = localStorage.getItem(LOCAL_USER_KEY);
+  return localData ? JSON.parse(localData) : null;
 }
 
 function convertUser(user: FirebaseUser): User {
