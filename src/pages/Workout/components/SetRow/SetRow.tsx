@@ -11,7 +11,6 @@ import {
   type Set,
   useQueryRecordsBySet,
   type Record,
-  type Performance,
   queryRecordsByPerformance,
   type WeightUnits,
 } from "../../../../db";
@@ -145,7 +144,7 @@ export function SetRow({
       onAnimationEnd={() => setFlash(false)}
     >
       <td className={s.setNumValue} onClick={setInfoHandler}>
-        {renderSetBadge(performance, set, number, records, localChange)}
+        {renderSetBadge(set, number, records, localChange)}
       </td>
       <td className={s.prevVolumeValue} onClick={copyPreviousHandler}>
         {prev}
@@ -195,7 +194,6 @@ function announceRecords(records: Record[], set: Set, units: WeightUnits) {
 }
 
 function renderSetBadge(
-  performance: Performance,
   set: Set,
   number: string,
   records: Record[],
@@ -205,7 +203,7 @@ function renderSetBadge(
     return <PiMedalFill className={s.recordMedal} />;
   }
 
-  if (!performance.periodization && set.type !== "warm-up" && localChange) {
+  if (set.type !== "warm-up" && localChange) {
     if (localChange > 0) {
       return <PiArrowUpBold className={s.increment} />;
     }

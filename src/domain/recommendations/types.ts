@@ -2,9 +2,7 @@ import type {
   PerformanceWeights,
   SetType,
   ExerciseWeight,
-  RecordNumbers,
   ExerciseRepRange,
-  PeriodizationMode,
 } from "../../db";
 
 export interface DraftSetData {
@@ -37,6 +35,4 @@ export interface RecommendationParams {
   exerciseReps?: ExerciseRepRange;
   performanceWeights?: PerformanceWeights;
   selfWeight?: number;
-  oneRepMax?: RecordNumbers;
-  periodization?: PeriodizationMode;
 }

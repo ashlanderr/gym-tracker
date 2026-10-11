@@ -1,5 +1,4 @@
 import s from "./styles.module.scss";
-import { clsx } from "clsx";
 import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useSetAtom } from "jotai";
@@ -51,7 +50,6 @@ export function Performance() {
     store,
     performance?.exercise ?? "",
     performance?.startedAt ?? 0,
-    performance?.periodization,
     performance?.program,
   );
   const prevSets = useQuerySetsByPerformance(store, prevPerformance?.id ?? "");
@@ -109,14 +107,7 @@ export function Performance() {
               <MuscleFigure muscles={exercise?.muscles ?? []} />
             </div>
             <div className={s.titles}>
-              <h1
-                className={clsx(
-                  s.name,
-                  performance.periodization && s[performance.periodization],
-                )}
-              >
-                {exercise?.name ?? "–"}
-              </h1>
+              <h1 className={s.name}>{exercise?.name ?? "–"}</h1>
               <div className={s.spec}>
                 <b>{working.length}</b> × <b>{formatPlannedReps(exercise, prevSet)}</b> @{" "}
                 <b>

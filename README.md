@@ -10,7 +10,6 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
 - **Workout completion** with summary statistics
 - **Duplicate workouts** to quickly recreate previous training sessions
 - **Cancel workouts** with automatic cleanup of all associated data
-- **Workout periodization modes** (Light, Medium, Heavy) for systematic training progression
 
 ### Exercise Tracking
 - **Comprehensive exercise database** with 17 muscle groups:
@@ -45,11 +44,6 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
 - **Historical performance comparison**
 
 ### Advanced Training Features
-- **Periodization system** with automatic mode cycling (Light → Medium → Heavy)
-- **Intelligent weight recommendations** based on periodization mode:
-  - Light: 10-12 reps at 65% 1RM
-  - Medium: 6-8 reps at 75% 1RM  
-  - Heavy: 4-6 reps at 85% 1RM
 - **Warm-up set calculations** with progressive weight increases
 - **Weight progression algorithms** for consistent strength gains
 

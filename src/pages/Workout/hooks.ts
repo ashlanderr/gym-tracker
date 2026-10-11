@@ -4,13 +4,11 @@ import {
   DEFAULT_WEIGHT_UNITS,
   type Exercise,
   type Performance,
-  type Record,
   type Set,
   useQueryExerciseById,
   useQueryLatestMeasurement,
   useQueryPerformancesByWorkout,
   useQueryPreviousPerformance,
-  useQueryPreviousRecordByExercise,
   useQuerySetsByPerformance,
   type WeightUnits,
 } from "../../db";
@@ -45,27 +43,10 @@ export function usePerformanceSets(performance: Performance): PerformanceSets {
   const sets = useQuerySetsByPerformance(store, performance.id);
   const measurement = useQueryLatestMeasurement(store, performance.startedAt);
 
-  const trainingMax = useQueryPreviousRecordByExercise(
-    store,
-    "training_max",
-    performance.exercise,
-    performance.program,
-    performance.startedAt - 1,
-  );
-
-  const oneRepMax = useQueryPreviousRecordByExercise(
-    store,
-    "one_rep_max",
-    performance.exercise,
-    performance.program,
-    performance.startedAt - 1,
-  );
-
   const prevPerformance = useQueryPreviousPerformance(
     store,
     performance.exercise,
     performance.startedAt,
-    performance.periodization,
     performance.program,
   );
 
@@ -81,8 +62,6 @@ export function usePerformanceSets(performance: Performance): PerformanceSets {
     exerciseWeights: exercise?.weight,
     exerciseReps: exercise?.reps ?? DEFAULT_EXERCISE_REPS,
     selfWeight: measurement?.weight,
-    periodization: performance.periodization,
-    oneRepMax: selectLatestRepMax(trainingMax, oneRepMax) ?? undefined,
   });
 
   const prevWarmUp = prevSets.filter((s) => s.type === "warm-up");
@@ -162,10 +141,4 @@ function setNumber(set: Set, workingCount: number): string {
     default:
       return assertNever(set.type);
   }
-}
-
-function selectLatestRepMax(a: Record | null, b: Record | null): Record | null {
-  if (!a) return b;
-  if (!b) return a;
-  return a.createdAt > b.createdAt ? a : b;
 }

@@ -8,7 +8,6 @@ import {
   useQueryCollection,
 } from "./db.ts";
 import type { Store } from "./doc.ts";
-import type { PeriodizationMode } from "./periodization.ts";
 
 export interface Performance {
   id: string;
@@ -19,7 +18,6 @@ export interface Performance {
   startedAt: number;
   weights?: PerformanceWeights;
   timer?: number;
-  periodization?: PeriodizationMode;
   program: string | undefined;
 }
 
@@ -90,7 +88,6 @@ export function useQueryPreviousPerformance(
   store: Store,
   exercise: string,
   startedAt: number,
-  periodization: PeriodizationMode | undefined,
   program: string | undefined,
 ): Performance | null {
   const entities = useQueryCollection<Performance>({
@@ -98,10 +95,9 @@ export function useQueryPreviousPerformance(
     filter: {
       exercise: { eq: exercise },
       startedAt: { lt: startedAt },
-      periodization: { eq: periodization },
       program: { eq: program },
     },
-    deps: [exercise, startedAt, periodization, program],
+    deps: [exercise, startedAt, program],
   });
   return maxBy(entities, (a, b) => a.startedAt - b.startedAt);
 }

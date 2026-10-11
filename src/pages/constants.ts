@@ -72,7 +72,6 @@ export const RECORD_NOTICE: Partial<Record<RecordType, string>> = {
 
 export const RECORDS_TRANSLATION: Record<RecordType, string> = {
   one_rep_max: "Лучший 1ПМ",
-  training_max: "Рабочий 1ПМ",
   weight: "Самый большой вес",
   volume: "Лучший объём",
 };

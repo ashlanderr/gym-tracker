@@ -52,31 +52,6 @@
   }
 }
 
-// Periodization still marks the name, as it did on the single page.
-.light,
-.medium,
-.heavy {
-  &::before {
-    flex: 0 0 auto;
-    content: "";
-    width: 3px;
-    margin: 2px 8px 2px 0;
-    border-radius: 2px;
-  }
-}
-
-.light::before {
-  background: #8f8;
-}
-
-.medium::before {
-  background: #ff0;
-}
-
-.heavy::before {
-  background: #f84;
-}
-
 .sets {
   margin: 16px 16px 0;
 }

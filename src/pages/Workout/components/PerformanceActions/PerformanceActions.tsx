@@ -9,14 +9,12 @@ import {
   useStore,
 } from "../../../../components";
 import type { PerformanceActionsData } from "./types.ts";
-import { type Exercise, updatePerformance } from "../../../../db";
+import { type Exercise } from "../../../../db";
 import { deletePerformance, replacePerformance } from "../../../../domain";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { ChooseExercise } from "../ChooseExercise";
 import { AddExercise } from "../AddExercise";
-import { LuTrendingUp } from "react-icons/lu";
-import { PeriodizationSelector } from "../PeriodizationSelector";
 
 export function PerformanceActions({
   data,
@@ -57,17 +55,6 @@ export function PerformanceActions({
     onCancel();
   };
 
-  const periodizationHandler = async () => {
-    await onCancel();
-    const periodization = await pushModal(PeriodizationSelector, null);
-    if (periodization) {
-      updatePerformance(store, {
-        ...performance,
-        periodization: periodization !== "none" ? periodization : undefined,
-      });
-    }
-  };
-
   return (
     <>
       <BottomSheet onClose={onCancel}>
@@ -80,10 +67,6 @@ export function PerformanceActions({
           <button className={s.sheetAction} onClick={replaceBeginHandler}>
             <MdAutorenew />
             <span>Заменить на другое</span>
-          </button>
-          <button className={s.sheetAction} onClick={periodizationHandler}>
-            <LuTrendingUp />
-            <span>Выбор периодизации</span>
           </button>
           <button className={s.sheetAction} onClick={editHandler}>
             <MdEdit />

@@ -12,17 +12,11 @@ import {
   maxBy,
   compareRecordsByDate,
   useQueryExerciseById,
-  type PeriodizationMode,
 } from "../../../../db";
 import { PageHeader, useStore } from "../../../../components";
 import { useMemo, useState } from "react";
 import { buildHistory } from "./utils.ts";
-import {
-  CHART_PARAMETERS,
-  CHART_PERIODS,
-  DATE_FORMATTER,
-  PERIODIZATION_DOT_COLORS,
-} from "./constants.ts";
+import { CHART_PARAMETERS, CHART_PERIODS, DATE_FORMATTER } from "./constants.ts";
 import { clsx } from "clsx";
 import {
   CartesianGrid,
@@ -133,7 +127,7 @@ export function ExerciseHistory() {
                 dataKey={parameter}
                 stroke="gray"
                 isAnimationActive={false}
-                dot={<CustomDot />}
+                dot={{ r: 3, fill: "white", stroke: "none" }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -156,11 +150,3 @@ export function ExerciseHistory() {
     </div>
   );
 }
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const CustomDot = (props: any) => {
-  const { cx, cy, payload } = props;
-  const periodization: PeriodizationMode | "" = payload.periodization ?? "";
-  const color = PERIODIZATION_DOT_COLORS[periodization];
-  return <circle cx={cx} cy={cy} r={3} fill={color} />;
-};

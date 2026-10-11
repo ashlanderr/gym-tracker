@@ -51,7 +51,6 @@ export function buildHistory(
         workoutVolume: 0,
         averageRepMax: 0,
         sets: 0,
-        periodization: performance.periodization,
       };
       points.set(performance.workout, point);
     }

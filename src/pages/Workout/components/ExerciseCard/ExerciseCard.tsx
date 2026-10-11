@@ -25,7 +25,6 @@ export function ExerciseCard({
     store,
     performance.exercise,
     performance.startedAt,
-    performance.periodization,
     performance.program,
   );
   const prevSets = useQuerySetsByPerformance(store, prevPerformance?.id ?? "");
