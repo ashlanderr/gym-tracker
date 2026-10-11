@@ -32,36 +32,3 @@
   color: #fff;
   font-variant-numeric: tabular-nums;
 }
-
-.sheetHeader {
-  padding: 24px 16px;
-  border-bottom: 1px solid #666;
-  text-align: center;
-}
-
-.sheetSelector {
-  max-height: 240px;
-  overflow: scroll;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  padding: 16px;
-  border-bottom: 1px solid #666;
-  margin: 0 0 32px;
-  font-size: 20px;
-}
-
-.sheetOption {
-  padding: 12px 0;
-  color: inherit;
-  margin: 0;
-  font: inherit;
-  border: none;
-  outline: none;
-  background: none;
-}
-
-.selected {
-  color: #08f;
-  font-weight: 700;
-}

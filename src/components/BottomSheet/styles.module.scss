@@ -5,17 +5,11 @@
   top: 0;
   bottom: 0;
   z-index: 1;
-  pointer-events: none;
   display: flex;
   overflow: hidden;
 }
 
-.backdrop {
-  pointer-events: all;
-}
-
 .modal {
-  pointer-events: all;
   display: flex;
   flex-direction: column;
   width: 100%;

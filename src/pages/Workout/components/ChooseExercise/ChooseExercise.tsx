@@ -5,11 +5,10 @@ import {
   useQueryAllExercises,
 } from "../../../../db";
 import s from "./styles.module.scss";
-import { MdAdd, MdDelete, MdEdit } from "react-icons/md";
+import { MdAdd } from "react-icons/md";
 import { MUSCLES_TRANSLATION } from "../../../constants.ts";
-import { useState } from "react";
+import { type MouseEvent, useState } from "react";
 import {
-  BottomSheet,
   HeaderButton,
   MuscleFigure,
   PageHeader,
@@ -17,15 +16,13 @@ import {
   useModalStack,
 } from "../../../../components";
 import { AddExercise } from "../AddExercise";
-import { type MouseEvent } from "react";
-import { clsx } from "clsx";
 import { DeleteExerciseModal } from "../DeleteExerciseModal";
+import { ExerciseActionsSheet } from "../ExerciseActionsSheet";
 
 export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
   const store = useStore();
   const { pushModal } = useModalStack();
   const exercises = useQueryAllExercises(store);
-  const [actionsState, setActionsState] = useState<Exercise | null>(null);
   const [search, setSearch] = useState("");
   const searchLower = search.toLowerCase();
   const filteredExercises = exercises.filter(
@@ -43,26 +40,19 @@ export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
     }
   };
 
-  const exerciseActionsHandler = (event: MouseEvent, exercise: Exercise) => {
+  const exerciseActionsHandler = async (
+    event: MouseEvent,
+    exercise: Exercise,
+  ) => {
     event.stopPropagation();
     event.preventDefault();
-    setActionsState(exercise);
-  };
 
-  const editHandler = async () => {
-    if (!actionsState) return;
-    const exercise = actionsState;
-    setActionsState(null);
-    await pushModal(AddExercise, exercise);
-  };
-
-  const deleteHandler = async () => {
-    if (!actionsState) return;
-    setActionsState(null);
-
-    const result = await pushModal(DeleteExerciseModal, null);
-    if (result) {
-      deleteExercise(store, actionsState);
+    const action = await pushModal(ExerciseActionsSheet, exercise);
+    if (action === "edit") {
+      await pushModal(AddExercise, exercise);
+    } else if (action === "delete") {
+      const confirmed = await pushModal(DeleteExerciseModal, null);
+      if (confirmed) deleteExercise(store, exercise);
     }
   };
 
@@ -108,25 +98,6 @@ export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
           </div>
         ))}
       </div>
-      <BottomSheet
-        isOpen={actionsState !== null}
-        onClose={() => setActionsState(null)}
-      >
-        <div className={s.sheetHeader}>Упражнение</div>
-        <div className={s.sheetActions}>
-          <button className={s.sheetAction} onClick={editHandler}>
-            <MdEdit />
-            <span>Редактировать упражнение</span>
-          </button>
-          <button
-            className={clsx(s.sheetAction, s.danger)}
-            onClick={deleteHandler}
-          >
-            <MdDelete />
-            <span>Удалить упражнение</span>
-          </button>
-        </div>
-      </BottomSheet>
     </div>
   );
 }

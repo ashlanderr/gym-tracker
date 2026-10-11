@@ -1,22 +1,17 @@
 import s from "./styles.module.scss";
-import { useState } from "react";
 import { MdRefresh, MdTune } from "react-icons/md";
 import {
-  PageModal,
   type ModalProps,
+  useModalStack,
   useStore,
 } from "../../../../components";
-import {
-  type PerformanceWeights,
-  updatePerformance,
-  updateSet,
-} from "../../../../db";
+import { updatePerformance, updateSet } from "../../../../db";
 import {
   snapWeightKg,
   stepWeightKg,
   unitsToKg,
 } from "../../../../domain";
-import { WeightsSelector } from "../WeightsSelector";
+import { WeightsSelectorModal } from "../WeightsSelectorModal";
 import { WeightsVisualizer } from "../WeightsVisualizer";
 import { SheetAction, StepSheet } from "../StepSheet";
 import { MANUAL_WEIGHT_STEP } from "../constants.ts";
@@ -33,7 +28,7 @@ export function WeightSheet({
   onCancel,
 }: ModalProps<SetSheetData, null>) {
   const store = useStore();
-  const [isInventoryOpen, setInventoryOpen] = useState(false);
+  const { pushModal } = useModalStack();
   const performance = useLivePerformance(data.performance) ?? data.performance;
   const { exercise, rows, units } = usePerformanceSets(performance);
   const row = rows.find((r) => r.set.id === data.setId);
@@ -65,9 +60,15 @@ export function WeightSheet({
     onCancel();
   };
 
-  const inventoryHandler = (newWeights: PerformanceWeights | undefined) => {
-    updatePerformance(store, { ...performance, weights: newWeights });
-    setInventoryOpen(false);
+  const inventoryHandler = async () => {
+    const result = await pushModal(WeightsSelectorModal, {
+      equipment,
+      weights,
+      previewKg: weightKg,
+    });
+    if (result) {
+      updatePerformance(store, { ...performance, weights: result.weights });
+    }
   };
 
   const renderBody = () => {
@@ -101,8 +102,7 @@ export function WeightSheet({
   };
 
   return (
-    <>
-      <StepSheet
+    <StepSheet
         title={`${set.type === "warm-up" ? "Разминка" : `Подход ${number}`} · вес`}
         value={formatWeightUnits(weightKg, units)}
         units={weightKg !== undefined ? UNITS_SHORT[units] : undefined}
@@ -116,7 +116,7 @@ export function WeightSheet({
               Сбросить
             </SheetAction>
             {equipment !== "none" && (
-              <SheetAction onClick={() => setInventoryOpen(true)}>
+              <SheetAction onClick={inventoryHandler}>
                 <MdTune />
                 {!fits && weights && isSuggested
                   ? "Проверить инвентарь"
@@ -128,15 +128,5 @@ export function WeightSheet({
       >
         {renderBody()}
       </StepSheet>
-      <PageModal isOpen={isInventoryOpen}>
-        <WeightsSelector
-          equipment={equipment}
-          weights={weights}
-          previewKg={weightKg}
-          onCancel={() => setInventoryOpen(false)}
-          onSubmit={inventoryHandler}
-        />
-      </PageModal>
-    </>
   );
 }

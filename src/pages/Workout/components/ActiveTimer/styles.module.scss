@@ -1,3 +1,12 @@
+// Stays at the bottom while the page is used, so every modal opens above it.
+.panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
 .root {
   display: flex;
   padding: 12px 12px calc(12px + env(safe-area-inset-bottom));

@@ -9,19 +9,15 @@ import { APP_VERSION, DATE_FORMATTER } from "./constants.ts";
 import {
   MdAdd,
   MdClose,
-  MdDelete,
-  MdEdit,
   MdLogout,
   MdPerson,
   MdPlayArrow,
   MdSettings,
 } from "react-icons/md";
 import { useNavigate } from "react-router";
-import { useState } from "react";
 import { clsx } from "clsx";
 import { signOut, useUser } from "../../firebase/auth.ts";
 import {
-  BottomSheet,
   useConnectionStatus,
   useModalStack,
   useScrollRestoration,
@@ -29,7 +25,7 @@ import {
 } from "../../components";
 import { PiMedalFill } from "react-icons/pi";
 import { addWorkout, cancelWorkout, duplicateWorkout } from "../../domain";
-import { CancelWorkoutModal } from "./components";
+import { CancelWorkoutModal, WorkoutActionsSheet } from "./components";
 import { formatSoundLog } from "../../utils";
 
 export function Home() {
@@ -40,7 +36,6 @@ export function Home() {
   const { pushModal } = useModalStack();
   const workouts = useQueryCompletedWorkouts(store);
   const [activeWorkout] = useQueryActiveWorkouts(store);
-  const [workoutActions, setWorkoutActions] = useState<Workout | null>(null);
   const activeTimer = useTimer(activeWorkout?.startedAt ?? null, null);
   const { scrollRef } = useScrollRestoration();
 
@@ -61,18 +56,19 @@ export function Home() {
     }
   };
 
-  const duplicateWorkoutHandler = () => {
-    if (!workoutActions) return;
-    const newWorkout = duplicateWorkout(store, workoutActions);
-    openWorkoutHandler(newWorkout);
-  };
+  const workoutActionsHandler = async (workout: Workout) => {
+    const action = await pushModal(WorkoutActionsSheet, {
+      workout,
+      canDuplicate: !activeWorkout,
+    });
 
-  const deleteWorkoutHandler = async () => {
-    if (!workoutActions) return;
-    const confirm = await pushModal(CancelWorkoutModal, null);
-    if (confirm) {
-      cancelWorkout(store, workoutActions);
-      setWorkoutActions(null);
+    if (action === "open") {
+      openWorkoutHandler(workout);
+    } else if (action === "duplicate") {
+      openWorkoutHandler(duplicateWorkout(store, workout));
+    } else if (action === "delete") {
+      const confirm = await pushModal(CancelWorkoutModal, null);
+      if (confirm) cancelWorkout(store, workout);
     }
   };
 
@@ -148,7 +144,7 @@ export function Home() {
           <div
             key={workout.id}
             className={s.workout}
-            onClick={() => setWorkoutActions(workout)}
+            onClick={() => workoutActionsHandler(workout)}
           >
             <div className={s.workoutName}>{workout.name}</div>
             <div className={s.workoutDate}>
@@ -191,33 +187,6 @@ export function Home() {
         App Version: {APP_VERSION}
       </div>
       <div className={s.connectionStatus}>Network: {connection}</div>
-      <BottomSheet
-        isOpen={workoutActions !== null}
-        onClose={() => setWorkoutActions(null)}
-      >
-        <div className={s.sheetHeader}>Тренировка</div>
-        <div className={s.sheetActions}>
-          <button
-            className={s.sheetAction}
-            onClick={() => openWorkoutHandler(workoutActions)}
-          >
-            <MdEdit />
-            <span>Открыть тренировку</span>
-          </button>
-          <button
-            className={s.sheetAction}
-            disabled={!!activeWorkout}
-            onClick={duplicateWorkoutHandler}
-          >
-            <MdPlayArrow />
-            <span>Повторить тренировку</span>
-          </button>
-          <button className={s.sheetAction} onClick={deleteWorkoutHandler}>
-            <MdDelete />
-            <span>Удалить тренировку</span>
-          </button>
-        </div>
-      </BottomSheet>
     </div>
   );
 }
