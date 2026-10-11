@@ -5,6 +5,7 @@ import {
   useQueryPerformancesByWorkout,
   useQuerySetsByWorkout,
   type Exercise,
+  type MuscleType,
   type Performance,
   type Set,
   useQueryProgramById,
@@ -91,7 +92,17 @@ export function Workout() {
   const { scrollRef } = useScrollRestoration();
 
   const setsByPerformance = groupSets(sets);
-  const statuses = computeStatuses(performances, setsByPerformance);
+  const muscles = new Map(
+    performances.map((p) => [
+      p.id,
+      queryExerciseById(store, p.exercise)?.muscles ?? [],
+    ]),
+  );
+  const { statuses, blockers } = computeStatuses(
+    performances,
+    setsByPerformance,
+    muscles,
+  );
   const doneCount = performances.filter(
     (p) => statuses.get(p.id) === "done",
   ).length;
@@ -109,8 +120,18 @@ export function Workout() {
   // flashes blue, then the list calms down.
   useEffect(() => {
     if (!justFinished) return;
+    // Unlocked by this exercise: locked while it was still pending.
+    const before = computeStatuses(
+      performances,
+      setsByPerformance,
+      muscles,
+      justFinished,
+    ).statuses;
     const open = performances
-      .filter((p) => statuses.get(p.id) === "new")
+      .filter(
+        (p) =>
+          before.get(p.id) === "locked" && statuses.get(p.id) === "new",
+      )
       .map((p) => p.id);
     setHighlight({ done: justFinished, open });
     setJustFinished(null);
@@ -153,9 +174,9 @@ export function Workout() {
     if (justDragged.current) return;
 
     if (statuses.get(performance.id) === "locked") {
-      const current = performances
-        .filter((p) => statuses.get(p.id) === "progress")
-        .map((p) => queryExerciseById(store, p.exercise)?.name ?? "–")
+      const current = (blockers.get(performance.id) ?? [])
+        .map((id) => performances.find((p) => p.id === id))
+        .map((p) => (p && queryExerciseById(store, p.exercise)?.name) ?? "–")
         .map((name) => name.toLowerCase());
       const confirmed = await pushModal(LockedExerciseModal, { current });
       if (!confirmed) return;
@@ -297,24 +318,43 @@ function groupSets(sets: Set[]): Map<string, Set[]> {
   return result;
 }
 
-// An exercise not started waits while another one is in progress.
+interface WorkoutStatuses {
+  statuses: Map<string, ExerciseCardStatus>;
+  // The earlier exercises an exercise waits for.
+  blockers: Map<string, string[]>;
+}
+
+// An exercise not started waits for the exercises above it that work any of
+// its muscles and are not done yet: tired muscles would not match the last
+// time. Exercises for other muscles stay open in parallel. The pending one
+// counts as not done, to see what finishing it unlocked.
 function computeStatuses(
   performances: Performance[],
   setsByPerformance: Map<string, Set[]>,
-): Map<string, ExerciseCardStatus> {
-  const statuses = new Map<string, ExerciseCardStatus>(
-    performances.map((p) => [
-      p.id,
-      computePerformanceStatus(setsByPerformance.get(p.id) ?? []),
-    ]),
-  );
-  const anyInProgress = [...statuses.values()].includes("progress");
+  muscles: Map<string, MuscleType[]>,
+  pending?: string,
+): WorkoutStatuses {
+  const statuses = new Map<string, ExerciseCardStatus>();
+  const blockers = new Map<string, string[]>();
+  const unfinished: Performance[] = [];
 
-  if (anyInProgress) {
-    for (const [id, status] of statuses) {
-      if (status === "new") statuses.set(id, "locked");
-    }
+  for (const performance of performances) {
+    const own = muscles.get(performance.id) ?? [];
+    const status =
+      performance.id === pending
+        ? "progress"
+        : computePerformanceStatus(setsByPerformance.get(performance.id) ?? []);
+    const waitsFor = unfinished
+      .filter((p) => muscles.get(p.id)?.some((m) => own.includes(m)))
+      .map((p) => p.id);
+
+    blockers.set(performance.id, waitsFor);
+    statuses.set(
+      performance.id,
+      status === "new" && waitsFor.length !== 0 ? "locked" : status,
+    );
+    if (status !== "done") unfinished.push(performance);
   }
 
-  return statuses;
+  return { statuses, blockers };
 }

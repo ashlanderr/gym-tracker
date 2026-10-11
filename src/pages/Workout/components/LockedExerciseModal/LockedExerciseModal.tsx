@@ -3,7 +3,7 @@ import { ModalDialog, type ModalProps } from "../../../../components";
 import type { LockedExerciseData } from "./types.ts";
 
 // Doing exercises out of order is not forbidden, only warned about: the
-// machine for the current one may be taken.
+// machine for the earlier one may be taken.
 export function LockedExerciseModal({
   data,
   onCancel,
@@ -19,8 +19,8 @@ export function LockedExerciseModal({
       onSubmit={() => onSubmit(true)}
     >
       <div className={s.text}>
-        Начатое упражнение ещё не закончено. Если переключиться, мышцы придут
-        уставшими, и веса с повторами разойдутся с прошлым разом.
+        Выше в списке есть упражнение на те же мышцы. Если начать с этого,
+        мышцы придут уставшими, и веса с повторами разойдутся с прошлым разом.
       </div>
     </ModalDialog>
   );
