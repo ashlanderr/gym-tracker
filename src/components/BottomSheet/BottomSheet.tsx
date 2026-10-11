@@ -1,33 +1,30 @@
 import type { BottomSheetProps } from "./types.ts";
 import s from "./styles.module.scss";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { SHEET_TRANSITION } from "./constants.ts";
 
 export function BottomSheet({ children, onClose }: BottomSheetProps) {
   return createPortal(
-    <AnimatePresence propagate>
+    <motion.div
+      className={s.root}
+      initial={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
+      animate={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+      exit={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
+      transition={SHEET_TRANSITION}
+      onClick={onClose}
+    >
       <motion.div
-        key="sheet"
-        className={s.root}
-        initial={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
-        animate={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
-        exit={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
+        className={s.modal}
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
         transition={SHEET_TRANSITION}
-        onClick={onClose}
+        onClick={(e) => e.stopPropagation()}
       >
-        <motion.div
-          className={s.modal}
-          initial={{ y: "100%" }}
-          animate={{ y: 0 }}
-          exit={{ y: "100%" }}
-          transition={SHEET_TRANSITION}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {children}
-        </motion.div>
+        {children}
       </motion.div>
-    </AnimatePresence>,
+    </motion.div>,
     document.body,
   );
 }
