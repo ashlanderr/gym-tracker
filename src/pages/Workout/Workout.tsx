@@ -2,17 +2,14 @@ import s from "./styles.module.scss";
 import { MdAdd } from "react-icons/md";
 import {
   useQueryWorkoutById,
-  useQueryPerformancesByWorkout,
-  useQuerySetsByWorkout,
-  type MuscleType,
   type Performance,
-  type Set,
   useQueryProgramById,
   queryExerciseById,
   updatePerformance,
 } from "../../db";
 import type { WorkoutParams } from "./types.ts";
 import { usePageParams, useClock } from "../hooks.ts";
+import { useWorkoutState } from "./hooks.ts";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useAtom } from "jotai";
@@ -39,8 +36,6 @@ import {
   CompleteWorkoutModal,
   ChooseProgramBottomSheet,
   ExerciseCard,
-  type ExerciseCardStatus,
-  LockedExerciseModal,
   PerformanceActions,
 } from "./components";
 import {
@@ -55,7 +50,8 @@ import {
   completeWorkout,
   addPerformance,
   setWorkoutProgram,
-  computePerformanceStatus,
+  computeWorkoutStatuses,
+  queryPendingIncrease,
 } from "../../domain";
 import {
   DRAG_DELAY,
@@ -81,8 +77,8 @@ export function Workout() {
     workout?.startedAt ?? null,
     workout?.completedAt ?? null,
   );
-  const performances = useQueryPerformancesByWorkout(store, workoutId);
-  const sets = useQuerySetsByWorkout(store, workoutId);
+  const { performances, sets, setsByPerformance, muscles, statuses } =
+    useWorkoutState(workoutId);
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
   const [justFinished, setJustFinished] = useAtom(JUST_FINISHED_ATOM);
@@ -90,18 +86,6 @@ export function Workout() {
   const justDragged = useRef(false);
   const { scrollRef } = useScrollRestoration();
 
-  const setsByPerformance = groupSets(sets);
-  const muscles = new Map(
-    performances.map((p) => [
-      p.id,
-      queryExerciseById(store, p.exercise)?.muscles ?? [],
-    ]),
-  );
-  const { statuses, blockers } = computeStatuses(
-    performances,
-    setsByPerformance,
-    muscles,
-  );
   const doneCount = performances.filter(
     (p) => statuses.get(p.id) === "done",
   ).length;
@@ -120,7 +104,7 @@ export function Workout() {
   useEffect(() => {
     if (!justFinished) return;
     // Unlocked by this exercise: locked while it was still pending.
-    const before = computeStatuses(
+    const before = computeWorkoutStatuses(
       performances,
       setsByPerformance,
       muscles,
@@ -168,19 +152,14 @@ export function Workout() {
     }
   };
 
-  const openHandler = async (performance: Performance) => {
+  const openHandler = (performance: Performance) => {
     if (justDragged.current) return;
 
-    if (statuses.get(performance.id) === "locked") {
-      const current = (blockers.get(performance.id) ?? [])
-        .map((id) => performances.find((p) => p.id === id))
-        .map((p) => (p && queryExerciseById(store, p.exercise)?.name) ?? "–")
-        .map((name) => name.toLowerCase());
-      const confirmed = await pushModal(LockedExerciseModal, { current });
-      if (!confirmed) return;
-    }
-
-    navigate(`/workouts/${workoutId}/performances/${performance.id}`);
+    const path = `/workouts/${workoutId}/performances/${performance.id}`;
+    const hasNotice =
+      statuses.get(performance.id) === "locked" ||
+      queryPendingIncrease(store, performance) !== null;
+    navigate(hasNotice ? `${path}/notice` : path);
   };
 
   const menuHandler = async (performance: Performance) => {
@@ -309,53 +288,4 @@ function SortableCard({ id, children }: { id: string; children: ReactNode }) {
       {children}
     </div>
   );
-}
-
-function groupSets(sets: Set[]): Map<string, Set[]> {
-  const result = new Map<string, Set[]>();
-  for (const set of [...sets].sort((a, b) => a.order - b.order)) {
-    result.set(set.performance, [...(result.get(set.performance) ?? []), set]);
-  }
-  return result;
-}
-
-interface WorkoutStatuses {
-  statuses: Map<string, ExerciseCardStatus>;
-  // The earlier exercises an exercise waits for.
-  blockers: Map<string, string[]>;
-}
-
-// An exercise not started waits for the exercises above it that work any of
-// its muscles and are not done yet: tired muscles would not match the last
-// time. Exercises for other muscles stay open in parallel. The pending one
-// counts as not done, to see what finishing it unlocked.
-function computeStatuses(
-  performances: Performance[],
-  setsByPerformance: Map<string, Set[]>,
-  muscles: Map<string, MuscleType[]>,
-  pending?: string,
-): WorkoutStatuses {
-  const statuses = new Map<string, ExerciseCardStatus>();
-  const blockers = new Map<string, string[]>();
-  const unfinished: Performance[] = [];
-
-  for (const performance of performances) {
-    const own = muscles.get(performance.id) ?? [];
-    const status =
-      performance.id === pending
-        ? "progress"
-        : computePerformanceStatus(setsByPerformance.get(performance.id) ?? []);
-    const waitsFor = unfinished
-      .filter((p) => muscles.get(p.id)?.some((m) => own.includes(m)))
-      .map((p) => p.id);
-
-    blockers.set(performance.id, waitsFor);
-    statuses.set(
-      performance.id,
-      status === "new" && waitsFor.length !== 0 ? "locked" : status,
-    );
-    if (status !== "done") unfinished.push(performance);
-  }
-
-  return { statuses, blockers };
 }

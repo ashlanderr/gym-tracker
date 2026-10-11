@@ -5,9 +5,6 @@ export const DEFAULT_PLATES: Record<WeightUnits, number[]> = {
   lbs: [2.5, 5, 10, 25, 35, 45],
 };
 
-// The step of the weight buttons when the inventory is not set up.
-export const MANUAL_WEIGHT_STEP = 2.5;
-
 export const REPS_PICKER_MAX = 30;
 
 export const BARBELL_DEFAULT_BASE: Record<WeightUnits, number> = {

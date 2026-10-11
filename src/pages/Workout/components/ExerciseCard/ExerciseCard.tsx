@@ -1,15 +1,14 @@
 import s from "./styles.module.scss";
 import { clsx } from "clsx";
-import { MdCheck, MdLock } from "react-icons/md";
+import { MdArrowUpward, MdCheck, MdLock } from "react-icons/md";
 import { MuscleFigure, useStore } from "../../../../components";
-import {
-  DEFAULT_WEIGHT_UNITS,
-  useQueryExerciseById,
-  useQueryPreviousPerformance,
-  useQuerySetsByPerformance,
-} from "../../../../db";
+import { queryPendingIncrease } from "../../../../domain";
 import { UNITS_SHORT } from "../../../constants.ts";
-import { formatPlannedReps, formatWeightUnits } from "../../hooks.ts";
+import {
+  formatPlannedReps,
+  formatWeightUnits,
+  usePerformanceSets,
+} from "../../hooks.ts";
 import type { ExerciseCardProps } from "./types.ts";
 
 export function ExerciseCard({
@@ -20,24 +19,19 @@ export function ExerciseCard({
   onClick,
 }: ExerciseCardProps) {
   const store = useStore();
-  const exercise = useQueryExerciseById(store, performance.exercise);
-  const prevPerformance = useQueryPreviousPerformance(
-    store,
-    performance.exercise,
-    performance.startedAt,
-    performance.program,
-  );
-  const prevSets = useQuerySetsByPerformance(store, prevPerformance?.id ?? "");
+  const { exercise, rows, units } = usePerformanceSets(performance);
+  const increase = queryPendingIncrease(store, performance);
 
-  const units = performance.weights?.units ?? DEFAULT_WEIGHT_UNITS;
   const working = sets.filter((s) => s.type !== "warm-up");
   const done = working.filter((s) => s.completed).length;
 
-  // What the exercise is about: the weight of the first working set of the
-  // last time, with the reps range of the exercise.
-  const prevSet = prevSets.find((s) => s.completed && s.type !== "warm-up");
+  // What the exercise is about: the weight of the first working set, entered
+  // or carried from the last time, with the reps range of the exercise.
+  const first = rows.find((r) => r.set.type !== "warm-up");
+  const firstWeight = first && (first.set.weight ?? first.recSet?.weight);
   const reps = formatPlannedReps(exercise);
-  const weight = prevSet ? formatWeightUnits(prevSet.weight, units) : "?";
+  const weight =
+    firstWeight !== undefined ? formatWeightUnits(firstWeight, units) : "?";
 
   return (
     <div
@@ -57,6 +51,7 @@ export function ExerciseCard({
       <div className={s.spec}>
         <b>{working.length}</b> × <b>{reps}</b> @ <b>{weight}</b>{" "}
         {UNITS_SHORT[units]}
+        {increase && <MdArrowUpward className={s.increase} />}
       </div>
     </div>
   );

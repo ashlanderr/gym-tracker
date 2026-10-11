@@ -3,20 +3,26 @@ import {
   DEFAULT_EXERCISE_REPS,
   DEFAULT_WEIGHT_UNITS,
   type Exercise,
+  type MuscleType,
   type Performance,
+  queryExerciseById,
   type Set,
   useQueryExerciseById,
   useQueryLatestMeasurement,
   useQueryPerformancesByWorkout,
   useQueryPreviousPerformance,
   useQuerySetsByPerformance,
+  useQuerySetsByWorkout,
   type WeightUnits,
 } from "../../db";
 import { useStore } from "../../components";
 import {
   buildRecommendations,
+  computeWorkoutStatuses,
+  groupSets,
   kgToUnits,
   type RecSetData,
+  type WorkoutStatuses,
 } from "../../domain";
 import { assertNever } from "../../utils";
 
@@ -94,6 +100,36 @@ export function usePerformanceSets(performance: Performance): PerformanceSets {
     prevSets,
     rows,
     units: performance.weights?.units ?? DEFAULT_WEIGHT_UNITS,
+  };
+}
+
+export interface WorkoutState extends WorkoutStatuses {
+  performances: Performance[];
+  sets: Set[];
+  setsByPerformance: Map<string, Set[]>;
+  muscles: Map<string, MuscleType[]>;
+}
+
+// The exercises of a workout with what can be done now, the same for the
+// list and the notices before an exercise.
+export function useWorkoutState(workoutId: string): WorkoutState {
+  const store = useStore();
+  const performances = useQueryPerformancesByWorkout(store, workoutId);
+  const sets = useQuerySetsByWorkout(store, workoutId);
+  const setsByPerformance = groupSets(sets);
+  const muscles = new Map(
+    performances.map((p) => [
+      p.id,
+      queryExerciseById(store, p.exercise)?.muscles ?? [],
+    ]),
+  );
+
+  return {
+    performances,
+    sets,
+    setsByPerformance,
+    muscles,
+    ...computeWorkoutStatuses(performances, setsByPerformance, muscles),
   };
 }
 

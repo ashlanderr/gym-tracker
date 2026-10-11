@@ -1,6 +1,6 @@
 import s from "./styles.module.scss";
 import { useEffect, useRef } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { Navigate, useLocation, useNavigate } from "react-router";
 import { useSetAtom } from "jotai";
 import { MdMoreHoriz } from "react-icons/md";
 import {
@@ -15,6 +15,7 @@ import {
   useQueryPerformancesByWorkout,
   useQuerySetsByPerformance,
 } from "../../db";
+import { queryPendingIncrease } from "../../domain";
 import { usePageParams } from "../hooks.ts";
 import { MUSCLES_TRANSLATION } from "../constants.ts";
 import {
@@ -59,6 +60,10 @@ export function Performance() {
 
   const left = sets.filter((s) => !s.completed).length;
   const [mainMuscle, ...otherMuscles] = exercise?.muscles ?? [];
+
+  if (performance && queryPendingIncrease(store, performance)) {
+    return <Navigate to="notice" replace />;
+  }
 
   const menuHandler = async () => {
     if (!performance) return;

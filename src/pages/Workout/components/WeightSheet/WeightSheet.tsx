@@ -7,6 +7,7 @@ import {
 } from "../../../../components";
 import { updatePerformance, updateSet } from "../../../../db";
 import {
+  MANUAL_WEIGHT_STEP,
   snapWeightKg,
   stepWeightKg,
   unitsToKg,
@@ -14,7 +15,6 @@ import {
 import { WeightsSelectorModal } from "../WeightsSelectorModal";
 import { WeightsVisualizer } from "../WeightsVisualizer";
 import { SheetAction, StepSheet } from "../StepSheet";
-import { MANUAL_WEIGHT_STEP } from "../constants.ts";
 import { UNITS_SHORT } from "../../../constants.ts";
 import {
   formatWeightUnits,
