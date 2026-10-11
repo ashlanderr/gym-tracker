@@ -37,16 +37,13 @@ describe("weight increase", () => {
     expect(computeWeightIncrease(sets, range, { fallbackStepKg })).toBeNull();
   });
 
-  test("starts from the heaviest set", () => {
-    const sets = [working(75, 8), working(80, 8), working(77.5, 8)];
-    expect(computeWeightIncrease(sets, range, { fallbackStepKg })).toEqual({
-      from: 80,
-      to: 82.5,
-    });
+  test("waits while a set was done with another weight", () => {
+    const sets = [working(80, 8), working(80, 8), working(70, 8)];
+    expect(computeWeightIncrease(sets, range, { fallbackStepKg })).toBeNull();
   });
 
   test("takes help away on an assisting machine", () => {
-    const sets = [working(30, 8), working(25, 8)];
+    const sets = [working(25, 8), working(25, 8)];
     expect(
       computeWeightIncrease(sets, range, {
         exerciseWeights: { type: "negative", selfWeightPercent: 100 },
@@ -78,6 +75,15 @@ describe("placeholders", () => {
 
   test("repeat the last time without raising it", () => {
     expect(recommend([draft(), draft()])).toEqual([80, 80]);
+  });
+
+  test("repeat the heaviest weight that reached the range", () => {
+    const sets = buildRecommendations({
+      currentSets: [draft(), draft()],
+      previousSets: [working(80, 8), working(85, 5), working(80, 7)],
+      exerciseReps: range,
+    });
+    expect(sets.map((r) => r.weight)).toEqual([80, 80]);
   });
 
   test("repeat the weight of the set above", () => {
