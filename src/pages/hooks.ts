@@ -25,6 +25,34 @@ export function useTimer(
   return time;
 }
 
+// A running clock as on a stopwatch, 12:05 or 1:02:03.
+export function useClock(
+  startedAt: number | null,
+  completedAt: number | null,
+): string {
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (completedAt !== null) return;
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, [completedAt]);
+
+  if (startedAt === null) return "";
+  return formatClock(((completedAt ?? now) - startedAt) / 1000);
+}
+
+export function formatClock(totalSeconds: number): string {
+  const { seconds, minutes, hours } = buildTimeParts(
+    Math.max(0, Math.floor(totalSeconds)),
+  );
+  const ss = seconds.toString().padStart(2, "0");
+
+  return hours
+    ? `${hours}:${minutes.toString().padStart(2, "0")}:${ss}`
+    : `${minutes}:${ss}`;
+}
+
 export function buildTime(
   startedAt: Date | number | null,
   completedAt: Date | number | null,

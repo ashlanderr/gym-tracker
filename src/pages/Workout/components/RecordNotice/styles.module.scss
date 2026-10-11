@@ -1,0 +1,24 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-variant-numeric: tabular-nums;
+
+  b {
+    font-weight: 700;
+  }
+}
+
+.medal {
+  flex: 0 0 auto;
+  font-size: 20px;
+  color: #ff0;
+}
+
+.increment {
+  color: #8eff8e;
+}
+
+.decrement {
+  color: #ffa877;
+}

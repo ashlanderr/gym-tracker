@@ -1,7 +1,13 @@
 import { HashRouter, Route, Routes } from "react-router";
 import { Workout } from "./Workout";
 import { Home } from "./Home";
-import { ModalStack, ProtectedRoute, StoreProvider } from "../components";
+import {
+  ModalStack,
+  ProtectedRoute,
+  StoreProvider,
+  Toasts,
+} from "../components";
+import { Performance } from "./Performance";
 import { SignIn } from "./SignIn";
 import { User } from "./User";
 import { ExerciseHistory } from "./Exercise";
@@ -29,6 +35,14 @@ export function Layout() {
               }
             />
             <Route
+              path="/workouts/:workoutId/performances/:performanceId"
+              element={
+                <ProtectedRoute>
+                  <Performance />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/exercises/:exerciseId/history"
               element={
                 <ProtectedRoute>
@@ -46,6 +60,7 @@ export function Layout() {
             />
             <Route path="/auth/sign-in" element={<SignIn />} />
           </Routes>
+          <Toasts />
         </ModalStack>
       </StoreProvider>
     </HashRouter>

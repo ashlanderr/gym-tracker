@@ -6,85 +6,73 @@
   overflow: auto;
 }
 
-.toolbar {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 8px;
-  background: #333;
-  border-bottom: 1px solid #666;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.pageTitle {
-  font-weight: bold;
-  flex: 1 1 auto;
-}
-
-.toolbarButton {
-  color: #FFF;
-  background: transparent;
-  border: none;
-  outline: none;
-  border-radius: 4px;
-  font-size: 24px;
-  padding: 6px 8px 2px 8px;
-  line-height: 1;
-
-  &:disabled {
-    color: #AAA;
-  }
-}
-
 .body {
   display: flex;
   flex-direction: column;
   margin: 0 16px 64px 16px;
 }
 
+.preview {
+  margin-top: 28px;
+  padding: 20px 12px;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  background: #0f0f0f;
+}
+
+.previewLabel {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6d6d6d;
+}
+
+.previewWeight {
+  color: #fff;
+  letter-spacing: 0;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+}
+
 .label {
-  margin: 16px 0 0;
+  margin: 20px 0 0;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6d6d6d;
 }
 
 .hint {
-  margin: 2px 0 0;
+  margin: 5px 0 0;
   font-size: 12px;
-  color: #BBB;
-}
-
-.example {
-  font-size: 12px;
-  color: #888;
-}
-
-.input {
-  width: 100%;
-  min-width: 0;
-  font: inherit;
-  padding: 8px;
-  box-sizing: border-box;
+  line-height: 1.4;
+  color: #6d6d6d;
 }
 
 .chips {
-  margin: 12px 0 12px;
+  margin: 9px 0 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .chip {
-  background: none;
-  border: none;
-  color: inherit;
-  padding: 8px 8px;
-  background: #444;
-  border-radius: 8px;
-  font-size: 12px;
-  min-width: 44px;
+  min-width: 40px;
+  padding: 9px;
+  border: 1px solid #2e2e2e;
+  border-radius: 10px;
+  background: transparent;
+  text-align: center;
+  font-size: 13px;
+  color: #bdbdbd;
 }
 
 .selected {
-  background: #06F;
+  border-color: #06f;
+  background: #06f;
+  color: #fff;
+  font-weight: 600;
 }

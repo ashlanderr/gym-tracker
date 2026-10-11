@@ -1,5 +1,4 @@
 import s from "./styles.module.scss";
-import { MdArrowBack } from "react-icons/md";
 import type {
   ChartParameterType,
   ChartPeriodType,
@@ -15,7 +14,7 @@ import {
   useQueryExerciseById,
   type PeriodizationMode,
 } from "../../../../db";
-import { useStore } from "../../../../components";
+import { PageHeader, useStore } from "../../../../components";
 import { useMemo, useState } from "react";
 import { buildHistory } from "./utils.ts";
 import {
@@ -75,12 +74,7 @@ export function ExerciseHistory() {
 
   return (
     <div className={s.root}>
-      <div className={s.toolbar}>
-        <button className={s.toolbarButton} onClick={() => navigate(-1)}>
-          <MdArrowBack />
-        </button>
-        <div className={s.pageTitle}>История упражнения</div>
-      </div>
+      <PageHeader title="История упражнения" onBack={() => navigate(-1)} />
       <div className={s.name}>{exercise.name}</div>
       <div className={s.muscles}>
         {exercise.muscles.map((m) => (

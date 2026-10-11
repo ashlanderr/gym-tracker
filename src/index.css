@@ -47,10 +47,15 @@ table {
     border-spacing: 0;
 }
 html {
-    font-family: Montserrat, "Helvetica Neue", sans-serif;
+    font-family: "Manrope Variable", "Helvetica Neue", sans-serif;
     background: #000;
     color: #fff;
     user-select: none;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+}
+button, input, select, textarea {
+    font: inherit;
 }
 html, body, #root {
     width: 100%;

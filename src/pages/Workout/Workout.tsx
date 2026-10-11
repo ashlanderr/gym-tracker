@@ -1,25 +1,51 @@
 import s from "./styles.module.scss";
-import { MdAdd, MdArrowBack } from "react-icons/md";
+import { MdAdd } from "react-icons/md";
 import {
   useQueryWorkoutById,
   useQueryPerformancesByWorkout,
   useQuerySetsByWorkout,
   type Exercise,
+  type Performance,
+  type Set,
   useQueryProgramById,
+  queryExerciseById,
+  updatePerformance,
 } from "../../db";
 import type { WorkoutParams } from "./types.ts";
-import { usePageParams } from "../hooks.ts";
-import { useState } from "react";
+import { usePageParams, useClock } from "../hooks.ts";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { useTimer } from "../hooks.ts";
+import { useAtom } from "jotai";
 import {
-  Performance,
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import { CSS } from "@dnd-kit/utilities";
+import { clsx } from "clsx";
+import {
   ChooseExercise,
   CompleteWorkoutModal,
   ActiveTimer,
   ChooseProgramBottomSheet,
+  ExerciseCard,
+  type ExerciseCardStatus,
+  LockedExerciseModal,
 } from "./components";
 import {
+  HeaderButton,
+  PageHeader,
   PageModal,
   useStore,
   useModalStack,
@@ -29,7 +55,19 @@ import {
   completeWorkout,
   addPerformance,
   setWorkoutProgram,
+  computePerformanceStatus,
 } from "../../domain";
+import {
+  DRAG_DELAY,
+  DRAG_TOLERANCE,
+  HIGHLIGHT_DURATION,
+  JUST_FINISHED_ATOM,
+} from "./constants.ts";
+
+interface Highlight {
+  done: string | null;
+  open: string[];
+}
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
@@ -38,7 +76,7 @@ export function Workout() {
   const { pushModal } = useModalStack();
   const workout = useQueryWorkoutById(store, workoutId);
   const program = useQueryProgramById(store, workout?.program ?? "");
-  const timer = useTimer(
+  const clock = useClock(
     workout?.startedAt ?? null,
     workout?.completedAt ?? null,
   );
@@ -47,7 +85,43 @@ export function Workout() {
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
   const [isAddPerformanceOpen, setAddPerformanceOpen] = useState(false);
+  const [justFinished, setJustFinished] = useAtom(JUST_FINISHED_ATOM);
+  const [highlight, setHighlight] = useState<Highlight | null>(null);
+  const justDragged = useRef(false);
   const { scrollRef } = useScrollRestoration();
+
+  const setsByPerformance = groupSets(sets);
+  const statuses = computeStatuses(performances, setsByPerformance);
+  const doneCount = performances.filter(
+    (p) => statuses.get(p.id) === "done",
+  ).length;
+
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: { delay: DRAG_DELAY, tolerance: DRAG_TOLERANCE },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: DRAG_DELAY, tolerance: DRAG_TOLERANCE },
+    }),
+  );
+
+  // Back from a finished exercise: it flashes green and what it unlocked
+  // flashes blue, then the list calms down.
+  useEffect(() => {
+    if (!justFinished) return;
+    const open = performances
+      .filter((p) => statuses.get(p.id) === "new")
+      .map((p) => p.id);
+    setHighlight({ done: justFinished, open });
+    setJustFinished(null);
+
+    document
+      .querySelector(`[data-performance="${justFinished}"]`)
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+
+    const timeout = setTimeout(() => setHighlight(null), HIGHLIGHT_DURATION);
+    return () => clearTimeout(timeout);
+  }, [justFinished]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const addPerformanceHandler = (exercise: Exercise) => {
     if (!workout) return;
@@ -75,44 +149,99 @@ export function Workout() {
     }
   };
 
+  const openHandler = async (performance: Performance) => {
+    if (justDragged.current) return;
+
+    if (statuses.get(performance.id) === "locked") {
+      const current = performances
+        .filter((p) => statuses.get(p.id) === "progress")
+        .map((p) => queryExerciseById(store, p.exercise)?.name ?? "–")
+        .map((name) => name.toLowerCase());
+      const confirmed = await pushModal(LockedExerciseModal, { current });
+      if (!confirmed) return;
+    }
+
+    navigate(`/workouts/${workoutId}/performances/${performance.id}`);
+  };
+
+  const dragEndHandler = ({ active, over }: DragEndEvent) => {
+    justDragged.current = true;
+    setTimeout(() => (justDragged.current = false), 350);
+
+    if (!over || active.id === over.id) return;
+    const from = performances.findIndex((p) => p.id === active.id);
+    const to = performances.findIndex((p) => p.id === over.id);
+    arrayMove(performances, from, to).forEach((performance, order) => {
+      if (performance.order !== order) {
+        updatePerformance(store, { ...performance, order });
+      }
+    });
+  };
+
   return (
     <div className={s.root} ref={scrollRef}>
       <ActiveTimer />
-      <div className={s.toolbar}>
-        <button className={s.backButton} onClick={() => navigate(-1)}>
-          <MdArrowBack />
-        </button>
-        <div className={s.pageTitle}>Тренировка</div>
-        <button className={s.finishButton} onClick={completeHandler}>
-          {workout?.completedAt ? "Обновить" : "Закончить"}
-        </button>
-      </div>
-      <div className={s.stats}>
-        <div className={s.stat}>
-          <div className={s.statName}>Время</div>
-          <div className={s.statValue}>{timer}</div>
-        </div>
-        <div className={s.stat}>
-          <div className={s.statName}>Объём</div>
-          <div className={s.statValue}>
-            {Math.round(volume).toLocaleString()} кг
+      <PageHeader
+        kicker={`Тренировка · ${program?.name ?? "Базовая"}`}
+        title={workout?.name ?? "Тренировка"}
+        onBack={() => navigate(-1)}
+        onTitleClick={handleSelectProgram}
+        right={
+          <HeaderButton primary onClick={completeHandler}>
+            {workout?.completedAt ? "Обновить" : "Закончить"}
+          </HeaderButton>
+        }
+      >
+        <div className={s.stats}>
+          <div className={s.stat}>
+            <div className={s.statName}>Время</div>
+            <div className={s.statValue}>{clock}</div>
+          </div>
+          <div className={s.stat}>
+            <div className={s.statName}>Объём</div>
+            <div className={s.statValue}>
+              {Math.round(volume).toLocaleString("ru-RU")} кг
+            </div>
+          </div>
+          <div className={s.stat}>
+            <div className={s.statName}>Упражнения</div>
+            <div className={s.statValue}>
+              {doneCount} / {performances.length}
+            </div>
           </div>
         </div>
-        <div className={s.stat}>
-          <div className={s.statName}>Сеты</div>
-          <div className={s.statValue}>
-            {completedSets.length} / {sets.length}
-          </div>
-        </div>
-        <div className={s.stat} onClick={handleSelectProgram}>
-          <div className={s.statName}>Программа</div>
-          <div className={s.statValue}>{program?.name ?? "Базовая"}</div>
-        </div>
-      </div>
+      </PageHeader>
       <div className={s.exercises}>
-        {performances.map((performance) => (
-          <Performance key={performance.id} performance={performance} />
-        ))}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          modifiers={[restrictToVerticalAxis]}
+          onDragStart={() => navigator.vibrate?.(15)}
+          onDragEnd={dragEndHandler}
+        >
+          <SortableContext
+            items={performances.map((p) => p.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {performances.map((performance) => (
+              <SortableCard key={performance.id} id={performance.id}>
+                <ExerciseCard
+                  performance={performance}
+                  sets={setsByPerformance.get(performance.id) ?? []}
+                  status={statuses.get(performance.id) ?? "new"}
+                  highlight={
+                    highlight?.done === performance.id
+                      ? "done"
+                      : highlight?.open.includes(performance.id)
+                        ? "open"
+                        : undefined
+                  }
+                  onClick={() => openHandler(performance)}
+                />
+              </SortableCard>
+            ))}
+          </SortableContext>
+        </DndContext>
         <button
           className={s.addExerciseButton}
           onClick={() => setAddPerformanceOpen(true)}
@@ -120,6 +249,11 @@ export function Workout() {
           <MdAdd />
           Добавить упражнение
         </button>
+        {performances.length > 1 && (
+          <p className={s.hint}>
+            Зажми карточку и перетащи, чтобы поменять порядок
+          </p>
+        )}
       </div>
       <PageModal isOpen={isAddPerformanceOpen}>
         <ChooseExercise
@@ -129,4 +263,58 @@ export function Workout() {
       </PageModal>
     </div>
   );
+}
+
+function SortableCard({ id, children }: { id: string; children: ReactNode }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  return (
+    <div
+      ref={setNodeRef}
+      data-performance={id}
+      className={clsx(s.sortable, isDragging && s.lifted)}
+      style={{ transform: CSS.Translate.toString(transform), transition }}
+      {...attributes}
+      {...listeners}
+    >
+      {children}
+    </div>
+  );
+}
+
+function groupSets(sets: Set[]): Map<string, Set[]> {
+  const result = new Map<string, Set[]>();
+  for (const set of [...sets].sort((a, b) => a.order - b.order)) {
+    result.set(set.performance, [...(result.get(set.performance) ?? []), set]);
+  }
+  return result;
+}
+
+// An exercise not started waits while another one is in progress.
+function computeStatuses(
+  performances: Performance[],
+  setsByPerformance: Map<string, Set[]>,
+): Map<string, ExerciseCardStatus> {
+  const statuses = new Map<string, ExerciseCardStatus>(
+    performances.map((p) => [
+      p.id,
+      computePerformanceStatus(setsByPerformance.get(p.id) ?? []),
+    ]),
+  );
+  const anyInProgress = [...statuses.values()].includes("progress");
+
+  if (anyInProgress) {
+    for (const [id, status] of statuses) {
+      if (status === "new") statuses.set(id, "locked");
+    }
+  }
+
+  return statuses;
 }

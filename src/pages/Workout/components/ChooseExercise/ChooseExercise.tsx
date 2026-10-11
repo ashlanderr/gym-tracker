@@ -5,10 +5,17 @@ import {
   useQueryAllExercises,
 } from "../../../../db";
 import s from "./styles.module.scss";
-import { MdAdd, MdArrowBack, MdDelete, MdEdit } from "react-icons/md";
+import { MdAdd, MdDelete, MdEdit } from "react-icons/md";
 import { MUSCLES_TRANSLATION } from "../../../constants.ts";
 import { useState } from "react";
-import { BottomSheet, useStore, useModalStack } from "../../../../components";
+import {
+  BottomSheet,
+  HeaderButton,
+  MuscleFigure,
+  PageHeader,
+  useStore,
+  useModalStack,
+} from "../../../../components";
 import { AddExercise } from "../AddExercise";
 import { type MouseEvent } from "react";
 import { clsx } from "clsx";
@@ -61,21 +68,22 @@ export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
 
   return (
     <div className={s.root}>
-      <div className={s.toolbar}>
-        <button className={s.toolbarButton} onClick={onCancel}>
-          <MdArrowBack />
-        </button>
-        <div className={s.pageTitle}>Выбрать упражнение</div>
-        <button className={s.toolbarButton} onClick={addHandler}>
-          <MdAdd />
-        </button>
-      </div>
-      <input
-        className={s.search}
-        value={search}
-        placeholder="Поиск..."
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      <PageHeader
+        title="Выбрать упражнение"
+        onBack={onCancel}
+        right={
+          <HeaderButton onClick={addHandler}>
+            <MdAdd />
+          </HeaderButton>
+        }
+      >
+        <input
+          className={s.search}
+          value={search}
+          placeholder="Поиск..."
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </PageHeader>
       <div className={s.exercises}>
         {filteredExercises.map((exercise) => (
           <div
@@ -84,13 +92,18 @@ export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
             onClick={() => onSubmit(exercise)}
             onContextMenu={(event) => exerciseActionsHandler(event, exercise)}
           >
-            <div className={s.exerciseName}> {exercise.name}</div>
-            <div className={s.muscles}>
-              {exercise.muscles.map((m) => (
-                <div key={m} className={s.muscle}>
-                  {MUSCLES_TRANSLATION[m] ?? m}
-                </div>
-              ))}
+            <div className={s.picture}>
+              <MuscleFigure muscles={exercise.muscles} />
+            </div>
+            <div className={s.info}>
+              <div className={s.exerciseName}>{exercise.name}</div>
+              <div className={s.muscles}>
+                {exercise.muscles.map((m) => (
+                  <div key={m} className={s.muscle}>
+                    {MUSCLES_TRANSLATION[m] ?? m}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         ))}

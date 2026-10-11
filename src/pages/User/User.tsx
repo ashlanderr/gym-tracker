@@ -1,4 +1,4 @@
-import { useStore } from "../../components";
+import { HeaderButton, PageHeader, useStore } from "../../components";
 import {
   addMeasurement,
   useQueryLatestMeasurement,
@@ -10,7 +10,6 @@ import { useState } from "react";
 import { useUser } from "../../firebase/auth.ts";
 import s from "./styles.module.scss";
 import { useNavigate } from "react-router";
-import { MdArrowBack } from "react-icons/md";
 
 export function User() {
   const store = useStore();
@@ -70,22 +69,15 @@ export function User() {
 
   return (
     <div className={s.root}>
-      <div className={s.toolbar}>
-        <button
-          className={s.backButton}
-          onClick={() => navigate("/", { replace: true })}
-        >
-          <MdArrowBack />
-        </button>
-        <div className={s.pageTitle}>Пользователь</div>
-        <button
-          className={s.saveButton}
-          disabled={!canSave}
-          onClick={saveHandler}
-        >
-          Сохранить
-        </button>
-      </div>
+      <PageHeader
+        title="Пользователь"
+        onBack={() => navigate("/", { replace: true })}
+        right={
+          <HeaderButton primary disabled={!canSave} onClick={saveHandler}>
+            Сохранить
+          </HeaderButton>
+        }
+      />
       <div className={s.body}>
         <div className={s.field}>
           <label className={s.fieldLabel}>Масса тела</label>

@@ -6,58 +6,60 @@
   overflow: auto;
 }
 
-.toolbar {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 8px;
-  background: #333;
-  border-bottom: 1px solid #666;
-  position: sticky;
-  top: 0;
-}
-
-.pageTitle {
-  font-weight: bold;
-  flex: 1 1 auto;
-}
-
-.toolbarButton {
-  color: #FFF;
-  background: transparent;
-  border: none;
-  outline: none;
-  border-radius: 4px;
-  font-size: 24px;
-  padding: 6px 8px 2px 8px;
-  line-height: 1;
-}
-
 .search {
-  width: calc(100% - 32px);
-  margin: 16px 16px 0;
+  width: 100%;
+  margin: 12px 0 0;
   min-width: 0;
-  font: inherit;
-  padding: 8px;
+  padding: 11px 14px;
   box-sizing: border-box;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  outline: none;
+  background: #0f0f0f;
+  color: #fff;
+  font-size: 15px;
+
+  &:focus {
+    border-color: #06f;
+  }
 }
 
 .exercises {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 24px 16px;
+  gap: 16px;
+  padding: 8px 16px;
   margin: 0 0 64px;
 }
 
 .exercise {
   display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.picture {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  box-sizing: border-box;
+  padding: 3px;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  background: #000;
+}
+
+.info {
+  display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 
 .exerciseName {
-  font-size: 20px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
 }
 
 .muscles {

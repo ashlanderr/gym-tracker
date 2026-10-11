@@ -1,18 +1,36 @@
 .root {
+  height: 40px;
+  margin: 0 auto;
+  padding: 0 14px;
   display: flex;
   align-items: center;
-  gap: 4px;
-  color: #08F;
-  margin: 0 0 0 -2px;
-  font: inherit;
-  padding: 0;
-  border: none;
-  outline: none;
-  background: none;
+  gap: 8px;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  background: #0f0f0f;
+  color: #8a8a8a;
+
+  &:active {
+    background: #1a1a1a;
+  }
 }
 
 .icon {
-  margin: 0 0 2px 0;
+  font-size: 18px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.time {
+  min-width: 46px;
+  text-align: left;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
 }
 
 .sheetHeader {
@@ -22,7 +40,7 @@
 }
 
 .sheetSelector {
-  max-height: 160px;
+  max-height: 240px;
   overflow: scroll;
   display: flex;
   align-items: center;
@@ -41,4 +59,9 @@
   border: none;
   outline: none;
   background: none;
+}
+
+.selected {
+  color: #08f;
+  font-weight: 700;
 }

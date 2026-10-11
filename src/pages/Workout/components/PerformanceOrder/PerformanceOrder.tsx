@@ -1,9 +1,9 @@
 import type { OrderItem, PerformanceOrderProps } from "./types.ts";
 import { useState } from "react";
-import { useStore } from "../../../../components";
+import { HeaderButton, PageHeader, useStore } from "../../../../components";
 import { queryExerciseById } from "../../../../db";
 import s from "./styles.module.scss";
-import { MdArrowBack, MdCheck } from "react-icons/md";
+import { MdCheck } from "react-icons/md";
 import {
   closestCenter,
   DndContext,
@@ -66,15 +66,15 @@ export function PerformanceOrder({
 
   return (
     <div className={s.root}>
-      <div className={s.toolbar}>
-        <button className={s.toolbarButton} onClick={onCancel}>
-          <MdArrowBack />
-        </button>
-        <div className={s.pageTitle}>Изменить порядок</div>
-        <button className={s.toolbarButton} onClick={submitHandler}>
-          <MdCheck />
-        </button>
-      </div>
+      <PageHeader
+        title="Изменить порядок"
+        onBack={onCancel}
+        right={
+          <HeaderButton onClick={submitHandler}>
+            <MdCheck />
+          </HeaderButton>
+        }
+      />
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}

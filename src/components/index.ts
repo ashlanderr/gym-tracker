@@ -5,3 +5,6 @@ export * from "./ModalDialog";
 export * from "./PageModal";
 export * from "./ModalStack";
 export * from "./ScrollRestoration";
+export * from "./PageHeader";
+export * from "./MuscleFigure";
+export * from "./Toasts";

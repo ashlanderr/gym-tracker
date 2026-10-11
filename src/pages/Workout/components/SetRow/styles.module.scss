@@ -2,6 +2,21 @@
   background: #060;
 }
 
+.flash {
+  animation: setDone 0.6s ease;
+}
+
+@keyframes setDone {
+  from {
+    background: #0b0;
+  }
+}
+
+tr {
+  font-variant-numeric: tabular-nums;
+  transition: background 0.25s;
+}
+
 td.setNumValue {
   text-align: center;
   padding-left: 16px;
@@ -26,22 +41,40 @@ td.setCompletedValue {
   text-align: center;
 }
 
-.input {
-  min-width: 0;
-  width: 100%;
-  text-align: center;
-  border: none;
-  background: transparent;
-  color: #fff;
-  font: inherit;
-  outline: none;
+.prevVolumeValue {
+  color: #8a8a8a;
+  white-space: nowrap;
 }
 
-.input:disabled {
-  -webkit-text-fill-color: #fff;
-  -webkit-opacity: 1;
+.completed .prevVolumeValue {
   color: #fff;
-  opacity: 1;
+}
+
+// Tapping a number opens its sheet, so the whole cell is the button.
+.cell {
+  width: 100%;
+  min-height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &:active {
+    background: #1a1a1a;
+  }
+}
+
+.suggested {
+  color: #6d6d6d;
+  font-weight: 500;
+}
+
+.completed .cell {
+  color: #fff;
 }
 
 .setCompletedButton {

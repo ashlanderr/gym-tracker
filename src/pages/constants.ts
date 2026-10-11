@@ -58,6 +58,18 @@ export const UNITS_TRANSLATION: Record<WeightUnits, string> = {
   lbs: "LBS",
 };
 
+export const UNITS_SHORT: Record<WeightUnits, string> = {
+  kg: "кг",
+  lbs: "lb",
+};
+
+// How a record is named in the notice when a set beats it. As in the
+// prototype, only strength and volume: a heavier weight shows in 1RM anyway.
+export const RECORD_NOTICE: Partial<Record<RecordType, string>> = {
+  one_rep_max: "Рекорд 1ПМ",
+  volume: "Рекорд объёма",
+};
+
 export const RECORDS_TRANSLATION: Record<RecordType, string> = {
   one_rep_max: "Лучший 1ПМ",
   training_max: "Рабочий 1ПМ",

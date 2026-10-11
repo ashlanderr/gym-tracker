@@ -3,6 +3,8 @@ import type { PerformanceWeights, EquipmentType } from "../../../../db";
 export interface WeightsSelectorProps {
   equipment: EquipmentType;
   weights: PerformanceWeights | undefined;
+  // The weight of the set the inventory is opened from, drawn as it changes.
+  previewKg?: number;
   onCancel: () => void;
   onSubmit: (value: PerformanceWeights | undefined) => void;
 }

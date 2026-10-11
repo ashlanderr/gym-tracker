@@ -1,12 +1,16 @@
 import type { Selector, WeightsSelectorProps } from "./types.ts";
-import { MdArrowBack, MdCheck } from "react-icons/md";
+import { MdCheck } from "react-icons/md";
 import s from "./styles.module.scss";
+import { HeaderButton, PageHeader } from "../../../../components";
+import { snapWeightKg } from "../../../../domain";
+import { WeightsVisualizer } from "../WeightsVisualizer";
+import { formatWeightUnits } from "../../hooks.ts";
 import {
   type EquipmentType,
   type PerformanceWeights,
   type WeightUnits,
 } from "../../../../db";
-import { UNITS_TRANSLATION } from "../../../constants.ts";
+import { UNITS_SHORT, UNITS_TRANSLATION } from "../../../constants.ts";
 import { useEffect, useState } from "react";
 import { clsx } from "clsx";
 import {
@@ -19,6 +23,7 @@ import { assertNever } from "../../../../utils";
 export function WeightsSelector({
   equipment,
   weights,
+  previewKg,
   onCancel,
   onSubmit,
 }: WeightsSelectorProps) {
@@ -32,22 +37,36 @@ export function WeightsSelector({
     onSubmit(state);
   };
 
+  const isValid = validateWeights(equipment, state);
+
   return (
     <div className={s.root}>
-      <div className={s.toolbar}>
-        <button className={s.toolbarButton} onClick={onCancel}>
-          <MdArrowBack />
-        </button>
-        <div className={s.pageTitle}>Настройка весов</div>
-        <button
-          className={s.toolbarButton}
-          onClick={submitHandler}
-          disabled={!validateWeights(equipment, state)}
-        >
-          <MdCheck />
-        </button>
-      </div>
+      <PageHeader
+        title="Мой инвентарь"
+        onBack={onCancel}
+        right={
+          <HeaderButton onClick={submitHandler} disabled={!isValid}>
+            <MdCheck />
+          </HeaderButton>
+        }
+      />
       <div className={s.body}>
+        {previewKg !== undefined && isValid && state && (
+          <div className={s.preview}>
+            <div className={s.previewLabel}>
+              <span>Как собрать</span>
+              <span className={s.previewWeight}>
+                {formatWeightUnits(snapWeightKg(state, previewKg), state.units)}{" "}
+                {UNITS_SHORT[state.units]}
+              </span>
+            </div>
+            <WeightsVisualizer
+              equipment={equipment}
+              weights={state}
+              weightKg={snapWeightKg(state, previewKg)}
+            />
+          </div>
+        )}
         {unitsSelector(state, setState)}
         {state && buildBody(equipment, state, setState)}
       </div>

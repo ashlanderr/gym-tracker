@@ -1,33 +1,41 @@
 .root {
   display: flex;
-  padding: 16px;
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
   align-items: center;
   gap: 8px;
+  background: #1a1a1a;
+  border-top: 1px solid #333;
+  border-radius: 16px 16px 0 0;
 }
 
 .button {
   margin: 0;
-  background: #444;
-  color: #fff;
+  min-width: 48px;
+  height: 40px;
+  padding: 0 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  border: none;
-  outline: none;
-  border-radius: 4px;
-  font-size: inherit;
-  padding: 12px 12px 10px 12px;
+  border: 1px solid #2e2e2e;
+  border-radius: 10px;
+  background: #0f0f0f;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 
 .skipButton {
   margin-left: auto;
-  background: #06F;
-  color: #fff;
+  border-color: #06f;
+  background: #06f;
 }
 
 .time {
-  font-size: 24px;
-  font-family: monospace;
+  min-width: 80px;
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }

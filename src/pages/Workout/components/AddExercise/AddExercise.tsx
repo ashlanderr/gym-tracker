@@ -1,5 +1,5 @@
 import s from "./styles.module.scss";
-import { MdArrowBack, MdCheck } from "react-icons/md";
+import { MdCheck } from "react-icons/md";
 import { useState } from "react";
 import {
   addExercise,
@@ -22,7 +22,9 @@ import {
 } from "../../../constants.ts";
 import { clsx } from "clsx";
 import {
+  HeaderButton,
   type ModalProps,
+  PageHeader,
   PageModal,
   useModalStack,
   useStore,
@@ -153,19 +155,15 @@ export function AddExercise({
   return (
     <PageModal>
       <div className={s.root}>
-        <div className={s.toolbar}>
-          <button className={s.toolbarButton} onClick={onCancel}>
-            <MdArrowBack />
-          </button>
-          <div className={s.pageTitle}>Создать упражнение</div>
-          <button
-            className={s.toolbarButton}
-            disabled={disabled}
-            onClick={submitHandler}
-          >
-            <MdCheck />
-          </button>
-        </div>
+        <PageHeader
+          title={exercise ? "Изменить упражнение" : "Создать упражнение"}
+          onBack={onCancel}
+          right={
+            <HeaderButton disabled={disabled} onClick={submitHandler}>
+              <MdCheck />
+            </HeaderButton>
+          }
+        />
         <div className={s.body}>
           <label className={s.label}>Название упражнения</label>
           <input

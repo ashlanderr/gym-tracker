@@ -1,9 +1,12 @@
-import type { EquipmentType, PerformanceWeights } from "../../../../db";
+import type {
+  EquipmentType,
+  PerformanceWeights,
+  WeightUnits,
+} from "../../../../db";
 import s from "./styles.module.scss";
 import { clsx } from "clsx";
-import { RiPlayList2Fill } from "react-icons/ri";
-import { LuCircleGauge } from "react-icons/lu";
-import { computeWeights } from "../../../../domain";
+import { computeWeights, type WeightsConstructor } from "../../../../domain";
+import { UNITS_SHORT } from "../../../constants.ts";
 
 export interface WeightsVisualizerProps {
   equipment: EquipmentType;
@@ -11,99 +14,97 @@ export interface WeightsVisualizerProps {
   weightKg: number;
 }
 
-export function WeightsVisualizer(props: WeightsVisualizerProps) {
-  const { equipment } = props;
+const STACK_BRICKS = 11;
+const STACK_BELOW_PIN = 3;
 
-  switch (equipment) {
-    case "barbell":
-      return barbellWeights(props);
+export function WeightsVisualizer({
+  equipment,
+  weights,
+  weightKg,
+}: WeightsVisualizerProps) {
+  const ctor = computeWeights(weights, weightKg);
+  const isInvalid = Math.abs(ctor.totalKg - weightKg) >= 1e-3;
+  const plates = Array.isArray(weights?.steps) ? weights.steps : [];
+  const rackHeight = plateHeight(Math.max(0, ...plates));
 
-    case "dumbbell":
-      return dumbbellWeights(props);
+  const content = (() => {
+    switch (equipment) {
+      case "barbell":
+        return barbellWeights(ctor, rackHeight);
 
-    case "machine":
-      return machineWeights(props);
+      case "dumbbell":
+        return dumbbellWeights(ctor);
 
-    case "plates":
-      return platesWeights(props);
+      case "machine":
+        return stackWeights(ctor, weights);
 
-    default:
-      return null;
-  }
+      case "plates":
+        return platesWeights(ctor, rackHeight);
+
+      default:
+        return null;
+    }
+  })();
+
+  if (!content) return null;
+
+  return <div className={clsx(isInvalid && s.invalid)}>{content}</div>;
 }
 
-function barbellWeights({ weights, weightKg }: WeightsVisualizerProps) {
-  const ctor = computeWeights(weights, weightKg);
-  const isInvalid = !isSameWeight(ctor.totalKg, weightKg);
-  const steps: Array<{ weight: number; height: number }> = [];
+function expandSteps(ctor: WeightsConstructor): number[] {
+  return (ctor.steps ?? []).flatMap((step) =>
+    Array.from({ length: step.count }, () => step.weight),
+  );
+}
 
-  for (const step of ctor.steps ?? []) {
-    for (let i = 0; i < step.count; ++i) {
-      steps.push({
-        weight: step.weight,
-        height: Math.pow(Math.max(1.25, Math.min(45, step.weight)), 1 / 3) * 35,
-      });
-    }
-  }
+function formatUnits(value: number, units: WeightUnits): string {
+  return `${Math.round(value * 100) / 100} ${UNITS_SHORT[units]}`;
+}
+
+// The rack keeps the height of the largest plate in the gym, so changing the
+// weight never moves the bar.
+function barbellWeights(ctor: WeightsConstructor, height: number) {
+  const plates = expandSteps(ctor);
 
   return (
-    <div className={clsx(s.barbell, isInvalid && s.invalid)}>
+    <div className={s.barbell} style={{ height }}>
       <div className={s.barSpacer} />
-      {[...steps].reverse().map((step, i) => (
-        <div className={s.plate} key={i} style={{ height: step.height }}>
-          <div className={s.plateLabel}>{step.weight}</div>
-        </div>
-      ))}
+      {renderPlates([...plates].reverse(), "left")}
       <div className={clsx(s.plate, s.innerPlate)} />
       <div className={s.barCenter} />
       <div className={clsx(s.plate, s.innerPlate)} />
-      {steps.map((step, i) => (
-        <div className={s.plate} key={i} style={{ height: step.height }}>
-          <div className={s.plateLabel}>{step.weight}</div>
-        </div>
-      ))}
+      {renderPlates(plates, "right")}
       <div className={s.barSpacer} />
       <div className={s.bar}>
-        <div className={s.barLabel}>{ctor.base}</div>
+        <span className={clsx(s.barLabel, s.num)}>
+          {formatUnits(ctor.base ?? 0, ctor.units)}
+        </span>
       </div>
     </div>
   );
 }
 
-function dumbbellWeights({ weights, weightKg }: WeightsVisualizerProps) {
-  const ctor = computeWeights(weights, weightKg);
-  const isInvalid = !isSameWeight(ctor.totalKg, weightKg);
-
-  const step = ctor.steps?.at(0);
-  if (!step) return null;
-
-  const weight = step.weight * step.count;
-
-  let repeat: number[];
-  if (ctor.count === 2) {
-    repeat = [0, 1];
-  } else if (ctor.count === 1) {
-    repeat = [0];
-  } else {
-    return null;
-  }
+function dumbbellWeights(ctor: WeightsConstructor) {
+  const dumbbell = (ctor.totalUnits - (ctor.base ?? 0)) / ctor.count;
 
   return (
-    <div className={clsx(s.dumbbells, isInvalid && s.invalid)}>
-      {repeat.map((r) => (
-        <div className={s.dumbbell} key={r}>
+    <div className={s.dumbbells}>
+      {Array.from({ length: ctor.count }, (_, i) => (
+        <div className={s.dumbbell} key={i}>
           <div className={s.barbell}>
             <div className={s.barSpacer} />
-            <div className={s.plate} style={{ height: 50 }} />
-            <div className={s.plate} style={{ height: 90 }} />
+            <div className={clsx(s.plate, s.dumbbellOuter)} />
+            <div className={clsx(s.plate, s.dumbbellInner)} />
             <div className={clsx(s.plate, s.innerPlate)} />
             <div className={s.barCenter} />
             <div className={clsx(s.plate, s.innerPlate)} />
-            <div className={s.plate} style={{ height: 90 }} />
-            <div className={s.plate} style={{ height: 50 }} />
+            <div className={clsx(s.plate, s.dumbbellInner)} />
+            <div className={clsx(s.plate, s.dumbbellOuter)} />
             <div className={s.barSpacer} />
             <div className={s.bar}>
-              <div className={s.dumbbellLabel}>{weight}</div>
+              <span className={clsx(s.barLabel, s.num)}>
+                {formatUnits(dumbbell, ctor.units)}
+              </span>
             </div>
           </div>
         </div>
@@ -112,61 +113,60 @@ function dumbbellWeights({ weights, weightKg }: WeightsVisualizerProps) {
   );
 }
 
-function machineWeights({ weights, weightKg }: WeightsVisualizerProps) {
-  const ctor = computeWeights(weights, weightKg);
-  const baseWeight = ctor.base ?? 0;
-  const mainStep = ctor.steps?.at(0) ?? { weight: 0, count: 0 };
-  const additionalStep = ctor.steps?.at(1) ?? { weight: 0, count: 0 };
-  const mainWeight = mainStep.weight * mainStep.count;
-  const additionalWeight = additionalStep.weight * additionalStep.count;
+// The stack always shows the same bricks and only the pin moves, like on a
+// machine. Heavy weights scroll the bricks so a few stay below the pin.
+function stackWeights(
+  ctor: WeightsConstructor,
+  weights: PerformanceWeights | undefined,
+) {
+  const base = ctor.base ?? 0;
+  const tiles = ctor.steps?.find((s) => s.weight === weights?.steps);
+  const additional = ctor.steps?.find((s) => s.weight === weights?.additional);
+  const pin = tiles?.count ?? 0;
+  const stack = base + (tiles ? tiles.weight * tiles.count : 0);
+  const extra = additional ? additional.weight * additional.count : 0;
+  const offset = Math.max(0, pin - (STACK_BRICKS - STACK_BELOW_PIN - 1));
 
   return (
-    <div className={s.machineWeights}>
-      <div className={s.machineWeight}>
-        <RiPlayList2Fill />
-        <span>{baseWeight + mainWeight}</span>
+    <div className={s.stack}>
+      <div className={s.stackTop}>
+        <div className={s.stackRod} />
+        {extra !== 0 && (
+          <div className={s.addChip}>
+            <span className={s.num}>+{extra}</span>
+          </div>
+        )}
       </div>
-      <div className={s.machineWeight}>
-        <LuCircleGauge />
-        <span>{additionalWeight}</span>
-      </div>
+      {Array.from({ length: STACK_BRICKS }, (_, i) => {
+        const brick = i + offset;
+        return (
+          <div
+            key={i}
+            className={clsx(
+              s.brick,
+              brick < pin && s.lifted,
+              brick === pin && s.pick,
+            )}
+          >
+            {brick === pin && (
+              <span className={s.num}>{formatUnits(stack, ctor.units)}</span>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
 
-function platesWeights({ weights, weightKg }: WeightsVisualizerProps) {
-  const ctor = computeWeights(weights, weightKg);
-  const isInvalid = !isSameWeight(ctor.totalKg, weightKg);
-  const steps: Array<{ weight: number; height: number }> = [];
-
-  for (const step of ctor.steps ?? []) {
-    for (let i = 0; i < step.count; ++i) {
-      steps.push({
-        weight: step.weight,
-        height: Math.pow(Math.max(1.25, Math.min(45, step.weight)), 1 / 3) * 35,
-      });
-    }
-  }
-
-  let repeat: number[];
-  if (ctor.count === 2) {
-    repeat = [0, 1];
-  } else if (ctor.count === 1) {
-    repeat = [0];
-  } else {
-    return null;
-  }
+function platesWeights(ctor: WeightsConstructor, height: number) {
+  const plates = [...expandSteps(ctor)].reverse();
 
   return (
-    <div className={clsx(s.platesMachine, isInvalid && s.invalid)}>
-      {repeat.map((r) => (
-        <div className={s.barbell} key={r}>
+    <div className={s.platesMachine}>
+      {Array.from({ length: ctor.count }, (_, i) => (
+        <div className={s.barbell} key={i} style={{ height }}>
           <div className={s.barSpacer} />
-          {[...steps].reverse().map((step, i) => (
-            <div className={s.plate} key={i} style={{ height: step.height }}>
-              <div className={s.plateLabel}>{step.weight}</div>
-            </div>
-          ))}
+          {renderPlates(plates, `side-${i}`)}
           <div className={clsx(s.plate, s.innerPlate)} />
           <div className={s.platesSpacer} />
           <div className={s.platesHolder} />
@@ -177,6 +177,18 @@ function platesWeights({ weights, weightKg }: WeightsVisualizerProps) {
   );
 }
 
-function isSameWeight(a: number, b: number): boolean {
-  return Math.abs(a - b) < 1e-3;
+function renderPlates(plates: number[], side: string) {
+  return plates.map((weight, i) => (
+    <div
+      className={s.plate}
+      key={`${side}-${i}`}
+      style={{ height: plateHeight(weight) }}
+    >
+      <span className={clsx(s.plateLabel, s.num)}>{weight}</span>
+    </div>
+  ));
+}
+
+function plateHeight(weight: number): number {
+  return Math.pow(Math.max(1.25, Math.min(45, weight)), 1 / 3) * 35;
 }

@@ -84,6 +84,38 @@ export function snapWeightKg(
   return computeWeights(weights, valueKg, rounding).totalKg;
 }
 
+const STEP_PROBE_KG = 0.25;
+const STEP_PROBE_LIMIT = 400;
+
+// The next weight that can be put together from the inventory, up or down.
+// Without an inventory it moves along a grid of a fixed step, so an odd
+// suggested weight lands on a round one.
+export function stepWeightKg(
+  weights: PerformanceWeights | undefined,
+  valueKg: number,
+  direction: 1 | -1,
+  fallbackKg: number,
+): number {
+  if (!weights) {
+    const steps =
+      direction > 0
+        ? Math.floor(valueKg / fallbackKg + 1e-6) + 1
+        : Math.ceil(valueKg / fallbackKg - 1e-6) - 1;
+    return Math.max(0, steps * fallbackKg);
+  }
+
+  const current = snapWeightKg(weights, valueKg);
+  const rounding = direction > 0 ? "floor" : "ceil";
+
+  for (let i = 1; i <= STEP_PROBE_LIMIT; ++i) {
+    const probe = valueKg + direction * i * STEP_PROBE_KG;
+    const snapped = snapWeightKg(weights, probe, rounding);
+    if (direction * (snapped - current) > 1e-6) return snapped;
+  }
+
+  return current;
+}
+
 export function computeWeights(
   weights: PerformanceWeights | undefined,
   valueKg: number,

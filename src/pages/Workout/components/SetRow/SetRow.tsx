@@ -1,23 +1,26 @@
 import type { SetRowProps } from "./types.ts";
 import s from "./styles.module.scss";
 import { MdCheck } from "react-icons/md";
-import { useModalStack, useStore } from "../../../../components";
-import { useEffect, useRef, useState } from "react";
+import {
+  showToast,
+  useModalStack,
+  useStore,
+} from "../../../../components";
 import {
   updateSet,
   type Set,
   useQueryRecordsBySet,
   type Record,
   type Performance,
+  queryRecordsByPerformance,
+  type WeightUnits,
 } from "../../../../db";
 import { clsx } from "clsx";
+import { useState } from "react";
 import { PiArrowDownBold, PiArrowUpBold, PiMedalFill } from "react-icons/pi";
 import {
   addSelfWeight,
-  kgToUnits,
   MEDAL_RECORDS,
-  snapWeightKg,
-  unitsToKg,
   updateRecords,
   volumeToOneRepMax,
 } from "../../../../domain";
@@ -25,10 +28,16 @@ import { useActiveTimer } from "../ActiveTimer";
 import { formatRepRange } from "./utils.ts";
 import { RecordsBottomSheet } from "../RecordsBottomSheet";
 import { SetActionsBottomSheet } from "../SetActionsBottomSheet";
+import { WeightSheet } from "../WeightSheet";
+import { RepsSheet } from "../RepsSheet";
+import { RecordNotice } from "../RecordNotice";
+import { RECORD_NOTICE } from "../../../constants.ts";
+import { formatWeightUnits } from "../../hooks.ts";
 
 export function SetRow({
   exercise,
   performance,
+  units,
   number,
   set,
   prevSet,
@@ -36,12 +45,11 @@ export function SetRow({
 }: SetRowProps) {
   const store = useStore();
   const { pushModal } = useModalStack();
-  const [weightInput, setWeightInput] = useState<string | null>(null);
-  const [repsInput, setRepsInput] = useState<string | null>(null);
   const records = useQueryRecordsBySet(store, set.id).filter((r) =>
     MEDAL_RECORDS.includes(r.type),
   );
   const { startTimer } = useActiveTimer();
+  const [flash, setFlash] = useState(false);
 
   const prevOneRepMax = prevSet
     ? volumeToOneRepMax(
@@ -60,85 +68,52 @@ export function SetRow({
       ? currOneRepMax - prevOneRepMax
       : undefined;
 
-  const updatedSet = useRef(set);
-  useEffect(() => {
-    updatedSet.current = set;
-  }, [set]);
-
-  const convertWeight = (weightKg: number | undefined): number | undefined => {
-    return weightKg !== undefined
-      ? Math.round(kgToUnits(weightKg, performance.weights?.units) * 100) / 100
-      : undefined;
-  };
-
   const prev = prevSet
-    ? `${convertWeight(prevSet.weight)} x ${prevSet.reps}`
-    : "-";
+    ? `${formatWeightUnits(prevSet.weight, units)} × ${prevSet.reps}`
+    : "–";
 
-  const weight = (convertWeight(set.weight) ?? "").toString();
-  const weightPlaceholder = (convertWeight(recSet?.weight) ?? "-").toString();
+  const isWeightSuggested = set.weight === undefined;
+  const weight = formatWeightUnits(set.weight ?? recSet?.weight, units);
 
-  const reps = set.reps?.toString() ?? "";
-  const repsPlaceholder = recSet?.reps ? formatRepRange(recSet.reps) : "-";
+  const isRepsSuggested = set.reps === undefined;
+  const reps =
+    set.reps?.toString() ?? (recSet?.reps ? formatRepRange(recSet.reps) : "–");
 
-  const updateSetInner = (updater: (set: Set) => Set): Set => {
-    updatedSet.current = updater(updatedSet.current);
-    return updatedSet.current;
+  const openWeight = async () => {
+    if (set.completed) return;
+    await pushModal(WeightSheet, { performance, setId: set.id });
   };
 
-  const weightBlurHandler = () => {
-    if (weightInput === null) return;
-    const newWeight = Number.parseFloat(weightInput);
-    setWeightInput(null);
-
-    let newWeightKg = !Number.isNaN(newWeight)
-      ? unitsToKg(newWeight, performance.weights?.units)
-      : undefined;
-
-    if (newWeightKg !== undefined) {
-      newWeightKg = snapWeightKg(performance.weights, newWeightKg);
-    }
-
-    const set = updateSetInner((set) =>
-      !set.completed ? { ...set, weight: newWeightKg } : set,
-    );
-    updateSet(store, set);
-  };
-
-  const repsBlurHandler = () => {
-    if (repsInput === null) return;
-    const newReps = Number.parseFloat(repsInput);
-    setRepsInput(null);
-
-    const newRepsValue = !Number.isNaN(newReps) ? newReps : undefined;
-
-    const set = updateSetInner((set) =>
-      !set.completed ? { ...set, reps: newRepsValue } : set,
-    );
-    updateSet(store, set);
+  const openReps = async () => {
+    if (set.completed) return;
+    await pushModal(RepsSheet, { performance, setId: set.id });
   };
 
   const completeHandler = async () => {
-    if (!set.completed) {
-      const set = updateSetInner((set) => {
-        const weight = set.weight ?? recSet?.weight;
-        const reps = set.reps ?? recSet?.reps?.max;
-        if (weight !== undefined && reps !== undefined) {
-          return { ...set, weight, reps, completed: true };
-        } else {
-          return set;
-        }
-      });
-      if (set.completed) {
-        updateSet(store, set);
-        updateRecords(store, set);
-        startTimer(performance.timer);
-      }
-    } else {
-      const set = updateSetInner((set) => ({ ...set, completed: false }));
-      updateSet(store, set);
-      updateRecords(store, set);
+    if (set.completed) {
+      const updated: Set = { ...set, completed: false };
+      updateSet(store, updated);
+      updateRecords(store, updated);
+      return;
     }
+
+    const weight = set.weight ?? recSet?.weight;
+    const reps = set.reps ?? recSet?.reps?.max;
+
+    // Nothing to fill the set with: ask for the missing number first.
+    if (weight === undefined) return openWeight();
+    if (reps === undefined) return openReps();
+
+    const updated: Set = { ...set, weight, reps, completed: true };
+    setFlash(true);
+    updateSet(store, updated);
+    updateRecords(store, updated);
+    startTimer(performance.timer);
+    announceRecords(
+      queryRecordsByPerformance(store, performance.id),
+      updated,
+      units,
+    );
   };
 
   const setInfoHandler = async () => {
@@ -156,17 +131,19 @@ export function SetRow({
 
   const copyPreviousHandler = () => {
     if (prevSet && !set.completed) {
-      const set = updateSetInner((set) => ({
+      updateSet(store, {
         ...set,
         weight: prevSet.weight,
         reps: prevSet.reps,
-      }));
-      updateSet(store, set);
+      });
     }
   };
 
   return (
-    <tr className={clsx(set.completed && s.completed)}>
+    <tr
+      className={clsx(set.completed && s.completed, flash && s.flash)}
+      onAnimationEnd={() => setFlash(false)}
+    >
       <td className={s.setNumValue} onClick={setInfoHandler}>
         {renderSetBadge(performance, set, number, records, localChange)}
       </td>
@@ -174,32 +151,20 @@ export function SetRow({
         {prev}
       </td>
       <td className={s.currentWeightValue}>
-        <input
-          className={s.input}
-          value={weightInput ?? weight}
-          placeholder={weightPlaceholder}
-          disabled={set.completed}
-          type="text"
-          inputMode="numeric"
-          onContextMenu={(e) => e.preventDefault()}
-          onChange={(e) => setWeightInput(e.target.value)}
-          onFocus={(e) => e.target.select()}
-          onBlur={weightBlurHandler}
-        />
+        <button
+          className={clsx(s.cell, isWeightSuggested && s.suggested)}
+          onClick={openWeight}
+        >
+          {weight}
+        </button>
       </td>
       <td className={s.currentRepsValue}>
-        <input
-          className={s.input}
-          value={repsInput ?? reps}
-          placeholder={repsPlaceholder}
-          disabled={set.completed}
-          type="text"
-          inputMode="numeric"
-          onContextMenu={(e) => e.preventDefault()}
-          onChange={(e) => setRepsInput(e.target.value)}
-          onFocus={(e) => e.target.select()}
-          onBlur={repsBlurHandler}
-        />
+        <button
+          className={clsx(s.cell, isRepsSuggested && s.suggested)}
+          onClick={openReps}
+        >
+          {reps}
+        </button>
       </td>
       <td className={s.setCompletedValue}>
         <button className={s.setCompletedButton} onClick={completeHandler}>
@@ -208,6 +173,25 @@ export function SetRow({
       </td>
     </tr>
   );
+}
+
+// A set that beats the best of earlier workouts says so at once. The first
+// time an exercise is done there is nothing to beat, so it stays quiet.
+function announceRecords(records: Record[], set: Set, units: WeightUnits) {
+  records
+    .filter((r) => r.set === set.id && r.previous !== undefined)
+    .forEach((record) => {
+      const title = RECORD_NOTICE[record.type];
+      if (!title || record.previous === undefined) return;
+      showToast(
+        <RecordNotice
+          title={title}
+          current={record.current}
+          previous={record.previous}
+          units={units}
+        />,
+      );
+    });
 }
 
 function renderSetBadge(
