@@ -54,20 +54,6 @@ export function SetActionsBottomSheet({
           <span>Обычный подход</span>
         </button>
         <button
-          className={s.sheetAction}
-          onClick={() => setTypeHandler("light")}
-        >
-          <span className={s.lightSet}>L</span>
-          <span>Легкий подход</span>
-        </button>
-        <button
-          className={s.sheetAction}
-          onClick={() => setTypeHandler("failure")}
-        >
-          <span className={s.failureSet}>F</span>
-          <span>Подход в отказ</span>
-        </button>
-        <button
           className={clsx(s.sheetAction, s.danger)}
           onClick={removeHandler}
         >

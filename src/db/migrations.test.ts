@@ -31,3 +31,18 @@ test("leaves a document from a newer version alone", () => {
   expect(doc.getArray("log").length).toBe(0);
   expect(readSchemaVersion(doc)).toBe(5);
 });
+
+test("merges light and failure sets into working ones", () => {
+  const doc = new Y.Doc();
+  const sets = doc.getMap<Y.Map<unknown>>("sets");
+  for (const type of ["warm-up", "working", "light", "failure"]) {
+    sets.set(type, new Y.Map([["type", type]]));
+  }
+  migrate(doc);
+  expect([...sets.values()].map((s) => s.get("type"))).toEqual([
+    "warm-up",
+    "working",
+    "working",
+    "working",
+  ]);
+});

@@ -1,11 +1,19 @@
 import * as Y from "yjs";
 import { useEffect, useState } from "react";
 import type { Store } from "./doc.ts";
+import { collection } from "./db.ts";
 
 type Migration = (doc: Y.Doc) => void;
 
 // The migration at index i moves the data from version i to i + 1.
-const MIGRATIONS: Migration[] = [];
+const MIGRATIONS: Migration[] = [mergeSetTypesIntoWorking];
+
+function mergeSetTypesIntoWorking(doc: Y.Doc) {
+  for (const set of collection(doc, "sets").values()) {
+    const type = set.get("type");
+    if (type === "failure" || type === "light") set.set("type", "working");
+  }
+}
 
 export const SCHEMA_VERSION = MIGRATIONS.length;
 

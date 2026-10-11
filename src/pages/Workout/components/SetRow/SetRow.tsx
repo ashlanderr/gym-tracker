@@ -217,8 +217,6 @@ function renderSetBadge(
       className={clsx({
         [s.warmUpSet]: set.type === "warm-up",
         [s.workingSet]: set.type === "working",
-        [s.lightSet]: set.type === "light",
-        [s.failureSet]: set.type === "failure",
       })}
     >
       {number}

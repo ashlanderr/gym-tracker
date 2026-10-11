@@ -134,10 +134,6 @@ function setNumber(set: Set, workingCount: number): string {
       return "W";
     case "working":
       return workingCount.toString();
-    case "failure":
-      return "F";
-    case "light":
-      return "L";
     default:
       return assertNever(set.type);
   }

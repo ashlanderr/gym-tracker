@@ -4,17 +4,9 @@ import {
   type Performance,
   type Store,
   type Set,
-  type SetType,
   querySetsByPerformance,
 } from "../db";
 import { updateRecords } from "./records.ts";
-
-const DUPLICATE_SET_TYPE_MAPPING: Record<SetType, SetType> = {
-  ["warm-up"]: "warm-up",
-  ["working"]: "working",
-  ["failure"]: "failure",
-  ["light"]: "working",
-};
 
 export function duplicateSet(
   store: Store,
@@ -28,7 +20,7 @@ export function duplicateSet(
     exercise: newPerformance.exercise,
     performance: newPerformance.id,
     order: oldSet.order,
-    type: DUPLICATE_SET_TYPE_MAPPING[oldSet.type],
+    type: oldSet.type,
     weight: undefined,
     reps: undefined,
     completed: false,
