@@ -55,9 +55,9 @@ export function WeightSheet({
     saveWeight(stepWeightKg(weights, weightKg ?? 0, direction, fallback));
   };
 
-  const resetHandler = () => {
+  const resetHandler = async () => {
+    await onCancel();
     saveWeight(undefined);
-    onCancel();
   };
 
   const inventoryHandler = async () => {
