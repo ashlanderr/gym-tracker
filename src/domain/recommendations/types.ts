@@ -17,10 +17,7 @@ export interface CompletedSetData {
   reps: number;
 }
 
-export interface RepRange {
-  min: number;
-  max: number;
-}
+export type RepRange = ExerciseRepRange;
 
 export interface RecSetData {
   type: SetType;
@@ -28,11 +25,19 @@ export interface RecSetData {
   reps: RepRange | undefined;
 }
 
-export interface RecommendationParams {
-  currentSets: DraftSetData[];
-  previousSets: CompletedSetData[];
+export interface WeightContext {
   exerciseWeights?: ExerciseWeight;
-  exerciseReps?: ExerciseRepRange;
   performanceWeights?: PerformanceWeights;
   selfWeight?: number;
+}
+
+export interface RecommendationParams extends WeightContext {
+  currentSets: DraftSetData[];
+  previousSets: CompletedSetData[];
+  exerciseReps: RepRange;
+}
+
+export interface WeightIncrease {
+  from: number;
+  to: number;
 }
