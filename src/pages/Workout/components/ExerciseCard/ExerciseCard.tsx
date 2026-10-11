@@ -2,6 +2,7 @@ import s from "./styles.module.scss";
 import { clsx } from "clsx";
 import { MdArrowUpward, MdCheck, MdLock } from "react-icons/md";
 import { MuscleFigure, useStore } from "../../../../components";
+import { DEFAULT_EXERCISE_REPS } from "../../../../db";
 import { queryPendingIncrease } from "../../../../domain";
 import { UNITS_SHORT } from "../../../constants.ts";
 import {
@@ -26,10 +27,12 @@ export function ExerciseCard({
   const done = working.filter((s) => s.completed).length;
 
   // What the exercise is about: the weight of the first working set, entered
-  // or carried from the last time, with the reps range of the exercise.
+  // or carried from the last time, with the reps range for that weight.
   const first = rows.find((r) => r.set.type !== "warm-up");
   const firstWeight = first && (first.set.weight ?? first.recSet?.weight);
-  const reps = formatPlannedReps(exercise);
+  const reps = formatPlannedReps(
+    first?.recSet?.reps ?? exercise?.reps ?? DEFAULT_EXERCISE_REPS,
+  );
   const weight =
     firstWeight !== undefined ? formatWeightUnits(firstWeight, units) : "?";
 

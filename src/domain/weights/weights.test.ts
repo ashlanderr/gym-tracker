@@ -133,6 +133,11 @@ test("round machine weights with additional weight 2", () => {
   expect(actual).toEqual(expected);
 });
 
+test("one rep max by Epley", () => {
+  expect(volumeToOneRepMax(20, 8)).closeTo(25.33, 0.01);
+  expect(oneRepMaxToReps(25.33, 22.5)).closeTo(3.77, 0.01);
+});
+
 test("one rep max equivalents", () => {
   expect(oneRepMaxToWeight(volumeToOneRepMax(60, 6), 6)).closeTo(60, 0.1);
   expect(oneRepMaxToWeight(volumeToOneRepMax(60, 3), 3)).closeTo(60, 0.1);

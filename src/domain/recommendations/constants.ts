@@ -22,3 +22,7 @@ export const WARM_UP_SETS = [
     { weight: 0.85, reps: 2 },
   ],
 ];
+
+// The top of a range is widened up to one of these. Past the last one sets
+// leave the zone of hypertrophy and 1RM formulas stop being reliable.
+export const TOP_REPS = [6, 8, 10, 12, 15, 20];

@@ -22,6 +22,7 @@ import {
   groupSets,
   kgToUnits,
   type RecSetData,
+  type RepRange,
   type WorkoutStatuses,
 } from "../../domain";
 import { assertNever } from "../../utils";
@@ -149,8 +150,7 @@ export function formatWeightUnits(
   return (Math.round(kgToUnits(weightKg, units) * 100) / 100).toString();
 }
 
-export function formatPlannedReps(exercise: Exercise | null): string {
-  const { min, max } = exercise?.reps ?? DEFAULT_EXERCISE_REPS;
+export function formatPlannedReps({ min, max }: RepRange): string {
   return min === max ? min.toString() : `${min}–${max}`;
 }
 

@@ -1,6 +1,5 @@
 import {
   DEFAULT_EXERCISE_REPS,
-  DEFAULT_WEIGHT_UNITS,
   type Performance,
   queryExerciseById,
   queryLatestMeasurement,
@@ -9,7 +8,6 @@ import {
   type Store,
 } from "../db";
 import { computeWeightIncrease, type WeightIncrease } from "./recommendations";
-import { MANUAL_WEIGHT_STEP, unitsToKg } from "./weights";
 
 // A new weight is offered before the exercise until the person answers it.
 // The answer is the weight written into the first working set, so the
@@ -36,7 +34,6 @@ export function queryPendingIncrease(
         (s) => s.completed,
       )
     : [];
-  const units = performance.weights?.units ?? DEFAULT_WEIGHT_UNITS;
 
   return computeWeightIncrease(
     prevSets,
@@ -45,7 +42,6 @@ export function queryPendingIncrease(
       exerciseWeights: exercise?.weight,
       performanceWeights: performance.weights,
       selfWeight: queryLatestMeasurement(store, performance.startedAt)?.weight,
-      fallbackStepKg: unitsToKg(MANUAL_WEIGHT_STEP, units),
     },
   );
 }

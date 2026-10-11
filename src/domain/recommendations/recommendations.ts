@@ -4,13 +4,14 @@ import type {
   RecSetData,
 } from "./types.ts";
 import { WARM_UP_SETS } from "./constants.ts";
-import { computeWorkingWeight } from "./working.ts";
+import { computeRepRange, computeWorkingWeight } from "./working.ts";
 import { addSelfWeight, snapWeightKg, subtractSelfWeight } from "../weights";
 
 // What empty sets suggest, to save taps. A working set repeats the weight of
 // the working set above it, entered or done; the first one repeats the last
 // time. A new weight is never suggested here: it is offered before the
-// exercise, where it can be explained.
+// exercise, where it can be explained. The reps of a working set are the
+// range for its weight.
 export function buildRecommendations(
   params: RecommendationParams,
 ): RecSetData[] {
@@ -36,7 +37,11 @@ export function buildRecommendations(
       return warmUp;
     }
 
-    const working: RecSetData = { type: set.type, weight, reps: exerciseReps };
+    const working: RecSetData = {
+      type: set.type,
+      weight,
+      reps: computeRepRange(set.weight ?? weight, exerciseReps, params),
+    };
     if (set.weight !== undefined) weight = set.weight;
     workingIndex += 1;
     return working;

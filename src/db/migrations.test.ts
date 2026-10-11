@@ -1,5 +1,10 @@
 import * as Y from "yjs";
-import { migrate, readSchemaVersion } from "./migrations.ts";
+import {
+  mergeSetTypesIntoWorking,
+  migrate,
+  readSchemaVersion,
+  replaceRepPresetsWithRanges,
+} from "./migrations.ts";
 
 function log(doc: Y.Doc, entry: string) {
   doc.getArray<string>("log").push([entry]);
@@ -38,7 +43,7 @@ test("merges light and failure sets into working ones", () => {
   for (const type of ["warm-up", "working", "light", "failure"]) {
     sets.set(type, new Y.Map([["type", type]]));
   }
-  migrate(doc);
+  mergeSetTypesIntoWorking(doc);
   expect([...sets.values()].map((s) => s.get("type"))).toEqual([
     "warm-up",
     "working",
@@ -54,7 +59,7 @@ test("replaces rep presets of changed exercises with ranges", () => {
   for (const reps of ["low", "medium", "high", custom, undefined]) {
     exercises.set(String(exercises.size), new Y.Map([["reps", reps]]));
   }
-  migrate(doc);
+  replaceRepPresetsWithRanges(doc);
   expect([...exercises.values()].map((e) => e.get("reps"))).toEqual([
     { min: 6, max: 8 },
     { min: 8, max: 12 },

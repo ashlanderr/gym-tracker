@@ -3,13 +3,8 @@ import { useEffect, useState } from "react";
 import type { Store } from "./doc.ts";
 import { collection } from "./db.ts";
 
-type Migration = (doc: Y.Doc) => void;
-
 // The migration at index i moves the data from version i to i + 1.
-const MIGRATIONS: Migration[] = [
-  mergeSetTypesIntoWorking,
-  replaceRepPresetsWithRanges,
-];
+export type Migration = (doc: Y.Doc) => void;
 
 const REP_PRESETS: Record<string, { min: number; max: number }> = {
   low: { min: 6, max: 8 },
@@ -17,14 +12,14 @@ const REP_PRESETS: Record<string, { min: number; max: number }> = {
   high: { min: 12, max: 15 },
 };
 
-function mergeSetTypesIntoWorking(doc: Y.Doc) {
+export function mergeSetTypesIntoWorking(doc: Y.Doc) {
   for (const set of collection(doc, "sets").values()) {
     const type = set.get("type");
     if (type === "failure" || type === "light") set.set("type", "working");
   }
 }
 
-function replaceRepPresetsWithRanges(doc: Y.Doc) {
+export function replaceRepPresetsWithRanges(doc: Y.Doc) {
   for (const exercise of collection(doc, "exercises").values()) {
     const reps = exercise.get("reps");
     if (typeof reps === "string" && reps in REP_PRESETS) {
@@ -32,8 +27,6 @@ function replaceRepPresetsWithRanges(doc: Y.Doc) {
     }
   }
 }
-
-export const SCHEMA_VERSION = MIGRATIONS.length;
 
 const VERSION_KEY = "version";
 
@@ -62,7 +55,7 @@ export function useSchemaVersion(store: Store): number {
   return version;
 }
 
-export function migrate(doc: Y.Doc, migrations: Migration[] = MIGRATIONS) {
+export function migrate(doc: Y.Doc, migrations: Migration[]) {
   const from = readSchemaVersion(doc);
   if (from >= migrations.length) return;
 

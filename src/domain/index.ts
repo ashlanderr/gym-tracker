@@ -6,3 +6,4 @@ export * from "./workout.ts";
 export * from "./records.ts";
 export * from "./order.ts";
 export * from "./notices.ts";
+export * from "./migrations.ts";

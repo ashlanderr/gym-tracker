@@ -1,10 +1,9 @@
 import type { PerformanceWeights } from "../../db";
 import { buildRecommendations } from "./recommendations.ts";
-import { computeWeightIncrease } from "./working.ts";
+import { computeRepRange, computeWeightIncrease } from "./working.ts";
 import type { CompletedSetData, DraftSetData } from "./types.ts";
 
 const range = { min: 6, max: 8 };
-const fallbackStepKg = 2.5;
 
 const barbell: PerformanceWeights = {
   units: "kg",
@@ -27,19 +26,18 @@ describe("weight increase", () => {
     expect(
       computeWeightIncrease(sets, range, {
         performanceWeights: barbell,
-        fallbackStepKg,
       }),
-    ).toEqual({ from: 80, to: 82.5 });
+    ).toEqual({ from: 80, to: 82.5, range });
   });
 
   test("waits while a set is below the top", () => {
     const sets = [working(80, 8), working(80, 7), working(80, 8)];
-    expect(computeWeightIncrease(sets, range, { fallbackStepKg })).toBeNull();
+    expect(computeWeightIncrease(sets, range, {})).toBeNull();
   });
 
   test("waits while a set was done with another weight", () => {
     const sets = [working(80, 8), working(80, 8), working(70, 8)];
-    expect(computeWeightIncrease(sets, range, { fallbackStepKg })).toBeNull();
+    expect(computeWeightIncrease(sets, range, {})).toBeNull();
   });
 
   test("takes help away on an assisting machine", () => {
@@ -48,9 +46,8 @@ describe("weight increase", () => {
       computeWeightIncrease(sets, range, {
         exerciseWeights: { type: "negative", selfWeightPercent: 100 },
         selfWeight: 80,
-        fallbackStepKg,
       }),
-    ).toEqual({ from: 25, to: 22.5 });
+    ).toEqual({ from: 25, to: 22.5, range });
   });
 
   test("has nowhere to go without help left", () => {
@@ -59,9 +56,48 @@ describe("weight increase", () => {
       computeWeightIncrease(sets, range, {
         exerciseWeights: { type: "negative", selfWeightPercent: 100 },
         selfWeight: 80,
-        fallbackStepKg,
       }),
     ).toBeNull();
+  });
+});
+
+describe("rep range", () => {
+  test("reaches the bottom of the next weight by 1RM", () => {
+    expect(computeRepRange(20, range, {})).toEqual({ min: 6, max: 12 });
+  });
+
+  test("never narrows the range of the exercise", () => {
+    const wide = { min: 8, max: 12 };
+    expect(computeRepRange(100, wide, { performanceWeights: barbell })).toEqual(
+      wide,
+    );
+  });
+
+  test("stops at 20 reps", () => {
+    expect(computeRepRange(1, range, {})).toEqual({ min: 6, max: 20 });
+  });
+
+  test("keeps the range without the weight of the body", () => {
+    const assisting = { type: "negative", selfWeightPercent: 100 } as const;
+    expect(computeRepRange(25, range, { exerciseWeights: assisting })).toEqual(
+      range,
+    );
+  });
+});
+
+describe("increase by the range", () => {
+  test("waits for the top of the widened range", () => {
+    const sets = [working(20, 8), working(20, 8)];
+    expect(computeWeightIncrease(sets, range, {})).toBeNull();
+  });
+
+  test("raises once the widened top is reached", () => {
+    const sets = [working(20, 12), working(20, 12)];
+    expect(computeWeightIncrease(sets, range, {})).toEqual({
+      from: 20,
+      to: 22.5,
+      range: { min: 6, max: 12 },
+    });
   });
 });
 
@@ -84,6 +120,18 @@ describe("placeholders", () => {
       exerciseReps: range,
     });
     expect(sets.map((r) => r.weight)).toEqual([80, 80]);
+  });
+
+  test("give each working set the range of its weight", () => {
+    const sets = buildRecommendations({
+      currentSets: [draft(), draft(22.5)],
+      previousSets: [working(20, 12)],
+      exerciseReps: range,
+    });
+    expect(sets.map((r) => r.reps)).toEqual([
+      { min: 6, max: 12 },
+      { min: 6, max: 10 },
+    ]);
   });
 
   test("repeat the weight of the set above", () => {

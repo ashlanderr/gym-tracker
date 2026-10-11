@@ -40,4 +40,5 @@ export interface RecommendationParams extends WeightContext {
 export interface WeightIncrease {
   from: number;
   to: number;
+  range: RepRange;
 }

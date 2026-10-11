@@ -1,5 +1,13 @@
-import { maxBy } from "../../db";
-import { addSelfWeight, stepWeightKg } from "../weights";
+import { DEFAULT_EXERCISE_WEIGHT, DEFAULT_WEIGHT_UNITS, maxBy } from "../../db";
+import {
+  addSelfWeight,
+  MANUAL_WEIGHT_STEP,
+  oneRepMaxToReps,
+  stepWeightKg,
+  unitsToKg,
+  volumeToOneRepMax,
+} from "../weights";
+import { TOP_REPS } from "./constants.ts";
 import type {
   CompletedSetData,
   RepRange,
@@ -26,34 +34,66 @@ export function computeWorkingWeight(
   )?.weight;
 }
 
+// The range for a weight. Its top is where the next weight reaches the bottom
+// by 1RM, so a set at the top means the next weight can be done in the range.
+// The range of the exercise is only widened, never narrowed.
+export function computeRepRange(
+  weight: number | undefined,
+  reps: RepRange,
+  context: WeightContext,
+): RepRange {
+  const type = (context.exerciseWeights ?? DEFAULT_EXERCISE_WEIGHT).type;
+  if (weight === undefined) return reps;
+  if (type !== "full" && context.selfWeight === undefined) return reps;
+
+  const current = full(context, weight);
+  const next = full(context, nextWeight(context, weight));
+  if (current <= 0 || next <= current + EPSILON) return reps;
+
+  const top = Math.min(
+    oneRepMaxToReps(volumeToOneRepMax(next, reps.min), current),
+    TOP_REPS[TOP_REPS.length - 1],
+  );
+  const niceTop = TOP_REPS.find((r) => r >= top - EPSILON) ?? top;
+
+  return { min: reps.min, max: Math.max(reps.max, niceTop) };
+}
+
 // The weight goes up one step of the inventory when every working set of the
-// last time was done with the working weight, reached the top of the range,
+// last time was done with the working weight, reached the top of its range,
 // and the equipment has a heavier weight.
 export function computeWeightIncrease(
   previousSets: CompletedSetData[],
   reps: RepRange,
-  context: WeightContext & { fallbackStepKg: number },
+  context: WeightContext,
 ): WeightIncrease | null {
   const working = previousSets.filter((s) => s.type === "working");
   const from = computeWorkingWeight(previousSets, reps, context);
   if (from === undefined) return null;
 
+  const range = computeRepRange(from, reps, context);
   const isDone = working.every(
-    (s) => Math.abs(s.weight - from) < EPSILON && s.reps >= reps.max,
+    (s) => Math.abs(s.weight - from) < EPSILON && s.reps >= range.max,
   );
   if (!isDone) return null;
 
-  const direction = context.exerciseWeights?.type === "negative" ? -1 : 1;
-  const to = stepWeightKg(
-    context.performanceWeights,
-    from,
-    direction,
-    context.fallbackStepKg,
-  );
-
+  const to = nextWeight(context, from);
   return full(context, to) > full(context, from) + EPSILON
-    ? { from, to }
+    ? { from, to, range }
     : null;
+}
+
+// One step of the inventory toward a heavier load: down on an assisting
+// machine.
+function nextWeight(context: WeightContext, weight: number): number {
+  const units = context.performanceWeights?.units ?? DEFAULT_WEIGHT_UNITS;
+  const direction = context.exerciseWeights?.type === "negative" ? -1 : 1;
+  return stepWeightKg(
+    context.performanceWeights,
+    weight,
+    direction,
+    unitsToKg(MANUAL_WEIGHT_STEP, units),
+  );
 }
 
 function full(context: WeightContext, weight: number): number {

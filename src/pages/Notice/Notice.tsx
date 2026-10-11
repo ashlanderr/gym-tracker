@@ -12,7 +12,6 @@ import {
 } from "react-icons/md";
 import { PageHeader, useModalStack, useStore } from "../../components";
 import {
-  DEFAULT_EXERCISE_REPS,
   type Performance,
   queryExerciseById,
   type Store,
@@ -116,7 +115,6 @@ function NoticeQueue({ workout, performance }: NoticeQueueProps) {
   } else if (current === "increase" && increase) {
     content = increaseContent(increase, {
       formatWeight,
-      range: exercise?.reps ?? DEFAULT_EXERCISE_REPS,
       lastReps: prevSets
         .filter((set) => set.type === "working")
         .map((set) => set.reps),
@@ -228,7 +226,6 @@ function orderContent(
 
 interface IncreaseOptions {
   formatWeight: (weightKg: number) => string;
-  range: { min: number; max: number };
   lastReps: number[];
   raise: () => void;
   stay: () => void;
@@ -237,8 +234,9 @@ interface IncreaseOptions {
 
 function increaseContent(
   increase: WeightIncrease,
-  { formatWeight, range, lastReps, raise, stay, custom }: IncreaseOptions,
+  { formatWeight, lastReps, raise, stay, custom }: IncreaseOptions,
 ): NoticeContent {
+  const { range } = increase;
   return {
     tone: "good",
     icon: <MdArrowUpward />,
