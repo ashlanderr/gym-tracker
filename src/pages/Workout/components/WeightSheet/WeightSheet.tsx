@@ -118,9 +118,7 @@ export function WeightSheet({
             {equipment !== "none" && (
               <SheetAction onClick={inventoryHandler}>
                 <MdTune />
-                {!fits && weights && isSuggested
-                  ? "Проверить инвентарь"
-                  : "Инвентарь"}
+                Инвентарь
               </SheetAction>
             )}
           </>
