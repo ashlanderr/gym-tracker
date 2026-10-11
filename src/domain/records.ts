@@ -17,8 +17,6 @@ import {
   maxBy,
   type RecordNumbers,
   queryWorkoutById,
-  queryRecordsByType,
-  queryAllPerformances,
 } from "../db";
 import { addSelfWeight, volumeToOneRepMax } from "./weights";
 
@@ -32,59 +30,53 @@ interface RecordData {
 export const MEDAL_RECORDS: RecordType[] = ["one_rep_max", "weight", "volume"];
 
 export function updateRecords(store: Store, set: Set) {
+  const workout = queryWorkoutById(store, set.workout);
+  if (!workout) return;
+
   const performance = queryPerformanceById(store, set.performance);
-  if (performance) updatePerformanceRecords(store, performance, MEDAL_RECORDS);
-}
+  if (!performance) return;
 
-// Records of 1RM depend on the formula, so a new one builds them again from
-// the sets, the oldest performance first, the same way as they were done.
-export function rebuildOneRepMaxRecords(store: Store) {
-  queryRecordsByType(store, "one_rep_max").forEach((r) =>
-    deleteRecord(store, r),
-  );
-
-  queryAllPerformances(store)
-    .sort((a, b) => a.startedAt - b.startedAt)
-    .forEach((p) => updatePerformanceRecords(store, p, ["one_rep_max"]));
-}
-
-function updatePerformanceRecords(
-  store: Store,
-  performance: Performance,
-  types: RecordType[],
-) {
-  if (!queryWorkoutById(store, performance.workout)) return;
-
-  const exercise = queryExerciseById(store, performance.exercise);
+  const exercise = queryExerciseById(store, set.exercise);
   if (!exercise) return;
 
   const measurement = queryLatestMeasurement(store, performance.startedAt);
   const selfWeight = measurement?.weight;
-  const full = (s: CompletedSet) =>
-    addSelfWeight(exercise.weight, selfWeight, s.weight);
 
-  const selectors: { [T in RecordType]: [Selector, Selector] } = {
-    one_rep_max: [
-      (s) => volumeToOneRepMax(s.weight, s.reps),
-      (s) => volumeToOneRepMax(full(s), s.reps),
-    ],
-    weight: [(s) => s.weight, full],
-    volume: [(s) => s.weight * s.reps, (s) => full(s) * s.reps],
-  };
+  updateRecord(
+    store,
+    performance,
+    "one_rep_max",
+    (s) => volumeToOneRepMax(s.weight, s.reps),
+    (s) =>
+      volumeToOneRepMax(
+        addSelfWeight(exercise.weight, selfWeight, s.weight),
+        s.reps,
+      ),
+  );
 
-  for (const type of types) {
-    updateRecord(store, performance, type, ...selectors[type]);
-  }
+  updateRecord(
+    store,
+    performance,
+    "weight",
+    (s) => s.weight,
+    (s) => addSelfWeight(exercise.weight, selfWeight, s.weight),
+  );
+
+  updateRecord(
+    store,
+    performance,
+    "volume",
+    (s) => s.weight * s.reps,
+    (s) => addSelfWeight(exercise.weight, selfWeight, s.weight) * s.reps,
+  );
 }
-
-type Selector = (set: CompletedSet) => number;
 
 function updateRecord(
   store: Store,
   performance: Performance,
   type: RecordType,
-  currentSelector: Selector,
-  fullSelector: Selector,
+  currentSelector: (set: CompletedSet) => number,
+  fullSelector: (set: CompletedSet) => number,
 ) {
   queryRecordsByPerformance(store, performance.id) //
     .filter((r) => r.type === type)

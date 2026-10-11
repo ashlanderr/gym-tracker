@@ -46,12 +46,6 @@ export function queryRecordsByPerformance(
   });
 }
 
-export function queryRecordsByType(store: Store, type: RecordType): Record[] {
-  return queryCollection(collection(store.personal, "records"), {
-    type: { eq: type },
-  });
-}
-
 export function useQueryRecordsBySet(store: Store, set: string): Record[] {
   return useQueryCollection({
     collection: collection(store.personal, "records"),

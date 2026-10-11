@@ -4,8 +4,13 @@
 //   npx vite-node scripts/check-records-migration.ts -- dumps/doc.bin
 import { readFileSync } from "node:fs";
 import * as Y from "yjs";
-import { queryExerciseById, type Record, readSchemaVersion } from "../src/db";
-import { migrateData, SCHEMA_VERSION } from "../src/domain";
+import {
+  migrate,
+  queryExerciseById,
+  type Record,
+  readSchemaVersion,
+  SCHEMA_VERSION,
+} from "../src/db";
 
 const [file] = process.argv.slice(2).filter((a) => a !== "--");
 if (!file) {
@@ -19,7 +24,7 @@ const store = { personal: doc, hasServer: false };
 
 const before = oneRepMaxRecords();
 const version = readSchemaVersion(doc);
-migrateData(doc);
+migrate(doc);
 const after = oneRepMaxRecords();
 
 console.log(

@@ -40,13 +40,6 @@ export function queryPerformanceById(
   return getEntity(collection(store.personal, "performances"), id);
 }
 
-export function queryAllPerformances(store: Store): Performance[] {
-  return queryCollection<Performance>(
-    collection(store.personal, "performances"),
-    {},
-  );
-}
-
 export function queryPerformancesByWorkout(
   store: Store,
   workout: string,

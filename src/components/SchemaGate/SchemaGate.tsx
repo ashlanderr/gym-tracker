@@ -1,7 +1,6 @@
 import s from "./styles.module.scss";
 import { type ReactNode, useEffect } from "react";
-import { useSchemaVersion } from "../../db";
-import { migrateData, SCHEMA_VERSION } from "../../domain";
+import { migrate, SCHEMA_VERSION, useSchemaVersion } from "../../db";
 import type { SchemaGateProps } from "./types.ts";
 
 // The data is migrated on this device once it has both the local copy and
@@ -18,7 +17,7 @@ export function SchemaGate({
   const outdated = loaded && version < SCHEMA_VERSION;
 
   useEffect(() => {
-    if (outdated && serverReady) migrateData(store.personal);
+    if (outdated && serverReady) migrate(store.personal);
   }, [outdated, serverReady, store]);
 
   if (!loaded) {
@@ -44,14 +43,12 @@ export function SchemaGate({
       <Screen
         spinner
         title="Обновляем данные"
-        text={
-          serverReady ? undefined : "Ждём сервер, чтобы ничего не потерять."
-        }
+        text={serverReady ? undefined : "Ждём сервер, чтобы ничего не потерять."}
         action={
           !serverReady && (
             <button
               className={s.secondary}
-              onClick={() => migrateData(store.personal)}
+              onClick={() => migrate(store.personal)}
             >
               Обновить без сервера
             </button>
