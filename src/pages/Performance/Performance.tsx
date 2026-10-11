@@ -21,7 +21,6 @@ import {
 import { usePageParams } from "../hooks.ts";
 import { UNITS_SHORT } from "../constants.ts";
 import {
-  ActiveTimer,
   Performance as PerformanceSets,
   PerformanceActions,
   PerformanceTimer,
@@ -90,7 +89,6 @@ export function Performance() {
 
   return (
     <div className={s.root} ref={scrollRef}>
-      <ActiveTimer />
       <PageHeader
         title={performance && <PerformanceTimer performance={performance} />}
         onBack={goBack}

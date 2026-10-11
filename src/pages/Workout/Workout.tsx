@@ -37,7 +37,6 @@ import { clsx } from "clsx";
 import {
   ChooseExerciseModal,
   CompleteWorkoutModal,
-  ActiveTimer,
   ChooseProgramBottomSheet,
   ExerciseCard,
   type ExerciseCardStatus,
@@ -212,7 +211,6 @@ export function Workout() {
 
   return (
     <div className={s.root} ref={scrollRef}>
-      <ActiveTimer />
       <PageHeader
         kicker={`Тренировка · ${program?.name ?? "Базовая"}`}
         title={<Marquee>{workout?.name ?? "Тренировка"}</Marquee>}

@@ -1,5 +1,5 @@
 import { HashRouter, Route, Routes } from "react-router";
-import { Workout } from "./Workout";
+import { Workout, WorkoutLayout } from "./Workout";
 import { Home } from "./Home";
 import {
   ModalStack,
@@ -30,18 +30,16 @@ export function Layout() {
               path="/workouts/:workoutId"
               element={
                 <ProtectedRoute>
-                  <Workout />
+                  <WorkoutLayout />
                 </ProtectedRoute>
               }
-            />
-            <Route
-              path="/workouts/:workoutId/performances/:performanceId"
-              element={
-                <ProtectedRoute>
-                  <Performance />
-                </ProtectedRoute>
-              }
-            />
+            >
+              <Route index element={<Workout />} />
+              <Route
+                path="performances/:performanceId"
+                element={<Performance />}
+              />
+            </Route>
             <Route
               path="/exercises/:exerciseId/history"
               element={
