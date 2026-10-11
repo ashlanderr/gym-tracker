@@ -43,6 +43,7 @@ import {
   ExerciseCard,
   type ExerciseCardStatus,
   LockedExerciseModal,
+  PerformanceActions,
 } from "./components";
 import {
   HeaderButton,
@@ -64,6 +65,7 @@ import {
   DRAG_TOLERANCE,
   HIGHLIGHT_DURATION,
   JUST_FINISHED_ATOM,
+  MENU_MOVE_TOLERANCE,
 } from "./constants.ts";
 
 interface Highlight {
@@ -186,9 +188,21 @@ export function Workout() {
     navigate(`/workouts/${workoutId}/performances/${performance.id}`);
   };
 
-  const dragEndHandler = ({ active, over }: DragEndEvent) => {
+  const menuHandler = async (performance: Performance) => {
+    const exercise = queryExerciseById(store, performance.exercise);
+    await pushModal(PerformanceActions, { performance, exercise });
+  };
+
+  const dragEndHandler = ({ active, over, delta }: DragEndEvent) => {
     justDragged.current = true;
     setTimeout(() => (justDragged.current = false), 350);
+
+    const held = Math.hypot(delta.x, delta.y) < MENU_MOVE_TOLERANCE;
+    if (held) {
+      const performance = performances.find((p) => p.id === active.id);
+      if (performance) menuHandler(performance);
+      return;
+    }
 
     if (!over || active.id === over.id) return;
     const from = performances.findIndex((p) => p.id === active.id);
@@ -271,9 +285,10 @@ export function Workout() {
           <MdAdd />
           Добавить упражнение
         </button>
-        {performances.length > 1 && (
+        {performances.length !== 0 && (
           <p className={s.hint}>
-            Зажми карточку и перетащи, чтобы поменять порядок
+            Зажми карточку: перетащи, чтобы поменять порядок, или отпусти,
+            чтобы открыть меню
           </p>
         )}
       </div>

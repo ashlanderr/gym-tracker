@@ -1,12 +1,5 @@
 import s from "./styles.module.scss";
-import {
-  MdAutorenew,
-  MdBarChart,
-  MdDelete,
-  MdEdit,
-  MdSwapVert,
-} from "react-icons/md";
-import { TbWeight } from "react-icons/tb";
+import { MdAutorenew, MdBarChart, MdDelete, MdEdit } from "react-icons/md";
 import { clsx } from "clsx";
 import {
   BottomSheet,
@@ -16,20 +9,12 @@ import {
   useStore,
 } from "../../../../components";
 import type { PerformanceActionsData } from "./types.ts";
-import {
-  type Exercise,
-  type Performance,
-  type PerformanceWeights,
-  queryPerformancesByWorkout,
-  updatePerformance,
-} from "../../../../db";
+import { type Exercise, updatePerformance } from "../../../../db";
 import { deletePerformance, replacePerformance } from "../../../../domain";
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import { PerformanceOrder } from "../PerformanceOrder";
 import { ChooseExercise } from "../ChooseExercise";
 import { AddExercise } from "../AddExercise";
-import { WeightsSelector } from "../WeightsSelector";
 import { LuTrendingUp } from "react-icons/lu";
 import { PeriodizationSelector } from "../PeriodizationSelector";
 
@@ -41,9 +26,7 @@ export function PerformanceActions({
   const store = useStore();
   const navigate = useNavigate();
   const { pushModal } = useModalStack();
-  const [orderState, setOrderState] = useState<Performance[]>([]);
   const [isReplaceOpen, setReplaceOpen] = useState(false);
-  const [isWeightsOpen, setWeightsOpen] = useState(false);
 
   const historyHandler = async () => {
     if (exercise) {
@@ -52,16 +35,6 @@ export function PerformanceActions({
         `/exercises/${exercise.id}/history?program=${performance.program || ""}`,
       );
     }
-  };
-
-  const orderBeginHandler = () => {
-    setOrderState(queryPerformancesByWorkout(store, performance.workout));
-  };
-
-  const orderCompleteHandler = (items: Performance[]) => {
-    items.forEach((p) => updatePerformance(store, p));
-    setOrderState([]);
-    onCancel();
   };
 
   const replaceBeginHandler = () => {
@@ -84,15 +57,6 @@ export function PerformanceActions({
     onCancel();
   };
 
-  const weightsBeginHandler = () => {
-    setWeightsOpen(true);
-  };
-
-  const weightsCompleteHandler = (weights: PerformanceWeights | undefined) => {
-    updatePerformance(store, { ...performance, weights });
-    onCancel();
-  };
-
   const periodizationHandler = async () => {
     await onCancel();
     const periodization = await pushModal(PeriodizationSelector, null);
@@ -107,26 +71,16 @@ export function PerformanceActions({
   return (
     <>
       <BottomSheet onClose={onCancel}>
-        <div className={s.sheetHeader}>Упражнение</div>
+        <div className={s.sheetHeader}>{exercise?.name ?? "Упражнение"}</div>
         <div className={s.sheetActions}>
           <button className={s.sheetAction} onClick={historyHandler}>
             <MdBarChart />
             <span>История выполнения</span>
           </button>
-          <button className={s.sheetAction} onClick={orderBeginHandler}>
-            <MdSwapVert />
-            <span>Порядок выполнения</span>
-          </button>
           <button className={s.sheetAction} onClick={replaceBeginHandler}>
             <MdAutorenew />
             <span>Заменить на другое</span>
           </button>
-          {exercise?.equipment && (
-            <button className={s.sheetAction} onClick={weightsBeginHandler}>
-              <TbWeight />
-              <span>Настройка весов</span>
-            </button>
-          )}
           <button className={s.sheetAction} onClick={periodizationHandler}>
             <LuTrendingUp />
             <span>Выбор периодизации</span>
@@ -145,27 +99,10 @@ export function PerformanceActions({
         </div>
       </BottomSheet>
 
-      <PageModal isOpen={orderState.length !== 0}>
-        <PerformanceOrder
-          performances={orderState}
-          onCancel={() => onCancel()}
-          onSubmit={orderCompleteHandler}
-        />
-      </PageModal>
-
       <PageModal isOpen={isReplaceOpen}>
         <ChooseExercise
           onCancel={() => onCancel()}
           onSubmit={replaceCompleteHandler}
-        />
-      </PageModal>
-
-      <PageModal isOpen={isWeightsOpen}>
-        <WeightsSelector
-          equipment={exercise?.equipment ?? "none"}
-          weights={performance.weights}
-          onCancel={() => onCancel()}
-          onSubmit={weightsCompleteHandler}
         />
       </PageModal>
     </>
