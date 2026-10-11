@@ -234,7 +234,7 @@ export const EXERCISES: Record<string, Exercise> = {
     muscles: ["lats", "upper_back", "biceps", "forearms"],
     equipment: "machine",
     weight: {
-      type: "positive",
+      type: "negative",
       selfWeightPercent: 100,
     },
   },

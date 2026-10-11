@@ -149,7 +149,7 @@ const BODY_WEIGHT_EXERCISES_V3: Record<string, ExerciseWeightV3> = {
   Wa6kyQhTiGRur6z8p7xZ: { type: "positive", selfWeightPercent: 100 },
   "7wGjDt7HL8RK8eu0Cfc7": { type: "negative", selfWeightPercent: 100 },
   I4ThGLxJyoXzcFdfFfpO: { type: "positive", selfWeightPercent: 100 },
-  aPtSAO6ZEBZ2401nIDLK: { type: "positive", selfWeightPercent: 100 },
+  aPtSAO6ZEBZ2401nIDLK: { type: "negative", selfWeightPercent: 100 },
   md6HLXAXou4SEwRPjssW: { type: "positive", selfWeightPercent: 100 },
   RRsBEHSyiYyZ6KsCt2LE: { type: "negative", selfWeightPercent: 100 },
   tYCzxni00QUvnavXoGXf: { type: "positive", selfWeightPercent: 25 },
