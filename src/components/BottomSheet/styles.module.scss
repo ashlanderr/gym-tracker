@@ -12,8 +12,6 @@
 
 .backdrop {
   pointer-events: all;
-  background: rgba(0, 0, 0, 0.6);
-  animation: fadeIn 0.28s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .modal {
@@ -25,17 +23,4 @@
   background: #333;
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
-  animation: slideIn 0.28s cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-@keyframes fadeIn {
-  from {
-    background: rgba(0, 0, 0, 0);
-  }
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateY(100%);
-  }
 }

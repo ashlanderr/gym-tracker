@@ -108,24 +108,25 @@ export function ChooseExercise({ onCancel, onSubmit }: ChooseExerciseProps) {
           </div>
         ))}
       </div>
-      {actionsState && (
-        <BottomSheet isOpen={true} onClose={() => setActionsState(null)}>
-          <div className={s.sheetHeader}>Упражнение</div>
-          <div className={s.sheetActions}>
-            <button className={s.sheetAction} onClick={editHandler}>
-              <MdEdit />
-              <span>Редактировать упражнение</span>
-            </button>
-            <button
-              className={clsx(s.sheetAction, s.danger)}
-              onClick={deleteHandler}
-            >
-              <MdDelete />
-              <span>Удалить упражнение</span>
-            </button>
-          </div>
-        </BottomSheet>
-      )}
+      <BottomSheet
+        isOpen={actionsState !== null}
+        onClose={() => setActionsState(null)}
+      >
+        <div className={s.sheetHeader}>Упражнение</div>
+        <div className={s.sheetActions}>
+          <button className={s.sheetAction} onClick={editHandler}>
+            <MdEdit />
+            <span>Редактировать упражнение</span>
+          </button>
+          <button
+            className={clsx(s.sheetAction, s.danger)}
+            onClick={deleteHandler}
+          >
+            <MdDelete />
+            <span>Удалить упражнение</span>
+          </button>
+        </div>
+      </BottomSheet>
     </div>
   );
 }

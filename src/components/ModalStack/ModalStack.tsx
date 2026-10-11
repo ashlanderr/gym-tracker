@@ -14,6 +14,7 @@ import { useLocation, useNavigate } from "react-router";
 import { generateId } from "../../db";
 import { ModalStackContext } from "./constants.ts";
 import { createPortal } from "react-dom";
+import { AnimatePresence } from "motion/react";
 
 export function ModalStack({ children }: ModalStackProps) {
   const [stack, setStack] = useState<ReactNode[]>([]);
@@ -73,7 +74,7 @@ export function ModalStack({ children }: ModalStackProps) {
   return (
     <ModalStackContext value={methods}>
       {children}
-      {createPortal(stack, document.body)}
+      {createPortal(<AnimatePresence>{stack}</AnimatePresence>, document.body)}
     </ModalStackContext>
   );
 }

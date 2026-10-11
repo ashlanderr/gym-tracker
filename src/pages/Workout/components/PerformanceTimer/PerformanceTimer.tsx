@@ -30,25 +30,23 @@ export function PerformanceTimer({ performance }: PerformanceTimerProps) {
         <span className={s.label}>Отдых</span>
         <span className={s.time}>{time}</span>
       </button>
-      {chooseOpen && (
-        <BottomSheet isOpen={true} onClose={() => setChooseOpen(false)}>
-          <div className={s.sheetHeader}>Таймер отдыха</div>
-          <div className={s.sheetSelector}>
-            {TIMER_OPTIONS.map((t) => (
-              <button
-                className={clsx(
-                  s.sheetOption,
-                  t === (performance.timer ?? 0) && s.selected,
-                )}
-                key={t}
-                onClick={() => chooseCompleteHandler(t)}
-              >
-                {t ? buildTime(0, t * 1000) : "ВЫКЛ"}
-              </button>
-            ))}
-          </div>
-        </BottomSheet>
-      )}
+      <BottomSheet isOpen={chooseOpen} onClose={() => setChooseOpen(false)}>
+        <div className={s.sheetHeader}>Таймер отдыха</div>
+        <div className={s.sheetSelector}>
+          {TIMER_OPTIONS.map((t) => (
+            <button
+              className={clsx(
+                s.sheetOption,
+                t === (performance.timer ?? 0) && s.selected,
+              )}
+              key={t}
+              onClick={() => chooseCompleteHandler(t)}
+            >
+              {t ? buildTime(0, t * 1000) : "ВЫКЛ"}
+            </button>
+          ))}
+        </div>
+      </BottomSheet>
     </>
   );
 }

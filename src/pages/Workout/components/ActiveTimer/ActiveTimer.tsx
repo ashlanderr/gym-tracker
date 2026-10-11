@@ -30,15 +30,13 @@ export function ActiveTimer() {
     };
   }, [deadline]);
 
-  if (!time) return null;
-
   const { seconds, minutes } = buildTimeParts(time);
   const secondsStr = seconds.toString().padStart(2, "0");
   const minutesStr = minutes.toString().padStart(2, "0");
   const timeStr = `${minutesStr}:${secondsStr}`;
 
   return (
-    <BottomSheet isOpen={true} hasBackdrop={false}>
+    <BottomSheet isOpen={time !== 0} hasBackdrop={false}>
       <div className={s.root}>
         <button className={s.button} onClick={() => changeHandler(-15)}>
           -15
