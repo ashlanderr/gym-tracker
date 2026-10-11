@@ -43,7 +43,9 @@ export function SchemaGate({
       <Screen
         spinner
         title="Обновляем данные"
-        text={serverReady ? undefined : "Ждём сервер, чтобы ничего не потерять."}
+        text={
+          serverReady ? undefined : "Ждём сервер, чтобы ничего не потерять."
+        }
         action={
           !serverReady && (
             <button

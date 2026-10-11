@@ -151,7 +151,10 @@ function createPlayer(): Player {
     });
   }
 
-  logSound("player created", { player: player.id, contextState: context.state });
+  logSound("player created", {
+    player: player.id,
+    contextState: context.state,
+  });
   return player;
 }
 
@@ -159,7 +162,11 @@ function createPlayer(): Player {
 // doesn't count. Noise at about -60 dBFS passes Chrome's silence threshold (about -72 dBFS)
 // but can't be heard.
 function startNoise(context: AudioContext, destination: AudioNode) {
-  const buffer = context.createBuffer(1, context.sampleRate, context.sampleRate);
+  const buffer = context.createBuffer(
+    1,
+    context.sampleRate,
+    context.sampleRate,
+  );
   const samples = buffer.getChannelData(0);
   for (let i = 0; i < samples.length; i++) {
     samples[i] = (Math.random() * 2 - 1) * NOISE_AMPLITUDE;

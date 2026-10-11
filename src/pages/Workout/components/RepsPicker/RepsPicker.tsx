@@ -6,7 +6,12 @@ import type { RepsPickerProps } from "./types.ts";
 
 const OPTIONS = Array.from({ length: REPS_PICKER_MAX }, (_, i) => i + 1);
 
-export function RepsPicker({ center, selected, target, onPick }: RepsPickerProps) {
+export function RepsPicker({
+  center,
+  selected,
+  target,
+  onPick,
+}: RepsPickerProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const centerRef = useRef<HTMLButtonElement | null>(null);
 

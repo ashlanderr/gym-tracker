@@ -103,28 +103,28 @@ export function WeightSheet({
 
   return (
     <StepSheet
-        title={`${set.type === "warm-up" ? "Разминка" : `Подход ${number}`} · вес`}
-        value={formatWeightUnits(weightKg, units)}
-        units={weightKg !== undefined ? UNITS_SHORT[units] : undefined}
-        onDecrease={() => stepHandler(-1)}
-        onIncrease={() => stepHandler(1)}
-        onClose={onCancel}
-        actions={
-          <>
-            <SheetAction onClick={resetHandler}>
-              <MdRefresh />
-              Сбросить
+      title={`${set.type === "warm-up" ? "Разминка" : `Подход ${number}`} · вес`}
+      value={formatWeightUnits(weightKg, units)}
+      units={weightKg !== undefined ? UNITS_SHORT[units] : undefined}
+      onDecrease={() => stepHandler(-1)}
+      onIncrease={() => stepHandler(1)}
+      onClose={onCancel}
+      actions={
+        <>
+          <SheetAction onClick={resetHandler}>
+            <MdRefresh />
+            Сбросить
+          </SheetAction>
+          {equipment !== "none" && (
+            <SheetAction onClick={inventoryHandler}>
+              <MdTune />
+              Инвентарь
             </SheetAction>
-            {equipment !== "none" && (
-              <SheetAction onClick={inventoryHandler}>
-                <MdTune />
-                Инвентарь
-              </SheetAction>
-            )}
-          </>
-        }
-      >
-        {renderBody()}
-      </StepSheet>
+          )}
+        </>
+      }
+    >
+      {renderBody()}
+    </StepSheet>
   );
 }

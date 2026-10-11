@@ -1,11 +1,7 @@
 import type { SetRowProps } from "./types.ts";
 import s from "./styles.module.scss";
 import { MdCheck } from "react-icons/md";
-import {
-  showToast,
-  useModalStack,
-  useStore,
-} from "../../../../components";
+import { showToast, useModalStack, useStore } from "../../../../components";
 import {
   updateSet,
   type Set,

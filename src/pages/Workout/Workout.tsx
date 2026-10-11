@@ -112,8 +112,7 @@ export function Workout() {
     ).statuses;
     const open = performances
       .filter(
-        (p) =>
-          before.get(p.id) === "locked" && statuses.get(p.id) === "new",
+        (p) => before.get(p.id) === "locked" && statuses.get(p.id) === "new",
       )
       .map((p) => p.id);
     setHighlight({ done: justFinished, open });
@@ -257,8 +256,8 @@ export function Workout() {
         </button>
         {performances.length !== 0 && (
           <p className={s.hint}>
-            Зажми карточку: перетащи, чтобы поменять порядок, или отпусти,
-            чтобы открыть меню
+            Зажми карточку: перетащи, чтобы поменять порядок, или отпусти, чтобы
+            открыть меню
           </p>
         )}
       </div>

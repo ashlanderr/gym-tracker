@@ -16,7 +16,11 @@ import {
 import { PageHeader, useStore } from "../../../../components";
 import { useMemo, useState } from "react";
 import { buildHistory } from "./utils.ts";
-import { CHART_PARAMETERS, CHART_PERIODS, DATE_FORMATTER } from "./constants.ts";
+import {
+  CHART_PARAMETERS,
+  CHART_PERIODS,
+  DATE_FORMATTER,
+} from "./constants.ts";
 import { clsx } from "clsx";
 import {
   CartesianGrid,

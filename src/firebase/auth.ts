@@ -54,9 +54,7 @@ export function useAuth() {
     return localData ? JSON.parse(localData) : null;
   });
   const [localUser, setLocalUser] = useState(readLocalUser);
-  const [firebaseLoading, setFirebaseLoading] = useState(
-    firebaseUser === null,
-  );
+  const [firebaseLoading, setFirebaseLoading] = useState(firebaseUser === null);
 
   useEffect(() => {
     const listener = () => setLocalUser(readLocalUser());
