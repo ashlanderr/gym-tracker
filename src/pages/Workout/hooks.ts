@@ -113,19 +113,9 @@ export function formatWeightUnits(
   return (Math.round(kgToUnits(weightKg, units) * 100) / 100).toString();
 }
 
-// The reps of an exercise at a glance: its own range when one is set,
-// otherwise what was done the last time.
-export function formatPlannedReps(
-  exercise: Exercise | null,
-  prevSet: Set | undefined,
-): string {
-  const range = exercise?.reps;
-  if (range && typeof range !== "string") {
-    return range.min === range.max
-      ? range.min.toString()
-      : `${range.min}–${range.max}`;
-  }
-  return prevSet?.reps?.toString() ?? "?";
+export function formatPlannedReps(exercise: Exercise | null): string {
+  const { min, max } = exercise?.reps ?? DEFAULT_EXERCISE_REPS;
+  return min === max ? min.toString() : `${min}–${max}`;
 }
 
 function setNumber(set: Set, workingCount: number): string {

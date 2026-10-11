@@ -34,9 +34,9 @@ export function ExerciseCard({
   const done = working.filter((s) => s.completed).length;
 
   // What the exercise is about: the weight of the first working set of the
-  // last time, with the reps range of the exercise when it has one.
+  // last time, with the reps range of the exercise.
   const prevSet = prevSets.find((s) => s.completed && s.type !== "warm-up");
-  const reps = formatPlannedReps(exercise, prevSet);
+  const reps = formatPlannedReps(exercise);
   const weight = prevSet ? formatWeightUnits(prevSet.weight, units) : "?";
 
   return (

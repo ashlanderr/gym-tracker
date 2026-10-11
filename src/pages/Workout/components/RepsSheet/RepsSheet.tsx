@@ -31,9 +31,7 @@ export function RepsSheet({ data, onCancel }: ModalProps<SetSheetData, null>) {
 
   const { set, recSet, number } = row;
   const exerciseReps = exercise?.reps ?? DEFAULT_EXERCISE_REPS;
-  const range: RepRange | undefined =
-    recSet?.reps ??
-    (typeof exerciseReps !== "string" ? exerciseReps : undefined);
+  const range: RepRange = recSet?.reps ?? exerciseReps;
   const target = set.type !== "warm-up" ? range : undefined;
   const reps = set.reps ?? recSet?.reps?.max;
   const base = reps ?? target?.min ?? FALLBACK_REPS;
@@ -55,8 +53,7 @@ export function RepsSheet({ data, onCancel }: ModalProps<SetSheetData, null>) {
 
   const rangeHandler = async () => {
     if (!exercise) return;
-    const current = typeof exerciseReps !== "string" ? exerciseReps : null;
-    const result = await pushModal(CustomRepsModal, current);
+    const result = await pushModal(CustomRepsModal, exerciseReps);
     if (result) updateExercise(store, { ...exercise, reps: result });
   };
 

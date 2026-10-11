@@ -11,13 +11,11 @@ import {
   updateExercise,
   generateId,
   DEFAULT_EXERCISE_REPS,
-  type ExerciseRepRangeSimple,
 } from "../../../../db";
 import { CustomRepsModal } from "../CustomRepsModal";
 import {
   EQUIPMENT_TRANSLATION,
   EXERCISE_WEIGHT_TRANSLATION,
-  EXERCISES_REPS_TRANSLATION,
   MUSCLES_TRANSLATION,
 } from "../../../constants.ts";
 import { clsx } from "clsx";
@@ -74,19 +72,7 @@ export function AddExercise({
     }),
   );
 
-  const repsOptions = Object.entries(EXERCISES_REPS_TRANSLATION).map(
-    ([key, label]) => ({
-      key: key as ExerciseRepRangeSimple,
-      label,
-    }),
-  );
-
   const selfWeightPercentages = [0, 25, 50, 75, 100];
-
-  const customReps = typeof reps !== "string" ? reps : null;
-  const customRepsLabel = customReps
-    ? `${customReps.min}-${customReps.max}`
-    : "Свой";
 
   const disabled =
     !trimmedName || !mainMuscle || secondaryMuscles.includes(mainMuscle);
@@ -108,7 +94,7 @@ export function AddExercise({
   };
 
   const customRepsHandler = async () => {
-    const result = await pushModal(CustomRepsModal, customReps);
+    const result = await pushModal(CustomRepsModal, reps);
     if (result) setReps(result);
   };
 
@@ -218,20 +204,11 @@ export function AddExercise({
           )}
           <label className={s.label}>Диапазон повторений</label>
           <div className={s.chips}>
-            {repsOptions.map((w) => (
-              <button
-                className={clsx(s.chip, reps === w.key && s.selected)}
-                key={w.key}
-                onClick={() => setReps(w.key)}
-              >
-                {w.label}
-              </button>
-            ))}
             <button
-              className={clsx(s.chip, customReps && s.selected)}
+              className={clsx(s.chip, s.selected)}
               onClick={customRepsHandler}
             >
-              {customRepsLabel}
+              {reps.min}–{reps.max}
             </button>
           </div>
           <label className={s.label}>Основная группа мышц</label>

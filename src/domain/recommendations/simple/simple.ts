@@ -6,7 +6,6 @@ import type {
 } from "../types.ts";
 import {
   DEFAULT_WEIGHT_DROP,
-  MIN_REPS,
   WARM_UP_SETS,
   WEIGHT_ROUNDING,
 } from "./constants.ts";
@@ -144,15 +143,12 @@ function computeWorkingSet(
     return {
       type: "working",
       weight: undefined,
-      reps: typeof exerciseRepsNorm === "string" ? undefined : exerciseRepsNorm,
+      reps: exerciseRepsNorm,
     };
   }
 
   const weightType = exerciseWeights?.type ?? DEFAULT_EXERCISE_WEIGHT.type;
-  const minReps =
-    typeof exerciseRepsNorm === "string"
-      ? MIN_REPS[exerciseRepsNorm]
-      : exerciseRepsNorm.min;
+  const minReps = exerciseRepsNorm.min;
   const rounding = WEIGHT_ROUNDING[weightType];
   const fullWeight = oneRepMaxToWeight(currSelfRepMax, minReps);
   const weight = subtractSelfWeight(exerciseWeights, selfWeight, fullWeight);
@@ -161,7 +157,7 @@ function computeWorkingSet(
   return {
     type: "working",
     weight: roundedWeight,
-    reps: typeof exerciseRepsNorm === "string" ? undefined : exerciseRepsNorm,
+    reps: exerciseRepsNorm,
   };
 }
 

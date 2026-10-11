@@ -46,3 +46,20 @@ test("merges light and failure sets into working ones", () => {
     "working",
   ]);
 });
+
+test("replaces rep presets of changed exercises with ranges", () => {
+  const doc = new Y.Doc();
+  const exercises = doc.getMap<Y.Map<unknown>>("exercises");
+  const custom = { min: 5, max: 10 };
+  for (const reps of ["low", "medium", "high", custom, undefined]) {
+    exercises.set(String(exercises.size), new Y.Map([["reps", reps]]));
+  }
+  migrate(doc);
+  expect([...exercises.values()].map((e) => e.get("reps"))).toEqual([
+    { min: 6, max: 8 },
+    { min: 8, max: 12 },
+    { min: 12, max: 15 },
+    custom,
+    undefined,
+  ]);
+});

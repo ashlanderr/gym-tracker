@@ -13,7 +13,7 @@ import { useMemo } from "react";
 
 export const DEFAULT_EXERCISE_WEIGHT: ExerciseWeight = { type: "full" };
 
-export const DEFAULT_EXERCISE_REPS: ExerciseRepRange = "low";
+export const DEFAULT_EXERCISE_REPS: ExerciseRepRange = { min: 6, max: 8 };
 
 export function queryExerciseById(store: Store, id: string): Exercise | null {
   const defaultExercise = EXERCISES[id];
