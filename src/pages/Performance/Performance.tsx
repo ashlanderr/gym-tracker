@@ -5,30 +5,23 @@ import { useSetAtom } from "jotai";
 import { MdMoreHoriz } from "react-icons/md";
 import {
   HeaderButton,
-  MuscleFigure,
   PageHeader,
   useModalStack,
   useScrollRestoration,
   useStore,
 } from "../../components";
 import {
-  DEFAULT_WEIGHT_UNITS,
   useQueryExerciseById,
   useQueryPerformancesByWorkout,
-  useQueryPreviousPerformance,
   useQuerySetsByPerformance,
 } from "../../db";
 import { usePageParams } from "../hooks.ts";
-import { UNITS_SHORT } from "../constants.ts";
+import { MUSCLES_TRANSLATION } from "../constants.ts";
 import {
   Performance as PerformanceSets,
   PerformanceActions,
   PerformanceTimer,
 } from "../Workout/components";
-import {
-  formatPlannedReps,
-  formatWeightUnits,
-} from "../Workout/hooks.ts";
 import { JUST_FINISHED_ATOM } from "../Workout/constants.ts";
 import type { PerformanceParams } from "./types.ts";
 
@@ -45,13 +38,6 @@ export function Performance() {
   const performance = performances.find((p) => p.id === performanceId);
   const exercise = useQueryExerciseById(store, performance?.exercise ?? "");
   const sets = useQuerySetsByPerformance(store, performanceId);
-  const prevPerformance = useQueryPreviousPerformance(
-    store,
-    performance?.exercise ?? "",
-    performance?.startedAt ?? 0,
-    performance?.program,
-  );
-  const prevSets = useQuerySetsByPerformance(store, prevPerformance?.id ?? "");
 
   const goBack = () => {
     if (location.key !== "default") {
@@ -71,10 +57,8 @@ export function Performance() {
     }
   }, [performance]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const units = performance?.weights?.units ?? DEFAULT_WEIGHT_UNITS;
-  const working = sets.filter((s) => s.type !== "warm-up");
   const left = sets.filter((s) => !s.completed).length;
-  const prevSet = prevSets.find((s) => s.completed && s.type !== "warm-up");
+  const [mainMuscle, ...otherMuscles] = exercise?.muscles ?? [];
 
   const menuHandler = async () => {
     if (!performance) return;
@@ -90,30 +74,26 @@ export function Performance() {
   return (
     <div className={s.root} ref={scrollRef}>
       <PageHeader
-        title={performance && <PerformanceTimer performance={performance} />}
         onBack={goBack}
         right={
-          <HeaderButton onClick={menuHandler}>
-            <MdMoreHoriz />
-          </HeaderButton>
+          <div className={s.headerActions}>
+            {performance && <PerformanceTimer performance={performance} />}
+            <HeaderButton onClick={menuHandler}>
+              <MdMoreHoriz />
+            </HeaderButton>
+          </div>
         }
       />
       {performance && (
         <>
-          <div className={s.card}>
-            <div className={s.picture}>
-              <MuscleFigure muscles={exercise?.muscles ?? []} />
-            </div>
-            <div className={s.titles}>
-              <h1 className={s.name}>{exercise?.name ?? "–"}</h1>
-              <div className={s.spec}>
-                <b>{working.length}</b> × <b>{formatPlannedReps(exercise, prevSet)}</b> @{" "}
-                <b>
-                  {prevSet ? formatWeightUnits(prevSet.weight, units) : "?"}
-                </b>{" "}
-                {UNITS_SHORT[units]}
+          <div className={s.titles}>
+            <h1 className={s.name}>{exercise?.name ?? "–"}</h1>
+            {mainMuscle && (
+              <div className={s.muscles}>
+                <b>{MUSCLES_TRANSLATION[mainMuscle]}</b>
+                {otherMuscles.map((m) => `, ${MUSCLES_TRANSLATION[m]}`)}
               </div>
-            </div>
+            )}
           </div>
           <div className={s.sets}>
             <PerformanceSets performance={performance} />

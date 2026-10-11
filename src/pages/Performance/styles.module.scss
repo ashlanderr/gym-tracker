@@ -6,54 +6,34 @@
   overflow: auto;
 }
 
-// The same card as on the workout list, only bigger.
-.card {
-  margin: 2px 16px 0;
-  padding: 12px 14px;
-  display: grid;
-  grid-template-columns: 72px 1fr;
-  gap: 16px;
-  align-items: center;
-  border: 1px solid #06f;
-  border-radius: 12px;
-  background: linear-gradient(160deg, rgba(0, 102, 255, 0.14), #111 60%);
-}
-
-.picture {
-  width: 72px;
-  height: 72px;
-  box-sizing: border-box;
-  padding: 4px;
-  border: 1px solid #2a2a2a;
-  border-radius: 10px;
-  background: #000;
+.headerActions {
+  display: flex;
+  gap: 8px;
 }
 
 .titles {
-  min-width: 0;
+  margin: 0 16px;
 }
 
 .name {
-  display: flex;
-  font-size: 21px;
+  font-size: 26px;
   font-weight: 800;
   line-height: 1.15;
 }
 
-.spec {
+.muscles {
   margin-top: 6px;
   font-size: 14px;
   color: #8a8a8a;
-  font-variant-numeric: tabular-nums;
 
   b {
     color: #fff;
-    font-weight: 700;
+    font-weight: 600;
   }
 }
 
 .sets {
-  margin: 16px 16px 0;
+  margin: 24px 16px 0;
 }
 
 .actions {
