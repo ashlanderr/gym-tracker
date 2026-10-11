@@ -7,12 +7,14 @@ import {
   type Store,
 } from "../../db";
 import { ConnectionContext, StoreContext } from "./constants.ts";
+import { SchemaGate } from "../SchemaGate";
 
 export function StoreProvider({ children }: PropsWithChildren) {
   const { user } = useAuth();
   const uid = useRef<string | undefined>(undefined);
   const store = useRef<Store | null>(null);
   const [status, setStatus] = useState<ConnectionStatus>("disconnected");
+  const [loaded, setLoaded] = useState<string | null>(null);
 
   if (uid.current !== user?.uid) {
     uid.current = user?.uid;
@@ -22,14 +24,25 @@ export function StoreProvider({ children }: PropsWithChildren) {
     }
     setStatus("disconnected");
     if (uid.current) {
-      store.current = initStore(uid.current, setStatus);
+      const current = uid.current;
+      store.current = initStore(current, setStatus, () => setLoaded(current));
     }
   }
 
   return (
     <StoreContext.Provider value={store.current}>
       <ConnectionContext.Provider value={status}>
-        {children}
+        {store.current ? (
+          <SchemaGate
+            store={store.current}
+            loaded={loaded === uid.current}
+            status={status}
+          >
+            {children}
+          </SchemaGate>
+        ) : (
+          children
+        )}
       </ConnectionContext.Provider>
     </StoreContext.Provider>
   );

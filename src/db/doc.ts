@@ -10,6 +10,7 @@ export type ConnectionStatus =
 
 export interface Store {
   personal: Y.Doc;
+  hasServer: boolean;
 }
 
 const BACKEND_URL_STORAGE_KEY = "BACKEND_URL";
@@ -25,6 +26,7 @@ export function setBackendUrl(url: string) {
 export function initStore(
   uid: string,
   onStatusChange: (status: ConnectionStatus) => void,
+  onLoaded: () => void,
 ): Store {
   const statusMap = new Map<string, ConnectionStatus>();
 
@@ -48,13 +50,15 @@ export function initStore(
   };
 
   return {
-    personal: initDoc(`user/${uid}`, statusHandler),
+    personal: initDoc(`user/${uid}`, statusHandler, onLoaded),
+    hasServer: !!getBackendUrl(),
   };
 }
 
 function initDoc(
   name: string,
   onStatusChange: (status: ConnectionStatus, name: string) => void,
+  onLoaded: () => void,
 ): Y.Doc {
   const doc = new Y.Doc();
 
@@ -80,6 +84,7 @@ function initDoc(
 
   idbProvider.on("synced", () => {
     console.log(`idbProvider [${name}]: synced`);
+    onLoaded();
   });
 
   return doc;

@@ -1,0 +1,64 @@
+.root {
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 8px;
+  border: 3px solid #2a2a2a;
+  border-top-color: #06f;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.text {
+  max-width: 280px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #8a8a8a;
+}
+
+.button,
+.secondary {
+  height: 44px;
+  margin-top: 12px;
+  padding: 0 20px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.button {
+  border: none;
+  background: #06f;
+}
+
+.secondary {
+  border: 1px solid #2a2a2a;
+  background: transparent;
+
+  &:active {
+    background: #1a1a1a;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

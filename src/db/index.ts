@@ -7,3 +7,4 @@ export * from "./records.ts";
 export * from "./sets.ts";
 export * from "./workouts.ts";
 export * from "./program.ts";
+export * from "./migrations.ts";
