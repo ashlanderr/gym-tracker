@@ -1,5 +1,3 @@
-import s from "./styles.module.scss";
-import { clsx } from "clsx";
 import { MdRefresh, MdTune } from "react-icons/md";
 import {
   type ModalProps,
@@ -15,7 +13,8 @@ import { type RepRange } from "../../../../domain";
 import { SheetAction, StepSheet } from "../StepSheet";
 import { CustomRepsModal } from "../CustomRepsModal";
 import { formatRepRange } from "../SetRow/utils.ts";
-import { REPS_OPTIONS_COUNT } from "../constants.ts";
+import { RepsPicker } from "../RepsPicker";
+import { REPS_PICKER_MAX } from "../constants.ts";
 import { useLivePerformance, usePerformanceSets } from "../../hooks.ts";
 import type { SetSheetData } from "../SetRow/types.ts";
 
@@ -38,12 +37,15 @@ export function RepsSheet({ data, onCancel }: ModalProps<SetSheetData, null>) {
   const target = set.type !== "warm-up" ? range : undefined;
   const reps = set.reps ?? recSet?.reps?.max;
   const base = reps ?? target?.min ?? FALLBACK_REPS;
-  const first = Math.max(1, (target?.min ?? base) - 2);
-  const options = Array.from({ length: REPS_OPTIONS_COUNT }, (_, i) => first + i);
 
   const saveReps = (newReps: number | undefined) => {
     if (set.completed || (newReps !== undefined && newReps < 1)) return;
     updateSet(store, { ...set, reps: newReps });
+  };
+
+  const pickHandler = (newReps: number) => {
+    saveReps(newReps);
+    onCancel();
   };
 
   const resetHandler = () => {
@@ -78,24 +80,12 @@ export function RepsSheet({ data, onCancel }: ModalProps<SetSheetData, null>) {
         </>
       }
     >
-      <div className={s.quick}>
-        {options.map((option) => (
-          <button
-            key={option}
-            className={clsx(
-              s.option,
-              target &&
-                option >= target.min &&
-                option <= target.max &&
-                s.target,
-              option === reps && s.selected,
-            )}
-            onClick={() => saveReps(option)}
-          >
-            {option}
-          </button>
-        ))}
-      </div>
+      <RepsPicker
+        center={Math.min(Math.max(base, 1), REPS_PICKER_MAX)}
+        selected={reps}
+        target={target}
+        onPick={pickHandler}
+      />
     </StepSheet>
   );
 }
