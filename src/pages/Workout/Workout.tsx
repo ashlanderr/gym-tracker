@@ -46,6 +46,7 @@ import {
 } from "./components";
 import {
   HeaderButton,
+  Marquee,
   PageHeader,
   PageModal,
   useStore,
@@ -204,7 +205,7 @@ export function Workout() {
       <ActiveTimer />
       <PageHeader
         kicker={`Тренировка · ${program?.name ?? "Базовая"}`}
-        title={workout?.name ?? "Тренировка"}
+        title={<Marquee>{workout?.name ?? "Тренировка"}</Marquee>}
         onBack={() => navigate(-1)}
         onTitleClick={handleSelectProgram}
         right={

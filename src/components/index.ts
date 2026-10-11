@@ -8,3 +8,4 @@ export * from "./ScrollRestoration";
 export * from "./PageHeader";
 export * from "./MuscleFigure";
 export * from "./Toasts";
+export * from "./Marquee";
