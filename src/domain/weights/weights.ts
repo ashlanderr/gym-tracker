@@ -111,6 +111,13 @@ export function stepWeightKg(
   return current;
 }
 
+// The lightest weight the inventory puts together: the empty bar, the lightest
+// dumbbells, the top plate of a stack.
+export function minimumWeightKg(weights: PerformanceWeights): number {
+  const empty = snapWeightKg(weights, 0, "ceil");
+  return empty > 0 ? empty : stepWeightKg(weights, 0, 1, 0);
+}
+
 export function computeWeights(
   weights: PerformanceWeights | undefined,
   valueKg: number,

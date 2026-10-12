@@ -1,5 +1,6 @@
 import {
   computeWeights,
+  minimumWeightKg,
   oneRepMaxToReps,
   oneRepMaxToWeight,
   snapWeightKg,
@@ -82,6 +83,14 @@ test("round machine weights", () => {
   expect(snapWeightKg(machineWeights, 14)).toEqual(15);
   expect(snapWeightKg(machineWeights, 17)).toEqual(15);
   expect(snapWeightKg(machineWeights, 19)).toEqual(20);
+});
+
+test("minimum weight is the empty bar or the lightest weight put together", () => {
+  expect(
+    minimumWeightKg({ units: "kg", base: 20, steps: [1.25, 2.5], count: 2 }),
+  ).toEqual(20);
+  expect(minimumWeightKg({ units: "kg", steps: 2, count: 2 })).toEqual(4);
+  expect(minimumWeightKg({ units: "kg", base: 0, steps: 5 })).toEqual(5);
 });
 
 test("round machine weights with additional weight 1", () => {

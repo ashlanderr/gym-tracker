@@ -3,24 +3,41 @@ import { type ReactNode, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router";
 import { clsx } from "clsx";
 import {
+  MdArrowDownward,
   MdArrowForward,
   MdArrowUpward,
+  MdAutorenew,
   MdEdit,
+  MdHistory,
   MdLock,
   MdPause,
+  MdPersonOutline,
+  MdQuestionMark,
+  MdTune,
   MdViewList,
 } from "react-icons/md";
 import { PageHeader, useModalStack, useStore } from "../../components";
 import {
+  type Exercise,
   type Performance,
   queryExerciseById,
   type Store,
+  updatePerformance,
   updateSet,
 } from "../../db";
-import { queryPendingIncrease, type WeightIncrease } from "../../domain";
+import {
+  minimumWeightKg,
+  type PendingWeight,
+  queryMissingInventory,
+  queryPendingWeight,
+  replacePerformance,
+  type WeightIncrease,
+} from "../../domain";
 import { usePageParams } from "../hooks.ts";
 import { UNITS_SHORT } from "../constants.ts";
 import { WeightSheet } from "../Workout/components/WeightSheet";
+import { WeightsSelectorModal } from "../Workout/components/WeightsSelectorModal";
+import { ChooseExerciseModal } from "../Workout/components/ChooseExerciseModal";
 import {
   formatWeightUnits,
   usePerformanceSets,
@@ -29,7 +46,7 @@ import {
 } from "../Workout/hooks.ts";
 import type { PerformanceParams } from "../Performance/types.ts";
 
-type NoticeType = "order" | "increase";
+type NoticeType = "order" | "inventory" | "weight";
 
 interface Choice {
   icon: ReactNode;
@@ -49,8 +66,8 @@ interface NoticeContent {
   choices: Choice[];
 }
 
-// What comes up before an exercise, one at a time: a warning about the order
-// and a new weight. Nothing here is stored but the answers that change the
+// What comes up before an exercise, one at a time: a warning about the order,
+// the inventory and a weight to pick. Nothing here is stored but the answers that change the
 // data, so the queue is read again from the workout on every render.
 export function Notice() {
   const { workoutId, performanceId } = usePageParams<PerformanceParams>();
@@ -76,11 +93,13 @@ function NoticeQueue({ workout, performance }: NoticeQueueProps) {
 
   const exercisePath = `/workouts/${performance.workout}/performances/${performance.id}`;
   const isLocked = workout.statuses.get(performance.id) === "locked";
-  const increase = queryPendingIncrease(store, performance);
+  const isInventoryMissing = queryMissingInventory(store, performance);
+  const pending = queryPendingWeight(store, performance);
 
   const notices: NoticeType[] = [];
   if (isLocked) notices.push("order");
-  if (increase) notices.push("increase");
+  if (isInventoryMissing) notices.push("inventory");
+  if (pending) notices.push("weight");
 
   const queue = notices.filter((n) => n !== "order" || !isOrderAccepted);
   const current = queue.at(0);
@@ -98,6 +117,31 @@ function NoticeQueue({ workout, performance }: NoticeQueueProps) {
     if (first) await pushModal(WeightSheet, { performance, setId: first.id });
   };
 
+  const setInventory = async () => {
+    const result = await pushModal(WeightsSelectorModal, {
+      equipment: exercise?.equipment ?? "none",
+      weights: performance.weights,
+      previewKg: undefined,
+    });
+    if (result?.weights) {
+      updatePerformance(store, { ...performance, weights: result.weights });
+    }
+  };
+
+  const replaceExercise = async () => {
+    const newExercise = await pushModal(ChooseExerciseModal, null);
+    if (!newExercise) return;
+    const newPerformance = replacePerformance(
+      store,
+      performance,
+      newExercise.id,
+    );
+    navigate(
+      `/workouts/${performance.workout}/performances/${newPerformance.id}`,
+      { replace: true },
+    );
+  };
+
   const goBack = () => {
     if (location.key !== "default") {
       navigate(-1);
@@ -112,7 +156,13 @@ function NoticeQueue({ workout, performance }: NoticeQueueProps) {
       back: goBack,
       accept: () => setOrderAccepted(true),
     });
-  } else if (current === "increase" && increase) {
+  } else if (current === "inventory") {
+    content = inventoryContent({
+      setInventory,
+      replace: replaceExercise,
+    });
+  } else if (current === "weight" && pending?.type === "increase") {
+    const { increase } = pending;
     content = increaseContent(increase, {
       formatWeight,
       lastReps: prevSets
@@ -121,6 +171,14 @@ function NoticeQueue({ workout, performance }: NoticeQueueProps) {
       raise: () => writeWeight(increase.to),
       stay: () => writeWeight(increase.from),
       custom: customWeight,
+    });
+  } else if (current === "weight" && pending?.type === "unknown") {
+    content = unknownContent(pending, exercise, performance, {
+      formatWeight,
+      minimum: writeWeight,
+      none: () => writeWeight(0),
+      custom: customWeight,
+      replace: replaceExercise,
     });
   }
 
@@ -277,5 +335,119 @@ function increaseContent(
         onClick: custom,
       },
     ],
+  };
+}
+
+interface InventoryOptions {
+  setInventory: () => void;
+  replace: () => void;
+}
+
+function inventoryContent({
+  setInventory,
+  replace,
+}: InventoryOptions): NoticeContent {
+  return {
+    tone: "dim",
+    icon: <MdTune />,
+    kicker: "Инвентарь",
+    title: "Что есть в зале?",
+    text:
+      "Без этого приложение не соберёт вес из того, что есть, и не " +
+      "посчитает разминку. Отмечается один раз, дальше переносится сам.",
+    choices: [
+      {
+        icon: <MdTune />,
+        title: "Отметить инвентарь",
+        text: "Гриф, блины, гантели или плитки",
+        onClick: setInventory,
+      },
+      {
+        icon: <MdAutorenew />,
+        title: "Заменить упражнение",
+        text: "Нет снаряда или не хочу его",
+        onClick: replace,
+      },
+    ],
+  };
+}
+
+interface UnknownOptions {
+  formatWeight: (weightKg: number) => string;
+  minimum: (weightKg: number) => void;
+  none: () => void;
+  custom: () => void;
+  replace: () => void;
+}
+
+const RELATIVE_TIME = new Intl.RelativeTimeFormat("ru", { numeric: "auto" });
+const MONTH_MS = 30 * 24 * 60 * 60 * 1000;
+
+function unknownContent(
+  pending: Extract<PendingWeight, { type: "unknown" }>,
+  exercise: Exercise | null,
+  performance: Performance,
+  { formatWeight, minimum, none, custom, replace }: UnknownOptions,
+): NoticeContent {
+  const { last } = pending;
+  const type = exercise?.weight?.type ?? "full";
+  const choices: Choice[] = [];
+
+  if (type === "positive") {
+    choices.push({
+      icon: <MdPersonOutline />,
+      title: "Без отягощения",
+      text: "Только свой вес",
+      onClick: none,
+    });
+  } else if (type === "full" && performance.weights) {
+    const weightKg = minimumWeightKg(performance.weights);
+    choices.push({
+      icon: <MdArrowDownward />,
+      title: `Минимум: ${formatWeight(weightKg)}`,
+      text: "Начну с лёгкого и прибавлю",
+      onClick: () => minimum(weightKg),
+    });
+  }
+
+  choices.push(
+    {
+      icon: <MdEdit />,
+      title: "Ввести вес",
+      text: "Знаю, сколько взять",
+      onClick: custom,
+    },
+    {
+      icon: <MdAutorenew />,
+      title: "Заменить упражнение",
+      text: "Нет снаряда или не хочу его",
+      onClick: replace,
+    },
+  );
+
+  if (!last) {
+    return {
+      tone: "dim",
+      icon: <MdQuestionMark />,
+      kicker: "Первый раз",
+      title: "Какой вес взять?",
+      text: "Истории ещё нет, поэтому вес выбираешь ты. Дальше приложение будет считать от него.",
+      choices,
+    };
+  }
+
+  const months = Math.round(
+    (performance.startedAt - last.startedAt) / MONTH_MS,
+  );
+  return {
+    tone: "dim",
+    icon: <MdHistory />,
+    kicker: "Долгий перерыв",
+    title: "Какой вес взять?",
+    text:
+      `Последний раз ${RELATIVE_TIME.format(-months, "month")}, ` +
+      `с весом ${formatWeight(last.weight)}. За это время сила могла уйти, ` +
+      "поэтому вес выбираешь ты.",
+    choices,
   };
 }

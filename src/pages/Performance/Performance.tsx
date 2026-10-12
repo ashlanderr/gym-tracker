@@ -15,7 +15,7 @@ import {
   useQueryPerformancesByWorkout,
   useQuerySetsByPerformance,
 } from "../../db";
-import { queryPendingIncrease } from "../../domain";
+import { queryMissingInventory, queryPendingWeight } from "../../domain";
 import { usePageParams } from "../hooks.ts";
 import { MUSCLES_TRANSLATION } from "../constants.ts";
 import {
@@ -61,7 +61,11 @@ export function Performance() {
   const left = sets.filter((s) => !s.completed).length;
   const [mainMuscle, ...otherMuscles] = exercise?.muscles ?? [];
 
-  if (performance && queryPendingIncrease(store, performance)) {
+  if (
+    performance &&
+    (queryMissingInventory(store, performance) ||
+      queryPendingWeight(store, performance))
+  ) {
     return <Navigate to="notice" replace />;
   }
 

@@ -78,11 +78,22 @@
   }
 }
 
-.increase {
+.mark {
   margin-left: 6px;
   vertical-align: -3px;
   font-size: 18px;
+}
+
+.increase {
   color: #3c3;
+}
+
+.unknown {
+  color: #4a9eff;
+}
+
+.inventory {
+  color: #e5a33a;
 }
 
 .new {

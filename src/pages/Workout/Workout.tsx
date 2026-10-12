@@ -51,7 +51,8 @@ import {
   addPerformance,
   setWorkoutProgram,
   computeWorkoutStatuses,
-  queryPendingIncrease,
+  queryMissingInventory,
+  queryPendingWeight,
 } from "../../domain";
 import {
   DRAG_DELAY,
@@ -157,7 +158,8 @@ export function Workout() {
     const path = `/workouts/${workoutId}/performances/${performance.id}`;
     const hasNotice =
       statuses.get(performance.id) === "locked" ||
-      queryPendingIncrease(store, performance) !== null;
+      queryMissingInventory(store, performance) ||
+      queryPendingWeight(store, performance) !== null;
     navigate(hasNotice ? `${path}/notice` : path);
   };
 
