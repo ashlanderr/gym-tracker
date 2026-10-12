@@ -1,5 +1,5 @@
-// Color means the kind of notice: green for a new weight, grey for a
-// warning that can be ignored.
+// Color means the kind of notice, the same as its mark on the card: grey
+// for a warning that can be ignored.
 .root {
   --tone: #06f;
   width: 100%;
@@ -7,8 +7,16 @@
   overflow: auto;
 }
 
-.good {
-  --tone: #2c2;
+.inventory {
+  --tone: var(--mark-inventory);
+}
+
+.unknown {
+  --tone: var(--mark-unknown);
+}
+
+.increase {
+  --tone: var(--mark-increase);
 }
 
 .dim {

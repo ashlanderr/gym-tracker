@@ -1,3 +1,13 @@
+.icon {
+  width: 1em;
+  height: 1em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .mark {
   display: inline-grid;
   place-items: center;
@@ -7,28 +17,22 @@
   border-radius: 2px;
   box-sizing: border-box;
   background: #000;
+  font-size: 11px;
   transform: rotate(45deg);
 
-  svg {
-    width: 11px;
-    height: 11px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2.6;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+  .icon {
     transform: rotate(-45deg);
   }
 }
 
 .inventory {
-  color: #e5a33a;
+  color: var(--mark-inventory);
 }
 
 .unknown {
-  color: #4a9eff;
+  color: var(--mark-unknown);
 }
 
 .increase {
-  color: #3c3;
+  color: var(--mark-increase);
 }

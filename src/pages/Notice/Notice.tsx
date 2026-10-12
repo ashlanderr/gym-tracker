@@ -8,13 +8,11 @@ import {
   MdArrowForward,
   MdArrowUpward,
   MdAutorenew,
+  MdBuild,
   MdEdit,
-  MdHistory,
   MdLock,
   MdPause,
   MdPersonOutline,
-  MdQuestionMark,
-  MdTune,
   MdViewList,
 } from "react-icons/md";
 import { PageHeader, useModalStack, useStore } from "../../components";
@@ -47,6 +45,10 @@ import {
 import type { PerformanceParams } from "../Performance/types.ts";
 import { JUST_REPLACED_ATOM } from "../Workout/constants.ts";
 import { StartWeightSheet } from "./components/StartWeightSheet";
+import {
+  ExerciseMarkIcon,
+  type ExerciseMarkType,
+} from "../Workout/components/ExerciseMark";
 
 type NoticeType = "order" | "inventory" | "weight";
 
@@ -59,7 +61,7 @@ interface Choice {
 }
 
 interface NoticeContent {
-  tone: "good" | "dim";
+  tone: ExerciseMarkType | "dim";
   icon: ReactNode;
   kicker: string;
   title: string;
@@ -301,8 +303,8 @@ function increaseContent(
 ): NoticeContent {
   const { range } = increase;
   return {
-    tone: "good",
-    icon: <MdArrowUpward />,
+    tone: "increase",
+    icon: <ExerciseMarkIcon type="increase" />,
     kicker: "Новый вес",
     title: `Пора прибавить: ${formatWeight(increase.to)}`,
     text: "В прошлый раз все подходы на максимум. Ты стал сильнее.",
@@ -353,8 +355,8 @@ function inventoryContent({
   replace,
 }: InventoryOptions): NoticeContent {
   return {
-    tone: "dim",
-    icon: <MdTune />,
+    tone: "inventory",
+    icon: <ExerciseMarkIcon type="inventory" />,
     kicker: "Инвентарь",
     title: "Что есть в зале?",
     text:
@@ -362,7 +364,7 @@ function inventoryContent({
       "посчитает разминку. Отмечается один раз, дальше переносится сам.",
     choices: [
       {
-        icon: <MdTune />,
+        icon: <MdBuild />,
         title: "Отметить инвентарь",
         text: "Гриф, блины, гантели или плитки",
         onClick: setInventory,
@@ -435,8 +437,8 @@ function unknownContent(
 
   if (!last) {
     return {
-      tone: "dim",
-      icon: <MdQuestionMark />,
+      tone: "unknown",
+      icon: <ExerciseMarkIcon type="unknown" />,
       kicker: "Первый раз",
       title: "Какой вес взять?",
       text: "Истории ещё нет, поэтому вес выбираешь ты. Дальше приложение будет считать от него.",
@@ -448,8 +450,8 @@ function unknownContent(
     (performance.startedAt - last.startedAt) / MONTH_MS,
   );
   return {
-    tone: "dim",
-    icon: <MdHistory />,
+    tone: "unknown",
+    icon: <ExerciseMarkIcon type="unknown" />,
     kicker: "Долгий перерыв",
     title: "Какой вес взять?",
     text:

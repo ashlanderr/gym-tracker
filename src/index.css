@@ -148,3 +148,8 @@ body,
   height: 100%;
   overflow: hidden;
 }
+:root {
+  --mark-inventory: #e5a33a;
+  --mark-unknown: #4a9eff;
+  --mark-increase: #3c3;
+}

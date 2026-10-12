@@ -10,12 +10,18 @@ const PATHS: Record<ExerciseMarkType, string> = {
   increase: "M12 19V5M6 11l6-6 6 6",
 };
 
+export function ExerciseMarkIcon({ type }: ExerciseMarkProps) {
+  return (
+    <svg className={s.icon} viewBox="0 0 24 24">
+      <path d={PATHS[type]} />
+    </svg>
+  );
+}
+
 export function ExerciseMark({ type }: ExerciseMarkProps) {
   return (
     <span className={clsx(s.mark, s[type])}>
-      <svg viewBox="0 0 24 24">
-        <path d={PATHS[type]} />
-      </svg>
+      <ExerciseMarkIcon type={type} />
     </span>
   );
 }
