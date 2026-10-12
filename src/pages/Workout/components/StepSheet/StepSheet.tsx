@@ -1,10 +1,18 @@
 import s from "./styles.module.scss";
+import { clsx } from "clsx";
 import { BottomSheet } from "../../../../components";
 import type { SheetActionProps, StepSheetProps } from "./types.ts";
 
-export function SheetAction({ children, onClick }: SheetActionProps) {
+export function SheetAction({
+  children,
+  isPrimary,
+  onClick,
+}: SheetActionProps) {
   return (
-    <button className={s.action} onClick={onClick}>
+    <button
+      className={clsx(s.action, isPrimary && s.primary)}
+      onClick={onClick}
+    >
       {children}
     </button>
   );

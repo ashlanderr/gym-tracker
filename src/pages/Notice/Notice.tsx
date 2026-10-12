@@ -36,7 +36,6 @@ import {
 } from "../../domain";
 import { usePageParams } from "../hooks.ts";
 import { UNITS_SHORT } from "../constants.ts";
-import { WeightSheet } from "../Workout/components/WeightSheet";
 import { WeightsSelectorModal } from "../Workout/components/WeightsSelectorModal";
 import { ChooseExerciseModal } from "../Workout/components/ChooseExerciseModal";
 import {
@@ -117,11 +116,6 @@ function NoticeQueue({ workout, performance }: NoticeQueueProps) {
     if (first) updateSet(store, { ...first, weight: weightKg });
   };
 
-  const customWeight = async () => {
-    const first = sets.find((set) => set.type === "working");
-    if (first) await pushModal(WeightSheet, { performance, setId: first.id });
-  };
-
   const startWeight = async (initialKg: number) => {
     const weightKg = await pushModal(StartWeightSheet, {
       performance,
@@ -181,7 +175,7 @@ function NoticeQueue({ workout, performance }: NoticeQueueProps) {
         .map((set) => set.reps),
       raise: () => writeWeight(increase.to),
       stay: () => writeWeight(increase.from),
-      custom: customWeight,
+      custom: () => startWeight(increase.from),
     });
   } else if (current === "weight" && pending?.type === "unknown") {
     content = unknownContent(pending, exercise, performance, {
@@ -341,8 +335,8 @@ function increaseContent(
       },
       {
         icon: <MdEdit />,
-        title: "Свой вес",
-        text: "Выберу сам",
+        title: "Ввести вес",
+        text: "Знаю, сколько взять",
         onClick: custom,
       },
     ],

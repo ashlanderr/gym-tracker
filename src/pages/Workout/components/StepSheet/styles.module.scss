@@ -90,3 +90,15 @@
     background: #222;
   }
 }
+
+.primary {
+  border-color: #06f;
+  background: #06f;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+
+  &:active {
+    background: #05c;
+  }
+}

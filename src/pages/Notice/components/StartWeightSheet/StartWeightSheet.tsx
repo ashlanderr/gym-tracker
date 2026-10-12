@@ -1,6 +1,5 @@
 import s from "./styles.module.scss";
 import { useState } from "react";
-import { MdCheck } from "react-icons/md";
 import type { ModalProps } from "../../../../components";
 import {
   MANUAL_WEIGHT_STEP,
@@ -28,7 +27,6 @@ export function StartWeightSheet({
   const [weightKg, setWeightKg] = useState(data.initialKg);
   const weights = performance.weights;
   const equipment = exercise?.equipment ?? "none";
-  const formatted = `${formatWeightUnits(weightKg, units)} ${UNITS_SHORT[units]}`;
 
   const stepHandler = (direction: 1 | -1) => {
     const fallback = unitsToKg(MANUAL_WEIGHT_STEP, units);
@@ -44,9 +42,8 @@ export function StartWeightSheet({
       onIncrease={() => stepHandler(1)}
       onClose={onCancel}
       actions={
-        <SheetAction onClick={() => onSubmit(weightKg)}>
-          <MdCheck />
-          Начать с {formatted}
+        <SheetAction isPrimary onClick={() => onSubmit(weightKg)}>
+          Выбрать
         </SheetAction>
       }
     >

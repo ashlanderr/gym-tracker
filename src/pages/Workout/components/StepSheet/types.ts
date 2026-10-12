@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 export interface SheetActionProps {
   children: ReactNode;
+  isPrimary?: boolean;
   onClick: () => void;
 }
 
