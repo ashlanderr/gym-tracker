@@ -59,6 +59,7 @@ import {
   DRAG_TOLERANCE,
   HIGHLIGHT_DURATION,
   JUST_FINISHED_ATOM,
+  JUST_REPLACED_ATOM,
   MENU_MOVE_TOLERANCE,
 } from "./constants.ts";
 
@@ -83,6 +84,7 @@ export function Workout() {
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
   const [justFinished, setJustFinished] = useAtom(JUST_FINISHED_ATOM);
+  const [justReplaced, setJustReplaced] = useAtom(JUST_REPLACED_ATOM);
   const [highlight, setHighlight] = useState<Highlight | null>(null);
   const justDragged = useRef(false);
   const { scrollRef } = useScrollRestoration();
@@ -100,6 +102,16 @@ export function Workout() {
     }),
   );
 
+  const showHighlight = (next: Highlight, scrollTo: string) => {
+    setHighlight(next);
+    document
+      .querySelector(`[data-performance="${scrollTo}"]`)
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+
+    const timeout = setTimeout(() => setHighlight(null), HIGHLIGHT_DURATION);
+    return () => clearTimeout(timeout);
+  };
+
   // Back from a finished exercise: it flashes green and what it unlocked
   // flashes blue, then the list calms down.
   useEffect(() => {
@@ -116,16 +128,17 @@ export function Workout() {
         (p) => before.get(p.id) === "locked" && statuses.get(p.id) === "new",
       )
       .map((p) => p.id);
-    setHighlight({ done: justFinished, open });
     setJustFinished(null);
-
-    document
-      .querySelector(`[data-performance="${justFinished}"]`)
-      ?.scrollIntoView({ behavior: "smooth", block: "center" });
-
-    const timeout = setTimeout(() => setHighlight(null), HIGHLIGHT_DURATION);
-    return () => clearTimeout(timeout);
+    return showHighlight({ done: justFinished, open }, justFinished);
   }, [justFinished]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Back from a replaced exercise: the new one flashes blue, like an unlocked
+  // one, so it is found again in the list.
+  useEffect(() => {
+    if (!justReplaced) return;
+    setJustReplaced(null);
+    return showHighlight({ done: null, open: [justReplaced] }, justReplaced);
+  }, [justReplaced]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const addPerformanceHandler = async () => {
     const exercise = await pushModal(ChooseExerciseModal, null);

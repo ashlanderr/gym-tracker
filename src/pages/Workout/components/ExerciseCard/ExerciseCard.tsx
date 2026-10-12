@@ -1,12 +1,6 @@
 import s from "./styles.module.scss";
 import { clsx } from "clsx";
-import {
-  MdArrowUpward,
-  MdCheck,
-  MdLock,
-  MdQuestionMark,
-  MdTune,
-} from "react-icons/md";
+import { MdCheck, MdLock } from "react-icons/md";
 import { MuscleFigure, useStore } from "../../../../components";
 import { DEFAULT_EXERCISE_REPS } from "../../../../db";
 import { queryMissingInventory, queryPendingWeight } from "../../../../domain";
@@ -16,6 +10,7 @@ import {
   formatWeightUnits,
   usePerformanceSets,
 } from "../../hooks.ts";
+import { ExerciseMark } from "../ExerciseMark";
 import type { ExerciseCardProps } from "./types.ts";
 
 export function ExerciseCard({
@@ -59,15 +54,12 @@ export function ExerciseCard({
         <MuscleFigure muscles={exercise?.muscles ?? []} />
       </div>
       <div className={s.spec}>
-        <b>{working.length}</b> × <b>{reps}</b> @ <b>{weight}</b>{" "}
-        {UNITS_SHORT[units]}
-        {isInventoryMissing && <MdTune className={clsx(s.mark, s.inventory)} />}
-        {pendingWeight === "unknown" && (
-          <MdQuestionMark className={clsx(s.mark, s.unknown)} />
-        )}
-        {pendingWeight === "increase" && (
-          <MdArrowUpward className={clsx(s.mark, s.increase)} />
-        )}
+        <span>
+          <b>{working.length}</b> × <b>{reps}</b> @ <b>{weight}</b>{" "}
+          {UNITS_SHORT[units]}
+        </span>
+        {isInventoryMissing && <ExerciseMark type="inventory" />}
+        {pendingWeight && <ExerciseMark type={pendingWeight} />}
       </div>
     </div>
   );

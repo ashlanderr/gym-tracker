@@ -67,6 +67,10 @@
 .spec {
   grid-area: spec;
   align-self: center;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
   margin-left: 12px;
   font-size: 15px;
   color: #8a8a8a;
@@ -76,24 +80,6 @@
     color: #fff;
     font-weight: 700;
   }
-}
-
-.mark {
-  margin-left: 6px;
-  vertical-align: -3px;
-  font-size: 18px;
-}
-
-.increase {
-  color: #3c3;
-}
-
-.unknown {
-  color: #4a9eff;
-}
-
-.inventory {
-  color: #e5a33a;
 }
 
 .new {

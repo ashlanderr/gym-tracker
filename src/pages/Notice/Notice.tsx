@@ -1,5 +1,6 @@
 import s from "./styles.module.scss";
 import { type ReactNode, useState } from "react";
+import { useSetAtom } from "jotai";
 import { Navigate, useLocation, useNavigate } from "react-router";
 import { clsx } from "clsx";
 import {
@@ -45,6 +46,8 @@ import {
   type WorkoutState,
 } from "../Workout/hooks.ts";
 import type { PerformanceParams } from "../Performance/types.ts";
+import { JUST_REPLACED_ATOM } from "../Workout/constants.ts";
+import { StartWeightSheet } from "./components/StartWeightSheet";
 
 type NoticeType = "order" | "inventory" | "weight";
 
@@ -67,8 +70,9 @@ interface NoticeContent {
 }
 
 // What comes up before an exercise, one at a time: a warning about the order,
-// the inventory and a weight to pick. Nothing here is stored but the answers that change the
-// data, so the queue is read again from the workout on every render.
+// the inventory and a weight to pick. Nothing here is stored but the answers
+// that change the data, so the queue is read again from the workout on every
+// render.
 export function Notice() {
   const { workoutId, performanceId } = usePageParams<PerformanceParams>();
   const workout = useWorkoutState(workoutId);
@@ -90,6 +94,7 @@ function NoticeQueue({ workout, performance }: NoticeQueueProps) {
   const { pushModal } = useModalStack();
   const { exercise, sets, prevSets, units } = usePerformanceSets(performance);
   const [isOrderAccepted, setOrderAccepted] = useState(false);
+  const setJustReplaced = useSetAtom(JUST_REPLACED_ATOM);
 
   const exercisePath = `/workouts/${performance.workout}/performances/${performance.id}`;
   const isLocked = workout.statuses.get(performance.id) === "locked";
@@ -117,6 +122,14 @@ function NoticeQueue({ workout, performance }: NoticeQueueProps) {
     if (first) await pushModal(WeightSheet, { performance, setId: first.id });
   };
 
+  const startWeight = async (initialKg: number) => {
+    const weightKg = await pushModal(StartWeightSheet, {
+      performance,
+      initialKg,
+    });
+    if (weightKg !== undefined) writeWeight(weightKg);
+  };
+
   const setInventory = async () => {
     const result = await pushModal(WeightsSelectorModal, {
       equipment: exercise?.equipment ?? "none",
@@ -136,10 +149,8 @@ function NoticeQueue({ workout, performance }: NoticeQueueProps) {
       performance,
       newExercise.id,
     );
-    navigate(
-      `/workouts/${performance.workout}/performances/${newPerformance.id}`,
-      { replace: true },
-    );
+    setJustReplaced(newPerformance.id);
+    goBack();
   };
 
   const goBack = () => {
@@ -177,7 +188,7 @@ function NoticeQueue({ workout, performance }: NoticeQueueProps) {
       formatWeight,
       minimum: writeWeight,
       none: () => writeWeight(0),
-      custom: customWeight,
+      custom: startWeight,
       replace: replaceExercise,
     });
   }
@@ -376,7 +387,7 @@ interface UnknownOptions {
   formatWeight: (weightKg: number) => string;
   minimum: (weightKg: number) => void;
   none: () => void;
-  custom: () => void;
+  custom: (initialKg: number) => void;
   replace: () => void;
 }
 
@@ -391,6 +402,10 @@ function unknownContent(
 ): NoticeContent {
   const { last } = pending;
   const type = exercise?.weight?.type ?? "full";
+  const minimumKg =
+    type !== "positive" && performance.weights
+      ? minimumWeightKg(performance.weights)
+      : 0;
   const choices: Choice[] = [];
 
   if (type === "positive") {
@@ -401,12 +416,11 @@ function unknownContent(
       onClick: none,
     });
   } else if (type === "full" && performance.weights) {
-    const weightKg = minimumWeightKg(performance.weights);
     choices.push({
       icon: <MdArrowDownward />,
-      title: `Минимум: ${formatWeight(weightKg)}`,
+      title: `Минимум: ${formatWeight(minimumKg)}`,
       text: "Начну с лёгкого и прибавлю",
-      onClick: () => minimum(weightKg),
+      onClick: () => minimum(minimumKg),
     });
   }
 
@@ -415,7 +429,7 @@ function unknownContent(
       icon: <MdEdit />,
       title: "Ввести вес",
       text: "Знаю, сколько взять",
-      onClick: custom,
+      onClick: () => custom(minimumKg),
     },
     {
       icon: <MdAutorenew />,
