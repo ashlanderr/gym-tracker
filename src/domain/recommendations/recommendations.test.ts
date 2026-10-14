@@ -27,7 +27,7 @@ function draft(weight?: number): DraftSetData {
 describe("working weight", () => {
   const ten = { min: 10, max: 12 };
   const weight = (...sets: CompletedSetData[]) =>
-    computeWorkingWeight(sets, ten);
+    computeWorkingWeight(sets, ten, {});
 
   test.each([
     [[working(20, 12), working(40, 12), working(60, 12)], 60],
@@ -111,16 +111,22 @@ describe("weight change", () => {
   });
 });
 
-describe("weight pattern", () => {
+describe("story of the last time", () => {
   const ten = { min: 10, max: 12 };
-  const pattern = (...sets: Array<[number, number]>) => {
-    const change = computeWeightChange(
+  const read = (...sets: Array<[number, number]>) =>
+    computeWeightChange(
       sets.map(([weight, reps]) => working(weight, reps)),
       ten,
       {},
     );
-    return change?.type === "mixed" ? change.pattern : null;
-  };
+
+  test("tells where each set went and how it came out", () => {
+    expect(
+      read([40, 15], [40, 10], [50, 8], [35, 15])?.steps.map(
+        (s) => `${s.move} ${s.result}`,
+      ),
+    ).toEqual(["start top", "same range", "up short", "down top"]);
+  });
 
   test.each([
     [
@@ -129,6 +135,7 @@ describe("weight pattern", () => {
         [40, 12],
         [60, 12],
       ],
+      "continue",
     ],
     [
       [
@@ -136,42 +143,53 @@ describe("weight pattern", () => {
         [40, 10],
         [60, 4],
       ],
+      "limit",
+    ],
+    [
+      [
+        [40, 12],
+        [40, 12],
+        [50, 6],
+      ],
+      "limit",
     ],
     [
       [
         [40, 12],
         [40, 12],
         [50, 12],
+      ],
+      "continue",
+    ],
+    [
+      [
+        [40, 12],
+        [40, 8],
+        [35, 12],
         [35, 10],
       ],
+      "back",
     ],
-  ] as Array<[Array<[number, number]>]>)("is a search: %j", (sets) => {
-    expect(pattern(...sets)).toEqual({ type: "search" });
+    [
+      [
+        [50, 10],
+        [40, 12],
+        [40, 10],
+      ],
+      "back",
+    ],
+  ] as Array<[Array<[number, number]>, string]>)(
+    "ends with why: %j",
+    (sets, reason) => {
+      expect(read(...sets)).toMatchObject({ type: "mixed", reason });
+    },
+  );
+
+  test("is not told when every set had the working weight", () => {
+    expect(read([40, 12], [40, 10], [40, 10])).toBeNull();
   });
 
-  test("is settled when the held weight ends the workout", () => {
-    expect(pattern([50, 10], [40, 12], [40, 10])).toEqual({ type: "settled" });
-  });
-
-  test("goes above the held weight", () => {
-    expect(pattern([40, 12], [40, 12], [50, 6])).toEqual({
-      type: "above",
-      held: 40,
-      other: 50,
-      isHeldShort: false,
-    });
-  });
-
-  test("goes below the held weight", () => {
-    expect(pattern([40, 12], [40, 8], [35, 12], [35, 10])).toEqual({
-      type: "below",
-      held: 40,
-      other: 35,
-      isHeldShort: true,
-    });
-  });
-
-  test("goes above by the load on an assisting machine", () => {
+  test("goes up by the load on an assisting machine", () => {
     const change = computeWeightChange(
       [working(30, 10), working(30, 10), working(25, 10)],
       ten,
@@ -180,7 +198,7 @@ describe("weight pattern", () => {
         selfWeight: 80,
       },
     );
-    expect(change?.type === "mixed" && change.pattern.type).toBe("above");
+    expect(change?.steps.at(-1)?.move).toBe("up");
   });
 });
 
@@ -191,7 +209,7 @@ describe("weight increase", () => {
       computeWeightChange(sets, range, {
         performanceWeights: barbell,
       }),
-    ).toEqual({ type: "increase", from: 80, to: 82.5, range });
+    ).toMatchObject({ type: "increase", from: 80, to: 82.5, range });
   });
 
   test("waits while a set is below the top", () => {
@@ -211,7 +229,7 @@ describe("weight increase", () => {
         exerciseWeights: { type: "negative", selfWeightPercent: 100 },
         selfWeight: 80,
       }),
-    ).toEqual({ type: "increase", from: 25, to: 22.5, range });
+    ).toMatchObject({ type: "increase", from: 25, to: 22.5, range });
   });
 
   test("has nowhere to go without help left", () => {
@@ -257,7 +275,7 @@ describe("increase by the range", () => {
 
   test("raises once the widened top is reached", () => {
     const sets = [working(20, 12), working(20, 12)];
-    expect(computeWeightChange(sets, range, {})).toEqual({
+    expect(computeWeightChange(sets, range, {})).toMatchObject({
       type: "increase",
       from: 20,
       to: 22.5,

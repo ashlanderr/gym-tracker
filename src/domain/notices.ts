@@ -68,7 +68,7 @@ export function queryPendingWeight(
     selfWeight: queryLatestMeasurement(store, performance.startedAt)?.weight,
   };
 
-  const lastWeight = computeWorkingWeight(prevSets, reps);
+  const lastWeight = computeWorkingWeight(prevSets, reps, context);
   if (!prevPerformance || lastWeight === undefined) return { type: "unknown" };
 
   if (performance.startedAt - prevPerformance.startedAt > LONG_BREAK_MS) {

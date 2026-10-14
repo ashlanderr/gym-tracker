@@ -76,7 +76,7 @@ function emptyPerformance(store: Store, id: string, startedAt: number) {
 
 test("offers a new weight while no working set has one", () => {
   const { store, today } = workoutAfterTopReps();
-  expect(queryPendingWeight(store, today)).toEqual({
+  expect(queryPendingWeight(store, today)).toMatchObject({
     type: "increase",
     from: 80,
     to: 82.5,

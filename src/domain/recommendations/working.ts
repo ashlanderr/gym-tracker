@@ -10,24 +10,66 @@ import {
 import { TOP_REPS } from "./constants.ts";
 import type {
   CompletedSetData,
+  LastTime,
   RepRange,
+  SetMove,
+  SetStep,
   WeightChange,
   WeightContext,
-  WeightPattern,
 } from "./types.ts";
 
 const EPSILON = 1e-6;
 
-// The weight the exercise was done with the last time: the last working set
+// The last time read set by set, the way a coach who was not there would
+// read the record: where each set went from the one before and how it came
+// out against the range. Along the way the working weight is the last set
 // that reached the bottom of the range, the last choice of the person that
-// worked. The sets after it fell short, the sets before it led to it. When no
-// set reached the bottom, the last set.
+// worked; when no set reached it, the last set.
+export function readLastTime(
+  previousSets: CompletedSetData[],
+  reps: RepRange,
+  context: WeightContext,
+): LastTime {
+  const working = previousSets.filter((s) => s.type === "working");
+  let weight: number | undefined;
+
+  const steps = working.map((set, index): SetStep => {
+    const range = computeRepRange(set.weight, reps, context);
+    if (set.reps >= range.min) weight = set.weight;
+    return {
+      weight: set.weight,
+      reps: set.reps,
+      move: computeMove(context, set, working[index - 1]),
+      result:
+        set.reps < range.min
+          ? "short"
+          : set.reps >= range.max
+            ? "top"
+            : "range",
+    };
+  });
+
+  return { steps, weight: weight ?? working.at(-1)?.weight };
+}
+
 export function computeWorkingWeight(
   previousSets: CompletedSetData[],
   reps: RepRange,
+  context: WeightContext,
 ): number | undefined {
-  const working = previousSets.filter((s) => s.type === "working").reverse();
-  return (working.find((s) => s.reps >= reps.min) ?? working.at(0))?.weight;
+  return readLastTime(previousSets, reps, context).weight;
+}
+
+function computeMove(
+  context: WeightContext,
+  set: CompletedSetData,
+  before: CompletedSetData | undefined,
+): SetMove {
+  if (!before) return "start";
+  if (isSame(set.weight, before.weight)) return "same";
+  return full(context, set.weight) > full(context, before.weight)
+    ? "up"
+    : "down";
 }
 
 // The range for a weight. Its top is where the next weight reaches the bottom
@@ -59,71 +101,46 @@ export function computeRepRange(
 // below the bottom of the range rolls it back one step of the inventory, or
 // says there is nothing lighter. Every set at the top, all with the working
 // weight, raises it one step: double progression needs the weight passed in
-// full. Otherwise the weight stays, and when the last time had other weights
-// the choice of this one needs an explanation.
+// full. Otherwise the weight stays: silently when every set had it, and with
+// the story of the last time when there were other weights. The story ends
+// with why: the weight went back from where the last time started, a heavier
+// one fell short, or the weight simply goes on.
 export function computeWeightChange(
   previousSets: CompletedSetData[],
   reps: RepRange,
   context: WeightContext,
 ): WeightChange | null {
-  const working = previousSets.filter((s) => s.type === "working");
-  const weight = computeWorkingWeight(previousSets, reps);
+  const { steps, weight } = readLastTime(previousSets, reps, context);
   if (weight === undefined) return null;
 
   const range = computeRepRange(weight, reps, context);
-  const atWeight = working.filter((s) => isSame(s.weight, weight));
+  const atWeight = steps.filter((s) => isSame(s.weight, weight));
 
-  if (atWeight.some((s) => s.reps < range.min)) {
+  if (atWeight.some((s) => s.result === "short")) {
     const to = stepLoad(context, weight, -1);
     return full(context, to) < full(context, weight) - EPSILON
-      ? { type: "decrease", from: weight, to, range }
-      : { type: "lightest", weight, range };
+      ? { type: "decrease", from: weight, to, range, steps }
+      : { type: "lightest", weight, range, steps };
   }
 
-  if (atWeight.length < working.length) {
-    return {
-      type: "mixed",
-      weight,
-      range,
-      pattern: computePattern(working, range, context),
-    };
+  if (atWeight.length < steps.length) {
+    const load = full(context, weight);
+    const isBack = load < full(context, steps[0].weight) - EPSILON;
+    const isLimit = steps.some(
+      (s) => s.result === "short" && full(context, s.weight) > load,
+    );
+    const reason = isBack ? "back" : isLimit ? "limit" : "continue";
+    return { type: "mixed", weight, range, steps, reason };
   }
 
-  if (working.every((s) => s.reps >= range.max)) {
+  if (steps.every((s) => s.result === "top")) {
     const to = stepLoad(context, weight, 1);
     if (full(context, to) > full(context, weight) + EPSILON) {
-      return { type: "increase", from: weight, to, range };
+      return { type: "increase", from: weight, to, range, steps };
     }
   }
 
   return null;
-}
-
-// What the weights of the last time looked like, to explain the choice. A
-// weight held in a row is the one the workout stood on; the weights after it
-// went above or below. With more than two weights, or none held, the weight
-// was being picked, and only that is told.
-function computePattern(
-  working: CompletedSetData[],
-  range: RepRange,
-  context: WeightContext,
-): WeightPattern {
-  const weights = new Set(working.map((s) => s.weight));
-  const start = working.findIndex(
-    (s, i) => i > 0 && isSame(s.weight, working[i - 1].weight),
-  );
-  if (weights.size > 2 || start < 0) return { type: "search" };
-
-  const held = working[start].weight;
-  const after = working.slice(start).filter((s) => !isSame(s.weight, held));
-  const other = after.at(0)?.weight;
-  if (other === undefined) return { type: "settled" };
-
-  const isAbove = full(context, other) > full(context, held);
-  const isHeldShort = working.some(
-    (s) => isSame(s.weight, held) && s.reps < range.min,
-  );
-  return { type: isAbove ? "above" : "below", held, other, isHeldShort };
 }
 
 function isSame(a: number, b: number): boolean {
