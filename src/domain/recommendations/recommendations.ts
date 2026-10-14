@@ -20,7 +20,7 @@ export function buildRecommendations(
   const currWorkingSets = currentSets.filter((s) => s.type !== "warm-up");
   const prevWorkingSets = previousSets.filter((s) => s.type !== "warm-up");
   const warmUpCount = currentSets.length - currWorkingSets.length;
-  let weight = computeWorkingWeight(previousSets, exerciseReps, params);
+  let weight = computeWorkingWeight(previousSets, exerciseReps);
   let warmUpIndex = 0;
   let workingIndex = 0;
 

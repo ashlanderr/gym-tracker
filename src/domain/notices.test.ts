@@ -78,7 +78,9 @@ test("offers a new weight while no working set has one", () => {
   const { store, today } = workoutAfterTopReps();
   expect(queryPendingWeight(store, today)).toEqual({
     type: "increase",
-    increase: { from: 80, to: 82.5, range: { min: 6, max: 8 } },
+    from: 80,
+    to: 82.5,
+    range: { min: 6, max: 8 },
   });
 });
 

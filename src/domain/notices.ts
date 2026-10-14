@@ -8,15 +8,15 @@ import {
   type Store,
 } from "../db";
 import {
-  computeWeightIncrease,
+  computeWeightChange,
   computeWorkingWeight,
-  type WeightIncrease,
+  type WeightChange,
 } from "./recommendations";
 
 const LONG_BREAK_MS = 90 * 24 * 60 * 60 * 1000;
 
 export type PendingWeight =
-  | { type: "increase"; increase: WeightIncrease }
+  | WeightChange
   | { type: "unknown"; last?: { weight: number; startedAt: number } };
 
 // Nothing about the weight works without the inventory, so it is asked before
@@ -37,7 +37,8 @@ export function queryMissingInventory(
 // answer is the weight written into the first working set, so the question
 // stays open while no working set has a weight. Without a history, or after
 // a long break, the app does not know the weight and the person picks it.
-// Otherwise a new weight is offered when it is time to raise.
+// Otherwise every weight other than the one of the last time is explained: a
+// raise, a rollback, or a choice among the weights the last time had.
 export function queryPendingWeight(
   store: Store,
   performance: Performance,
@@ -67,7 +68,7 @@ export function queryPendingWeight(
     selfWeight: queryLatestMeasurement(store, performance.startedAt)?.weight,
   };
 
-  const lastWeight = computeWorkingWeight(prevSets, reps, context);
+  const lastWeight = computeWorkingWeight(prevSets, reps);
   if (!prevPerformance || lastWeight === undefined) return { type: "unknown" };
 
   if (performance.startedAt - prevPerformance.startedAt > LONG_BREAK_MS) {
@@ -77,6 +78,5 @@ export function queryPendingWeight(
     };
   }
 
-  const increase = computeWeightIncrease(prevSets, reps, context);
-  return increase && { type: "increase", increase };
+  return computeWeightChange(prevSets, reps, context);
 }

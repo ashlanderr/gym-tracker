@@ -8,6 +8,8 @@ const PATHS: Record<ExerciseMarkType, string> = {
   unknown:
     "M12 5a7 7 0 1 0 0 14a7 7 0 1 0 0-14M12 10.5a1.5 1.5 0 1 0 0 3a1.5 1.5 0 1 0 0-3M12 2v3M12 19v3M2 12h3M19 12h3",
   increase: "M12 19V5M6 11l6-6 6 6",
+  decrease: "M12 5v14M6 13l6 6 6-6",
+  mixed: "M5 9h14M5 15h14",
 };
 
 export function ExerciseMarkIcon({ type }: ExerciseMarkProps) {

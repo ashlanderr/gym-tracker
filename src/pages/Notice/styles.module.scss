@@ -19,6 +19,14 @@
   --tone: var(--mark-increase);
 }
 
+.decrease {
+  --tone: var(--mark-decrease);
+}
+
+.mixed {
+  --tone: var(--mark-mixed);
+}
+
 .dim {
   --tone: #8a8a8a;
 }
@@ -109,10 +117,24 @@
     font-variant-numeric: tabular-nums;
   }
 
+  .withWeight {
+    padding: 0 8px;
+  }
+
   .top {
     border-color: #0b0;
     background: rgba(0, 187, 0, 0.16);
     color: #3d3;
+  }
+
+  .short {
+    border-color: var(--mark-decrease);
+    background: color-mix(in srgb, var(--mark-decrease) 16%, #111);
+    color: var(--mark-decrease);
+  }
+
+  .other {
+    color: #6a6a6a;
   }
 
   span:first-child {

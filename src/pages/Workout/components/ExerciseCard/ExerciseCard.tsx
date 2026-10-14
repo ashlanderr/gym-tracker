@@ -24,6 +24,7 @@ export function ExerciseCard({
   const { exercise, rows, units } = usePerformanceSets(performance);
   const isInventoryMissing = queryMissingInventory(store, performance);
   const pendingWeight = queryPendingWeight(store, performance)?.type;
+  const weightMark = pendingWeight === "lightest" ? "decrease" : pendingWeight;
 
   const working = sets.filter((s) => s.type !== "warm-up");
   const done = working.filter((s) => s.completed).length;
@@ -59,7 +60,7 @@ export function ExerciseCard({
           {UNITS_SHORT[units]}
         </span>
         {isInventoryMissing && <ExerciseMark type="inventory" />}
-        {pendingWeight && <ExerciseMark type={pendingWeight} />}
+        {weightMark && <ExerciseMark type={weightMark} />}
       </div>
     </div>
   );

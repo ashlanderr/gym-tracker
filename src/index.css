@@ -152,4 +152,6 @@ body,
   --mark-inventory: #e5a33a;
   --mark-unknown: #4a9eff;
   --mark-increase: #3c3;
+  --mark-decrease: #b47cff;
+  --mark-mixed: #c8c8c8;
 }

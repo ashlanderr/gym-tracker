@@ -1,4 +1,9 @@
-export type ExerciseMarkType = "inventory" | "unknown" | "increase";
+export type ExerciseMarkType =
+  | "inventory"
+  | "unknown"
+  | "increase"
+  | "decrease"
+  | "mixed";
 
 export interface ExerciseMarkProps {
   type: ExerciseMarkType;

@@ -17,20 +17,23 @@ import {
 } from "react-icons/md";
 import { PageHeader, useModalStack, useStore } from "../../components";
 import {
+  type CompletedSet,
   type Exercise,
   type Performance,
   queryExerciseById,
   type Store,
   updatePerformance,
   updateSet,
+  type WeightUnits,
 } from "../../db";
 import {
   minimumWeightKg,
   type PendingWeight,
   queryMissingInventory,
   queryPendingWeight,
+  type RepRange,
   replacePerformance,
-  type WeightIncrease,
+  type WeightChange,
 } from "../../domain";
 import { usePageParams } from "../hooks.ts";
 import { UNITS_SHORT } from "../constants.ts";
@@ -168,16 +171,14 @@ function NoticeQueue({ workout, performance }: NoticeQueueProps) {
       setInventory,
       replace: replaceExercise,
     });
-  } else if (current === "weight" && pending?.type === "increase") {
-    const { increase } = pending;
-    content = increaseContent(increase, {
+  } else if (current === "weight" && pending && pending.type !== "unknown") {
+    content = changeContent(pending, {
       formatWeight,
-      lastReps: prevSets
-        .filter((set) => set.type === "working")
-        .map((set) => set.reps),
-      raise: () => writeWeight(increase.to),
-      stay: () => writeWeight(increase.from),
-      custom: () => startWeight(increase.from),
+      info: (weightKg: number) =>
+        lastSetsInfo(prevSets, weightKg, pending.range, units),
+      write: writeWeight,
+      custom: startWeight,
+      replace: replaceExercise,
     });
   } else if (current === "weight" && pending?.type === "unknown") {
     content = unknownContent(pending, exercise, performance, {
@@ -289,60 +290,163 @@ function orderContent(
   };
 }
 
-interface IncreaseOptions {
+interface ChangeOptions {
   formatWeight: (weightKg: number) => string;
-  lastReps: number[];
-  raise: () => void;
-  stay: () => void;
-  custom: () => void;
+  info: (weightKg: number) => ReactNode;
+  write: (weightKg: number) => void;
+  custom: (initialKg: number) => void;
+  replace: () => void;
 }
 
-function increaseContent(
-  increase: WeightIncrease,
-  { formatWeight, lastReps, raise, stay, custom }: IncreaseOptions,
+function changeContent(
+  change: WeightChange,
+  { formatWeight, info, write, custom, replace }: ChangeOptions,
 ): NoticeContent {
-  const { range } = increase;
-  return {
-    tone: "increase",
-    icon: <ExerciseMarkIcon type="increase" />,
-    kicker: "Новый вес",
-    title: `Пора прибавить: ${formatWeight(increase.to)}`,
-    text: "В прошлый раз все подходы на максимум. Ты стал сильнее.",
-    info: (
-      <div className={s.reps}>
-        <span>Прошлый раз</span>
-        {lastReps.map((reps, index) => (
-          <b key={index} className={clsx(reps >= range.max && s.top)}>
-            {reps}
-          </b>
-        ))}
-        <span>
-          цель {range.min}–{range.max}
-        </span>
-      </div>
-    ),
-    choices: [
-      {
-        icon: <MdArrowUpward />,
-        title: formatWeight(increase.to),
-        text: `Хватит сил на ${range.min}+ повторов`,
-        isAdvice: true,
-        onClick: raise,
-      },
-      {
-        icon: <MdPause />,
-        title: `Остаться на ${formatWeight(increase.from)}`,
-        text: "Если сегодня не в форме",
-        onClick: stay,
-      },
-      {
-        icon: <MdEdit />,
-        title: "Ввести вес",
-        text: "Знаю, сколько взять",
-        onClick: custom,
-      },
-    ],
-  };
+  const { range } = change;
+  const enter = (initialKg: number): Choice => ({
+    icon: <MdEdit />,
+    title: "Ввести вес",
+    text: "Знаю, сколько взять",
+    onClick: () => custom(initialKg),
+  });
+
+  switch (change.type) {
+    case "increase":
+      return {
+        tone: "increase",
+        icon: <ExerciseMarkIcon type="increase" />,
+        kicker: "Новый вес",
+        title: `Пора прибавить: ${formatWeight(change.to)}`,
+        text: "В прошлый раз все подходы на максимум. Ты стал сильнее.",
+        info: info(change.from),
+        choices: [
+          {
+            icon: <MdArrowUpward />,
+            title: formatWeight(change.to),
+            text: `Хватит сил на ${range.min}+ повторов`,
+            isAdvice: true,
+            onClick: () => write(change.to),
+          },
+          {
+            icon: <MdPause />,
+            title: `Остаться на ${formatWeight(change.from)}`,
+            text: "Если сегодня не в форме",
+            onClick: () => write(change.from),
+          },
+          enter(change.from),
+        ],
+      };
+
+    case "decrease":
+      return {
+        tone: "decrease",
+        icon: <ExerciseMarkIcon type="decrease" />,
+        kicker: "Откат",
+        title: `Снизим до ${formatWeight(change.to)}`,
+        text:
+          `В прошлый раз на ${formatWeight(change.from)} не хватило ` +
+          `повторов до ${range.min}. На шаг легче наберёшь их и пойдёшь вверх.`,
+        info: info(change.from),
+        choices: [
+          {
+            icon: <MdArrowDownward />,
+            title: formatWeight(change.to),
+            text: "Шаг назад, чтобы снова расти",
+            isAdvice: true,
+            onClick: () => write(change.to),
+          },
+          {
+            icon: <MdPause />,
+            title: `Остаться на ${formatWeight(change.from)}`,
+            text: "Ещё одна попытка",
+            onClick: () => write(change.from),
+          },
+          enter(change.to),
+        ],
+      };
+
+    case "lightest":
+      return {
+        tone: "decrease",
+        icon: <ExerciseMarkIcon type="decrease" />,
+        kicker: "Откат",
+        title: "Легче некуда",
+        text:
+          `В прошлый раз на ${formatWeight(change.weight)} не хватило ` +
+          `повторов до ${range.min}, а легче вес не собрать.`,
+        info: info(change.weight),
+        choices: [
+          {
+            icon: <MdAutorenew />,
+            title: "Заменить упражнение",
+            text: "На то, где есть куда снизить",
+            isAdvice: true,
+            onClick: replace,
+          },
+          {
+            icon: <MdPause />,
+            title: `Остаться на ${formatWeight(change.weight)}`,
+            text: "Ещё одна попытка",
+            onClick: () => write(change.weight),
+          },
+        ],
+      };
+
+    case "mixed":
+      return {
+        tone: "mixed",
+        icon: <ExerciseMarkIcon type="mixed" />,
+        kicker: "Прошлый раз",
+        title: `Начинаем с ${formatWeight(change.weight)}`,
+        text:
+          "Веса в прошлый раз менялись. Считаю от последнего подхода, " +
+          `где набралось ${range.min}+ повторов.`,
+        info: info(change.weight),
+        choices: [
+          {
+            icon: <MdArrowForward />,
+            title: `Начать с ${formatWeight(change.weight)}`,
+            text: "Вес можно поменять в подходах",
+            onClick: () => write(change.weight),
+          },
+        ],
+      };
+  }
+}
+
+// The working sets of the last time against the weight the notice is about:
+// the top and the short ones with it, the other weights dimmed.
+function lastSetsInfo(
+  sets: CompletedSet[],
+  weightKg: number,
+  range: RepRange,
+  units: WeightUnits,
+): ReactNode {
+  const working = sets.filter((set) => set.type === "working");
+  const isMixed = working.some((set) => set.weight !== weightKg);
+
+  return (
+    <div className={s.reps}>
+      <span>Прошлый раз</span>
+      {working.map((set, index) => (
+        <b
+          key={index}
+          className={clsx(
+            isMixed && s.withWeight,
+            set.weight !== weightKg && s.other,
+            set.weight === weightKg && set.reps >= range.max && s.top,
+            set.weight === weightKg && set.reps < range.min && s.short,
+          )}
+        >
+          {isMixed && `${formatWeightUnits(set.weight, units)}×`}
+          {set.reps}
+        </b>
+      ))}
+      <span>
+        цель {range.min}–{range.max}
+      </span>
+    </div>
+  );
 }
 
 interface InventoryOptions {

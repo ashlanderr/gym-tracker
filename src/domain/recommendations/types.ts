@@ -37,8 +37,8 @@ export interface RecommendationParams extends WeightContext {
   exerciseReps: RepRange;
 }
 
-export interface WeightIncrease {
-  from: number;
-  to: number;
-  range: RepRange;
-}
+export type WeightChange =
+  | { type: "increase"; from: number; to: number; range: RepRange }
+  | { type: "decrease"; from: number; to: number; range: RepRange }
+  | { type: "lightest"; weight: number; range: RepRange }
+  | { type: "mixed"; weight: number; range: RepRange };
