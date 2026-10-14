@@ -34,6 +34,7 @@ import {
   type RepRange,
   replacePerformance,
   type WeightChange,
+  type WeightPattern,
 } from "../../domain";
 import { usePageParams } from "../hooks.ts";
 import { UNITS_SHORT } from "../constants.ts";
@@ -396,12 +397,10 @@ function changeContent(
       return {
         tone: "mixed",
         icon: <ExerciseMarkIcon type="mixed" />,
-        kicker: "Прошлый раз",
+        kicker: PATTERN_KICKERS[change.pattern.type],
         title: `Начинаем с ${formatWeight(change.weight)}`,
-        text:
-          "Веса в прошлый раз менялись. Считаю от последнего подхода, " +
-          `где набралось ${range.min}+ повторов.`,
-        info: info(change.weight),
+        text: patternText(change.pattern, change.weight, range, formatWeight),
+        info: change.pattern.type !== "search" && info(change.weight),
         choices: [
           {
             icon: <MdArrowForward />,
@@ -411,6 +410,42 @@ function changeContent(
           },
         ],
       };
+  }
+}
+
+const PATTERN_KICKERS: Record<WeightPattern["type"], string> = {
+  search: "Подбор веса",
+  settled: "Вес найден",
+  above: "Попытка выше",
+  below: "Снижение веса",
+};
+
+// One short line: the sets show the numbers, the line tells what they mean.
+// A search has too many numbers to show, so it is only named.
+function patternText(
+  pattern: WeightPattern,
+  weightKg: number,
+  range: RepRange,
+  formatWeight: (weightKg: number) => string,
+): string {
+  switch (pattern.type) {
+    case "search":
+      return `Ты подбирал вес. Берём последний, где набралось ${range.min}+.`;
+
+    case "settled":
+      return `В конце ты держал ${formatWeight(weightKg)}.`;
+
+    case "above":
+    case "below":
+      if (weightKg === pattern.held) {
+        return `На ${formatWeight(pattern.other)} ты не дотянул до ${range.min}.`;
+      }
+      if (pattern.type === "above") {
+        return `На ${formatWeight(pattern.other)} ты набрал ${range.min}+.`;
+      }
+      return pattern.isHeldShort
+        ? `На ${formatWeight(pattern.held)} повторы упали ниже ${range.min}.`
+        : `Закончил ты на ${formatWeight(pattern.other)}.`;
   }
 }
 

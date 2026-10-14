@@ -111,6 +111,79 @@ describe("weight change", () => {
   });
 });
 
+describe("weight pattern", () => {
+  const ten = { min: 10, max: 12 };
+  const pattern = (...sets: Array<[number, number]>) => {
+    const change = computeWeightChange(
+      sets.map(([weight, reps]) => working(weight, reps)),
+      ten,
+      {},
+    );
+    return change?.type === "mixed" ? change.pattern : null;
+  };
+
+  test.each([
+    [
+      [
+        [20, 12],
+        [40, 12],
+        [60, 12],
+      ],
+    ],
+    [
+      [
+        [20, 12],
+        [40, 10],
+        [60, 4],
+      ],
+    ],
+    [
+      [
+        [40, 12],
+        [40, 12],
+        [50, 12],
+        [35, 10],
+      ],
+    ],
+  ] as Array<[Array<[number, number]>]>)("is a search: %j", (sets) => {
+    expect(pattern(...sets)).toEqual({ type: "search" });
+  });
+
+  test("is settled when the held weight ends the workout", () => {
+    expect(pattern([50, 10], [40, 12], [40, 10])).toEqual({ type: "settled" });
+  });
+
+  test("goes above the held weight", () => {
+    expect(pattern([40, 12], [40, 12], [50, 6])).toEqual({
+      type: "above",
+      held: 40,
+      other: 50,
+      isHeldShort: false,
+    });
+  });
+
+  test("goes below the held weight", () => {
+    expect(pattern([40, 12], [40, 8], [35, 12], [35, 10])).toEqual({
+      type: "below",
+      held: 40,
+      other: 35,
+      isHeldShort: true,
+    });
+  });
+
+  test("goes above by the load on an assisting machine", () => {
+    const change = computeWeightChange(
+      [working(30, 10), working(30, 10), working(25, 10)],
+      ten,
+      {
+        exerciseWeights: { type: "negative", selfWeightPercent: 100 },
+        selfWeight: 80,
+      },
+    );
+    expect(change?.type === "mixed" && change.pattern.type).toBe("above");
+  });
+});
+
 describe("weight increase", () => {
   test("steps up the inventory when every set reached the top", () => {
     const sets = [working(80, 8), working(80, 8), working(80, 8)];

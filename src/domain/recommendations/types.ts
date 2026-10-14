@@ -41,4 +41,19 @@ export type WeightChange =
   | { type: "increase"; from: number; to: number; range: RepRange }
   | { type: "decrease"; from: number; to: number; range: RepRange }
   | { type: "lightest"; weight: number; range: RepRange }
-  | { type: "mixed"; weight: number; range: RepRange };
+  | {
+      type: "mixed";
+      weight: number;
+      range: RepRange;
+      pattern: WeightPattern;
+    };
+
+export type WeightPattern =
+  | { type: "search" }
+  | { type: "settled" }
+  | {
+      type: "above" | "below";
+      held: number;
+      other: number;
+      isHeldShort: boolean;
+    };

@@ -13,6 +13,7 @@ import type {
   RepRange,
   WeightChange,
   WeightContext,
+  WeightPattern,
 } from "./types.ts";
 
 const EPSILON = 1e-6;
@@ -65,12 +66,12 @@ export function computeWeightChange(
   reps: RepRange,
   context: WeightContext,
 ): WeightChange | null {
-  const working = previousSets.filter((s) => s.type === "working").reverse();
+  const working = previousSets.filter((s) => s.type === "working");
   const weight = computeWorkingWeight(previousSets, reps);
   if (weight === undefined) return null;
 
   const range = computeRepRange(weight, reps, context);
-  const atWeight = working.filter((s) => Math.abs(s.weight - weight) < EPSILON);
+  const atWeight = working.filter((s) => isSame(s.weight, weight));
 
   if (atWeight.some((s) => s.reps < range.min)) {
     const to = stepLoad(context, weight, -1);
@@ -80,7 +81,12 @@ export function computeWeightChange(
   }
 
   if (atWeight.length < working.length) {
-    return { type: "mixed", weight, range };
+    return {
+      type: "mixed",
+      weight,
+      range,
+      pattern: computePattern(working, range, context),
+    };
   }
 
   if (working.every((s) => s.reps >= range.max)) {
@@ -91,6 +97,37 @@ export function computeWeightChange(
   }
 
   return null;
+}
+
+// What the weights of the last time looked like, to explain the choice. A
+// weight held in a row is the one the workout stood on; the weights after it
+// went above or below. With more than two weights, or none held, the weight
+// was being picked, and only that is told.
+function computePattern(
+  working: CompletedSetData[],
+  range: RepRange,
+  context: WeightContext,
+): WeightPattern {
+  const weights = new Set(working.map((s) => s.weight));
+  const start = working.findIndex(
+    (s, i) => i > 0 && isSame(s.weight, working[i - 1].weight),
+  );
+  if (weights.size > 2 || start < 0) return { type: "search" };
+
+  const held = working[start].weight;
+  const after = working.slice(start).filter((s) => !isSame(s.weight, held));
+  const other = after.at(0)?.weight;
+  if (other === undefined) return { type: "settled" };
+
+  const isAbove = full(context, other) > full(context, held);
+  const isHeldShort = working.some(
+    (s) => isSame(s.weight, held) && s.reps < range.min,
+  );
+  return { type: isAbove ? "above" : "below", held, other, isHeldShort };
+}
+
+function isSame(a: number, b: number): boolean {
+  return Math.abs(a - b) < EPSILON;
 }
 
 // One step of the inventory toward a heavier or a lighter load: on an
