@@ -12,7 +12,6 @@ import { Notice } from "./Notice";
 import { SignIn } from "./SignIn";
 import { User } from "./User";
 import { ExerciseHistory } from "./Exercise";
-import { NoticeMockup } from "./NoticeMockup";
 
 export function Layout() {
   return (
@@ -63,7 +62,6 @@ export function Layout() {
               }
             />
             <Route path="/auth/sign-in" element={<SignIn />} />
-            <Route path="/mockups/notice" element={<NoticeMockup />} />
           </Routes>
           <Toasts />
         </ModalStack>
