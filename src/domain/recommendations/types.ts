@@ -36,28 +36,3 @@ export interface RecommendationParams extends WeightContext {
   previousSets: CompletedSetData[];
   exerciseReps: RepRange;
 }
-
-export type SetMove = "start" | "same" | "up" | "down";
-
-export type SetResult = "top" | "range" | "short";
-
-export interface SetStep {
-  weight: number;
-  reps: number;
-  move: SetMove;
-  result: SetResult;
-}
-
-export interface LastTime {
-  steps: SetStep[];
-  weight: number | undefined;
-}
-
-export type MixedReason = "continue" | "limit" | "back";
-
-export type WeightChange = (
-  | { type: "increase"; from: number; to: number; range: RepRange }
-  | { type: "decrease"; from: number; to: number; range: RepRange }
-  | { type: "lightest"; weight: number; range: RepRange }
-  | { type: "mixed"; weight: number; range: RepRange; reason: MixedReason }
-) & { steps: SetStep[] };

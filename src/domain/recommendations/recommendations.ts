@@ -7,11 +7,11 @@ import { WARM_UP_SETS } from "./constants.ts";
 import { computeRepRange, computeWorkingWeight } from "./working.ts";
 import { addSelfWeight, snapWeightKg, subtractSelfWeight } from "../weights";
 
-// What empty sets suggest, to save taps. A working set repeats the weight of
-// the working set above it, entered or done; the first one repeats the last
-// time. A new weight is never suggested here: it is offered before the
-// exercise, where it can be explained. The reps of a working set are the
-// range for its weight.
+// What empty sets suggest: the plan of the exercise. The first working set
+// gets the working weight of the last time, raised or rolled back. Every next
+// one repeats the weight of the working set above it, entered or done, also
+// after a short set: a rollback waits for the next time. The reps of a
+// working set are the range for its weight.
 export function buildRecommendations(
   params: RecommendationParams,
 ): RecSetData[] {
