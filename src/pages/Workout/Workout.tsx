@@ -29,6 +29,7 @@ import {
   addPerformance,
   setWorkoutProgram,
   computePerformanceStatus,
+  findNextSet,
   groupSets,
 } from "../../domain";
 
@@ -46,6 +47,7 @@ export function Workout() {
   const performances = useQueryPerformancesByWorkout(store, workoutId);
   const sets = useQuerySetsByWorkout(store, workoutId);
   const setsByPerformance = groupSets(sets);
+  const nextSet = findNextSet(performances, setsByPerformance);
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
   const { scrollRef } = useScrollRestoration();
@@ -116,7 +118,11 @@ export function Workout() {
       </PageHeader>
       <div className={s.exercises}>
         {performances.map((performance) => (
-          <Performance key={performance.id} performance={performance} />
+          <Performance
+            key={performance.id}
+            performance={performance}
+            nextSetId={nextSet?.id}
+          />
         ))}
         <button className={s.addExerciseButton} onClick={addPerformanceHandler}>
           <MdAdd />

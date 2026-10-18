@@ -42,6 +42,7 @@ export function SetRow({
   prevSet,
   recSet,
   startsRest,
+  isNext,
 }: SetRowProps) {
   const store = useStore();
   const { pushModal } = useModalStack();
@@ -162,7 +163,11 @@ export function SetRow({
 
   return (
     <tr
-      className={clsx(set.completed && s.completed, flash && s.flash)}
+      className={clsx(
+        set.completed && s.completed,
+        isNext && s.next,
+        flash && s.flash,
+      )}
       onAnimationEnd={() => setFlash(false)}
     >
       <td className={s.setNumValue} onClick={setInfoHandler}>

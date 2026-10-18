@@ -9,7 +9,7 @@ import { UNITS_TRANSLATION } from "../../../constants.ts";
 import { addNextSet } from "../../../../domain";
 import { usePerformanceSets } from "../../hooks.ts";
 
-export function Performance({ performance }: PerformanceProps) {
+export function Performance({ performance, nextSetId }: PerformanceProps) {
   const store = useStore();
   const { pushModal } = useModalStack();
   const { exercise, rows, units } = usePerformanceSets(performance);
@@ -58,6 +58,7 @@ export function Performance({ performance }: PerformanceProps) {
               prevSet={row.prevSet}
               recSet={row.recSet}
               startsRest={row.startsRest}
+              isNext={row.set.id === nextSetId}
             />
           ))}
         </tbody>
