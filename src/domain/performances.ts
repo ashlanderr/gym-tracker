@@ -13,7 +13,6 @@ import {
   deleteSet,
   queryWorkoutById,
   updatePerformance,
-  type Set,
 } from "../db";
 import { addNextSet, duplicateSet } from "./sets.ts";
 
@@ -57,14 +56,6 @@ export function addPerformance(
   }
 
   return performance;
-}
-
-export type PerformanceStatus = "new" | "progress" | "done";
-
-// Where an exercise is, read from its sets: no field keeps it.
-export function computePerformanceStatus(sets: Set[]): PerformanceStatus {
-  if (sets.length !== 0 && sets.every((s) => s.completed)) return "done";
-  return sets.some((s) => s.completed) ? "progress" : "new";
 }
 
 export function deletePerformance(store: Store, performance: Performance) {

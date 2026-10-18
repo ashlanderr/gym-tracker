@@ -28,7 +28,6 @@ import {
   completeWorkout,
   addPerformance,
   setWorkoutProgram,
-  computePerformanceStatus,
   findNextSet,
   groupSets,
 } from "../../domain";
@@ -52,11 +51,6 @@ export function Workout() {
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
   const { scrollRef } = useScrollRestoration();
   const { startTimer } = useActiveTimer();
-
-  const doneCount = performances.filter(
-    (p) =>
-      computePerformanceStatus(setsByPerformance.get(p.id) ?? []) === "done",
-  ).length;
 
   const addPerformanceHandler = async () => {
     const exercise = await pushModal(ChooseExerciseModal, null);
@@ -109,9 +103,9 @@ export function Workout() {
             </div>
           </div>
           <div className={s.stat}>
-            <div className={s.statName}>Упражнения</div>
+            <div className={s.statName}>Подходы</div>
             <div className={s.statValue}>
-              {doneCount} / {performances.length}
+              {completedSets.length} / {sets.length}
             </div>
           </div>
         </div>
