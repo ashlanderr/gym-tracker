@@ -8,6 +8,7 @@ import {
 import { updatePerformance, updateSet } from "../../../../db";
 import {
   MANUAL_WEIGHT_STEP,
+  minimumWeightKg,
   snapWeightKg,
   stepWeightKg,
   unitsToKg,
@@ -38,7 +39,10 @@ export function WeightSheet({
   const { set, recSet, number } = row;
   const weights = performance.weights;
   const equipment = exercise?.equipment ?? "none";
-  const weightKg = set.weight ?? recSet?.weight;
+  const weightKg =
+    set.weight ??
+    recSet?.weight ??
+    (weights !== undefined ? minimumWeightKg(weights) : undefined);
   const isSuggested = set.weight === undefined;
   const fits =
     weights !== undefined &&
