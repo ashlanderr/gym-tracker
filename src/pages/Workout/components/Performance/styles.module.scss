@@ -1,3 +1,5 @@
+$picture-size: 48px;
+
 .exercise {
   display: flex;
   flex-direction: column;
@@ -16,8 +18,8 @@
 
 .picture {
   flex: 0 0 auto;
-  width: 48px;
-  height: 48px;
+  width: $picture-size;
+  height: $picture-size;
   box-sizing: border-box;
   padding: 3px;
   border: 1px solid #2a2a2a;
@@ -35,7 +37,9 @@
 }
 
 .sets {
+  width: calc(100% + 32px);
   margin: 0 -16px;
+  table-layout: fixed;
 
   th,
   td {
@@ -77,23 +81,11 @@ th.setCompletedHeader {
 }
 
 .setNumHeader {
-  width: 15%;
+  width: $picture-size;
 }
 
 .prevVolumeHeader {
   width: 30%;
-}
-
-.currentWeightHeader {
-  width: 17%;
-}
-
-.currentRepsHeader {
-  width: 18%;
-}
-
-.setCompletedHeader {
-  width: 20%;
 }
 
 .footer {
