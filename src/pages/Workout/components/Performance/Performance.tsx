@@ -1,7 +1,7 @@
 import type { PerformanceProps } from "./types.ts";
 import s from "./styles.module.scss";
 import { MdAdd, MdCheck } from "react-icons/md";
-import { useModalStack, useStore } from "../../../../components";
+import { MuscleFigure, useModalStack, useStore } from "../../../../components";
 import { SetRow } from "../SetRow";
 import { PerformanceActions } from "../PerformanceActions";
 import { PerformanceTimer } from "../PerformanceTimer";
@@ -24,8 +24,11 @@ export function Performance({ performance }: PerformanceProps) {
 
   return (
     <div className={s.exercise}>
-      <button className={s.name} onClick={menuHandler}>
-        {exercise?.name ?? "–"}
+      <button className={s.header} onClick={menuHandler}>
+        <div className={s.picture}>
+          <MuscleFigure muscles={exercise?.muscles ?? []} />
+        </div>
+        <span className={s.name}>{exercise?.name ?? "–"}</span>
       </button>
       <table className={s.sets}>
         <thead>
