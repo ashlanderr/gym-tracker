@@ -1,3 +1,5 @@
-// A finger on the handle lifts the item after a small move, so a tap on it
-// does nothing and the rest of the row scrolls the list.
-export const DRAG_DISTANCE = 4;
+// A finger lifts a row after a short hold, so a swipe over the rows still
+// scrolls the list. A mouse lifts it after a small move.
+export const TOUCH_DELAY = 200;
+export const TOUCH_TOLERANCE = 6;
+export const MOUSE_DISTANCE = 4;

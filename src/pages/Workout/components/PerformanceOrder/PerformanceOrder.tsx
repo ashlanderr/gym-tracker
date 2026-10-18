@@ -6,7 +6,8 @@ import {
   closestCenter,
   DndContext,
   type DragEndEvent,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -31,7 +32,7 @@ import {
 import { type Performance, queryExerciseById } from "../../../../db";
 import { MUSCLES_TRANSLATION } from "../../../constants.ts";
 import type { OrderItem } from "./types.ts";
-import { DRAG_DISTANCE } from "./constants.ts";
+import { MOUSE_DISTANCE, TOUCH_DELAY, TOUCH_TOLERANCE } from "./constants.ts";
 
 export function PerformanceOrder({
   data,
@@ -47,8 +48,11 @@ export function PerformanceOrder({
   );
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: DRAG_DISTANCE },
+    useSensor(MouseSensor, {
+      activationConstraint: { distance: MOUSE_DISTANCE },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: TOUCH_DELAY, tolerance: TOUCH_TOLERANCE },
     }),
   );
 
@@ -111,7 +115,6 @@ function SortableItem({ item, number }: { item: OrderItem; number: number }) {
     attributes,
     listeners,
     setNodeRef,
-    setActivatorNodeRef,
     transform,
     transition,
     isDragging,
@@ -123,6 +126,8 @@ function SortableItem({ item, number }: { item: OrderItem; number: number }) {
       ref={setNodeRef}
       className={clsx(s.item, isDragging && s.lifted)}
       style={{ transform: CSS.Translate.toString(transform), transition }}
+      {...attributes}
+      {...listeners}
     >
       <span className={s.number}>{number}</span>
       <div className={s.titles}>
@@ -131,15 +136,7 @@ function SortableItem({ item, number }: { item: OrderItem; number: number }) {
           <div className={s.muscle}>{MUSCLES_TRANSLATION[muscle]}</div>
         )}
       </div>
-      <button
-        ref={setActivatorNodeRef}
-        className={s.handle}
-        aria-label="Перетащить"
-        {...attributes}
-        {...listeners}
-      >
-        <MdDragIndicator />
-      </button>
+      <MdDragIndicator className={s.handle} />
     </div>
   );
 }
