@@ -9,6 +9,7 @@ import {
   type Record,
   queryRecordsByPerformance,
   type WeightUnits,
+  type SetHint,
 } from "../../../../db";
 import { clsx } from "clsx";
 import { useState } from "react";
@@ -16,6 +17,7 @@ import { PiArrowDownBold, PiArrowUpBold, PiMedalFill } from "react-icons/pi";
 import {
   addSelfWeight,
   MEDAL_RECORDS,
+  type RecSetData,
   updateRecords,
   volumeToOneRepMax,
 } from "../../../../domain";
@@ -101,7 +103,13 @@ export function SetRow({
     if (weight === undefined) return openWeight();
     if (reps === undefined) return openReps();
 
-    const updated: Set = { ...set, weight, reps, completed: true };
+    const updated: Set = {
+      ...set,
+      weight,
+      reps,
+      completed: true,
+      hint: toHint(recSet),
+    };
     setFlash(true);
     updateSet(store, updated);
     updateRecords(store, updated);
@@ -170,6 +178,13 @@ export function SetRow({
       </td>
     </tr>
   );
+}
+
+function toHint(recSet: RecSetData | undefined): SetHint {
+  const hint: SetHint = {};
+  if (recSet?.weight !== undefined) hint.weight = recSet.weight;
+  if (recSet?.reps !== undefined) hint.reps = recSet.reps;
+  return hint;
 }
 
 // A set that beats the best of earlier workouts says so at once. The first

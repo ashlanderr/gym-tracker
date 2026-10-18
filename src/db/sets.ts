@@ -35,6 +35,14 @@ export interface CompletedSet {
   weight: number;
   reps: number;
   completed: true;
+  hint?: SetHint;
+}
+
+// What the empty set suggested when it was done, to compare the plan with
+// what was done even after the rules change.
+export interface SetHint {
+  weight?: number;
+  reps?: { min: number; max: number };
 }
 
 export function querySetsByWorkout(store: Store, workout: string): Set[] {
