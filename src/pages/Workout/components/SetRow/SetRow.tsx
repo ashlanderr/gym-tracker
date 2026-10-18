@@ -68,7 +68,9 @@ export function SetRow({
     : "–";
 
   const isWeightSuggested = set.weight === undefined;
-  const weight = formatWeightUnits(set.weight ?? recSet?.weight, units);
+  const weightKg = set.weight ?? recSet?.weight;
+  const weight =
+    weightKg !== undefined ? formatWeightUnits(weightKg, units) : "?";
 
   const isRepsSuggested = set.reps === undefined;
   const reps =

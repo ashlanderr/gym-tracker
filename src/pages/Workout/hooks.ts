@@ -56,6 +56,12 @@ export function usePerformanceSets(performance: Performance): PerformanceSets {
     prevPerformance?.id ?? "",
   ).filter((s) => s.completed);
 
+  // Without the inventory a weight cannot be put together, so none is
+  // suggested until it is set.
+  const isInventoryMissing =
+    (exercise?.equipment ?? "none") !== "none" &&
+    performance.weights === undefined;
+
   const recommendations = buildRecommendations({
     currentSets: sets,
     previousSets: prevSets,
@@ -85,7 +91,9 @@ export function usePerformanceSets(performance: Performance): PerformanceSets {
       set,
       number: setNumber(set, workingIndex),
       prevSet,
-      recSet: recommendations[index],
+      recSet: isInventoryMissing
+        ? { ...recommendations[index], weight: undefined }
+        : recommendations[index],
     };
   });
 
