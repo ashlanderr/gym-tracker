@@ -24,12 +24,9 @@ export function Performance({ performance }: PerformanceProps) {
 
   return (
     <div className={s.exercise}>
-      <div className={s.header}>
-        <button className={s.name} onClick={menuHandler}>
-          {exercise?.name ?? "–"}
-        </button>
-        <PerformanceTimer performance={performance} />
-      </div>
+      <button className={s.name} onClick={menuHandler}>
+        {exercise?.name ?? "–"}
+      </button>
       <table className={s.sets}>
         <thead>
           <tr>
@@ -61,10 +58,13 @@ export function Performance({ performance }: PerformanceProps) {
           ))}
         </tbody>
       </table>
-      <button className={s.addSetButton} onClick={addSetHandler}>
-        <MdAdd />
-        Добавить подход
-      </button>
+      <div className={s.footer}>
+        <button className={s.addSetButton} onClick={addSetHandler}>
+          <MdAdd />
+          Добавить подход
+        </button>
+        <PerformanceTimer performance={performance} />
+      </div>
     </div>
   );
 }
