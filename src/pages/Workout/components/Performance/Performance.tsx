@@ -40,7 +40,9 @@ export function Performance({ performance }: PerformanceProps) {
             </th>
             <th className={s.currentRepsHeader}>Повт.</th>
             <th className={s.setCompletedHeader}>
-              <MdCheck />
+              <span className={s.completedMark}>
+                <MdCheck />
+              </span>
             </th>
           </tr>
         </thead>

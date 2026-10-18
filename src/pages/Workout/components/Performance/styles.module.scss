@@ -50,8 +50,16 @@ th.setNumHeader {
 }
 
 th.setCompletedHeader {
-  text-align: right;
-  padding-right: 20px;
+  padding-right: 16px;
+}
+
+// The same box as the check button of a row, so the marks line up.
+.completedMark {
+  display: flex;
+  width: fit-content;
+  margin-left: auto;
+  padding: 0 6px;
+  font-size: 16px;
 }
 
 .prevVolumeHeader,
