@@ -59,11 +59,11 @@ export function Performance({ performance }: PerformanceProps) {
         </tbody>
       </table>
       <div className={s.footer}>
+        <PerformanceTimer performance={performance} />
         <button className={s.addSetButton} onClick={addSetHandler}>
           <MdAdd />
           Добавить подход
         </button>
-        <PerformanceTimer performance={performance} />
       </div>
     </div>
   );

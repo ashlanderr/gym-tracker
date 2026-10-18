@@ -1,11 +1,10 @@
 .exercise {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
 .name {
-  margin-bottom: 8px;
   padding: 0;
   border: none;
   background: transparent;
@@ -83,7 +82,6 @@ th.setCompletedHeader {
 .footer {
   display: flex;
   gap: 8px;
-  margin: 12px 0 0;
 }
 
 .addSetButton {
