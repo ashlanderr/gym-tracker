@@ -48,3 +48,11 @@ export function addNextSet(store: Store, performance: Performance): Set {
 
   return nextSet;
 }
+
+// Warm-ups follow each other without rest: the rest starts before the first
+// working set and after every working set, the last one included.
+export function startsRest(sets: Set[], set: Set): boolean {
+  if (set.type === "working") return true;
+  const next = sets[sets.findIndex((s) => s.id === set.id) + 1];
+  return next?.type === "working";
+}

@@ -41,6 +41,7 @@ export function SetRow({
   set,
   prevSet,
   recSet,
+  startsRest,
 }: SetRowProps) {
   const store = useStore();
   const { pushModal } = useModalStack();
@@ -128,7 +129,7 @@ export function SetRow({
     setFlash(true);
     updateSet(store, updated);
     updateRecords(store, updated);
-    startTimer(performance.timer);
+    if (startsRest) startTimer(performance.timer);
     announceRecords(
       queryRecordsByPerformance(store, performance.id),
       updated,

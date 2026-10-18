@@ -14,6 +14,7 @@ import {
   CompleteWorkoutModal,
   ChooseProgramBottomSheet,
   Performance,
+  useActiveTimer,
 } from "./components";
 import {
   HeaderButton,
@@ -48,6 +49,7 @@ export function Workout() {
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
   const { scrollRef } = useScrollRestoration();
+  const { startTimer } = useActiveTimer();
 
   const doneCount = performances.filter(
     (p) =>
@@ -65,6 +67,7 @@ export function Workout() {
     const result = await pushModal(CompleteWorkoutModal, { workout, partial });
     if (result) {
       completeWorkout(store, workout, result.name);
+      startTimer(undefined);
       navigate("/", { replace: true });
     }
   };

@@ -17,6 +17,7 @@ export interface SetRowProps {
   set: Set;
   prevSet: CompletedSet | undefined;
   recSet: RecSetData | undefined;
+  startsRest: boolean;
 }
 
 export interface SetSheetData {

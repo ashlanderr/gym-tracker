@@ -15,6 +15,7 @@ import {
 import { useStore } from "../../components";
 import {
   buildRecommendations,
+  startsRest,
   kgToUnits,
   type RecSetData,
   type RepRange,
@@ -26,6 +27,7 @@ export interface SetRowData {
   number: string;
   prevSet: CompletedSet | undefined;
   recSet: RecSetData | undefined;
+  startsRest: boolean;
 }
 
 export interface PerformanceSets {
@@ -91,6 +93,7 @@ export function usePerformanceSets(performance: Performance): PerformanceSets {
       set,
       number: setNumber(set, workingIndex),
       prevSet,
+      startsRest: startsRest(sets, set),
       recSet: isInventoryMissing
         ? { ...recommendations[index], weight: undefined }
         : recommendations[index],

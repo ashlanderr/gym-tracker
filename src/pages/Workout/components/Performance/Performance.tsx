@@ -54,6 +54,7 @@ export function Performance({ performance }: PerformanceProps) {
               set={row.set}
               prevSet={row.prevSet}
               recSet={row.recSet}
+              startsRest={row.startsRest}
             />
           ))}
         </tbody>
