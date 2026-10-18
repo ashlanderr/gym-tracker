@@ -27,7 +27,7 @@ Use mutation tests methodology:
    a. is wrong - rewrite test and try again
    b. is right - fix code and continue
 
-For visual tests use playwright MCP.
+For visual tests use playwright MCP at a 366px wide viewport.
 
 Write only reasonable tests.
 Don't try to test any little thing.
