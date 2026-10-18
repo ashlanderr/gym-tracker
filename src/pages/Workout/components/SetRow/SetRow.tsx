@@ -4,6 +4,7 @@ import { MdCheck } from "react-icons/md";
 import { showToast, useModalStack, useStore } from "../../../../components";
 import {
   updateSet,
+  updatePerformance,
   type Set,
   useQueryRecordsBySet,
   type Record,
@@ -26,6 +27,7 @@ import { formatRepRange } from "./utils.ts";
 import { RecordsBottomSheet } from "../RecordsBottomSheet";
 import { SetActionsBottomSheet } from "../SetActionsBottomSheet";
 import { WeightSheet } from "../WeightSheet";
+import { WeightsSelectorModal } from "../WeightsSelectorModal";
 import { RepsSheet } from "../RepsSheet";
 import { RecordNotice } from "../RecordNotice";
 import { RECORD_NOTICE } from "../../../constants.ts";
@@ -78,8 +80,21 @@ export function SetRow({
   const reps =
     set.reps?.toString() ?? (recSet?.reps ? formatRepRange(recSet.reps) : "–");
 
+  // A weight is put together from the inventory, so it is set up first.
   const openWeight = async () => {
     if (set.completed) return;
+
+    const equipment = exercise?.equipment ?? "none";
+    if (equipment !== "none" && performance.weights === undefined) {
+      const result = await pushModal(WeightsSelectorModal, {
+        equipment,
+        weights: undefined,
+        previewKg: undefined,
+      });
+      if (!result) return;
+      updatePerformance(store, { ...performance, weights: result.weights });
+    }
+
     await pushModal(WeightSheet, { performance, setId: set.id });
   };
 
