@@ -1,5 +1,11 @@
 import s from "./styles.module.scss";
-import { MdAutorenew, MdBarChart, MdDelete, MdEdit } from "react-icons/md";
+import {
+  MdAutorenew,
+  MdBarChart,
+  MdDelete,
+  MdEdit,
+  MdSwapVert,
+} from "react-icons/md";
 import { clsx } from "clsx";
 import {
   BottomSheet,
@@ -9,9 +15,11 @@ import {
 } from "../../../../components";
 import type { PerformanceActionsData } from "./types.ts";
 import { deletePerformance, replacePerformance } from "../../../../domain";
+import { queryPerformancesByWorkout, updatePerformance } from "../../../../db";
 import { useNavigate } from "react-router";
 import { ChooseExerciseModal } from "../ChooseExerciseModal";
 import { AddExercise } from "../AddExercise";
+import { PerformanceOrder } from "../PerformanceOrder";
 
 export function PerformanceActions({
   data,
@@ -29,6 +37,16 @@ export function PerformanceActions({
         `/exercises/${exercise.id}/history?program=${performance.program || ""}`,
       );
     }
+  };
+
+  const orderHandler = async () => {
+    await onCancel();
+    const performances = queryPerformancesByWorkout(store, performance.workout);
+    const ordered = await pushModal(PerformanceOrder, performances);
+    const before = new Map(performances.map((p) => [p.id, p.order]));
+    ordered
+      ?.filter((p) => p.order !== before.get(p.id))
+      .forEach((p) => updatePerformance(store, p));
   };
 
   const replaceHandler = async () => {
@@ -55,6 +73,10 @@ export function PerformanceActions({
         <button className={s.sheetAction} onClick={historyHandler}>
           <MdBarChart />
           <span>История выполнения</span>
+        </button>
+        <button className={s.sheetAction} onClick={orderHandler}>
+          <MdSwapVert />
+          <span>Порядок выполнения</span>
         </button>
         <button className={s.sheetAction} onClick={replaceHandler}>
           <MdAutorenew />
