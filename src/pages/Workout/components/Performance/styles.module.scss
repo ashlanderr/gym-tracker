@@ -4,6 +4,27 @@
   gap: 4px;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.name {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #fff;
+  text-align: left;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
 .sets {
   margin: 0 -16px;
 

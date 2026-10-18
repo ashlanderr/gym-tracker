@@ -2,41 +2,18 @@ import s from "./styles.module.scss";
 import { MdAdd } from "react-icons/md";
 import {
   useQueryWorkoutById,
-  type Performance,
+  useQueryPerformancesByWorkout,
+  useQuerySetsByWorkout,
   useQueryProgramById,
-  queryExerciseById,
-  updatePerformance,
 } from "../../db";
 import type { WorkoutParams } from "./types.ts";
 import { usePageParams, useClock } from "../hooks.ts";
-import { useWorkoutState } from "./hooks.ts";
-import { type ReactNode, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { useAtom } from "jotai";
-import {
-  closestCenter,
-  DndContext,
-  type DragEndEvent,
-  MouseSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  arrayMove,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import { CSS } from "@dnd-kit/utilities";
-import { clsx } from "clsx";
 import {
   ChooseExerciseModal,
   CompleteWorkoutModal,
   ChooseProgramBottomSheet,
-  ExerciseCard,
-  PerformanceActions,
+  Performance,
 } from "./components";
 import {
   HeaderButton,
@@ -50,23 +27,9 @@ import {
   completeWorkout,
   addPerformance,
   setWorkoutProgram,
-  computeWorkoutStatuses,
-  queryMissingInventory,
-  queryPendingWeight,
+  computePerformanceStatus,
+  groupSets,
 } from "../../domain";
-import {
-  DRAG_DELAY,
-  DRAG_TOLERANCE,
-  HIGHLIGHT_DURATION,
-  JUST_FINISHED_ATOM,
-  JUST_REPLACED_ATOM,
-  MENU_MOVE_TOLERANCE,
-} from "./constants.ts";
-
-interface Highlight {
-  done: string | null;
-  open: string[];
-}
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
@@ -79,66 +42,17 @@ export function Workout() {
     workout?.startedAt ?? null,
     workout?.completedAt ?? null,
   );
-  const { performances, sets, setsByPerformance, muscles, statuses } =
-    useWorkoutState(workoutId);
+  const performances = useQueryPerformancesByWorkout(store, workoutId);
+  const sets = useQuerySetsByWorkout(store, workoutId);
+  const setsByPerformance = groupSets(sets);
   const completedSets = sets.filter((s) => s.completed);
   const volume = completedSets.reduce((v, s) => v + s.weight * s.reps, 0);
-  const [justFinished, setJustFinished] = useAtom(JUST_FINISHED_ATOM);
-  const [justReplaced, setJustReplaced] = useAtom(JUST_REPLACED_ATOM);
-  const [highlight, setHighlight] = useState<Highlight | null>(null);
-  const justDragged = useRef(false);
   const { scrollRef } = useScrollRestoration();
 
   const doneCount = performances.filter(
-    (p) => statuses.get(p.id) === "done",
+    (p) =>
+      computePerformanceStatus(setsByPerformance.get(p.id) ?? []) === "done",
   ).length;
-
-  const sensors = useSensors(
-    useSensor(MouseSensor, {
-      activationConstraint: { delay: DRAG_DELAY, tolerance: DRAG_TOLERANCE },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: { delay: DRAG_DELAY, tolerance: DRAG_TOLERANCE },
-    }),
-  );
-
-  const showHighlight = (next: Highlight, scrollTo: string) => {
-    setHighlight(next);
-    document
-      .querySelector(`[data-performance="${scrollTo}"]`)
-      ?.scrollIntoView({ behavior: "smooth", block: "center" });
-
-    const timeout = setTimeout(() => setHighlight(null), HIGHLIGHT_DURATION);
-    return () => clearTimeout(timeout);
-  };
-
-  // Back from a finished exercise: it flashes green and what it unlocked
-  // flashes blue, then the list calms down.
-  useEffect(() => {
-    if (!justFinished) return;
-    // Unlocked by this exercise: locked while it was still pending.
-    const before = computeWorkoutStatuses(
-      performances,
-      setsByPerformance,
-      muscles,
-      justFinished,
-    ).statuses;
-    const open = performances
-      .filter(
-        (p) => before.get(p.id) === "locked" && statuses.get(p.id) === "new",
-      )
-      .map((p) => p.id);
-    setJustFinished(null);
-    return showHighlight({ done: justFinished, open }, justFinished);
-  }, [justFinished]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Back from a replaced exercise: the new one flashes blue, like an unlocked
-  // one, so it is found again in the list.
-  useEffect(() => {
-    if (!justReplaced) return;
-    setJustReplaced(null);
-    return showHighlight({ done: null, open: [justReplaced] }, justReplaced);
-  }, [justReplaced]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const addPerformanceHandler = async () => {
     const exercise = await pushModal(ChooseExerciseModal, null);
@@ -163,43 +77,6 @@ export function Workout() {
     if (result !== undefined) {
       setWorkoutProgram(store, workout, result ?? undefined);
     }
-  };
-
-  const openHandler = (performance: Performance) => {
-    if (justDragged.current) return;
-
-    const path = `/workouts/${workoutId}/performances/${performance.id}`;
-    const hasNotice =
-      statuses.get(performance.id) === "locked" ||
-      queryMissingInventory(store, performance) ||
-      queryPendingWeight(store, performance) !== null;
-    navigate(hasNotice ? `${path}/notice` : path);
-  };
-
-  const menuHandler = async (performance: Performance) => {
-    const exercise = queryExerciseById(store, performance.exercise);
-    await pushModal(PerformanceActions, { performance, exercise });
-  };
-
-  const dragEndHandler = ({ active, over, delta }: DragEndEvent) => {
-    justDragged.current = true;
-    setTimeout(() => (justDragged.current = false), 350);
-
-    const held = Math.hypot(delta.x, delta.y) < MENU_MOVE_TOLERANCE;
-    if (held) {
-      const performance = performances.find((p) => p.id === active.id);
-      if (performance) menuHandler(performance);
-      return;
-    }
-
-    if (!over || active.id === over.id) return;
-    const from = performances.findIndex((p) => p.id === active.id);
-    const to = performances.findIndex((p) => p.id === over.id);
-    arrayMove(performances, from, to).forEach((performance, order) => {
-      if (performance.order !== order) {
-        updatePerformance(store, { ...performance, order });
-      }
-    });
   };
 
   return (
@@ -235,71 +112,14 @@ export function Workout() {
         </div>
       </PageHeader>
       <div className={s.exercises}>
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          modifiers={[restrictToVerticalAxis]}
-          onDragStart={() => navigator.vibrate?.(15)}
-          onDragEnd={dragEndHandler}
-        >
-          <SortableContext
-            items={performances.map((p) => p.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            {performances.map((performance) => (
-              <SortableCard key={performance.id} id={performance.id}>
-                <ExerciseCard
-                  performance={performance}
-                  sets={setsByPerformance.get(performance.id) ?? []}
-                  status={statuses.get(performance.id) ?? "new"}
-                  highlight={
-                    highlight?.done === performance.id
-                      ? "done"
-                      : highlight?.open.includes(performance.id)
-                        ? "open"
-                        : undefined
-                  }
-                  onClick={() => openHandler(performance)}
-                />
-              </SortableCard>
-            ))}
-          </SortableContext>
-        </DndContext>
+        {performances.map((performance) => (
+          <Performance key={performance.id} performance={performance} />
+        ))}
         <button className={s.addExerciseButton} onClick={addPerformanceHandler}>
           <MdAdd />
           Добавить упражнение
         </button>
-        {performances.length !== 0 && (
-          <p className={s.hint}>
-            Зажми карточку: перетащи, чтобы поменять порядок, или отпусти, чтобы
-            открыть меню
-          </p>
-        )}
       </div>
-    </div>
-  );
-}
-
-function SortableCard({ id, children }: { id: string; children: ReactNode }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
-
-  return (
-    <div
-      ref={setNodeRef}
-      data-performance={id}
-      className={clsx(s.sortable, isDragging && s.lifted)}
-      style={{ transform: CSS.Translate.toString(transform), transition }}
-      {...attributes}
-      {...listeners}
-    >
-      {children}
     </div>
   );
 }

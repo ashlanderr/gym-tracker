@@ -7,8 +7,6 @@ import {
   StoreProvider,
   Toasts,
 } from "../components";
-import { Performance } from "./Performance";
-import { Notice } from "./Notice";
 import { SignIn } from "./SignIn";
 import { User } from "./User";
 import { ExerciseHistory } from "./Exercise";
@@ -36,14 +34,6 @@ export function Layout() {
               }
             >
               <Route index element={<Workout />} />
-              <Route
-                path="performances/:performanceId"
-                element={<Performance />}
-              />
-              <Route
-                path="performances/:performanceId/notice"
-                element={<Notice />}
-              />
             </Route>
             <Route
               path="/exercises/:exerciseId/history"

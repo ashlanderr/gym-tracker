@@ -4,6 +4,5 @@ export * from "./ChooseExerciseModal";
 export * from "./CompleteWorkoutModal";
 export * from "./ActiveTimer";
 export * from "./ChooseProgramBottomSheet";
-export * from "./ExerciseCard";
 export * from "./PerformanceActions";
 export * from "./PerformanceTimer";
