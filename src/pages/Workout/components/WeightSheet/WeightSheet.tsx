@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import s from "./styles.module.scss";
 import { MdRefresh, MdTune } from "react-icons/md";
 import {
@@ -33,16 +34,30 @@ export function WeightSheet({
   const performance = useLivePerformance(data.performance) ?? data.performance;
   const { exercise, rows, units } = usePerformanceSets(performance);
   const row = rows.find((r) => r.set.id === data.setId);
+  const weights = performance.weights;
+  const emptySet =
+    row && !row.set.completed && row.set.weight === undefined
+      ? row.set
+      : undefined;
+  const lightestKg =
+    emptySet && row?.recSet?.weight === undefined && weights !== undefined
+      ? minimumWeightKg(weights)
+      : undefined;
+
+  const isOpening = useRef(true);
+  useEffect(() => {
+    if (!isOpening.current) return;
+    isOpening.current = false;
+    if (emptySet && lightestKg !== undefined) {
+      updateSet(store, { ...emptySet, weight: lightestKg });
+    }
+  }, [store, emptySet, lightestKg]);
 
   if (!row) return null;
 
   const { set, recSet, number } = row;
-  const weights = performance.weights;
   const equipment = exercise?.equipment ?? "none";
-  const weightKg =
-    set.weight ??
-    recSet?.weight ??
-    (weights !== undefined ? minimumWeightKg(weights) : undefined);
+  const weightKg = set.weight ?? recSet?.weight ?? lightestKg;
   const isSuggested = set.weight === undefined;
   const fits =
     weights !== undefined &&
