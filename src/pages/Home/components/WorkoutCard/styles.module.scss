@@ -1,0 +1,72 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background: #1a1a1a;
+  border-radius: 8px;
+}
+
+.name {
+  font-size: 24px;
+}
+
+.time {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.stats {
+  margin-top: 16px;
+  display: flex;
+  gap: 24px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statName {
+  font-size: 10px;
+  color: #aaa;
+}
+
+.statValue {
+  font-size: 16px;
+}
+
+.records {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.medal {
+  color: #ff0;
+  font-size: 14px;
+}
+
+.buttons {
+  display: flex;
+  margin-top: 16px;
+  gap: 16px;
+}
+
+.button {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: none;
+  border-radius: 4px;
+  padding: 12px;
+  line-height: 1;
+}
+
+.primary {
+  background: #06f;
+  color: #fff;
+}

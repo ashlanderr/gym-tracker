@@ -3,26 +3,20 @@ import {
   addMeasurement,
   useQueryLatestMeasurement,
   generateId,
-  getBackendUrl,
-  setBackendUrl,
 } from "../../db";
 import { useState } from "react";
 import { useUser } from "../../firebase/auth.ts";
 import s from "./styles.module.scss";
-import { useNavigate } from "react-router";
 
-export function User() {
+export function Profile() {
   const store = useStore();
   const user = useUser();
-  const navigate = useNavigate();
   const measurement = useQueryLatestMeasurement(store, null);
 
   const [weightInput, setWeightInput] = useState<string | null>(null);
   const [heightInput, setHeightInput] = useState<string | null>(null);
-  const [backendUrlInput, setBackendUrlInput] = useState<string | null>(null);
 
-  const canSave =
-    weightInput !== null || heightInput !== null || backendUrlInput !== null;
+  const canSave = weightInput !== null || heightInput !== null;
 
   const parseValue = (value: string | null, defaultValue: number): number => {
     if (!value) return defaultValue;
@@ -49,29 +43,21 @@ export function User() {
   };
 
   const saveHandler = () => {
-    if (weightInput !== null || heightInput !== null) {
-      addMeasurement(store, {
-        id: generateId(),
-        user: user.uid,
-        weight: parseValue(weightInput, measurement?.weight ?? 0),
-        height: parseValue(heightInput, measurement?.height ?? 0),
-        createdAt: Date.now(),
-      });
-      setWeightInput(null);
-      setHeightInput(null);
-    }
-    if (backendUrlInput !== null) {
-      setBackendUrl(backendUrlInput);
-      setBackendUrlInput(null);
-      location.reload();
-    }
+    addMeasurement(store, {
+      id: generateId(),
+      user: user.uid,
+      weight: parseValue(weightInput, measurement?.weight ?? 0),
+      height: parseValue(heightInput, measurement?.height ?? 0),
+      createdAt: Date.now(),
+    });
+    setWeightInput(null);
+    setHeightInput(null);
   };
 
   return (
     <div className={s.root}>
       <PageHeader
-        title="Пользователь"
-        onBack={() => navigate("/", { replace: true })}
+        title="Профиль"
         right={
           <HeaderButton primary disabled={!canSave} onClick={saveHandler}>
             Сохранить
@@ -100,15 +86,6 @@ export function User() {
             onBlur={heightBlurHandler}
           />
           <label className={s.fieldLabel}>см</label>
-        </div>
-        <div className={s.field}>
-          <label className={s.fieldLabel}>URL</label>
-          <input
-            className={s.fieldInput}
-            value={backendUrlInput ?? getBackendUrl() ?? ""}
-            placeholder=""
-            onChange={(e) => setBackendUrlInput(e.target.value)}
-          />
         </div>
       </div>
     </div>

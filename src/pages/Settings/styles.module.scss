@@ -1,0 +1,87 @@
+.root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 16px;
+}
+
+.user {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.userImage {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.userName {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.signOut {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: transparent;
+  color: #fff;
+  line-height: 1;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  border-bottom: 1px solid #444;
+}
+
+.fieldLabel {
+  flex: 0 0 auto;
+}
+
+.fieldInput {
+  flex: 1 1 0;
+  min-width: 0;
+  font: inherit;
+  padding: 8px;
+  box-sizing: border-box;
+  background: transparent;
+  outline: none;
+  border: none;
+  color: #fff;
+  text-align: right;
+}
+
+.fieldValue {
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: right;
+  color: #8a8a8a;
+  text-transform: capitalize;
+}

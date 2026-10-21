@@ -3,57 +3,112 @@ import {
   useQueryCompletedWorkouts,
   type Workout,
 } from "../../db";
-import { buildTime, useTimer } from "../hooks.ts";
 import s from "./styles.module.scss";
-import { APP_VERSION, DATE_FORMATTER } from "./constants.ts";
-import {
-  MdAdd,
-  MdClose,
-  MdLogout,
-  MdPerson,
-  MdPlayArrow,
-  MdSettings,
-} from "react-icons/md";
-import { useNavigate } from "react-router";
+import { FUTURE_WEEKS, PAST_WEEKS } from "./constants.ts";
+import { MdAdd, MdExpandMore, MdPlayArrow, MdToday } from "react-icons/md";
+import { useNavigate, useSearchParams } from "react-router";
+import { useMemo, useState } from "react";
 import { clsx } from "clsx";
-import { signOut, useUser } from "../../firebase/auth.ts";
+import { useUser } from "../../firebase/auth.ts";
 import {
-  useConnectionStatus,
+  HeaderButton,
+  PageHeader,
   useModalStack,
-  useScrollRestoration,
   useStore,
 } from "../../components";
-import { PiMedalFill } from "react-icons/pi";
 import { addWorkout, cancelWorkout, duplicateWorkout } from "../../domain";
-import { CancelWorkoutModal, WorkoutActionsSheet } from "./components";
-import { formatSoundLog } from "../../utils";
+import {
+  ActiveWorkoutCard,
+  CancelWorkoutModal,
+  MonthSheet,
+  WeekStrip,
+  WorkoutActionsSheet,
+  WorkoutCard,
+} from "./components";
+import {
+  addDays,
+  buildDayMarks,
+  buildWeeks,
+  dayKey,
+  findWeek,
+  formatDay,
+  formatMonth,
+  parseDayKey,
+  startOfWeek,
+} from "./calendar.ts";
 
+// The selected day lives in the address, so coming back from a workout
+// returns to it. Today is the default and leaves the address clean.
 export function Home() {
   const user = useUser();
   const store = useStore();
-  const connection = useConnectionStatus();
   const navigate = useNavigate();
   const { pushModal } = useModalStack();
-  const workouts = useQueryCompletedWorkouts(store);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const completedWorkouts = useQueryCompletedWorkouts(store);
   const [activeWorkout] = useQueryActiveWorkouts(store);
-  const activeTimer = useTimer(activeWorkout?.startedAt ?? null, null);
-  const { scrollRef } = useScrollRestoration();
+  const workouts = activeWorkout
+    ? [activeWorkout, ...completedWorkouts]
+    : completedWorkouts;
 
-  const openWorkoutHandler = (workout: Workout | null) => {
-    if (!workout) return;
+  const today = dayKey(Date.now());
+  const todayDate = parseDayKey(today);
+  const selected = searchParams.get("day") ?? today;
+  const selectedDate = parseDayKey(selected);
+  const [shownWeek, setShownWeek] = useState(() =>
+    dayKey(startOfWeek(selectedDate)),
+  );
+
+  const oldest = workouts.at(-1)?.startedAt ?? Date.now();
+  const firstDay = [
+    dayKey(addDays(todayDate, -PAST_WEEKS * 7)),
+    dayKey(oldest),
+    selected,
+  ].sort()[0];
+  const lastDay = [dayKey(addDays(todayDate, FUTURE_WEEKS * 7)), selected]
+    .sort()
+    .at(-1)!;
+  const weeks = useMemo(
+    () => buildWeeks(parseDayKey(firstDay), parseDayKey(lastDay)),
+    [firstDay, lastDay],
+  );
+  const week = Math.max(findWeek(weeks, shownWeek), 0);
+  const marks = buildDayMarks(workouts);
+
+  const dayWorkouts = workouts
+    .filter((w) => dayKey(w.startedAt) === selected)
+    .sort((a, b) => a.startedAt - b.startedAt);
+  const isToday = selected === today;
+  const titleDate = weeks[week].some((d) => dayKey(d) === selected)
+    ? selectedDate
+    : weeks[week][3];
+
+  const selectHandler = (day: string) => {
+    setSearchParams(day === today ? {} : { day }, { replace: true });
+    setShownWeek(dayKey(startOfWeek(parseDayKey(day))));
+  };
+
+  const pickDayHandler = async () => {
+    const day = await pushModal(MonthSheet, {
+      month: titleDate,
+      selected,
+      today,
+      marks,
+    });
+    if (day) selectHandler(day);
+  };
+
+  const openWorkoutHandler = (workout: Workout) => {
     navigate(`/workouts/${workout.id}`);
   };
 
   const startWorkoutHandler = () => {
-    const newWorkout = addWorkout(store, user.uid);
-    openWorkoutHandler(newWorkout);
+    openWorkoutHandler(addWorkout(store, user.uid));
   };
 
   const cancelWorkoutHandler = async (workout: Workout) => {
     const confirm = await pushModal(CancelWorkoutModal, null);
-    if (confirm) {
-      cancelWorkout(store, workout);
-    }
+    if (confirm) cancelWorkout(store, workout);
   };
 
   const workoutActionsHandler = async (workout: Workout) => {
@@ -67,126 +122,89 @@ export function Home() {
     } else if (action === "duplicate") {
       openWorkoutHandler(duplicateWorkout(store, workout));
     } else if (action === "delete") {
-      const confirm = await pushModal(CancelWorkoutModal, null);
-      if (confirm) cancelWorkout(store, workout);
-    }
-  };
-
-  const copySoundLogHandler = async () => {
-    try {
-      await navigator.clipboard.writeText(formatSoundLog());
-      alert("Лог звука таймера скопирован");
-    } catch (e) {
-      alert(`Не удалось скопировать лог: ${e}`);
+      await cancelWorkoutHandler(workout);
     }
   };
 
   return (
-    <div className={s.body} ref={scrollRef}>
-      <div className={s.user}>
-        {user.photoURL ? (
-          <img className={s.userImage} src={user.photoURL} alt="User Photo" />
-        ) : (
-          <div className={s.userImage}>
-            <MdPerson />
-          </div>
-        )}
-        <div className={s.userInfo}>
-          <div className={s.userName}>
-            {user.displayName ?? "Анонимный Пользователь"}
-          </div>
-          <button className={s.signOut} onClick={signOut}>
-            <MdLogout />
-            <span>Выйти</span>
-          </button>
-        </div>
-        <button className={s.userSettings} onClick={() => navigate("/user")}>
-          <MdSettings />
-        </button>
-      </div>
-      <div className={s.workouts}>
-        {activeWorkout ? (
-          <div className={s.workout}>
-            <div className={s.workoutName}>Активная тренировка</div>
-            <div className={s.workoutTimer}>{activeTimer}</div>
-            <div className={s.workoutButtons}>
-              <button
-                className={clsx(s.workoutButton, s.startWorkout)}
-                onClick={() => openWorkoutHandler(activeWorkout)}
-              >
-                <MdPlayArrow />
-                Продолжить
-              </button>
-              <button
-                className={clsx(s.workoutButton, s.cancelWorkout)}
-                onClick={() => cancelWorkoutHandler(activeWorkout)}
-              >
-                <MdClose />
-                Отменить
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className={s.workout}>
-            <div className={s.workoutName}>Новая тренировка</div>
-            <div className={s.workoutButtons}>
-              <button
-                className={clsx(s.workoutButton, s.startWorkout)}
-                onClick={() => startWorkoutHandler()}
-              >
-                <MdAdd />
-                Начать тренировку
-              </button>
-            </div>
-          </div>
-        )}
-        {workouts.map((workout) => (
-          <div
-            key={workout.id}
-            className={s.workout}
-            onClick={() => workoutActionsHandler(workout)}
+    <div className={s.root}>
+      <PageHeader
+        title={
+          <span className={s.month}>
+            {formatMonth(titleDate, todayDate)}
+            <MdExpandMore />
+          </span>
+        }
+        onTitleClick={pickDayHandler}
+        right={
+          <HeaderButton
+            disabled={isToday && weeks[week].some((d) => dayKey(d) === today)}
+            onClick={() => selectHandler(today)}
           >
-            <div className={s.workoutName}>{workout.name}</div>
-            <div className={s.workoutDate}>
-              {DATE_FORMATTER.format(workout.startedAt)}
+            <MdToday />
+          </HeaderButton>
+        }
+      >
+        <WeekStrip
+          weeks={weeks}
+          week={week}
+          selected={selected}
+          today={today}
+          marks={marks}
+          onSelect={selectHandler}
+          onWeekChange={(index) => setShownWeek(dayKey(weeks[index][0]))}
+        />
+      </PageHeader>
+      <div className={s.body}>
+        <div className={s.day}>{formatDay(selectedDate, todayDate)}</div>
+        {dayWorkouts.map((workout) =>
+          workout.completedAt === null ? (
+            <ActiveWorkoutCard
+              key={workout.id}
+              workout={workout}
+              onContinue={() => openWorkoutHandler(workout)}
+              onCancel={() => cancelWorkoutHandler(workout)}
+            />
+          ) : (
+            <WorkoutCard
+              key={workout.id}
+              workout={workout}
+              onClick={() => workoutActionsHandler(workout)}
+            />
+          ),
+        )}
+        {dayWorkouts.length === 0 && (
+          <div className={s.empty}>
+            <div className={s.emptyTitle}>
+              {isToday
+                ? "Сегодня без тренировки"
+                : selected < today
+                  ? "В этот день не тренировались"
+                  : "Ничего не запланировано"}
             </div>
-            <div className={s.workoutStats}>
-              <div className={s.workoutStat}>
-                <div className={s.statName}>Время</div>
-                <div className={s.statValue}>
-                  {buildTime(workout.startedAt, workout.completedAt)}
-                </div>
+            {!isToday && (
+              <div className={s.emptyNote}>
+                {selected < today
+                  ? "Тренировку можно начать только сегодня"
+                  : "Планирование тренировок появится позже"}
               </div>
-              <div className={s.workoutStat}>
-                <div className={s.statName}>Объём</div>
-                <div className={s.statValue}>
-                  {workout.volume
-                    ? Math.round(workout.volume).toLocaleString()
-                    : "-"}{" "}
-                  кг
-                </div>
-              </div>
-              <div className={s.workoutStat}>
-                <div className={s.statName}>Сеты</div>
-                <div className={s.statValue}>{workout.sets}</div>
-              </div>
-              {workout.records !== undefined && (
-                <div className={s.workoutStat}>
-                  <div className={s.statName}>Рекорды</div>
-                  <div className={clsx(s.statValue, s.statRecords)}>
-                    <PiMedalFill className={s.recordMedal} />
-                    {workout.records}
-                  </div>
-                </div>
-              )}
-            </div>
+            )}
           </div>
-        ))}
+        )}
+        {isToday && !dayWorkouts.some((w) => w.completedAt === null) && (
+          <button
+            className={clsx(s.start, dayWorkouts.length !== 0 && s.secondary)}
+            onClick={() =>
+              activeWorkout
+                ? openWorkoutHandler(activeWorkout)
+                : startWorkoutHandler()
+            }
+          >
+            {activeWorkout ? <MdPlayArrow /> : <MdAdd />}
+            {activeWorkout ? "Продолжить тренировку" : "Начать тренировку"}
+          </button>
+        )}
       </div>
-      <div className={s.appVersion} onClick={copySoundLogHandler}>
-        App Version: {APP_VERSION}
-      </div>
-      <div className={s.connectionStatus}>Network: {connection}</div>
     </div>
   );
 }

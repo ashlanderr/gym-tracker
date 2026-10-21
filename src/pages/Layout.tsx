@@ -8,7 +8,9 @@ import {
   Toasts,
 } from "../components";
 import { SignIn } from "./SignIn";
-import { User } from "./User";
+import { Profile } from "./Profile";
+import { Settings } from "./Settings";
+import { Tabs } from "./Tabs";
 import { ExerciseHistory } from "./Exercise";
 
 export function Layout() {
@@ -18,13 +20,16 @@ export function Layout() {
         <ModalStack>
           <Routes>
             <Route
-              path="/"
               element={
                 <ProtectedRoute>
-                  <Home />
+                  <Tabs />
                 </ProtectedRoute>
               }
-            />
+            >
+              <Route path="/" element={<Home />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/settings" element={<Settings />} />
+            </Route>
             <Route
               path="/workouts/:workoutId"
               element={
@@ -40,14 +45,6 @@ export function Layout() {
               element={
                 <ProtectedRoute>
                   <ExerciseHistory />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/user"
-              element={
-                <ProtectedRoute>
-                  <User />
                 </ProtectedRoute>
               }
             />

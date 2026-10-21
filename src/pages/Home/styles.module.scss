@@ -1,167 +1,70 @@
-.body {
-  padding: 16px;
+.root {
   width: 100%;
   height: 100%;
   overflow: auto;
-  box-sizing: border-box;
 }
 
-.user {
-  display: flex;
-  gap: 16px;
+.month {
+  display: inline-flex;
   align-items: center;
-  margin: 16px 0 32px;
-}
-
-.userImage {
-  flex: 0 0 auto;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: #666;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 48px;
-}
-
-.userInfo {
-  flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-start;
-}
-
-.userName {
-  font-size: 16px;
-}
-
-.signOut {
-  flex: 1 1 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  border: none;
-  outline: none;
-  border-radius: 4px;
-  font-size: inherit;
-  padding: 6px 24px 4px 24px;
-  line-height: 1;
+  gap: 2px;
 
   svg {
-    margin: 0 0 2px;
+    color: #8a8a8a;
   }
 }
 
-.userSettings {
-  flex: 0 0 auto;
-  border: none;
-  outline: none;
-  border-radius: 4px;
-  font-size: 24px;
-  padding: 0;
-  background: transparent;
-  color: #fff;
-}
-
-.workoutButtons {
+.body {
   display: flex;
-  margin-top: 16px;
+  flex-direction: column;
   gap: 16px;
-  flex-wrap: wrap;
+  padding: 16px;
 }
 
-.workoutButton {
-  flex: 1 1 0;
+.day {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 16px 16px;
+  text-align: center;
+}
+
+.emptyTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.emptyNote {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #6d6d6d;
+}
+
+.start {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
+  padding: 14px;
   border: none;
-  outline: none;
-  border-radius: 4px;
-  font-size: inherit;
-  padding: 12px 12px 12px 12px;
+  border-radius: 10px;
+  background: #06f;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
   line-height: 1;
 }
 
-.startWorkout {
-  background: #06f;
-  color: #fff;
-}
-
-.workouts {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.workout {
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  background: #1a1a1a;
-  border-radius: 8px;
-  position: relative;
-}
-
-.workoutName {
-  font-size: 24px;
-}
-
-.workoutTimer {
-  margin-top: 8px;
-}
-
-.workoutDate {
-  margin-top: 4px;
-  font-size: 12px;
-  color: #aaa;
-}
-
-.workoutStats {
-  margin-top: 16px;
-  display: flex;
-  gap: 24px;
-}
-
-.workoutStat {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.statName {
-  font-size: 10px;
-  color: #aaa;
-}
-
-.statValue {
-  font-size: 16px;
-}
-
-.statRecords {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.recordMedal {
-  color: #ff0;
-  font-size: 14px;
-}
-
-.appVersion {
-  margin: 64px 0 0;
-  font-size: 12px;
-  color: #999;
-}
-
-.connectionStatus {
-  margin: 4px 0 0;
-  font-size: 12px;
-  color: #999;
-  text-transform: capitalize;
+.secondary {
+  border: 1px solid #2a2a2a;
+  background: transparent;
 }
