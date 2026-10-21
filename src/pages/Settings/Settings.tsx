@@ -2,6 +2,7 @@ import {
   HeaderButton,
   PageHeader,
   useConnectionStatus,
+  useStore,
 } from "../../components";
 import { getBackendUrl, setBackendUrl } from "../../db";
 import { useState } from "react";
@@ -9,10 +10,12 @@ import { MdLogout, MdPerson } from "react-icons/md";
 import { signOut, useUser } from "../../firebase/auth.ts";
 import { formatSoundLog } from "../../utils";
 import { APP_VERSION } from "./constants.ts";
+import { seedWorkouts } from "./seed.ts";
 import s from "./styles.module.scss";
 
 export function Settings() {
   const user = useUser();
+  const store = useStore();
   const connection = useConnectionStatus();
   const [backendUrlInput, setBackendUrlInput] = useState<string | null>(null);
 
@@ -80,6 +83,16 @@ export function Settings() {
           <div className={s.fieldLabel}>Сеть</div>
           <div className={s.fieldValue}>{connection}</div>
         </div>
+        {/* Test data goes only into a local account while developing, never
+            into a real synced one. */}
+        {import.meta.env.DEV && user.uid.startsWith("local-") && (
+          <button
+            className={s.seed}
+            onClick={() => seedWorkouts(store, user.uid)}
+          >
+            Добавить тестовые тренировки
+          </button>
+        )}
       </div>
     </div>
   );
