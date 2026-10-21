@@ -128,6 +128,8 @@ export function Home() {
     if (action === "open") {
       openWorkoutHandler(workout);
     } else if (action === "duplicate") {
+      // The copy starts today, so the way back from it leads there.
+      selectHandler(today);
       openWorkoutHandler(duplicateWorkout(store, workout));
     } else if (action === "delete") {
       await cancelWorkoutHandler(workout);

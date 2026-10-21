@@ -10,3 +10,11 @@ export interface ActiveWorkoutCardProps {
   onContinue: () => void;
   onCancel: () => void;
 }
+
+export interface ExerciseSummary {
+  performance: string;
+  exercise: string;
+  done: number;
+  total: number;
+  best: { weight: number; reps: number } | null;
+}
