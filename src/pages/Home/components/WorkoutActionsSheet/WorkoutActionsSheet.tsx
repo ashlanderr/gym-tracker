@@ -1,5 +1,5 @@
 import s from "./styles.module.scss";
-import { MdDelete, MdEdit, MdPlayArrow } from "react-icons/md";
+import { MdDelete, MdEdit, MdEvent, MdPlayArrow } from "react-icons/md";
 import { BottomSheet, type ModalProps } from "../../../../components";
 import type { WorkoutAction, WorkoutActionsData } from "./types.ts";
 
@@ -14,7 +14,7 @@ export function WorkoutActionsSheet({
       <div className={s.sheetActions}>
         <button className={s.sheetAction} onClick={() => onSubmit("open")}>
           <MdEdit />
-          <span>Открыть тренировку</span>
+          <span>Открыть</span>
         </button>
         <button
           className={s.sheetAction}
@@ -22,11 +22,15 @@ export function WorkoutActionsSheet({
           onClick={() => onSubmit("duplicate")}
         >
           <MdPlayArrow />
-          <span>Повторить тренировку</span>
+          <span>Повторить</span>
+        </button>
+        <button className={s.sheetAction} onClick={() => onSubmit("schedule")}>
+          <MdEvent />
+          <span>Расписание</span>
         </button>
         <button className={s.sheetAction} onClick={() => onSubmit("delete")}>
           <MdDelete />
-          <span>Удалить тренировку</span>
+          <span>Удалить</span>
         </button>
       </div>
     </BottomSheet>

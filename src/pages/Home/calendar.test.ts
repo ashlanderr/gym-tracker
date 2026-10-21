@@ -85,3 +85,22 @@ describe("day marks", () => {
     });
   });
 });
+
+describe("day marks with a plan", () => {
+  it("mark a due day unless it has a workout or was missed", () => {
+    const template = workout(new Date(2026, 9, 12, 18), true);
+    const marks = buildDayMarks(
+      [workout(new Date(2026, 9, 26, 18), true)],
+      new Map([
+        ["2026-10-19", [{ template, missed: true }]],
+        ["2026-10-26", [{ template, missed: false }]],
+        ["2026-11-02", [{ template, missed: false }]],
+      ]),
+    );
+
+    expect(Object.fromEntries(marks)).toEqual({
+      "2026-10-26": "done",
+      "2026-11-02": "planned",
+    });
+  });
+});

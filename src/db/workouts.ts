@@ -3,6 +3,7 @@ import {
   deleteEntity,
   getEntity,
   insertEntity,
+  queryCollection,
   useGetEntity,
   useQueryCollection,
 } from "./db.ts";
@@ -18,6 +19,16 @@ export interface Workout {
   sets?: number;
   records?: number;
   program?: string;
+  repeat?: WorkoutRepeat;
+}
+
+// Repeats of one workout share the id, and the latest of them holds the
+// rule: every `days` days counting from the day `from`, like "2026-10-19".
+// The planned days are not stored, they follow from the rule.
+export interface WorkoutRepeat {
+  id: string;
+  from: string;
+  days: number;
 }
 
 export function queryWorkoutById(store: Store, id: string): Workout | null {
@@ -41,6 +52,13 @@ export function useQueryCompletedWorkouts(store: Store): Workout[] {
     deps: [],
   });
   return [...workouts].sort((a, b) => b.startedAt - a.startedAt);
+}
+
+export function queryWorkoutsByRepeat(store: Store, id: string): Workout[] {
+  return queryCollection<Workout>(
+    collection(store.personal, "workouts"),
+    {},
+  ).filter((w) => w.repeat?.id === id);
 }
 
 export function useQueryActiveWorkouts(store: Store): Workout[] {

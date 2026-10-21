@@ -1,4 +1,5 @@
 import type { Workout } from "../../../../db";
+import type { PlannedWorkout } from "../../types.ts";
 
 export interface WorkoutCardProps {
   workout: Workout;
@@ -17,4 +18,11 @@ export interface ExerciseSummary {
   done: number;
   total: number;
   best: { weight: number; reps: number } | null;
+}
+
+export interface PlannedWorkoutCardProps {
+  planned: PlannedWorkout;
+  canStart: boolean;
+  onStart: () => void;
+  onClick: () => void;
 }

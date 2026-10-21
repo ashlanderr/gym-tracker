@@ -16,9 +16,11 @@ import { useClock } from "../../../hooks.ts";
 import { TIME_FORMATTER } from "../../constants.ts";
 import { EXERCISES_SHOWN } from "./constants.ts";
 import { formatDuration, summarizeExercises } from "./utils.ts";
+import { formatRepeat } from "../../schedule.ts";
 import type {
   ActiveWorkoutCardProps,
   ExerciseSummary,
+  PlannedWorkoutCardProps,
   WorkoutCardProps,
 } from "./types.ts";
 
@@ -94,6 +96,49 @@ export function ActiveWorkoutCard({
           Отменить
         </button>
       </div>
+    </div>
+  );
+}
+
+// A due day of a repeating workout shows its latest repeat: what will be
+// done is what was done last time. A missed one keeps only its name.
+export function PlannedWorkoutCard({
+  planned: { template, missed },
+  canStart,
+  onStart,
+  onClick,
+}: PlannedWorkoutCardProps) {
+  const { exercises } = useWorkoutDetails(template);
+  const repeat = formatRepeat(template.repeat!);
+
+  if (missed) {
+    return (
+      <div className={clsx(s.root, s.missed)} onClick={onClick}>
+        <div className={s.kicker}>Пропущена · {repeat}</div>
+        <div className={s.name}>{template.name}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={clsx(s.root, s.planned)} onClick={onClick}>
+      <div className={s.kicker}>По плану · {repeat}</div>
+      <div className={s.name}>{template.name}</div>
+      <Exercises exercises={exercises} />
+      {canStart && (
+        <div className={s.buttons}>
+          <button
+            className={clsx(s.button, s.primary)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onStart();
+            }}
+          >
+            <MdPlayArrow />
+            Начать
+          </button>
+        </div>
+      )}
     </div>
   );
 }

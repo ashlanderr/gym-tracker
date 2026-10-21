@@ -1,6 +1,6 @@
 import type { Workout } from "../../../../db";
 
-export type WorkoutAction = "open" | "duplicate" | "delete";
+export type WorkoutAction = "open" | "duplicate" | "schedule" | "delete";
 
 export interface WorkoutActionsData {
   workout: Workout;

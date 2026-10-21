@@ -1,6 +1,6 @@
 import type { Workout } from "../../db";
 import { DAY_FORMATTER, MONTH_FORMATTER } from "./constants.ts";
-import type { DayMark } from "./types.ts";
+import type { DayMark, PlannedWorkout } from "./types.ts";
 
 // A day in local time as "2026-10-21": a workout belongs to the day it was
 // started on where the phone is.
@@ -65,14 +65,22 @@ function capitalize(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-// An active workout outshines a finished one on the same day.
-export function buildDayMarks(workouts: Workout[]): Map<string, DayMark> {
+// An active workout outshines a finished one on the same day, and both
+// outshine a plan. A missed plan leaves no mark.
+export function buildDayMarks(
+  workouts: Workout[],
+  plan: Map<string, PlannedWorkout[]> = new Map(),
+): Map<string, DayMark> {
   const marks = new Map<string, DayMark>();
+
+  for (const [key, planned] of plan) {
+    if (planned.some((p) => !p.missed)) marks.set(key, "planned");
+  }
 
   for (const workout of workouts) {
     const key = dayKey(workout.startedAt);
     if (workout.completedAt === null) marks.set(key, "active");
-    else if (!marks.has(key)) marks.set(key, "done");
+    else if (marks.get(key) !== "active") marks.set(key, "done");
   }
 
   return marks;

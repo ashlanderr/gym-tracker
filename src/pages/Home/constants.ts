@@ -21,3 +21,19 @@ export const TIME_FORMATTER = new Intl.DateTimeFormat("ru", {
   hour: "numeric",
   minute: "numeric",
 });
+
+// By Date.getDay(), from Sunday.
+export const WEEKDAYS_PLURAL = [
+  "по воскресеньям",
+  "по понедельникам",
+  "по вторникам",
+  "по средам",
+  "по четвергам",
+  "по пятницам",
+  "по субботам",
+];
+
+export const REPEAT_DAYS: [string, string, string] = ["день", "дня", "дней"];
+
+// The longest gap the schedule offers between repeats.
+export const MAX_REPEAT_DAYS = 28;

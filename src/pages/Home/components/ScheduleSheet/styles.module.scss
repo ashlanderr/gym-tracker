@@ -1,0 +1,122 @@
+.header {
+  padding: 16px;
+  border-bottom: 1px solid #444;
+  text-align: center;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #aaa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+.option {
+  padding: 14px;
+  border: 1px solid #444;
+  border-radius: 12px;
+}
+
+.selected {
+  border-color: #06f;
+  background: #2a3a55;
+}
+
+.optionRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.optionText {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.label {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.note {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #aaa;
+}
+
+.check {
+  flex: 0 0 auto;
+  font-size: 22px;
+  color: #4a9eff;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.step {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #555;
+  border-radius: 10px;
+  background: transparent;
+  color: #fff;
+  font-size: 22px;
+
+  &:disabled {
+    color: #666;
+  }
+}
+
+.days {
+  flex: 1 1 0;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 16px 32px;
+}
+
+.next {
+  text-align: center;
+  font-size: 13px;
+  color: #aaa;
+}
+
+.save {
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #06f;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+}

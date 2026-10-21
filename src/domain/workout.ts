@@ -14,6 +14,9 @@ import {
   updatePerformance,
   type Program,
   querySetsByPerformance,
+  queryWorkoutsByRepeat,
+  maxBy,
+  type WorkoutRepeat,
 } from "../db";
 import { addPerformance } from "./performances.ts";
 import { MEDAL_RECORDS, updateRecords } from "./records.ts";
@@ -37,6 +40,7 @@ export function duplicateWorkout(store: Store, oldWorkout: Workout): Workout {
     ...newWorkout,
     name: oldWorkout.name,
     program: oldWorkout.program,
+    repeat: oldWorkout.repeat,
   });
 
   const oldPerformances = queryPerformancesByWorkout(store, oldWorkout.id);
@@ -113,6 +117,27 @@ export function setWorkoutProgram(
     ...workout,
     program: program?.id,
   });
+}
+
+// The rule lives on the latest repeat, so that is the one to change. Stopping
+// takes the rule off every repeat: an older one must not take over.
+export function setWorkoutRepeat(
+  store: Store,
+  workout: Workout,
+  rule: Omit<WorkoutRepeat, "id"> | null,
+) {
+  const id = workout.repeat?.id ?? generateId();
+  const repeats = queryWorkoutsByRepeat(store, id);
+  const latest = maxBy(repeats, (a, b) => a.startedAt - b.startedAt) ?? workout;
+
+  if (rule) {
+    updateWorkout(store, { ...latest, repeat: { id, ...rule } });
+    return;
+  }
+
+  for (const repeat of repeats) {
+    updateWorkout(store, { ...repeat, repeat: undefined });
+  }
 }
 
 export function cancelWorkout(store: Store, workout: Workout) {

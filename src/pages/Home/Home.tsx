@@ -16,11 +16,18 @@ import {
   useModalStack,
   useStore,
 } from "../../components";
-import { addWorkout, cancelWorkout, duplicateWorkout } from "../../domain";
+import {
+  addWorkout,
+  cancelWorkout,
+  duplicateWorkout,
+  setWorkoutRepeat,
+} from "../../domain";
 import {
   ActiveWorkoutCard,
   CancelWorkoutModal,
   MonthSheet,
+  PlannedWorkoutCard,
+  ScheduleSheet,
   WeekStrip,
   WorkoutActionsSheet,
   WorkoutCard,
@@ -36,6 +43,7 @@ import {
   parseDayKey,
   startOfWeek,
 } from "./calendar.ts";
+import { buildPlan } from "./schedule.ts";
 
 // The selected day lives in the address, so coming back from a workout
 // returns to it. Today is the default and leaves the address clean.
@@ -82,11 +90,14 @@ export function Home() {
     [firstDay, lastDay],
   );
   const week = Math.max(findWeek(weeks, shownWeek), 0);
-  const marks = buildDayMarks(workouts);
+  const plan = buildPlan(workouts, firstDay, lastDay, today);
+  const marks = buildDayMarks(workouts, plan);
 
   const dayWorkouts = workouts
     .filter((w) => dayKey(w.startedAt) === selected)
     .sort((a, b) => a.startedAt - b.startedAt);
+  const dayPlan = plan.get(selected) ?? [];
+  const isEmpty = dayWorkouts.length === 0 && dayPlan.length === 0;
   const isToday = selected === today;
   const titleDate = weeks[week].some((d) => dayKey(d) === selected)
     ? selectedDate
@@ -119,6 +130,20 @@ export function Home() {
     if (confirm) cancelWorkout(store, workout);
   };
 
+  const startPlannedHandler = (template: Workout) => {
+    openWorkoutHandler(duplicateWorkout(store, template));
+  };
+
+  // A rule set from a workout counts from its day, unless it repeats already.
+  const scheduleHandler = async (workout: Workout) => {
+    const result = await pushModal(ScheduleSheet, {
+      workout,
+      from: workout.repeat?.from ?? dayKey(workout.startedAt),
+      today,
+    });
+    if (result) setWorkoutRepeat(store, workout, result.rule);
+  };
+
   const workoutActionsHandler = async (workout: Workout) => {
     const action = await pushModal(WorkoutActionsSheet, {
       workout,
@@ -131,6 +156,8 @@ export function Home() {
       // The copy starts today, so the way back from it leads there.
       selectHandler(today);
       openWorkoutHandler(duplicateWorkout(store, workout));
+    } else if (action === "schedule") {
+      await scheduleHandler(workout);
     } else if (action === "delete") {
       await cancelWorkoutHandler(workout);
     }
@@ -185,7 +212,16 @@ export function Home() {
             />
           ),
         )}
-        {dayWorkouts.length === 0 && (
+        {dayPlan.map((planned) => (
+          <PlannedWorkoutCard
+            key={planned.template.repeat!.id}
+            planned={planned}
+            canStart={isToday && !activeWorkout}
+            onStart={() => startPlannedHandler(planned.template)}
+            onClick={() => scheduleHandler(planned.template)}
+          />
+        ))}
+        {isEmpty && (
           <div className={s.empty}>
             <div className={s.emptyTitle}>
               {isToday
@@ -198,14 +234,14 @@ export function Home() {
               <div className={s.emptyNote}>
                 {selected < today
                   ? "Тренировку можно начать только сегодня"
-                  : "Планирование тренировок появится позже"}
+                  : "Расписание задаётся в меню прошедшей тренировки"}
               </div>
             )}
           </div>
         )}
         {isToday && !dayWorkouts.some((w) => w.completedAt === null) && (
           <button
-            className={clsx(s.start, dayWorkouts.length !== 0 && s.secondary)}
+            className={clsx(s.start, !isEmpty && s.secondary)}
             onClick={() =>
               activeWorkout
                 ? openWorkoutHandler(activeWorkout)
@@ -213,7 +249,11 @@ export function Home() {
             }
           >
             {activeWorkout ? <MdPlayArrow /> : <MdAdd />}
-            {activeWorkout ? "Продолжить тренировку" : "Начать тренировку"}
+            {activeWorkout
+              ? "Продолжить тренировку"
+              : isEmpty
+                ? "Начать тренировку"
+                : "Новая тренировка"}
           </button>
         )}
       </div>
