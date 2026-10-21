@@ -5,8 +5,8 @@ import {
 } from "../../db";
 import s from "./styles.module.scss";
 import { FUTURE_WEEKS, PAST_WEEKS } from "./constants.ts";
-import { MdAdd, MdExpandMore, MdPlayArrow, MdToday } from "react-icons/md";
-import { useNavigate, useSearchParams } from "react-router";
+import { MdAdd, MdExpandMore, MdPlayArrow } from "react-icons/md";
+import { useLocation, useNavigate, useSearchParams } from "react-router";
 import { useMemo, useState } from "react";
 import { clsx } from "clsx";
 import { useUser } from "../../firebase/auth.ts";
@@ -59,6 +59,15 @@ export function Home() {
     dayKey(startOfWeek(selectedDate)),
   );
 
+  // Every navigation here picks a day, from this page or from the tab bar,
+  // and the strip moves to show it.
+  const { key } = useLocation();
+  const [shownKey, setShownKey] = useState(key);
+  if (shownKey !== key) {
+    setShownKey(key);
+    setShownWeek(dayKey(startOfWeek(selectedDate)));
+  }
+
   const oldest = workouts.at(-1)?.startedAt ?? Date.now();
   const firstDay = [
     dayKey(addDays(todayDate, -PAST_WEEKS * 7)),
@@ -85,7 +94,6 @@ export function Home() {
 
   const selectHandler = (day: string) => {
     setSearchParams(day === today ? {} : { day }, { replace: true });
-    setShownWeek(dayKey(startOfWeek(parseDayKey(day))));
   };
 
   const pickDayHandler = async () => {
@@ -129,6 +137,7 @@ export function Home() {
   return (
     <div className={s.root}>
       <PageHeader
+        start
         title={
           <span className={s.month}>
             {formatMonth(titleDate, todayDate)}
@@ -138,10 +147,11 @@ export function Home() {
         onTitleClick={pickDayHandler}
         right={
           <HeaderButton
+            primary
             disabled={isToday && weeks[week].some((d) => dayKey(d) === today)}
             onClick={() => selectHandler(today)}
           >
-            <MdToday />
+            Сегодня
           </HeaderButton>
         }
       >

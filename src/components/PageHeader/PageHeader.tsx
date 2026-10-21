@@ -10,6 +10,7 @@ export function PageHeader({
   title,
   right,
   children,
+  start,
   onBack,
   onTitleClick,
 }: PageHeaderProps) {
@@ -21,10 +22,14 @@ export function PageHeader({
             <MdArrowBack />
           </HeaderButton>
         ) : (
-          <div className={s.spacer} />
+          !start && <div className={s.spacer} />
         )}
         <div
-          className={clsx(s.titles, onTitleClick && s.clickable)}
+          className={clsx(
+            s.titles,
+            start && s.start,
+            onTitleClick && s.clickable,
+          )}
           onClick={onTitleClick}
         >
           {kicker && <div className={s.kicker}>{kicker}</div>}

@@ -3,16 +3,17 @@ import { HOME_PATH } from "./constants.ts";
 
 // Switching tabs never stacks up: home pushes one entry, the other tabs
 // replace it, and going home pops it. A tab opened as the very first entry
-// has no home under it to pop back to.
+// has no home under it to pop back to. Tapping the current tab starts it over
+// from its bare path.
 export function useSelectTab() {
   const location = useLocation();
   const navigate = useNavigate();
   const current = location.pathname;
 
   return (path: string) => {
-    if (path === current) return;
-
-    if (current === HOME_PATH) {
+    if (path === current) {
+      navigate(path, { replace: true });
+    } else if (current === HOME_PATH) {
       navigate(path);
     } else if (path !== HOME_PATH) {
       navigate(path, { replace: true });
