@@ -1,4 +1,4 @@
-export const APP_VERSION = "4.14.0";
+export const APP_VERSION = "4.15.0";
 
 export const SEED_DAYS_AGO = [
   1, 3, 5, 8, 10, 12, 15, 17, 19, 22, 26, 29, 33, 40,
