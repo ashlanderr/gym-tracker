@@ -12,6 +12,7 @@ import { Profile } from "./Profile";
 import { Settings } from "./Settings";
 import { Tabs } from "./Tabs";
 import { ExerciseHistory } from "./Exercise";
+import { ProfileMockup } from "./ProfileMockup";
 
 export function Layout() {
   return (
@@ -49,6 +50,7 @@ export function Layout() {
               }
             />
             <Route path="/auth/sign-in" element={<SignIn />} />
+            <Route path="/mockups/profile" element={<ProfileMockup />} />
           </Routes>
           <Toasts />
         </ModalStack>

@@ -7,6 +7,14 @@ import {
 } from "./db.ts";
 import type { Store } from "./doc.ts";
 
+export type MeasurementType =
+  | "weight"
+  | "height"
+  | "waist"
+  | "chest"
+  | "hips"
+  | "biceps";
+
 export interface Measurement {
   id: string;
   user: string;
