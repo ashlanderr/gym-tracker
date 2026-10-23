@@ -38,7 +38,8 @@
   color: #5f6a72;
 }
 
-// An odd last tile takes the whole row instead of leaving a hole beside it.
+// The add tile fills the hole of an odd count, and after an even one it
+// takes the whole row.
 .tiles {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -48,13 +49,4 @@
   > :last-child:nth-child(odd) {
     grid-column: 1 / -1;
   }
-}
-
-.list {
-  grid-template-columns: 1fr;
-}
-
-.after {
-  display: grid;
-  margin-top: 8px;
 }

@@ -7,8 +7,6 @@ import { AddMeasureTile, BodyTile } from "../Profile/components";
 import { MEASURES } from "../Profile/constants.ts";
 import { formatAgo, formatMeasure } from "../Profile/utils.ts";
 
-type Layout = "grid" | "filled" | "list";
-
 interface Sample {
   createdAt: number;
   value: number;
@@ -49,12 +47,6 @@ const TRACKED: MeasurementType[] = [
 
 const COUNTS = [1, 2, 3, 5];
 
-const LAYOUTS: { id: Layout; label: string }[] = [
-  { id: "grid", label: "Плитки" },
-  { id: "filled", label: "+ в сетке" },
-  { id: "list", label: "Список" },
-];
-
 const noop = () => {};
 
 function Tile({ type }: { type: MeasurementType }) {
@@ -73,23 +65,11 @@ function Tile({ type }: { type: MeasurementType }) {
 }
 
 export function ProfileMockup() {
-  const [layout, setLayout] = useState<Layout>("grid");
   const [count, setCount] = useState(3);
   const tracked = TRACKED.slice(0, count);
 
   return (
     <div className={s.root}>
-      <div className={s.switch}>
-        {LAYOUTS.map(({ id, label }) => (
-          <button
-            key={id}
-            className={clsx(layout === id && s.active)}
-            onClick={() => setLayout(id)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
       <div className={s.switch}>
         {COUNTS.map((n) => (
           <button
@@ -104,17 +84,12 @@ export function ProfileMockup() {
       <PageHeader start title="Профиль" />
       <div className={s.section}>
         <div className={s.sectionTitle}>Тело</div>
-        <div className={clsx(s.tiles, layout === "list" && s.list)}>
+        <div className={s.tiles}>
           {tracked.map((type) => (
             <Tile key={type} type={type} />
           ))}
-          {layout === "filled" && <AddMeasureTile onClick={noop} />}
+          <AddMeasureTile onClick={noop} />
         </div>
-        {layout !== "filled" && (
-          <div className={s.after}>
-            <AddMeasureTile onClick={noop} />
-          </div>
-        )}
       </div>
     </div>
   );
