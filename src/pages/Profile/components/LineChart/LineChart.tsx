@@ -3,8 +3,9 @@ import { clsx } from "clsx";
 import type { LineChartProps } from "./types.ts";
 
 // The line is drawn in a unit square stretched over whatever box the parent
-// gives it, so one chart serves the card and the whole page. The dot on the
-// last value is a box of its own: a circle stretched with the line would
+// gives it, so one chart serves the card and the whole page. Every record is
+// a dot: with the last one alone marked the line read as a ray, not as
+// values. Dots are boxes of their own, a circle stretched with the line would
 // turn into an oval.
 export function LineChart({ points, className }: LineChartProps) {
   const xs = points.map((p) => p.x);
@@ -21,7 +22,6 @@ export function LineChart({ points, className }: LineChartProps) {
   const path = coords
     .map(({ x, y }, i) => `${i === 0 ? "M" : "L"}${x} ${y}`)
     .join(" ");
-  const last = coords.at(-1);
 
   return (
     <div className={clsx(s.root, className)}>
@@ -29,12 +29,13 @@ export function LineChart({ points, className }: LineChartProps) {
         <svg className={s.svg} viewBox="0 0 1 1" preserveAspectRatio="none">
           <path className={s.line} d={path} vectorEffect="non-scaling-stroke" />
         </svg>
-        {last && (
+        {coords.map(({ x, y }, i) => (
           <i
+            key={i}
             className={s.dot}
-            style={{ left: `${last.x * 100}%`, top: `${last.y * 100}%` }}
+            style={{ left: `${x * 100}%`, top: `${y * 100}%` }}
           />
-        )}
+        ))}
       </div>
     </div>
   );

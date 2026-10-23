@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import { useState } from "react";
 import { PageHeader } from "../../components";
 import type { MeasurementType } from "../../db";
-import { BodyCard, GirthsCard } from "../Profile/components";
+import { BodyCard, BodyTile, GirthsCard } from "../Profile/components";
 import { GIRTHS, MEASURES } from "../Profile/constants.ts";
 import { formatAgo, formatChange, formatMeasure } from "../Profile/utils.ts";
 
@@ -67,8 +67,22 @@ function Card({ type }: { type: MeasurementType }) {
   );
 }
 
+function Tile({ type }: { type: MeasurementType }) {
+  const last = latest(type);
+  return (
+    <BodyTile
+      label={MEASURES[type].title}
+      value={last ? formatMeasure(last.value, type) : "—"}
+      meta={last ? formatAgo(last.createdAt, NOW) : "Нет записей"}
+      points={points(type)}
+      onOpen={noop}
+      onAdd={noop}
+    />
+  );
+}
+
 export function ProfileMockup() {
-  const [variant, setVariant] = useState<Variant>("cards");
+  const [variant, setVariant] = useState<Variant>("grouped");
   const girthsAt = latest("waist")?.createdAt;
 
   return (
@@ -97,7 +111,10 @@ export function ProfileMockup() {
           </div>
         ) : (
           <div className={s.cards}>
-            <Card type="weight" />
+            <div className={s.tiles}>
+              <Tile type="weight" />
+              <Tile type="height" />
+            </div>
             <GirthsCard
               label="Объёмы"
               meta={girthsAt ? formatAgo(girthsAt, NOW) : "Нет записей"}
@@ -110,7 +127,6 @@ export function ProfileMockup() {
               onOpen={noop}
               onAdd={noop}
             />
-            <Card type="height" />
           </div>
         )}
       </div>
