@@ -69,6 +69,16 @@ describe("back to the range", () => {
     ).toBe(20);
   });
 
+  test("takes the plates off a weighted exercise", () => {
+    expect(
+      computeWorkingWeight([working(0, 12), working(0, 5)], ten, {
+        exerciseWeights: { type: "positive", selfWeightPercent: 100 },
+        selfWeight: 80,
+        performanceWeights: { units: "kg", steps: [1.25, 2.5, 5, 10, 20] },
+      }),
+    ).toBe(0);
+  });
+
   test("adds help on an assisting machine", () => {
     expect(
       computeWorkingWeight([working(25, 8)], ten, {

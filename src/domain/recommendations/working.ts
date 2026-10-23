@@ -47,7 +47,8 @@ export function computeWorkingWeight(
 
 // The weight where the 1RM of a short set gives the bottom of the range, put
 // together from the inventory toward a lighter load and never below its
-// lightest weight. Without the weight of the body the load is unknown.
+// lightest weight. Below it a weighted exercise is done with the body alone.
+// Without the weight of the body the load is unknown.
 function backToRange(
   set: CompletedSetData,
   reps: RepRange,
@@ -74,10 +75,10 @@ function backToRange(
     return Math.max(0, snapped * MANUAL_WEIGHT_STEP);
   }
 
-  return Math.max(
-    snapWeightKg(performanceWeights, weight, lighter),
-    minimumWeightKg(performanceWeights),
-  );
+  const minimum = minimumWeightKg(performanceWeights);
+  if (type === "positive" && weight < minimum - EPSILON) return 0;
+
+  return Math.max(snapWeightKg(performanceWeights, weight, lighter), minimum);
 }
 
 // The range for a weight. Its top is where the next weight reaches the bottom
