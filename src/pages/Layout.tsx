@@ -8,11 +8,10 @@ import {
   Toasts,
 } from "../components";
 import { SignIn } from "./SignIn";
-import { Profile } from "./Profile";
+import { MeasurementPage, ProfilePage } from "./Profile";
 import { Settings } from "./Settings";
 import { Tabs } from "./Tabs";
 import { ExerciseHistory } from "./Exercise";
-import { ProfileMockup } from "./ProfileMockup";
 
 export function Layout() {
   return (
@@ -28,7 +27,7 @@ export function Layout() {
               }
             >
               <Route path="/" element={<Home />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile" element={<ProfilePage />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
             <Route
@@ -49,8 +48,15 @@ export function Layout() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/profile/:type"
+              element={
+                <ProtectedRoute>
+                  <MeasurementPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/auth/sign-in" element={<SignIn />} />
-            <Route path="/mockups/profile" element={<ProfileMockup />} />
           </Routes>
           <Toasts />
         </ModalStack>

@@ -10,6 +10,7 @@ const MIGRATIONS: Migration[] = [
   mergeSetTypesIntoWorking,
   replaceRepPresetsWithRanges,
   rebuildOneRepMaxRecordsByEpley,
+  splitMeasurementsByType,
 ];
 
 const REP_PRESETS: Record<string, { min: number; max: number }> = {
@@ -105,6 +106,40 @@ function rebuildOneRepMaxRecordsByEpley(doc: Y.Doc) {
   }
 }
 
+// One record of weight and height becomes a record per measurement. The form
+// saved both fields every time, so the height is kept only where it changed,
+// and a zero stood for a field never filled in.
+function splitMeasurementsByType(doc: Y.Doc) {
+  const measurements = collection(doc, "measurements");
+  const combined = values<MeasurementV4>(doc, "measurements")
+    .filter((m) => m.type === undefined)
+    .sort((a, b) => a.createdAt - b.createdAt);
+
+  let height: number | undefined;
+  for (const { id, user, createdAt, weight, height: current } of combined) {
+    measurements.delete(id);
+    if (weight > 0) {
+      insertEntity(measurements, {
+        id: `${id}-weight`,
+        user,
+        type: "weight",
+        value: weight,
+        createdAt,
+      });
+    }
+    if (current > 0 && current !== height) {
+      height = current;
+      insertEntity(measurements, {
+        id: `${id}-height`,
+        user,
+        type: "height",
+        value: current,
+        createdAt,
+      });
+    }
+  }
+}
+
 interface PerformanceV3 {
   id: string;
   user: string;
@@ -127,6 +162,15 @@ interface SetV3 {
 interface MeasurementV3 {
   createdAt: number;
   weight: number;
+}
+
+interface MeasurementV4 {
+  id: string;
+  user: string;
+  createdAt: number;
+  type: string | undefined;
+  weight: number;
+  height: number;
 }
 
 interface RecordV3 {

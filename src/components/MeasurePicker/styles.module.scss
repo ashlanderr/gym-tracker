@@ -1,0 +1,38 @@
+// A wide, soft light behind the number: the screen holds one figure and a
+// scale, and without it the middle of the page reads as a hole.
+.value {
+  position: relative;
+  margin-bottom: 26px;
+  text-align: center;
+  font-size: 60px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 320px;
+    height: 320px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(
+      circle,
+      rgba(0, 102, 255, 0.16),
+      rgba(0, 102, 255, 0) 62%
+    );
+    pointer-events: none;
+  }
+}
+
+.units {
+  position: relative;
+  margin-left: 5px;
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: #8d8d8d;
+}

@@ -1,1 +1,0 @@
-export * from "./ProfileMockup.tsx";

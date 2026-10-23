@@ -140,7 +140,7 @@ function round(value: number | undefined) {
 
 test("builds the records of 1RM again by Epley", () => {
   const store: Store = { personal: new Y.Doc(), hasServer: false };
-  store.personal.getMap("meta").set("version", SCHEMA_VERSION - 1);
+  store.personal.getMap("meta").set("version", 2);
 
   // 90 × 10 and 103 × 5 are 120 and 115.9 by Brzycki, 120 and 120.17 by Epley
   workout(store, "b", 2, [[103, 5]]);
@@ -157,4 +157,41 @@ test("builds the records of 1RM again by Epley", () => {
   ]);
   expect(records(store, "weight")).toEqual([["a", 90, undefined]]);
   expect(readSchemaVersion(store.personal)).toBe(SCHEMA_VERSION);
+});
+
+test("splits weight and height into a record each", () => {
+  const doc = new Y.Doc();
+  doc.getMap("meta").set("version", SCHEMA_VERSION - 1);
+  const measurements = doc.getMap<Y.Map<unknown>>("measurements");
+  const combined: [string, number, number, number][] = [
+    ["c", 3, 81, 180],
+    ["a", 1, 0, 180],
+    ["b", 2, 80, 180],
+    ["d", 4, 82, 181],
+  ];
+  for (const [id, createdAt, weight, height] of combined) {
+    measurements.set(
+      id,
+      new Y.Map<unknown>([
+        ["user", "user"],
+        ["createdAt", createdAt],
+        ["weight", weight],
+        ["height", height],
+      ]),
+    );
+  }
+
+  migrate(doc);
+
+  expect(
+    [...measurements.values()]
+      .map((m) => [m.get("type"), m.get("createdAt"), m.get("value")])
+      .sort(),
+  ).toEqual([
+    ["height", 1, 180],
+    ["height", 4, 181],
+    ["weight", 2, 80],
+    ["weight", 3, 81],
+    ["weight", 4, 82],
+  ]);
 });

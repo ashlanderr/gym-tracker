@@ -44,7 +44,11 @@ export function usePerformanceSets(performance: Performance): PerformanceSets {
   const store = useStore();
   const exercise = useQueryExerciseById(store, performance.exercise);
   const sets = useQuerySetsByPerformance(store, performance.id);
-  const measurement = useQueryLatestMeasurement(store, performance.startedAt);
+  const bodyWeight = useQueryLatestMeasurement(
+    store,
+    "weight",
+    performance.startedAt,
+  );
 
   const prevPerformance = useQueryPreviousPerformance(
     store,
@@ -70,7 +74,7 @@ export function usePerformanceSets(performance: Performance): PerformanceSets {
     performanceWeights: performance.weights,
     exerciseWeights: exercise?.weight,
     exerciseReps: exercise?.reps ?? DEFAULT_EXERCISE_REPS,
-    selfWeight: measurement?.weight,
+    selfWeight: bodyWeight?.value,
   });
 
   const prevWarmUp = prevSets.filter((s) => s.type === "warm-up");

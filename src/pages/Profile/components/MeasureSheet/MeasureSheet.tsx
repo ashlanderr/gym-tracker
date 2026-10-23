@@ -1,0 +1,52 @@
+import { useState } from "react";
+import {
+  FormSheet,
+  MeasurePicker,
+  type ModalProps,
+  useStore,
+} from "../../../../components";
+import { addMeasurement, generateId } from "../../../../db";
+import { useUser } from "../../../../firebase/auth.ts";
+import { MEASURES } from "../../constants.ts";
+import type { MeasureSheetData } from "./types.ts";
+
+// Always a new record, never a correction of the last one: the history is
+// the point of measuring. A mistake is deleted on the history page.
+export function MeasureSheet({
+  data: { type, value: initial, isFirst },
+  onCancel,
+  onSubmit,
+}: ModalProps<MeasureSheetData, null>) {
+  const store = useStore();
+  const user = useUser();
+  const [value, setValue] = useState(initial);
+  const { title, units, decimals, range } = MEASURES[type];
+
+  const saveHandler = () => {
+    addMeasurement(store, {
+      id: generateId(),
+      user: user.uid,
+      type,
+      value,
+      createdAt: Date.now(),
+    });
+    void onSubmit(null);
+  };
+
+  return (
+    <FormSheet
+      title={title}
+      note={isFirst ? undefined : "Прошлые записи останутся в истории"}
+      action={{ label: "Записать", onClick: saveHandler }}
+      onClose={onCancel}
+    >
+      <MeasurePicker
+        range={range}
+        value={value}
+        units={units}
+        decimals={decimals}
+        onChange={setValue}
+      />
+    </FormSheet>
+  );
+}

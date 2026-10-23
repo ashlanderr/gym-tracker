@@ -1,6 +1,28 @@
-import type { MeasurementType } from "../../db";
+import type { Measurement, MeasurementType } from "../../db";
 import { pluralize } from "../../utils";
-import { DAY_FORMS, MEASURES, RECENT_DAYS } from "./constants.ts";
+import {
+  DAY_FORMS,
+  MEASURES,
+  MEASUREMENT_TYPES,
+  RECENT_DAYS,
+} from "./constants.ts";
+
+// Keeps the order it is given: newest first in, newest first out.
+export function groupByType(
+  measurements: Measurement[],
+): Record<MeasurementType, Measurement[]> {
+  const groups = Object.fromEntries(
+    MEASUREMENT_TYPES.map((type) => [type, [] as Measurement[]]),
+  ) as Record<MeasurementType, Measurement[]>;
+  for (const measurement of measurements) {
+    groups[measurement.type]?.push(measurement);
+  }
+  return groups;
+}
+
+export function toPoints(measurements: Measurement[]) {
+  return measurements.map((m) => ({ x: m.createdAt, y: m.value })).reverse();
+}
 
 export function formatMeasure(value: number, type: MeasurementType): string {
   const { units, decimals } = MEASURES[type];
