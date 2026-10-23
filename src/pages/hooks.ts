@@ -1,5 +1,6 @@
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
+import { workoutNow } from "../domain";
 
 export function usePageParams<T>(): T {
   return useParams() as unknown as T;
@@ -39,7 +40,9 @@ export function useClock(
   }, [completedAt]);
 
   if (startedAt === null) return "";
-  return formatClock(((completedAt ?? now) - startedAt) / 1000);
+  return formatClock(
+    ((completedAt ?? workoutNow(startedAt, now)) - startedAt) / 1000,
+  );
 }
 
 export function formatClock(totalSeconds: number): string {

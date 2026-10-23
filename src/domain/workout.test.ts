@@ -1,6 +1,11 @@
 import * as Y from "yjs";
 import { addWorkout, queryWorkoutById, type Store, type Workout } from "../db";
-import { duplicateWorkout, setWorkoutRepeat } from "./workout.ts";
+import {
+  addWorkout as startWorkout,
+  completeWorkout,
+  duplicateWorkout,
+  setWorkoutRepeat,
+} from "./workout.ts";
 
 function store(): Store {
   return { personal: new Y.Doc(), hasServer: false };
@@ -49,5 +54,21 @@ describe("workout repeat", () => {
     const copy = duplicateWorkout(s, workout(s, "old", 1));
 
     expect(copy.repeat?.id).toBe("legs");
+  });
+});
+
+describe("workout on a past day", () => {
+  afterEach(() => vi.useRealTimers());
+
+  it("lasts as long as it took to write down", () => {
+    const s = store();
+    vi.useFakeTimers({ now: new Date(2026, 9, 23, 18, 30) });
+    const workout = startWorkout(s, "user", 3);
+    vi.advanceTimersByTime(20 * 60_000);
+
+    const done = completeWorkout(s, workout, "Lower A");
+
+    expect(new Date(done.startedAt)).toEqual(new Date(2026, 9, 20, 18, 30));
+    expect(done.completedAt! - done.startedAt).toBe(20 * 60_000);
   });
 });

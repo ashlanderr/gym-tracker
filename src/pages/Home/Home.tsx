@@ -25,6 +25,7 @@ import {
 import {
   ActiveWorkoutCard,
   CancelWorkoutModal,
+  EmptyDay,
   MonthSheet,
   PlannedWorkoutCard,
   ScheduleSheet,
@@ -99,6 +100,10 @@ export function Home() {
   const dayPlan = plan.get(selected) ?? [];
   const isEmpty = dayWorkouts.length === 0 && dayPlan.length === 0;
   const isToday = selected === today;
+  const isPast = selected < today;
+  const daysAgo = Math.round(
+    (todayDate.getTime() - selectedDate.getTime()) / 86400_000,
+  );
   const titleDate = weeks[week].some((d) => dayKey(d) === selected)
     ? selectedDate
     : weeks[week][3];
@@ -122,7 +127,7 @@ export function Home() {
   };
 
   const startWorkoutHandler = () => {
-    openWorkoutHandler(addWorkout(store, user.uid));
+    openWorkoutHandler(addWorkout(store, user.uid, daysAgo));
   };
 
   const cancelWorkoutHandler = async (workout: Workout) => {
@@ -222,40 +227,38 @@ export function Home() {
           />
         ))}
         {isEmpty && (
-          <div className={s.empty}>
-            <div className={s.emptyTitle}>
-              {isToday
-                ? "Сегодня без тренировки"
-                : selected < today
-                  ? "В этот день не тренировались"
-                  : "Ничего не запланировано"}
-            </div>
-            {!isToday && (
-              <div className={s.emptyNote}>
-                {selected < today
-                  ? "Тренировку можно начать только сегодня"
-                  : "Расписание задаётся в меню прошедшей тренировки"}
-              </div>
-            )}
-          </div>
-        )}
-        {isToday && !dayWorkouts.some((w) => w.completedAt === null) && (
-          <button
-            className={clsx(s.start, !isEmpty && s.secondary)}
-            onClick={() =>
-              activeWorkout
-                ? openWorkoutHandler(activeWorkout)
-                : startWorkoutHandler()
+          <EmptyDay
+            kind={
+              workouts.length === 0 && isToday
+                ? "first"
+                : isToday
+                  ? "today"
+                  : isPast
+                    ? "past"
+                    : "future"
             }
-          >
-            {activeWorkout ? <MdPlayArrow /> : <MdAdd />}
-            {activeWorkout
-              ? "Продолжить тренировку"
-              : isEmpty
-                ? "Начать тренировку"
-                : "Новая тренировка"}
-          </button>
+          />
         )}
+        {(isToday || isPast) &&
+          !dayWorkouts.some((w) => w.completedAt === null) && (
+            <button
+              className={clsx(s.start, !isEmpty && s.secondary)}
+              onClick={() =>
+                activeWorkout
+                  ? openWorkoutHandler(activeWorkout)
+                  : startWorkoutHandler()
+              }
+            >
+              {activeWorkout ? <MdPlayArrow /> : <MdAdd />}
+              {activeWorkout
+                ? "Продолжить тренировку"
+                : isPast
+                  ? "Записать тренировку"
+                  : isEmpty
+                    ? "Начать тренировку"
+                    : "Новая тренировка"}
+            </button>
+          )}
       </div>
     </div>
   );

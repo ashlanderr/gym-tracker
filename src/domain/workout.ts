@@ -21,16 +21,24 @@ import {
 import { addPerformance } from "./performances.ts";
 import { MEDAL_RECORDS, updateRecords } from "./records.ts";
 
-export function addWorkout(store: Store, user: string): Workout {
+const DAY = 24 * 60 * 60 * 1000;
+
+export function addWorkout(store: Store, user: string, daysAgo = 0): Workout {
   return addWorkoutInner(store, {
     id: generateId(),
     user,
     name: "Новая тренировка",
-    startedAt: Date.now(),
+    startedAt: Date.now() - daysAgo * DAY,
     completedAt: null,
     volume: 0,
     sets: 0,
   });
+}
+
+// A workout written down on a past day starts whole days ago at this hour,
+// so the time spent on it is what is left over those days.
+export function workoutNow(startedAt: number, now = Date.now()): number {
+  return startedAt + ((now - startedAt) % DAY);
 }
 
 export function duplicateWorkout(store: Store, oldWorkout: Workout): Workout {
@@ -86,7 +94,7 @@ export function completeWorkout(
 
   workout = updateWorkout(store, {
     ...workout,
-    completedAt: workout.completedAt ?? Date.now(),
+    completedAt: workout.completedAt ?? workoutNow(workout.startedAt),
     name: newName,
     sets: completedSets.length,
     records: records.length !== 0 ? records.length : undefined,
