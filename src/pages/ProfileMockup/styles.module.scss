@@ -9,7 +9,7 @@
 .switch {
   display: flex;
   gap: 6px;
-  padding: 12px 12px 4px;
+  padding: 8px 12px 0;
 
   button {
     flex: 1;
@@ -38,15 +38,23 @@
   color: #5f6a72;
 }
 
-.cards {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 12px;
-}
-
+// An odd last tile takes the whole row instead of leaving a hole beside it.
 .tiles {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+  margin-top: 12px;
+
+  > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+.list {
+  grid-template-columns: 1fr;
+}
+
+.after {
+  display: grid;
+  margin-top: 8px;
 }

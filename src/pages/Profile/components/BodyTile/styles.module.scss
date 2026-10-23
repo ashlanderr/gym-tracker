@@ -1,5 +1,8 @@
 // The plus shares the one grid cell with the tile and sits in its corner.
+// Given a whole row, the tile turns into a line: the chart moves beside the
+// value and the plus to the middle of the right edge.
 .root {
+  container-type: inline-size;
   display: grid;
   border-radius: 14px;
   box-shadow: inset 0 0 0 1px #1f1f1f;
@@ -52,4 +55,40 @@
   background: transparent;
   color: #ddd;
   font-size: 18px;
+}
+
+@container (min-width: 280px) {
+  .main {
+    display: grid;
+    grid-template-columns: 40% 1fr;
+    grid-template-areas: "label chart" "value chart" "meta chart";
+    column-gap: 20px;
+    row-gap: 3px;
+    padding-right: 60px;
+  }
+
+  .label {
+    grid-area: label;
+  }
+
+  .value {
+    grid-area: value;
+  }
+
+  .meta {
+    grid-area: meta;
+  }
+
+  .chart {
+    grid-area: chart;
+    align-self: center;
+    margin-top: 0;
+  }
+
+  .add {
+    align-self: center;
+    margin: 0 14px;
+    width: 36px;
+    height: 36px;
+  }
 }

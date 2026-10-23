@@ -1,4 +1,3 @@
-export * from "./BodyCard";
+export * from "./AddMeasureTile";
 export * from "./BodyTile";
-export * from "./GirthsCard";
 export * from "./LineChart";

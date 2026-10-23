@@ -3,11 +3,11 @@ import { clsx } from "clsx";
 import { useState } from "react";
 import { PageHeader } from "../../components";
 import type { MeasurementType } from "../../db";
-import { BodyCard, BodyTile, GirthsCard } from "../Profile/components";
-import { GIRTHS, MEASURES } from "../Profile/constants.ts";
-import { formatAgo, formatChange, formatMeasure } from "../Profile/utils.ts";
+import { AddMeasureTile, BodyTile } from "../Profile/components";
+import { MEASURES } from "../Profile/constants.ts";
+import { formatAgo, formatMeasure } from "../Profile/utils.ts";
 
-type Variant = "cards" | "grouped";
+type Layout = "grid" | "filled" | "list";
 
 interface Sample {
   createdAt: number;
@@ -36,45 +36,36 @@ const SAMPLES: Record<MeasurementType, Sample[]> = {
   biceps: series(9, 30, [37, 37.5, 38]),
 };
 
-const VARIANTS: { id: Variant; label: string }[] = [
-  { id: "cards", label: "А · карточки" },
-  { id: "grouped", label: "Б · объёмы вместе" },
+// The order somebody would start tracking in: weight, then what they care
+// about. Only tracked measurements are shown, so the count varies.
+const TRACKED: MeasurementType[] = [
+  "weight",
+  "waist",
+  "biceps",
+  "height",
+  "chest",
+  "hips",
 ];
 
-const latest = (type: MeasurementType) => SAMPLES[type].at(-1);
+const COUNTS = [1, 2, 3, 5];
 
-const points = (type: MeasurementType) =>
-  SAMPLES[type].map((m) => ({ x: m.createdAt, y: m.value }));
-
-const change = (type: MeasurementType) => {
-  const [previous, last] = SAMPLES[type].slice(-2);
-  return last ? formatChange(last.value - previous.value, type) : null;
-};
+const LAYOUTS: { id: Layout; label: string }[] = [
+  { id: "grid", label: "Плитки" },
+  { id: "filled", label: "+ в сетке" },
+  { id: "list", label: "Список" },
+];
 
 const noop = () => {};
 
-function Card({ type }: { type: MeasurementType }) {
-  const last = latest(type);
-  return (
-    <BodyCard
-      label={MEASURES[type].title}
-      value={last ? formatMeasure(last.value, type) : "—"}
-      meta={last ? formatAgo(last.createdAt, NOW) : "Нет записей"}
-      points={points(type)}
-      onOpen={noop}
-      onAdd={noop}
-    />
-  );
-}
-
 function Tile({ type }: { type: MeasurementType }) {
-  const last = latest(type);
+  const samples = SAMPLES[type];
+  const last = samples.at(-1);
   return (
     <BodyTile
       label={MEASURES[type].title}
       value={last ? formatMeasure(last.value, type) : "—"}
       meta={last ? formatAgo(last.createdAt, NOW) : "Нет записей"}
-      points={points(type)}
+      points={samples.map((m) => ({ x: m.createdAt, y: m.value }))}
       onOpen={noop}
       onAdd={noop}
     />
@@ -82,51 +73,46 @@ function Tile({ type }: { type: MeasurementType }) {
 }
 
 export function ProfileMockup() {
-  const [variant, setVariant] = useState<Variant>("grouped");
-  const girthsAt = latest("waist")?.createdAt;
+  const [layout, setLayout] = useState<Layout>("grid");
+  const [count, setCount] = useState(3);
+  const tracked = TRACKED.slice(0, count);
 
   return (
     <div className={s.root}>
       <div className={s.switch}>
-        {VARIANTS.map(({ id, label }) => (
+        {LAYOUTS.map(({ id, label }) => (
           <button
             key={id}
-            className={clsx(variant === id && s.active)}
-            onClick={() => setVariant(id)}
+            className={clsx(layout === id && s.active)}
+            onClick={() => setLayout(id)}
           >
             {label}
+          </button>
+        ))}
+      </div>
+      <div className={s.switch}>
+        {COUNTS.map((n) => (
+          <button
+            key={n}
+            className={clsx(count === n && s.active)}
+            onClick={() => setCount(n)}
+          >
+            {n}
           </button>
         ))}
       </div>
       <PageHeader start title="Профиль" />
       <div className={s.section}>
         <div className={s.sectionTitle}>Тело</div>
-        {variant === "cards" ? (
-          <div className={s.cards}>
-            <Card type="weight" />
-            {GIRTHS.map((type) => (
-              <Card key={type} type={type} />
-            ))}
-            <Card type="height" />
-          </div>
-        ) : (
-          <div className={s.cards}>
-            <div className={s.tiles}>
-              <Tile type="weight" />
-              <Tile type="height" />
-            </div>
-            <GirthsCard
-              label="Объёмы"
-              meta={girthsAt ? formatAgo(girthsAt, NOW) : "Нет записей"}
-              cells={GIRTHS.map((type) => ({
-                type,
-                label: MEASURES[type].title,
-                value: formatMeasure(latest(type)!.value, type),
-                change: change(type),
-              }))}
-              onOpen={noop}
-              onAdd={noop}
-            />
+        <div className={clsx(s.tiles, layout === "list" && s.list)}>
+          {tracked.map((type) => (
+            <Tile key={type} type={type} />
+          ))}
+          {layout === "filled" && <AddMeasureTile onClick={noop} />}
+        </div>
+        {layout !== "filled" && (
+          <div className={s.after}>
+            <AddMeasureTile onClick={noop} />
           </div>
         )}
       </div>

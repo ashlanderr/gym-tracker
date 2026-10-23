@@ -10,8 +10,6 @@ export const MEASURES: Record<MeasurementType, MeasureSpec> = {
   biceps: { title: "Бицепс", units: "см", decimals: 1 },
 };
 
-export const GIRTHS: MeasurementType[] = ["waist", "chest", "hips", "biceps"];
-
 // The card says how long ago in words for a week, and the date after that:
 // "12 дней назад" is arithmetic the reader has to undo.
 export const RECENT_DAYS = 7;
