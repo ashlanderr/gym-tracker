@@ -7,6 +7,7 @@ import s from "./styles.module.scss";
 import { clsx } from "clsx";
 import { computeWeights, type WeightsConstructor } from "../../../../domain";
 import { UNITS_SHORT } from "../../../constants.ts";
+import { formatNumber } from "../../../../utils";
 
 export interface WeightsVisualizerProps {
   equipment: EquipmentType;
@@ -58,7 +59,7 @@ function expandSteps(ctor: WeightsConstructor): number[] {
 }
 
 function formatUnits(value: number, units: WeightUnits): string {
-  return `${Math.round(value * 100) / 100} ${UNITS_SHORT[units]}`;
+  return `${formatNumber(value, { maximumFractionDigits: 2 })} ${UNITS_SHORT[units]}`;
 }
 
 // The rack keeps the height of the largest plate in the gym, so changing the
@@ -133,7 +134,7 @@ function stackWeights(
         <div className={s.stackRod} />
         {extra !== 0 && (
           <div className={s.addChip}>
-            <span className={s.num}>+{extra}</span>
+            <span className={s.num}>+{formatNumber(extra)}</span>
           </div>
         )}
       </div>
@@ -184,7 +185,7 @@ function renderPlates(plates: number[], side: string) {
       key={`${side}-${i}`}
       style={{ height: plateHeight(weight) }}
     >
-      <span className={clsx(s.plateLabel, s.num)}>{weight}</span>
+      <span className={clsx(s.plateLabel, s.num)}>{formatNumber(weight)}</span>
     </div>
   ));
 }

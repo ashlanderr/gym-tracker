@@ -3,12 +3,13 @@ import { clsx } from "clsx";
 import { PiMedalFill } from "react-icons/pi";
 import { UNITS_SHORT } from "../../../constants.ts";
 import { kgToUnits } from "../../../../domain";
+import { formatNumber } from "../../../../utils";
 import type { RecordNoticeProps } from "./types.ts";
 import type { WeightUnits } from "../../../../db";
 
 // An estimated 1RM has no meaning past a tenth.
 function formatRecord(valueKg: number, units: WeightUnits): string {
-  return (Math.round(kgToUnits(valueKg, units) * 10) / 10).toString();
+  return formatNumber(kgToUnits(valueKg, units), { maximumFractionDigits: 1 });
 }
 
 export function RecordNotice({

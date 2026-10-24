@@ -185,7 +185,7 @@ function Exercises({
           <span className={s.best}>
             {best
               ? best.weight
-                ? `${best.weight} кг × ${best.reps}`
+                ? `${formatNumber(best.weight, { maximumFractionDigits: 2 })} кг × ${best.reps}`
                 : `× ${best.reps}`
               : "—"}
           </span>

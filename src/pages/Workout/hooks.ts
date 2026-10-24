@@ -20,7 +20,7 @@ import {
   type RecSetData,
   type RepRange,
 } from "../../domain";
-import { assertNever } from "../../utils";
+import { assertNever, formatNumber } from "../../utils";
 
 export interface SetRowData {
   set: Set;
@@ -126,7 +126,7 @@ export function formatWeightUnits(
   units: WeightUnits | undefined,
 ): string {
   if (weightKg === undefined) return "–";
-  return (Math.round(kgToUnits(weightKg, units) * 100) / 100).toString();
+  return formatNumber(kgToUnits(weightKg, units), { maximumFractionDigits: 2 });
 }
 
 export function formatPlannedReps({ min, max }: RepRange): string {

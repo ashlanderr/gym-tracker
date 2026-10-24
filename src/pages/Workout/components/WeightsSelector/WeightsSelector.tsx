@@ -18,7 +18,7 @@ import {
   BARBELL_DEFAULT_BASE,
   DEFAULT_PLATES,
 } from "../constants.ts";
-import { assertNever } from "../../../../utils";
+import { assertNever, formatNumber } from "../../../../utils";
 
 export function WeightsSelector({
   equipment,
@@ -120,9 +120,9 @@ function barbellWeights(
     <>
       {selector({
         label: "Вес пустого грифа",
-        hint: `Сколько весит гриф без блинов (стандартный ${defaultBase} ${unitsStr}).`,
+        hint: `Сколько весит гриф без блинов (стандартный ${formatNumber(defaultBase)} ${unitsStr}).`,
         options: BARBELL_BASES[units],
-        render: (value) => value.toString(),
+        render: (value) => formatNumber(value),
         isSelected: (value) => value === base,
         toggle: (value) => onChange({ ...weights, base: value, count: 2 }),
       })}
@@ -130,7 +130,7 @@ function barbellWeights(
         label: "Доступные блины",
         hint: "Укажите блины, которыми вы реально пользуетесь.",
         options: DEFAULT_PLATES[units],
-        render: (value) => value.toString(),
+        render: (value) => formatNumber(value),
         isSelected: (value) => steps.includes(value),
         toggle: (value) =>
           onChange({ ...weights, steps: toggleArray(steps, value) }),
@@ -152,7 +152,7 @@ function dumbbellWeights(
         label: "Количество гантелей",
         hint: "Сколько используется одновременно.",
         options: [1, 2],
-        render: (value) => value.toString(),
+        render: (value) => formatNumber(value),
         isSelected: (value) => count === value,
         toggle: (value) => onChange({ ...weights, count: value }),
       })}
@@ -160,7 +160,7 @@ function dumbbellWeights(
         label: "Шаг веса гантелей",
         hint: "Разница между соседними весами.",
         options: [1, 2, 2.5, 5],
-        render: (value) => value.toString(),
+        render: (value) => formatNumber(value),
         isSelected: (value) => steps === value,
         toggle: (value) => onChange({ ...weights, steps: value }),
       })}
@@ -186,7 +186,7 @@ function machineWeights(
         label: "Количество блоков",
         hint: "Сколько стеков используется одновременно.",
         options: [1, 2],
-        render: (value) => value.toString(),
+        render: (value) => formatNumber(value),
         isSelected: (value) => count === value,
         toggle: (value) => onChange({ ...weights, count: value }),
       })}
@@ -194,7 +194,7 @@ function machineWeights(
         label: "Начальный вес",
         hint: "Вес первой плитки в стеке.",
         options: stepOptions,
-        render: (value) => value.toString(),
+        render: (value) => formatNumber(value),
         isSelected: (value) => base === value,
         toggle: (value) => onChange({ ...weights, base: value }),
       })}
@@ -202,7 +202,7 @@ function machineWeights(
         label: "Шаг веса плиток",
         hint: "Разница между соседними плитками.",
         options: stepOptions,
-        render: (value) => value.toString(),
+        render: (value) => formatNumber(value),
         isSelected: (value) => steps === value,
         toggle: (value) =>
           onChange({ ...weights, steps: value, additional: undefined }),
@@ -212,7 +212,7 @@ function machineWeights(
           label: "Дополнительный шаг",
           hint: "Вес мелких гирек или ручек для точной настройки.",
           options: additionalOptions,
-          render: (value) => value.toString(),
+          render: (value) => formatNumber(value),
           isSelected: (value) => additional === value,
           toggle: (value) =>
             onChange({
@@ -238,7 +238,7 @@ function platesWeights(
         label: "Количество держателей",
         hint: "Сколько мест для установки блинов на тренажёре.",
         options: [1, 2],
-        render: (value) => value.toString(),
+        render: (value) => formatNumber(value),
         isSelected: (value) => count === value,
         toggle: (value) => onChange({ ...weights, count: value }),
       })}
@@ -246,7 +246,7 @@ function platesWeights(
         label: "Доступные блины",
         hint: "Укажите блины, которыми вы реально пользуетесь.",
         options: DEFAULT_PLATES[units],
-        render: (value) => value.toString(),
+        render: (value) => formatNumber(value),
         isSelected: (value) => steps.includes(value),
         toggle: (value) =>
           onChange({ ...weights, steps: toggleArray(steps, value) }),
