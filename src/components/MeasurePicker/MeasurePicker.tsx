@@ -1,5 +1,6 @@
 import s from "./styles.module.scss";
 import { Ruler } from "../Ruler";
+import { formatNumber } from "../../utils";
 import type { MeasurePickerProps } from "./types.ts";
 
 // One number, and the scale that sets it. The keyboard is never opened: on a
@@ -14,7 +15,7 @@ export function MeasurePicker({
   return (
     <>
       <div className={s.value}>
-        {value.toLocaleString("ru", {
+        {formatNumber(value, {
           minimumFractionDigits: decimals,
           maximumFractionDigits: decimals,
         })}

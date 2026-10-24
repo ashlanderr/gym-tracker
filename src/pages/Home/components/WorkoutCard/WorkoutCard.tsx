@@ -17,6 +17,7 @@ import { TIME_FORMATTER } from "../../constants.ts";
 import { EXERCISES_SHOWN } from "./constants.ts";
 import { formatDuration, summarizeExercises } from "./utils.ts";
 import { formatRepeat } from "../../schedule.ts";
+import { formatNumber } from "../../../../utils";
 import type {
   ActiveWorkoutCardProps,
   ExerciseSummary,
@@ -207,5 +208,5 @@ function Stat({ name, value }: { name: string; value: ReactNode }) {
 }
 
 function formatVolume(volume: number | undefined): string {
-  return volume ? `${Math.round(volume).toLocaleString("ru")} кг` : "—";
+  return volume ? `${formatNumber(Math.round(volume))} кг` : "—";
 }

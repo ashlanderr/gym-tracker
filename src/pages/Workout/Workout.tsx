@@ -31,6 +31,7 @@ import {
   findNextSet,
   groupSets,
 } from "../../domain";
+import { formatNumber } from "../../utils";
 
 export function Workout() {
   const { workoutId } = usePageParams<WorkoutParams>();
@@ -99,7 +100,7 @@ export function Workout() {
           <div className={s.stat}>
             <div className={s.statName}>Объём</div>
             <div className={s.statValue}>
-              {Math.round(volume).toLocaleString("ru-RU")} кг
+              {formatNumber(Math.round(volume))} кг
             </div>
           </div>
           <div className={s.stat}>

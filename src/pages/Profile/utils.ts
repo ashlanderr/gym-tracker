@@ -1,5 +1,5 @@
 import type { Measurement, MeasurementType } from "../../db";
-import { pluralize } from "../../utils";
+import { formatNumber, pluralize } from "../../utils";
 import {
   DAY_FORMS,
   MEASURES,
@@ -26,7 +26,7 @@ export function toPoints(measurements: Measurement[]) {
 
 export function formatMeasure(value: number, type: MeasurementType): string {
   const { units, decimals } = MEASURES[type];
-  return `${value.toLocaleString("ru", { maximumFractionDigits: decimals })} ${units}`;
+  return `${formatNumber(value, { maximumFractionDigits: decimals })} ${units}`;
 }
 
 // Neither direction is good or bad: we do not know whether somebody is

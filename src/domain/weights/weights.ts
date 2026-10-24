@@ -5,6 +5,7 @@ import {
   DEFAULT_EXERCISE_WEIGHT,
   type ExerciseWeight,
 } from "../../db";
+import { formatNumber } from "../../utils";
 import type { RoundingMode, WeightsConstructor } from "./types.ts";
 
 export function addSelfWeight(
@@ -68,7 +69,7 @@ export function oneRepMaxToReps(oneRepMax: number, weight: number): number {
 }
 
 export function formatRecordValue(value: number) {
-  return (Math.round(value * 100) / 100).toLocaleString() + " кг";
+  return formatNumber(value, { maximumFractionDigits: 2 }) + " кг";
 }
 
 export function snapWeightKg(
