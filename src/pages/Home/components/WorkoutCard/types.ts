@@ -1,4 +1,4 @@
-import type { Workout } from "../../../../db";
+import type { WeightUnits, Workout } from "../../../../db";
 import type { PlannedWorkout } from "../../types.ts";
 
 export interface WorkoutCardProps {
@@ -18,6 +18,7 @@ export interface ExerciseSummary {
   done: number;
   total: number;
   best: { weight: number; reps: number } | null;
+  units: WeightUnits;
 }
 
 export interface PlannedWorkoutCardProps {

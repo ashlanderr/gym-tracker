@@ -2,9 +2,8 @@ import type { Selector, WeightsSelectorProps } from "./types.ts";
 import { MdCheck } from "react-icons/md";
 import s from "./styles.module.scss";
 import { HeaderButton, PageHeader } from "../../../../components";
-import { snapWeightKg } from "../../../../domain";
+import { formatWeightUnits, snapWeightKg } from "../../../../domain";
 import { WeightsVisualizer } from "../WeightsVisualizer";
-import { formatWeightUnits } from "../../hooks.ts";
 import {
   type EquipmentType,
   type PerformanceWeights,

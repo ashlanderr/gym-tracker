@@ -17,6 +17,7 @@ import { useState } from "react";
 import { PiArrowDownBold, PiArrowUpBold, PiMedalFill } from "react-icons/pi";
 import {
   addSelfWeight,
+  formatWeightUnits,
   MEDAL_RECORDS,
   type RecSetData,
   updateRecords,
@@ -31,7 +32,6 @@ import { WeightsSelectorModal } from "../WeightsSelectorModal";
 import { RepsSheet } from "../RepsSheet";
 import { RecordNotice } from "../RecordNotice";
 import { RECORD_NOTICE } from "../../../constants.ts";
-import { formatWeightUnits } from "../../hooks.ts";
 
 export function SetRow({
   exercise,

@@ -8,6 +8,7 @@ import {
 } from "../../../../components";
 import { updatePerformance, updateSet } from "../../../../db";
 import {
+  formatWeightUnits,
   MANUAL_WEIGHT_STEP,
   minimumWeightKg,
   snapWeightKg,
@@ -18,11 +19,7 @@ import { WeightsSelectorModal } from "../WeightsSelectorModal";
 import { WeightsVisualizer } from "../WeightsVisualizer";
 import { SheetAction, StepSheet } from "../StepSheet";
 import { UNITS_SHORT } from "../../../constants.ts";
-import {
-  formatWeightUnits,
-  useLivePerformance,
-  usePerformanceSets,
-} from "../../hooks.ts";
+import { useLivePerformance, usePerformanceSets } from "../../hooks.ts";
 import type { SetSheetData } from "../SetRow/types.ts";
 
 export function WeightSheet({

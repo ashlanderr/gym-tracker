@@ -1,7 +1,11 @@
-import type { Performance, Set } from "../../../../db";
+import type { Performance, Set, WeightUnits } from "../../../../db";
 import { formatDuration, summarizeExercises } from "./utils.ts";
 
-function performance(id: string, exercise: string): Performance {
+function performance(
+  id: string,
+  exercise: string,
+  units?: WeightUnits,
+): Performance {
   return {
     id,
     user: "user",
@@ -10,6 +14,7 @@ function performance(id: string, exercise: string): Performance {
     order: 0,
     startedAt: 0,
     program: undefined,
+    weights: units && { units },
   };
 }
 
@@ -33,9 +38,9 @@ function set(
 }
 
 describe("exercise summary", () => {
-  it("counts the done sets and picks the heaviest, then by reps", () => {
+  it("counts the done sets, picks the heaviest, then by reps, with its units", () => {
     const summary = summarizeExercises(
-      [performance("bench", "e1"), performance("row", "e2")],
+      [performance("bench", "e1"), performance("row", "e2", "lbs")],
       [
         set("bench", 60, 8),
         set("bench", 62.5, 5),
@@ -52,8 +57,16 @@ describe("exercise summary", () => {
         done: 3,
         total: 4,
         best: { weight: 62.5, reps: 6 },
+        units: "kg",
       },
-      { performance: "row", exercise: "e2", done: 0, total: 1, best: null },
+      {
+        performance: "row",
+        exercise: "e2",
+        done: 0,
+        total: 1,
+        best: null,
+        units: "lbs",
+      },
     ]);
   });
 });

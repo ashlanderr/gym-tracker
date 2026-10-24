@@ -68,6 +68,14 @@ export function oneRepMaxToReps(oneRepMax: number, weight: number): number {
   return (oneRepMax / weight - 1) * 30;
 }
 
+export function formatWeightUnits(
+  weightKg: number | undefined,
+  units: WeightUnits | undefined,
+): string {
+  if (weightKg === undefined) return "–";
+  return formatNumber(kgToUnits(weightKg, units), { maximumFractionDigits: 2 });
+}
+
 export function formatRecordValue(value: number) {
   return formatNumber(value, { maximumFractionDigits: 2 }) + " кг";
 }

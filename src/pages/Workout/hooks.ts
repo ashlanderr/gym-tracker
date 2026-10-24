@@ -16,11 +16,10 @@ import { useStore } from "../../components";
 import {
   buildRecommendations,
   startsRest,
-  kgToUnits,
   type RecSetData,
   type RepRange,
 } from "../../domain";
-import { assertNever, formatNumber } from "../../utils";
+import { assertNever } from "../../utils";
 
 export interface SetRowData {
   set: Set;
@@ -119,14 +118,6 @@ export function useLivePerformance(snapshot: Performance): Performance | null {
   const store = useStore();
   const performances = useQueryPerformancesByWorkout(store, snapshot.workout);
   return performances.find((p) => p.id === snapshot.id) ?? null;
-}
-
-export function formatWeightUnits(
-  weightKg: number | undefined,
-  units: WeightUnits | undefined,
-): string {
-  if (weightKg === undefined) return "–";
-  return formatNumber(kgToUnits(weightKg, units), { maximumFractionDigits: 2 });
 }
 
 export function formatPlannedReps({ min, max }: RepRange): string {

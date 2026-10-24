@@ -18,6 +18,8 @@ import { EXERCISES_SHOWN } from "./constants.ts";
 import { formatDuration, summarizeExercises } from "./utils.ts";
 import { formatRepeat } from "../../schedule.ts";
 import { formatNumber } from "../../../../utils";
+import { formatWeightUnits } from "../../../../domain";
+import { UNITS_SHORT } from "../../../constants.ts";
 import type {
   ActiveWorkoutCardProps,
   ExerciseSummary,
@@ -174,7 +176,7 @@ function Exercises({
 
   return (
     <div className={s.exercises}>
-      {shown.map(({ performance, exercise, done, total, best }) => (
+      {shown.map(({ performance, exercise, done, total, best, units }) => (
         <div key={performance} className={s.exercise}>
           <span className={s.count}>
             {progress ? `${done}/${total}` : `${done} ×`}
@@ -185,7 +187,7 @@ function Exercises({
           <span className={s.best}>
             {best
               ? best.weight
-                ? `${formatNumber(best.weight, { maximumFractionDigits: 2 })} кг × ${best.reps}`
+                ? `${formatWeightUnits(best.weight, units)} ${UNITS_SHORT[units]} × ${best.reps}`
                 : `× ${best.reps}`
               : "—"}
           </span>

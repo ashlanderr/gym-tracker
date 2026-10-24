@@ -1,4 +1,8 @@
-import type { Performance, Set } from "../../../../db";
+import {
+  DEFAULT_WEIGHT_UNITS,
+  type Performance,
+  type Set,
+} from "../../../../db";
 import type { ExerciseSummary } from "./types.ts";
 
 // One line per exercise in the order of the workout: how many sets are done
@@ -26,6 +30,7 @@ export function summarizeExercises(
       done: done.length,
       total: own.length,
       best: best && { weight: best.weight!, reps: best.reps! },
+      units: performance.weights?.units ?? DEFAULT_WEIGHT_UNITS,
     };
   });
 }

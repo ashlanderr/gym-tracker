@@ -1,5 +1,6 @@
 import {
   computeWeights,
+  formatWeightUnits,
   minimumWeightKg,
   oneRepMaxToReps,
   oneRepMaxToWeight,
@@ -157,4 +158,9 @@ test("one rep max equivalents", () => {
   expect(oneRepMaxToReps(volumeToOneRepMax(60, 3), 60)).closeTo(3, 0.1);
   expect(oneRepMaxToReps(volumeToOneRepMax(60, 12), 60)).closeTo(12, 0.1);
   expect(oneRepMaxToReps(volumeToOneRepMax(60, 30), 60)).closeTo(30, 0.1);
+});
+
+test("weight in pounds is shown as it was picked, not as stored kilograms", () => {
+  expect(formatWeightUnits(unitsToKg(45, "lbs"), "lbs")).toBe("45");
+  expect(formatWeightUnits(unitsToKg(2.5, "lbs"), "lbs")).toBe("2.5");
 });
