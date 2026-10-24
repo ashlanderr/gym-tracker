@@ -1,5 +1,5 @@
 import s from "./styles.module.scss";
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { PageHeader, useModalStack, useStore } from "../../../../components";
 import {
@@ -39,11 +39,19 @@ export function MeasurementPage() {
   // Oldest first, as the chart runs: each change reads down from the record
   // above it.
   const history = useMemo(() => [...measurements].reverse(), [measurements]);
+  const [latest] = measurements;
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // The newest record is at the bottom, and it is the one that matters: the
+  // page opens on it, and again on a record just added.
+  useLayoutEffect(() => {
+    const content = contentRef.current;
+    if (content) content.scrollTop = content.scrollHeight;
+  }, [latest?.id]);
 
   if (!(type in MEASURES)) return null;
 
   const spec = MEASURES[type];
-  const [latest] = measurements;
   // The last weight stays: exercises with the body as their weight count it.
   const isLocked = type === "weight" && measurements.length < 2;
 
@@ -68,7 +76,7 @@ export function MeasurementPage() {
   return (
     <div className={s.root}>
       <PageHeader title={spec.title} onBack={() => navigate(-1)} />
-      <div className={s.content}>
+      <div ref={contentRef} className={s.content}>
         {latest && (
           <div className={s.summary}>{formatMeasure(latest.value, type)}</div>
         )}
