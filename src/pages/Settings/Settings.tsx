@@ -10,7 +10,7 @@ import { MdLogout, MdPerson } from "react-icons/md";
 import { signOut, useUser } from "../../firebase/auth.ts";
 import { formatSoundLog } from "../../utils";
 import { APP_VERSION } from "./constants.ts";
-import { seedWorkouts } from "./seed.ts";
+import { seedMeasurements, seedWorkouts } from "./seed.ts";
 import s from "./styles.module.scss";
 
 export function Settings() {
@@ -24,6 +24,11 @@ export function Settings() {
     setBackendUrl(backendUrlInput);
     setBackendUrlInput(null);
     location.reload();
+  };
+
+  const seedHandler = () => {
+    seedMeasurements(store, user.uid);
+    seedWorkouts(store, user.uid);
   };
 
   const copySoundLogHandler = async () => {
@@ -88,7 +93,7 @@ export function Settings() {
         {import.meta.env.DEV && user.uid.startsWith("local-") && (
           <button
             className={s.seed}
-            onClick={() => seedWorkouts(store, user.uid)}
+            onClick={seedHandler}
           >
             Добавить тестовые тренировки
           </button>

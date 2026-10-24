@@ -1,8 +1,40 @@
+import type { MeasurementType } from "../../db";
+
 export const APP_VERSION = "4.15.0";
 
 export const SEED_DAYS_AGO = [
   1, 3, 5, 8, 10, 12, 15, 17, 19, 22, 26, 29, 33, 40,
 ];
+
+// Days ago and the value. Weight weekly, girths every few weeks, height
+// once, the rest never: the profile shows only what has records.
+export const SEED_MEASUREMENTS: Partial<
+  Record<MeasurementType, [number, number][]>
+> = {
+  weight: [
+    [49, 84.2],
+    [42, 83.9],
+    [35, 84.4],
+    [28, 83.6],
+    [21, 83.1],
+    [14, 82.8],
+    [7, 82.5],
+    [2, 82.1],
+  ],
+  waist: [
+    [56, 88],
+    [35, 87],
+    [14, 86],
+    [3, 85.5],
+  ],
+  biceps: [
+    [56, 37],
+    [35, 37.5],
+    [14, 37.5],
+    [3, 38],
+  ],
+  height: [[60, 182]],
+};
 
 export const SEED_PLANS = [
   {
