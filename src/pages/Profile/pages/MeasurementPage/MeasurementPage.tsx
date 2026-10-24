@@ -36,6 +36,9 @@ export function MeasurementPage() {
     [all, type],
   );
   const points = useMemo(() => toPoints(measurements), [measurements]);
+  // Oldest first, as the chart runs: each change reads down from the record
+  // above it.
+  const history = useMemo(() => [...measurements].reverse(), [measurements]);
 
   if (!(type in MEASURES)) return null;
 
@@ -71,8 +74,8 @@ export function MeasurementPage() {
         )}
         {points.length > 1 && <LineChart className={s.chart} points={points} />}
         <div className={s.list}>
-          {measurements.map((measurement, index) => {
-            const previous = measurements[index + 1];
+          {history.map((measurement, index) => {
+            const previous = history[index - 1];
             return (
               <button
                 key={measurement.id}
