@@ -5,6 +5,7 @@ import {
   MEASURES,
   MEASUREMENT_TYPES,
   RECENT_DAYS,
+  TILE_CHART_MONTHS,
 } from "./constants.ts";
 
 // Keeps the order it is given: newest first in, newest first out.
@@ -22,6 +23,12 @@ export function groupByType(
 
 export function toPoints(measurements: Measurement[]) {
   return measurements.map((m) => ({ x: m.createdAt, y: m.value })).reverse();
+}
+
+export function toTilePoints(measurements: Measurement[], now: number) {
+  const since = new Date(now);
+  since.setMonth(since.getMonth() - TILE_CHART_MONTHS);
+  return toPoints(measurements.filter((m) => m.createdAt >= since.getTime()));
 }
 
 export function formatMeasure(value: number, type: MeasurementType): string {

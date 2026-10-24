@@ -14,7 +14,7 @@ import {
   formatAgo,
   formatMeasure,
   groupByType,
-  toPoints,
+  toTilePoints,
 } from "../../utils.ts";
 
 // A measurement is tracked once it has a record: only those are tiles, and
@@ -58,7 +58,7 @@ export function ProfilePage() {
                 label={MEASURES[type].title}
                 value={formatMeasure(latest.value, type)}
                 meta={formatAgo(latest.createdAt, now)}
-                points={toPoints(groups[type])}
+                points={toTilePoints(groups[type], now)}
                 onOpen={() => navigate(`/profile/${type}`)}
                 onAdd={() => recordHandler(type)}
               />

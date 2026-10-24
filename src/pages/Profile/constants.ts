@@ -54,4 +54,6 @@ export const MEASUREMENT_TYPES = Object.keys(MEASURES) as MeasurementType[];
 // "12 дней назад" is arithmetic the reader has to undo.
 export const RECENT_DAYS = 7;
 
+export const TILE_CHART_MONTHS = 3;
+
 export const DAY_FORMS: [string, string, string] = ["день", "дня", "дней"];
