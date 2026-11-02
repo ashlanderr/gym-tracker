@@ -1,8 +1,7 @@
 import type { MeasurementType } from "../../db";
 import type { MeasureSpec } from "./types.ts";
 
-// In the order the tiles go. A girth is set to half a centimetre, the
-// finest a tape is read to.
+// In the order the tiles go.
 export const MEASURES: Record<MeasurementType, MeasureSpec> = {
   weight: {
     title: "Вес",
