@@ -5,6 +5,7 @@ import {
   oneRepMaxToReps,
   oneRepMaxToWeight,
   snapWeightKg,
+  stepWeightKg,
   unitsToKg,
   volumeToOneRepMax,
 } from "./weights.ts";
@@ -163,4 +164,27 @@ test("one rep max equivalents", () => {
 test("weight in pounds is shown as it was picked, not as stored kilograms", () => {
   expect(formatWeightUnits(unitsToKg(45, "lbs"), "lbs")).toBe("45");
   expect(formatWeightUnits(unitsToKg(2.5, "lbs"), "lbs")).toBe("2.5");
+});
+
+const dumbbells: PerformanceWeights = {
+  units: "kg",
+  count: 2,
+  ranges: [
+    { from: 10, to: 20, step: 2 },
+    { from: 1, to: 4, step: 1 },
+  ],
+  excluded: [14],
+};
+
+test("a pair snaps to the nearest dumbbell that is in the gym", () => {
+  expect(snapWeightKg(dumbbells, 25)).toEqual(24);
+  expect(snapWeightKg(dumbbells, 29)).toEqual(32);
+  expect(snapWeightKg(dumbbells, 15)).toEqual(20);
+  expect(snapWeightKg(dumbbells, 100)).toEqual(40);
+  expect(minimumWeightKg(dumbbells)).toEqual(2);
+});
+
+test("stepping skips an excluded dumbbell and the gap between ranges", () => {
+  expect(stepWeightKg(dumbbells, 24, 1, 0)).toEqual(32);
+  expect(stepWeightKg(dumbbells, 20, -1, 0)).toEqual(8);
 });

@@ -1,0 +1,29 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.group {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: 6px;
+}
+
+.cell {
+  height: 40px;
+  padding: 0;
+  border: 1px solid #2e2e2e;
+  border-radius: 10px;
+  background: #141414;
+  font: inherit;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+.excluded {
+  border-color: #1c1c1c;
+  background: transparent;
+  color: #444;
+}

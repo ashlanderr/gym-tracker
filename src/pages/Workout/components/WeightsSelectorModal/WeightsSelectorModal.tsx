@@ -1,15 +1,13 @@
 import { type ModalProps, PageModal } from "../../../../components";
+import type { PerformanceWeights } from "../../../../db";
 import { WeightsSelector } from "../WeightsSelector";
-import type {
-  WeightsSelectorModalData,
-  WeightsSelectorModalResult,
-} from "./types.ts";
+import type { WeightsSelectorModalData } from "./types.ts";
 
 export function WeightsSelectorModal({
   data,
   onCancel,
   onSubmit,
-}: ModalProps<WeightsSelectorModalData, WeightsSelectorModalResult>) {
+}: ModalProps<WeightsSelectorModalData, PerformanceWeights>) {
   return (
     <PageModal>
       <WeightsSelector
@@ -17,7 +15,7 @@ export function WeightsSelectorModal({
         weights={data.weights}
         previewKg={data.previewKg}
         onCancel={onCancel}
-        onSubmit={(weights) => onSubmit({ weights })}
+        onSubmit={onSubmit}
       />
     </PageModal>
   );

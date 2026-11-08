@@ -161,7 +161,7 @@ test("builds the records of 1RM again by Epley", () => {
 
 test("splits weight and height into a record each", () => {
   const doc = new Y.Doc();
-  doc.getMap("meta").set("version", SCHEMA_VERSION - 1);
+  doc.getMap("meta").set("version", 3);
   const measurements = doc.getMap<Y.Map<unknown>>("measurements");
   const combined: [string, number, number, number][] = [
     ["c", 3, 81, 180],
@@ -193,5 +193,39 @@ test("splits weight and height into a record each", () => {
     ["weight", 2, 80],
     ["weight", 3, 81],
     ["weight", 4, 82],
+  ]);
+});
+
+test("replaces the dumbbell step with a range and leaves other weights", () => {
+  const doc = new Y.Doc();
+  const performances = doc.getMap<Y.Map<unknown>>("performances");
+  const weights = [
+    { units: "kg", steps: 2.5, count: 2 },
+    { units: "lbs", steps: 5, count: 1 },
+    { units: "kg", base: 5, steps: 10 },
+    { units: "kg", base: 20, steps: [5, 10], count: 2 },
+    undefined,
+  ];
+  for (const w of weights) {
+    performances.set(String(performances.size), new Y.Map([["weights", w]]));
+  }
+  doc.getMap("meta").set("version", 4);
+  migrate(doc);
+  expect([...performances.values()].map((p) => p.get("weights"))).toEqual([
+    {
+      units: "kg",
+      count: 2,
+      ranges: [{ from: 2.5, to: 40, step: 2.5 }],
+      excluded: [],
+    },
+    {
+      units: "lbs",
+      count: 1,
+      ranges: [{ from: 5, to: 90, step: 5 }],
+      excluded: [],
+    },
+    weights[2],
+    weights[3],
+    undefined,
   ]);
 });

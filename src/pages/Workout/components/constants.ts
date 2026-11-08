@@ -1,4 +1,19 @@
-import type { WeightUnits } from "../../../db";
+import type { DumbbellWeights, WeightUnits } from "../../../db";
+
+export const DEFAULT_DUMBBELLS: Record<WeightUnits, DumbbellWeights> = {
+  kg: {
+    units: "kg",
+    count: 2,
+    ranges: [{ from: 10, to: 40, step: 2 }],
+    excluded: [],
+  },
+  lbs: {
+    units: "lbs",
+    count: 2,
+    ranges: [{ from: 5, to: 100, step: 5 }],
+    excluded: [],
+  },
+};
 
 export const DEFAULT_PLATES: Record<WeightUnits, number[]> = {
   kg: [1.25, 2.5, 5, 10, 20, 25],

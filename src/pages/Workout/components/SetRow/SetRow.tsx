@@ -88,13 +88,13 @@ export function SetRow({
 
     const equipment = exercise?.equipment ?? "none";
     if (equipment !== "none" && performance.weights === undefined) {
-      const result = await pushModal(WeightsSelectorModal, {
+      const weights = await pushModal(WeightsSelectorModal, {
         equipment,
         weights: undefined,
         previewKg: undefined,
       });
-      if (!result) return;
-      updatePerformance(store, { ...performance, weights: result.weights });
+      if (!weights) return;
+      updatePerformance(store, { ...performance, weights });
     }
 
     await pushModal(WeightSheet, { performance, setId: set.id });

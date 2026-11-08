@@ -1,7 +1,9 @@
-import type {
-  EquipmentType,
-  PerformanceWeights,
-  WeightUnits,
+import {
+  type EquipmentType,
+  isDumbbellWeights,
+  type PerformanceWeights,
+  type StepWeights,
+  type WeightUnits,
 } from "../../../../db";
 import s from "./styles.module.scss";
 import { clsx } from "clsx";
@@ -25,7 +27,8 @@ export function WeightsVisualizer({
 }: WeightsVisualizerProps) {
   const ctor = computeWeights(weights, weightKg);
   const isInvalid = Math.abs(ctor.totalKg - weightKg) >= 1e-3;
-  const plates = Array.isArray(weights?.steps) ? weights.steps : [];
+  const stepWeights = isDumbbellWeights(weights) ? undefined : weights;
+  const plates = Array.isArray(stepWeights?.steps) ? stepWeights.steps : [];
   const rackHeight = plateHeight(Math.max(0, ...plates));
 
   const content = (() => {
@@ -37,7 +40,7 @@ export function WeightsVisualizer({
         return dumbbellWeights(ctor);
 
       case "machine":
-        return stackWeights(ctor, weights);
+        return stackWeights(ctor, stepWeights);
 
       case "plates":
         return platesWeights(ctor, rackHeight);
@@ -118,7 +121,7 @@ function dumbbellWeights(ctor: WeightsConstructor) {
 // machine. Heavy weights scroll the bricks so a few stay below the pin.
 function stackWeights(
   ctor: WeightsConstructor,
-  weights: PerformanceWeights | undefined,
+  weights: StepWeights | undefined,
 ) {
   const base = ctor.base ?? 0;
   const tiles = ctor.steps?.find((s) => s.weight === weights?.steps);

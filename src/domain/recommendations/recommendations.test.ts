@@ -205,3 +205,28 @@ describe("placeholders", () => {
     expect(recommend([short, draft()])).toEqual([82.5, 75]);
   });
 });
+
+describe("dumbbells", () => {
+  const dumbbells: PerformanceWeights = {
+    units: "kg",
+    count: 2,
+    ranges: [{ from: 10, to: 20, step: 2 }],
+    excluded: [14],
+  };
+  const context = { performanceWeights: dumbbells };
+
+  test("a wider gap to the next pair widens the range", () => {
+    const even = computeRepRange(20, range, context);
+    const gap = computeRepRange(24, range, context);
+    expect(gap.max).toBeGreaterThan(even.max);
+  });
+
+  test("a short set drops to a pair that is in the gym", () => {
+    expect(computeWorkingWeight([working(32, 3)], range, context)).toBe(24);
+  });
+
+  test("a passed pair rises over the excluded one", () => {
+    const top = computeRepRange(24, range, context).max;
+    expect(computeWorkingWeight([working(24, top)], range, context)).toBe(32);
+  });
+});

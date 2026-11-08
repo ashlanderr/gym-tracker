@@ -11,7 +11,36 @@ const MIGRATIONS: Migration[] = [
   replaceRepPresetsWithRanges,
   rebuildOneRepMaxRecordsByEpley,
   splitMeasurementsByType,
+  replaceDumbbellStepWithRanges,
 ];
+
+const DUMBBELL_MAX_V4: Record<string, number> = { kg: 40, lbs: 90 };
+
+// Dumbbells were a step from zero up without an end. They become one range
+// from the step to a usual heaviest dumbbell. Only dumbbells had a single
+// step without a base.
+function replaceDumbbellStepWithRanges(doc: Y.Doc) {
+  for (const performance of collection(doc, "performances").values()) {
+    const weights = performance.get("weights") as
+      | { units: string; base?: number; steps?: unknown; count?: number }
+      | undefined;
+    if (!weights || weights.base !== undefined) continue;
+    if (typeof weights.steps !== "number") continue;
+
+    performance.set("weights", {
+      units: weights.units,
+      count: weights.count ?? 1,
+      ranges: [
+        {
+          from: weights.steps,
+          to: DUMBBELL_MAX_V4[weights.units] ?? DUMBBELL_MAX_V4.kg,
+          step: weights.steps,
+        },
+      ],
+      excluded: [],
+    });
+  }
+}
 
 const REP_PRESETS: Record<string, { min: number; max: number }> = {
   low: { min: 6, max: 8 },

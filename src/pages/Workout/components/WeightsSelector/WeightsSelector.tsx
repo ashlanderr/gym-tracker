@@ -1,20 +1,36 @@
 import type { Selector, WeightsSelectorProps } from "./types.ts";
 import { MdCheck } from "react-icons/md";
 import s from "./styles.module.scss";
-import { HeaderButton, PageHeader } from "../../../../components";
-import { formatWeightUnits, snapWeightKg } from "../../../../domain";
-import { WeightsVisualizer } from "../WeightsVisualizer";
 import {
+  HeaderButton,
+  PageHeader,
+  useModalStack,
+} from "../../../../components";
+import { WhySheet } from "../WhySheet";
+import { INVENTORY_NOTE, INVENTORY_WHY } from "./constants.ts";
+import {
+  availableDumbbells,
+  formatWeightUnits,
+  snapWeightKg,
+} from "../../../../domain";
+import { WeightsVisualizer } from "../WeightsVisualizer";
+import { InventorySection } from "../InventorySection";
+import { DumbbellRanges } from "../DumbbellRanges";
+import {
+  type DumbbellWeights,
   type EquipmentType,
+  isDumbbellWeights,
   type PerformanceWeights,
+  type StepWeights,
   type WeightUnits,
 } from "../../../../db";
-import { UNITS_SHORT, UNITS_TRANSLATION } from "../../../constants.ts";
+import { EQUIPMENT_TRANSLATION, UNITS_SHORT } from "../../../constants.ts";
 import { useEffect, useState } from "react";
 import { clsx } from "clsx";
 import {
   BARBELL_BASES,
   BARBELL_DEFAULT_BASE,
+  DEFAULT_DUMBBELLS,
   DEFAULT_PLATES,
 } from "../constants.ts";
 import { assertNever, formatNumber } from "../../../../utils";
@@ -26,22 +42,26 @@ export function WeightsSelector({
   onCancel,
   onSubmit,
 }: WeightsSelectorProps) {
-  const [state, setState] = useState(weights);
+  const { pushModal } = useModalStack();
+  const [state, setState] = useState(() => initialWeights(equipment, weights));
 
   useEffect(() => {
-    setState(weights);
-  }, [weights]);
+    setState(initialWeights(equipment, weights));
+  }, [equipment, weights]);
 
   const submitHandler = () => {
     onSubmit(state);
   };
 
   const isValid = validateWeights(equipment, state);
+  const hasPreview =
+    previewKg !== undefined && isValid && equipment !== "dumbbell";
 
   return (
     <div className={s.root}>
       <PageHeader
-        title="Мой инвентарь"
+        kicker="Инвентарь"
+        title={EQUIPMENT_TRANSLATION[equipment]}
         onBack={onCancel}
         right={
           <HeaderButton onClick={submitHandler} disabled={!isValid}>
@@ -50,7 +70,19 @@ export function WeightsSelector({
         }
       />
       <div className={s.body}>
-        {previewKg !== undefined && isValid && state && (
+        <InventorySection
+          label="Зачем это"
+          hint={[
+            INVENTORY_NOTE,
+            <button
+              className={s.more}
+              onClick={() => pushModal(WhySheet, INVENTORY_WHY)}
+            >
+              Подробнее
+            </button>,
+          ]}
+        />
+        {hasPreview && (
           <div className={s.preview}>
             <div className={s.previewLabel}>
               <span>Как собрать</span>
@@ -66,11 +98,26 @@ export function WeightsSelector({
             />
           </div>
         )}
-        {unitsSelector(state, setState)}
-        {state && buildBody(equipment, state, setState)}
+        {unitsSelector(state.units, (units) =>
+          setState(initialWeights(equipment, { units })),
+        )}
+        {buildBody(equipment, state, setState)}
       </div>
     </div>
   );
+}
+
+// A dumbbell inventory starts from the defaults, the others from the units
+// alone, with every field to pick.
+function initialWeights(
+  equipment: EquipmentType,
+  weights: PerformanceWeights | undefined,
+): PerformanceWeights {
+  const units = weights?.units ?? "kg";
+  if (equipment === "dumbbell") {
+    return isDumbbellWeights(weights) ? weights : DEFAULT_DUMBBELLS[units];
+  }
+  return weights && !isDumbbellWeights(weights) ? weights : { units };
 }
 
 function buildBody(
@@ -78,15 +125,17 @@ function buildBody(
   weights: PerformanceWeights,
   onChange: (weights: PerformanceWeights) => void,
 ) {
+  if (isDumbbellWeights(weights)) {
+    return dumbbellWeights(weights, onChange);
+  }
+
   switch (equipment) {
     case "none":
+    case "dumbbell":
       return null;
 
     case "barbell":
       return barbellWeights(weights, onChange);
-
-    case "dumbbell":
-      return dumbbellWeights(weights, onChange);
 
     case "machine":
       return machineWeights(weights, onChange);
@@ -106,11 +155,10 @@ function toggleArray<T>(array: T[], value: T): T[] {
 }
 
 function barbellWeights(
-  weights: PerformanceWeights,
-  onChange: (weights: PerformanceWeights) => void,
+  weights: StepWeights,
+  onChange: (weights: StepWeights) => void,
 ) {
   const units = weights.units;
-  const unitsStr = UNITS_TRANSLATION[units];
   const steps = Array.isArray(weights.steps) ? weights.steps : [];
   const defaultBase = BARBELL_DEFAULT_BASE[units];
   const base = weights.base;
@@ -119,7 +167,7 @@ function barbellWeights(
     <>
       {selector({
         label: "Вес пустого грифа",
-        hint: `Сколько весит гриф без блинов (стандартный ${formatNumber(defaultBase)} ${unitsStr}).`,
+        hint: `Сколько весит гриф без блинов (стандартный ${formatNumber(defaultBase)} ${UNITS_SHORT[units]}).`,
         options: BARBELL_BASES[units],
         render: (value) => formatNumber(value),
         isSelected: (value) => value === base,
@@ -139,41 +187,36 @@ function barbellWeights(
 }
 
 function dumbbellWeights(
-  weights: PerformanceWeights,
-  onChange: (weights: PerformanceWeights) => void,
+  weights: DumbbellWeights,
+  onChange: (weights: DumbbellWeights) => void,
 ) {
-  const steps = typeof weights.steps === "number" ? weights.steps : undefined;
-  const count = weights.count;
-
   return (
     <>
-      {selector({
-        label: "Количество гантелей",
-        hint: "Сколько используется одновременно.",
+      {selector<1 | 2>({
+        label: "Гантели",
+        hint: "Для пары в подходах указывается суммарный вес.",
         options: [1, 2],
-        render: (value) => formatNumber(value),
-        isSelected: (value) => count === value,
+        render: (value) => (value === 1 ? "Одна" : "Пара"),
+        isSelected: (value) => weights.count === value,
         toggle: (value) => onChange({ ...weights, count: value }),
+        className: s.wide,
       })}
-      {selector({
-        label: "Шаг веса гантелей",
-        hint: "Разница между соседними весами.",
-        options: [1, 2, 2.5, 5],
-        render: (value) => formatNumber(value),
-        isSelected: (value) => steps === value,
-        toggle: (value) => onChange({ ...weights, steps: value }),
-      })}
+      <DumbbellRanges
+        key={weights.units}
+        weights={weights}
+        onChange={onChange}
+      />
     </>
   );
 }
 
 function machineWeights(
-  weights: PerformanceWeights,
-  onChange: (weights: PerformanceWeights) => void,
+  weights: StepWeights,
+  onChange: (weights: StepWeights) => void,
 ) {
   const stepOptions = [2.5, 5, 10, 15, 20];
   const base = weights.base;
-  const steps = typeof weights?.steps === "number" ? weights.steps : undefined;
+  const steps = typeof weights.steps === "number" ? weights.steps : undefined;
   const additional = weights.additional;
   const count = weights.count;
   const additionalOptions =
@@ -224,12 +267,12 @@ function machineWeights(
 }
 
 function platesWeights(
-  weights: PerformanceWeights,
-  onChange: (weights: PerformanceWeights) => void,
+  weights: StepWeights,
+  onChange: (weights: StepWeights) => void,
 ) {
   const units = weights.units;
-  const steps = Array.isArray(weights?.steps) ? weights.steps : [];
-  const count = weights?.count;
+  const steps = Array.isArray(weights.steps) ? weights.steps : [];
+  const count = weights.count;
 
   return (
     <>
@@ -255,30 +298,33 @@ function platesWeights(
 }
 
 function unitsSelector(
-  weights: PerformanceWeights | undefined,
-  onChange: (weights: PerformanceWeights | undefined) => void,
+  selected: WeightUnits,
+  onChange: (units: WeightUnits) => void,
 ) {
-  const selected = weights?.units ?? "";
-
-  return selector<WeightUnits | "">({
-    label: "Единицы измерения",
-    hint: "Система, в которой подписаны веса в зале.",
-    options: ["", "kg", "lbs"],
-    render: (value) => (value ? UNITS_TRANSLATION[value] : "ВЫКЛ"),
+  return selector<WeightUnits>({
+    label: "Единицы",
+    hint: "Как подписаны веса в зале.",
+    options: ["kg", "lbs"],
+    render: (value) => UNITS_SHORT[value],
     isSelected: (value) => selected === value,
-    toggle: (value) => onChange(value ? { units: value } : undefined),
+    toggle: (value) => {
+      if (value !== selected) onChange(value);
+    },
+    className: clsx(s.wide, s.units),
   });
 }
 
 function selector<T extends string | number>(props: Selector<T>) {
   return (
-    <>
-      <div className={s.label}>{props.label}</div>
-      {props.hint && <div className={s.hint}>{props.hint}</div>}
+    <InventorySection label={props.label} hint={props.hint}>
       <div className={s.chips}>
         {props.options.map((option) => (
           <button
-            className={clsx(s.chip, props.isSelected(option) && s.selected)}
+            className={clsx(
+              s.chip,
+              props.className,
+              props.isSelected(option) && s.selected,
+            )}
             key={option}
             onClick={() => props.toggle(option)}
           >
@@ -286,19 +332,24 @@ function selector<T extends string | number>(props: Selector<T>) {
           </button>
         ))}
       </div>
-    </>
+    </InventorySection>
   );
 }
 
 function validateWeights(
   equipment: EquipmentType,
-  weights: PerformanceWeights | undefined,
+  weights: PerformanceWeights,
 ): boolean {
-  if (!weights) return true;
+  if (isDumbbellWeights(weights)) {
+    return equipment === "dumbbell" && availableDumbbells(weights).length !== 0;
+  }
 
   switch (equipment) {
     case "none":
       return true;
+
+    case "dumbbell":
+      return false;
 
     case "barbell":
       return (
@@ -307,14 +358,6 @@ function validateWeights(
         weights.steps.length !== 0 &&
         weights.additional === undefined &&
         weights.count === 2
-      );
-
-    case "dumbbell":
-      return (
-        weights.base === undefined &&
-        typeof weights.steps === "number" &&
-        weights.additional === undefined &&
-        weights.count !== undefined
       );
 
     case "machine":

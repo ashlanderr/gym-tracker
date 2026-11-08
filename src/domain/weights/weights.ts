@@ -4,6 +4,9 @@ import {
   type WeightUnits,
   DEFAULT_EXERCISE_WEIGHT,
   type ExerciseWeight,
+  type DumbbellRange,
+  type DumbbellWeights,
+  isDumbbellWeights,
 } from "../../db";
 import { formatNumber } from "../../utils";
 import type { RoundingMode, WeightsConstructor } from "./types.ts";
@@ -141,6 +144,10 @@ export function computeWeights(
     };
   }
 
+  if (isDumbbellWeights(weights)) {
+    return computeDumbbells(weights, valueKg, rounding);
+  }
+
   const steps: number[] = [];
   const resultSteps: number[] = [];
 
@@ -187,6 +194,55 @@ export function computeWeights(
     base: base !== 0 ? base : undefined,
     steps: combinedSteps.length !== 0 ? combinedSteps : undefined,
     count,
+    totalUnits,
+  };
+}
+
+export function rangeWeights({ from, to, step }: DumbbellRange): number[] {
+  if (!(from > 0 && step > 0 && from <= to)) return [];
+  const count = Math.floor((to - from) / step + 1e-9) + 1;
+  return Array.from(
+    { length: count },
+    (_, i) => Math.round((from + i * step) * 1000) / 1000,
+  );
+}
+
+export function availableDumbbells(weights: DumbbellWeights): number[] {
+  const all = new Set(weights.ranges.flatMap(rangeWeights));
+  return [...all]
+    .filter((weight) => !weights.excluded.includes(weight))
+    .sort((a, b) => a - b);
+}
+
+// The pair takes two dumbbells of one weight. Past either end of the rack the
+// lightest or the heaviest is taken.
+function computeDumbbells(
+  weights: DumbbellWeights,
+  valueKg: number,
+  rounding: RoundingMode,
+): WeightsConstructor {
+  const available = availableDumbbells(weights);
+  const target = kgToUnits(valueKg, weights.units) / weights.count;
+  const eps = 1e-6;
+
+  const below = available.filter((w) => w <= target + eps).at(-1);
+  const above = available.find((w) => w >= target - eps);
+  const nearest =
+    below === undefined
+      ? above
+      : above === undefined || target - below <= above - target
+        ? below
+        : above;
+  const rounded = { floor: below, ceil: above, round: nearest }[rounding];
+  const edge = target < available[0] ? available[0] : available.at(-1);
+  const dumbbell = rounded ?? edge ?? 0;
+  const totalUnits = dumbbell * weights.count;
+
+  return {
+    units: weights.units,
+    totalKg: unitsToKg(totalUnits, weights.units),
+    steps: dumbbell !== 0 ? [{ weight: dumbbell, count: 1 }] : undefined,
+    count: weights.count,
     totalUnits,
   };
 }

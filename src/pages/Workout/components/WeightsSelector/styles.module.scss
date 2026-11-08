@@ -9,11 +9,19 @@
 .body {
   display: flex;
   flex-direction: column;
-  margin: 0 16px 64px 16px;
+  gap: 28px;
+  margin: 20px 16px 64px;
+}
+
+.more {
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: #4d94ff;
 }
 
 .preview {
-  margin-top: 28px;
   padding: 20px 12px;
   border: 1px solid #2a2a2a;
   border-radius: 12px;
@@ -37,23 +45,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-.label {
-  margin: 20px 0 0;
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #6d6d6d;
-}
-
-.hint {
-  margin: 5px 0 0;
-  font-size: 12px;
-  line-height: 1.4;
-  color: #6d6d6d;
-}
-
 .chips {
-  margin: 9px 0 0;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -68,6 +60,14 @@
   text-align: center;
   font-size: 13px;
   color: #bdbdbd;
+}
+
+.wide {
+  min-width: 64px;
+}
+
+.units {
+  text-transform: uppercase;
 }
 
 .selected {

@@ -1,0 +1,15 @@
+.ranges {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.add {
+  margin-top: 4px;
+  padding: 10px 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  color: #4d94ff;
+}

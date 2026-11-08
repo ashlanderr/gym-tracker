@@ -25,12 +25,34 @@ export type WeightUnits = "kg" | "lbs";
 
 export const DEFAULT_WEIGHT_UNITS: WeightUnits = "kg";
 
-export interface PerformanceWeights {
+export type PerformanceWeights = DumbbellWeights | StepWeights;
+
+// Values in the units of the inventory, each range for one dumbbell.
+export interface DumbbellWeights {
+  units: WeightUnits;
+  count: 1 | 2;
+  ranges: DumbbellRange[];
+  excluded: number[];
+}
+
+export interface DumbbellRange {
+  from: number;
+  to: number;
+  step: number;
+}
+
+export interface StepWeights {
   units: WeightUnits;
   base?: number;
   steps?: number | number[];
   additional?: number;
   count?: number;
+}
+
+export function isDumbbellWeights(
+  weights: PerformanceWeights | undefined,
+): weights is DumbbellWeights {
+  return weights !== undefined && "ranges" in weights;
 }
 
 export function queryPerformanceById(

@@ -50,12 +50,15 @@ A comprehensive strength and hypertrophy training progress tracker built with Re
 ### Weights Management
 - **Equipment-specific weight configurations**:
   - **Barbell**: Customizable bar weight and available plates
-  - **Dumbbell**: Step-based weight increments
+  - **Dumbbell**: Ranges of dumbbells with exclusions
   - **Machine**: Stack-based weight systems with multiple blocks
   - **Plates**: Custom plate selection for plate-loaded equipment
 - **Automatic weight snapping** to available increments
 - **Visual weight representation** showing exact plate/weight combinations
 - **Unit conversion** between kg and lbs
+- **Unit labels** are `кг` and `lb` across the whole app, one constant
+  (`UNITS_SHORT`). Caps come only from CSS (`text-transform`) where the
+  element is styled in caps: column headers, the units chips of the inventory.
 - **Self-weight calculations** for bodyweight exercises
 
 ### Real-time Collaboration

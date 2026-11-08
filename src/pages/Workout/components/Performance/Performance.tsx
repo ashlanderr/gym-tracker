@@ -5,7 +5,7 @@ import { MuscleFigure, useModalStack, useStore } from "../../../../components";
 import { SetRow } from "../SetRow";
 import { PerformanceActions } from "../PerformanceActions";
 import { PerformanceTimer } from "../PerformanceTimer";
-import { UNITS_TRANSLATION } from "../../../constants.ts";
+import { UNITS_SHORT } from "../../../constants.ts";
 import { addNextSet } from "../../../../domain";
 import { usePerformanceSets } from "../../hooks.ts";
 
@@ -35,9 +35,7 @@ export function Performance({ performance, nextSetId }: PerformanceProps) {
           <tr>
             <th className={s.setNumHeader}>Подх.</th>
             <th className={s.prevVolumeHeader}>Пред.</th>
-            <th className={s.currentWeightHeader}>
-              {UNITS_TRANSLATION[units]}
-            </th>
+            <th className={s.currentWeightHeader}>{UNITS_SHORT[units]}</th>
             <th className={s.currentRepsHeader}>Повт.</th>
             <th className={s.setCompletedHeader}>
               <span className={s.completedMark}>

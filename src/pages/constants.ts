@@ -43,11 +43,6 @@ export const EXERCISE_WEIGHT_TRANSLATION: Record<
   positive: "Утяжеление",
 };
 
-export const UNITS_TRANSLATION: Record<WeightUnits, string> = {
-  kg: "KG",
-  lbs: "LBS",
-};
-
 export const UNITS_SHORT: Record<WeightUnits, string> = {
   kg: "кг",
   lbs: "lb",

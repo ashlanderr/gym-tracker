@@ -83,7 +83,7 @@ export function WeightSheet({
       previewKg: weightKg,
     });
     if (result) {
-      updatePerformance(store, { ...performance, weights: result.weights });
+      updatePerformance(store, { ...performance, weights: result });
     }
   };
 

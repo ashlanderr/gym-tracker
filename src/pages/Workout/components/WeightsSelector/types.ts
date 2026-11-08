@@ -6,14 +6,15 @@ export interface WeightsSelectorProps {
   // The weight of the set the inventory is opened from, drawn as it changes.
   previewKg?: number;
   onCancel: () => void;
-  onSubmit: (value: PerformanceWeights | undefined) => void;
+  onSubmit: (value: PerformanceWeights) => void;
 }
 
 export interface Selector<T extends string | number> {
   label: string;
-  hint?: string;
+  hint: string;
   options: T[];
   render: (value: T) => string;
   isSelected: (value: T) => boolean;
   toggle: (value: T) => void;
+  className?: string;
 }
